@@ -27,8 +27,8 @@ The [challenge brief](https://github.com/rht/wildfire/blob/main/challenge.md) em
 | Incident | One selected fire and a fixed bounding box, chosen based on accessible real data. |
 | Facilities | Two or three classes from one cached dataset. Start with schools and care homes if coverage permits; add campsites only if readily available. Include every matching facility in the area. |
 | Fire input | One provider, Deepfire, polled for updates. Recorded responses feed the same pipeline. |
-| Exposure | Distance to the fire footprint and overlap, with source and age visible. Provided forecasts are optional enrichment. |
-| Ranking | Explainable proximity–size–value score; missing information remains visible. |
+| Exposure | Distance, overlap and per-location spread-predicted arrival, with source and age visible. A forecast is required for the contact order. |
+| Ranking | Predicted time to impact minus total evacuation duration and buffer; missing inputs remain in review. |
 | Coordination | Follow-up tasks, manual team assignment, capability/availability checks, status and blocking questions. |
 | Agent | Investigate unknown occupancy or ambiguous class against cached evidence; propose a sourced update or escalate. |
 | Interface | Map, ranked location table, selected-location details, task queue and change log. |
@@ -83,7 +83,8 @@ Use a sorted asset table for ranking. A graph is deferred until route connectivi
 | Value | Analyst-configured operational importance by facility class: a prototype policy, not monetary valuation or an established emergency-service rule. |
 | Investigation evidence | Small cache of registry records or facility pages with URLs, snippets and dates. Label manual enrichment; avoid several ingestion pipelines. |
 | Teams | Manually entered or fixture roster with team IDs, capabilities, availability and source labels. |
-| Optional forecast | Provided Deepfire forecast only if access and output meaning are confirmed early. No custom simulator fallback. |
+| Spread forecast | Provided per-location fire arrival estimates, with source and estimate semantics. Without a usable forecast, show an unranked review queue; do not substitute distance for arrival time. |
+| Evacuation duration | Sourced estimate including mobilisation, preparation/loading and movement to a receiving location. Record assistance/transport assumptions; do not guess duration from headcount alone. |
 
 Select classes after inspecting coverage. Include the complete matching set within the area instead of selecting only interesting facilities. If a desired class lacks usable coverage, select another covered class and disclose the limitation.
 
@@ -122,38 +123,40 @@ All keys are present. Unknown measurements are `null`, not zero. Times are ISO 8
 | `asset_id`, `name`, `asset_type` | Strings | Stable identity, name and class; `unknown` for unresolved class. |
 | `latitude`, `longitude` | Numbers or null | WGS84 representative point; both null when unresolved. |
 | `geometry` | GeoJSON or null | Facility footprint when available. |
-| `area_m2` | Nonnegative number or null | Optional footprint area; not the MVP size-score input. |
+| `area_m2` | Nonnegative number or null | Optional footprint area; not an input to contact urgency. |
 | `capacity`, `estimated_occupancy` | Nonnegative integers or null | Maximum people versus estimated people present. |
 | `occupancy_basis` | String or null | Evidence or estimation method; capacity used as a proxy is explicit. |
 | `value_score`, `value_basis` | Number or null; string or null | Class-based operational importance and versioned analyst policy. |
 | `distance_to_fire_m`, `intersects_fire` | Nonnegative number or null; boolean or null | Geometric exposure; record point/footprint approximation in provenance. |
 | `burn_probability` | Number or null | Optional provider estimate over its documented horizon; null when unsupported. |
 | `arrival_p10_at`, `arrival_p50_at` | Timestamps or null | Optional arrival quantiles only when supported by the provider. Null does not establish safety. |
-| `forecast_horizon_at`, `forecast_source` | Timestamp or null; string or null | Optional forecast horizon and source/method. |
+| `forecast_horizon_at`, `forecast_source` | Timestamp or null; string or null | Forecast horizon and source/method; required provenance for forecast-based contact ranking. |
+| `fire_arrival_at`, `fire_arrival_basis` | Timestamp or null; string or null | Selected spread-predicted arrival estimate and meaning, e.g. p10 when supported. Never infer it from distance alone. |
+| `evacuation_min`, `evacuation_source` | Nonnegative number or null; string or null | Total estimated evacuation duration in minutes, including mobilisation, preparation/loading and onward movement, with its basis. |
 | `needs_review`, `review_reasons` | Boolean; array of strings | Such as `location_unknown`, `occupancy_unknown`, `occupancy_seasonal`, `class_ambiguous`, `value_unknown`, `exposure_unknown`. |
 | `sources` | Array of objects | Field-level provenance: `fields`, `source`, `observed_at`, `available_at`, `fetched_at`, `notes`. Unknown source times remain null. |
 
-For historical replay, evidence must have been available by `as_of`; missing availability information cannot establish that. Document any forecast-to-asset aggregation method. Optional forecast enrichment must not block the distance-based pipeline.
+For historical replay, evidence must have been available by `as_of`; missing availability information cannot establish that. Document any forecast-to-asset aggregation method. Missing forecasts do not block ingestion or manual tasks, but they do block automatic contact ranking.
 
-## 6. Explainable priority calculation
+## 6. Contact priority from the evacuation window
 
-Risk assessment describes the facility and its exposure. Coordination calculates priority for **analyst attention**.
+Use fire-spread prediction to express proximity in time: how long until the fire reaches each location. The contact order depends on how much of that time is needed to evacuate.
 
 ```text
-priority_score = w_proximity * proximity_score
-               + w_size      * size_score
-               + w_value     * value_score
+time_to_impact = predicted_fire_arrival - current_time
+latest_start = predicted_fire_arrival - total_evacuation_duration - buffer
+remaining_window = latest_start - current_time
 ```
 
-- **Proximity:** higher when distance to the fire footprint is smaller.
-- **Size:** estimated people present, or capacity as a labelled proxy when no estimate exists.
-- **Value:** operational importance from the analyst-configured class table, distinct from people count to avoid double-counting size.
-- Normalise components to [0, 1] with fixed configured scales; nonnegative weights sum to one. Record the policy version. Freeze a prototype policy at kickoff and expose it in the UI; do not tune weights to manufacture a desired demo order.
-- Sort fully scored assets by descending score, then `asset_id` for stable ties. Recalculate when inputs or confirmed overrides change.
-- If a required component is unknown, leave the score null and put the asset in a visible **needs-review queue**, ordered by known proximity with unknown exposure first. This is an investigation queue, not an assertion of highest physical risk.
-- Show contributions and input age. Recalculation never makes stale source data fresh.
+Rank by **smallest remaining window first**, then earlier predicted arrival, nearer geographic distance, and stable asset ID. A farther asset may be more urgent because the fire is spreading toward it or its evacuation takes longer. Geographic distance does not replace a forecast or receive an arbitrary weight.
 
-Coordination adds `priority_score`, nullable `priority_rank` (within scored assets), `queue` (primary placement: `ranked` or `needs_review`), `score_components`, `priority_policy_version`, and `priority_reasons`. Each component records its value, weight, input and proxy. Assets with review flags also appear in the review view even if a proxy permits scoring. Optional forecasts appear as context; forecast-driven urgency tiers are deferred.
+The evacuation estimate includes mobilisation, preparation/loading and onward movement to the receiving location. Assistance needs, transport availability and occupancy inform this duration rather than acting as separate ranking weights. Property value does not override contact urgency. Estimates must have a source; the static prototype uses explicitly synthetic forecast and duration inputs.
+
+A zero or negative window stays at the top with `window_exhausted`: immediate analyst review is needed, not an automatic evacuation instruction. Missing forecast, evacuation duration or provenance produces an unranked review item. No probability, arrival time or duration is fabricated from distance or headcount. A missing distance does not prevent ranking when the forecast and evacuation estimate are known.
+
+Coordination emits `rank`, `slack_min` (remaining window), `latest_start_min`, `time_to_impact_min`, `status`, `components`, forecast/evacuation sources and `review_reasons`. This replaces the weighted contact score. The static API uses `fire_arrival_min` relative to a common scenario epoch and `ContactPolicy(now_min, buffer_min)`; live timestamps must be converted to that same epoch. The selected arrival estimate must state its semantics; use a conservative quantile only when the provider actually supports it.
+
+Response sequencing remains a separate constrained calculation using action deadlines, capabilities and explicit benefits/prerequisites (section 16). Static action durations are not automatically treated as total evacuation durations.
 
 ## 7. Analyst tasks and team coordination
 
@@ -181,7 +184,7 @@ Implement one bounded loop for unknown occupancy or ambiguous class:
 1. Read the selected asset and its review reasons.
 2. Look up evidence in cached registry/page records.
 3. Propose a sourced field update or produce a concrete question for the analyst.
-4. On analyst confirmation, persist the override, recalculate priority and update the existing task.
+4. On analyst confirmation, persist the override, recalculate the remaining evacuation window and update the existing task.
 
 Four tools suffice: `get_asset`, `lookup_facility`, `propose_update`, and `escalate`. Keep evidence and tool calls visible, cap investigation steps, and leave unsupported questions unresolved. All field updates require analyst confirmation in this MVP. The agent does not directly assign teams or change scoring policy; calculation stays in code.
 
@@ -189,7 +192,7 @@ No general chat, live web research, alert drafting or wind what-if tools are nee
 
 ## 9. Interface and implementation
 
-One screen contains the fire/facility map, ranked table, visible review queue, selected-facility evidence and score breakdown, team/task controls, and change log. Show input mode, timestamps and stale-data state. Live and recorded inputs use the same screen; a "next update" control suffices for the demo.
+One screen contains the fire/facility map, ranked table, visible review queue, selected-facility evidence and timing breakdown, team/task controls, and change log. Show input mode, timestamps and stale-data state. Live and recorded inputs use the same screen; a "next update" control suffices for the demo.
 
 Use Python for ingestion/calculations, GeoPandas/Shapely for geometry, Streamlit with one map component, and an LLM API with tool calling. Cache responses and snapshots as JSON/GeoJSON; use SQLite for tasks and analyst overrides. The core MVP needs no road-network library, raster-processing stack, message broker or custom simulation service.
 
@@ -197,7 +200,7 @@ Use Python for ingestion/calculations, GeoPandas/Shapely for geometry, Streamlit
 
 | Owner | Responsibility | Deliverable |
 |---|---|---|
-| Colleague — risk assessment | One provider adapter, incident/area selection, cached facilities, matching, geometric exposure, provenance and optional provided forecast. | Section 5 snapshots and ingestion/exposure checks. |
+| Colleague — risk assessment | One provider adapter, incident/area selection, cached facilities, matching, geometric exposure, provenance and per-location spread predictions (or explicit missing-forecast status). | Section 5 snapshots and ingestion/exposure checks. |
 | [@mirrdj](https://github.com/mirrdj) — analyst coordination | Scoring, persistent tasks, roster checks, manual assignment, agent investigation, UI and change log. | Ranked/review queues and the analyst workflow against fixtures and real snapshots. |
 | Both | Contract/policy agreement, integration, labelled validation examples and rehearsal. | Complete demo, measured checks and explicit limitations. |
 
@@ -208,11 +211,11 @@ Assume about 24 working hours for two people, subject to the event's actual dura
 | 0–2 h | Verify provider response and facility coverage; agree contract. | Shared fixture, roster and UI skeleton; agree policy. | Two snapshots and one missing-information case agreed. |
 | 2–6 h | Cached facility loading and fire-response adapter. | Fixture ranking, tasks, assignment and persistence. | **Entire fixture loop works.** |
 | 6–12 h | Real snapshots; check matches and distances. | Connect snapshots; evidence lookup and confirmation. | Real data and one agent investigation work. |
-| 12–18 h | Poll/record updates; stale/missing-data handling; forecast only if already accessible. | Assignment checks, change log and error handling. | Workflow survives update, missing data and reload. |
-| 18–22 h | Validate exposure and source timing. | Validate scoring, agent cases and task persistence. | Results recorded; feature freeze. |
+| 12–18 h | Poll/record updates; stale/missing-data handling; forecast integration or explicit missing-forecast review. | Assignment checks, change log and error handling. | Workflow survives update, missing data and reload. |
+| 18–22 h | Validate exposure and source timing. | Validate evacuation-window ordering, agent cases and task persistence. | Results recorded; feature freeze. |
 | 22–24 h | Rehearse together. | Rehearse together. | Two dry runs and backup recording. |
 
-If behind: drop forecast enrichment, then the third class, then visual polish. Retain real data, the update loop, one agent investigation, manual assignment and validation. If live polling is unavailable, use recorded real responses and state that live integration was not demonstrated.
+If behind: drop the third class, then visual polish. Use recorded forecast inputs if live forecast access is unavailable. Retain real data, the update loop, one agent investigation, manual assignment and validation. If live polling is unavailable, use recorded real responses and state that live integration was not demonstrated.
 
 ## 11. Validation and completion criteria
 
@@ -220,7 +223,7 @@ Select a small labelled set before prompt tuning. Include valid matches, ambiguo
 
 - **Coverage/matching:** count all facilities matching the chosen area/classes, inspect a sample, and report unmatched or ambiguous records.
 - **Geometry:** verify overlap gives zero, a known separated example gives the expected metric distance, missing geometry stays unknown, and the point fallback is labelled.
-- **Priority:** verify normalisation, stable ties and directional changes as proximity/size/value change. Unknown required inputs stay visible. These checks verify implementation, not operational validity of the weights.
+- **Priority:** verify forecast arrival minus elapsed time, evacuation duration and buffer; a farther downwind location can outrank a nearby one. Check negative/zero windows, stable ties and missing estimates. These checks verify implementation, not the accuracy of supplied forecasts or evacuation estimates.
 - **Updates:** duplicates and older snapshots cannot regress state. New snapshots change affected priorities, preserve source age, and flag unexpected disappearance without task closure.
 - **Tasks:** assignments/progress survive updates and reload. Suggestions do not duplicate. Incompatible/unavailable teams cannot be assigned; missing resources remain explicit.
 - **Agent:** report supported proposals, correct escalations and unsupported claims on held-out examples. Capacity must not become a claim about actual occupancy.
@@ -231,7 +234,7 @@ Done means fixture and real-data loops work, an investigation is demonstrated, a
 ## 12. Three-minute demo
 
 1. **20 s:** explain the problem and the two algorithms: exposure updates and practical coordination.
-2. **35 s:** show a real incident, the area's facilities and one location's proximity/size/value breakdown.
+2. **35 s:** show a real incident, the area's facilities and one location's predicted arrival and evacuation-window breakdown.
 3. **40 s:** open missing occupancy or ambiguous class; run evidence lookup and confirm a proposal or answer the question.
 4. **30 s:** assign a follow-up task to an available capable team; show status and any blocker.
 5. **35 s:** process the next live or recorded fire update; show changed priorities and the preserved assignment.
@@ -244,9 +247,9 @@ Use labelled synthetic fixtures for development and failure cases. Present real 
 | Risk | Response |
 |---|---|
 | Provider access or usable incident unavailable | Test first. Use available recorded real responses; disclose synthetic-only coverage if real data remains unavailable. |
-| No usable forecast | Run distance-based exposure; forecast fields remain null. |
+| No usable forecast | Display exposure context and an unranked review queue; forecast fields remain null. |
 | Missing occupancy or facility class | Label proxies or investigate; reduce to covered classes. |
-| Disputed priority policy | Show components/configuration and seek analyst feedback; do not claim validated weights. |
+| Disputed timing policy | Show arrival/evacuation assumptions and buffer; seek analyst feedback on the estimates. |
 | Agent cannot resolve a case | Escalate one question and allow manual resolution. |
 | Update changes/removes an asset | Refresh exposure, preserve tasks and flag affected work. |
 | No suitable team | Leave task unassigned/blocked and expose the resource need. |
@@ -254,11 +257,11 @@ Use labelled synthetic fixtures for development and failure cases. Present real 
 
 ## 14. After the MVP
 
-Only expand after completion criteria pass: provided-forecast urgency, road graphs and route constraints, shared exits, receiving-centre suitability, expert-reviewed evacuation/confinement recommendations, more incidents/classes/providers, automated resource scheduling and multilingual alerts. Custom spread modelling and wind what-ifs are separate future work.
+Only expand after completion criteria pass: road graphs and route constraints, shared exits, receiving-centre suitability, expert-reviewed evacuation/confinement recommendations, more incidents/classes/providers, automated resource scheduling and multilingual alerts. Custom spread modelling and wind what-ifs are separate future work.
 
 ## 15. Kickoff decisions and references
 
-Resolve in the first two hours: accessible incident and area, supported classes, scoring scales/weights and class-value table, review handling, team capabilities, snapshot fixture, event duration and submission requirements. If a mentor is available, ask whether the task queue and score explanations help their coordination workflow.
+Resolve in the first two hours: accessible incident and area, supported classes, arrival-estimate semantics, evacuation-duration sources and time buffer, review handling, team capabilities, snapshot fixture, event duration and submission requirements. If a mentor is available, ask whether the task queue and score explanations help their coordination workflow.
 
 Primary integration references; verify access and response semantics during implementation:
 
@@ -269,14 +272,14 @@ Primary integration references; verify access and response semantics during impl
 
 ## 16. Static contact and response-order prototype
 
-This iteration adds two separate calculations over a fixed collection of locations. Contact priority uses each location's own proximity, people, assisted-evacuation needs and value. Response order compares feasible sequences for one crew, including explicit action prerequisites and declared effects on other locations. This is a static decision-support experiment, not operational dispatch or a fire-spread simulator.
+This iteration adds two separate calculations over a fixed collection of locations. Contact priority uses spread-predicted arrival and total estimated evacuation time. Geographic proximity breaks timing ties; people and value do not directly determine contact order. Response order compares feasible sequences for one crew, including explicit action prerequisites and declared effects on other locations. This is a static decision-support experiment, not operational dispatch or a fire-spread simulator.
 
 In the O/B/C/A example, B and C have equal distance to O and B has higher direct value. C may nevertheless come first if it unlocks timely assistance at A or has an explicitly supplied protective effect on A. Coordinates alone never establish that effect. Synthetic scenarios cover both interpretations and counterexamples.
 
 ### Design and implementation plan
 
 - [x] Add typed static locations, actions, benefit assumptions and directed travel-time inputs in `fireline/priority_models.py`; reject invalid counts, times, references, cycles and non-finite numbers.
-- [x] Test then implement independent contact ranking in `fireline/contact_priority.py`, with visible missing-data review and transparent score components.
+- [x] Test then implement independent contact ranking in `fireline/contact_priority.py`, with visible missing-data review and transparent timing components.
 - [x] Test then implement exact one-crew sequence search in `fireline/response_priority.py`: travel/action duration, completion deadlines, capability checks, prerequisites, unique coverage, deterministic ties and explicit unserved/review results. Limit exhaustive search to eight actions.
 - [x] Add a reproducible O/B/C/A fixture and edge-case variants, a CLI, and machine-readable results. Compare look-ahead planning with a direct-value greedy baseline.
 - [x] Validate against an independent small-instance enumeration oracle and run the existing suite. Request independent code review.
@@ -296,13 +299,19 @@ make priority-report
 ```
 
 - Input: [fixtures/static_priority.json](fixtures/static_priority.json). It is a synthetic local-metre layout; the directed travel matrix is supplied separately and is not calculated from straight-line distance. For a different static collection, pass `--input path/to/scenario.json` to the CLI using the same `static-priority-1` schema.
-- Output: [reports/static-priority-results.json](reports/static-priority-results.json), including contact components, selected action timings, covered/unserved locations, review issues, and the best sequence for each possible first action.
+- Output: [reports/static-priority-results.json](reports/static-priority-results.json), including contact-window components, selected action timings, covered/unserved locations, review issues, and the best sequence for each possible first action.
 - Report: [reports/static-priority-report.pdf](reports/static-priority-report.pdf), generated by `scripts/build_priority_report.py` from the O/B/C/A fixture and its 14 variants. The report is specific to this demonstration, not an arbitrary-input report template.
 
-For the base fixture, contacts are **A → B → C**; the response sequence is **C → A**. The direct-value greedy baseline chooses **B → C** and misses A's supplied deadline. With an explicit protective effect from C to A, the alternative sequence is **C → B**; with direct access to A, it is **A → C**. No automatic preference for C is hard-coded.
+For the base fixture, contacts are **A → B → C** because the remaining windows are **2, 8 and 10 minutes** respectively (A: 9 minus 7; B: 12 minus 4; C: 12 minus 2, at minute zero with no buffer); the response sequence is **C → A**. The direct-value greedy baseline chooses **B → C** and misses A's supplied deadline. With an explicit protective effect from C to A, the alternative sequence is **C → B**; with direct access to A, it is **A → C**. No automatic preference for C is hard-coded.
 
 Review questions do not disappear when another action is selected. Partial coverage uses the maximum declared on-time effect per asset. Inclusive time windows use a `1e-9` minute tolerance for floating-point arithmetic noise, not an operational buffer; `buffer_min` is a separate input. Capability and prerequisite fields must be arrays of complete tags/IDs, never scalar strings.
 
 Validation includes 14 labelled scenario variants, independent enumeration of 12 simple and 30 constrained four-action instances, boundary and malformed-input tests, CLI checks, and the pre-existing suite. The PDF includes the test count from the latest supplied JUnit file. Independent code review found and prompted regression fixes for fractional-minute window boundaries and scalar capability parsing.
 
 This implementation is a standalone Python API/CLI experiment alongside the existing engine, not yet integrated into its Streamlit UI or live snapshot loop. It supports one crew, at most eight actions, a fixed horizon and supplied deadlines/effects. It does not infer suppression success, provide safe routes, check crew return/egress, allocate partial evacuation capacity, or dispatch teams. Real snapshot adaptation, preservation of completed/assigned work during re-planning, and multi-crew scheduling remain subsequent work.
+
+### Contact policy revision: forecast and evacuation time
+
+`forecast-evacuation-window-v2` replaces the earlier weighted proximity/people/value contact score. Static locations now include nullable `fire_arrival_min`, `evacuation_min`, `forecast_source` and `evacuation_source`. Older collections still load; missing timing evidence places their contacts in review. Times must share the scenario epoch. For a nonzero elapsed time or extra contact buffer, call `rank_contacts(locations, ContactPolicy(now_min=..., buffer_min=...))`. The response-action planner's feasibility buffer remains a separate scenario input.
+
+The example's contact order happens to remain A → B → C, but its justification is now the remaining window, not A's value. Live spread prediction remains the upstream engine's responsibility; this module consumes per-location predictions.

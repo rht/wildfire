@@ -8,96 +8,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "access",
@@ -263,96 +234,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "protective_effect",
@@ -514,96 +456,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "direct_access",
@@ -778,98 +691,69 @@
       "contacts": {
         "ranked": [
           {
-            "asset_id": "B",
-            "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
-            "asset_id": "A",
-            "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.37434164903094347,
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.0,
-                "weight": 0.2,
-                "contribution": 0.0
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "urgent_b",
@@ -1033,96 +917,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "blocked_c",
@@ -1244,96 +1099,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "missing_capability",
@@ -1515,96 +1341,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "missed_window",
@@ -1766,81 +1563,69 @@
       "contacts": {
         "ranked": [
           {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
-            "rank": 1,
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
-            "rank": 2,
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
-        "review": [
-          {
-            "asset_id": "A",
-            "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": null,
-            "rank": null,
-            "components": {},
-            "review_reasons": [
-              "people",
-              "assisted"
-            ]
-          }
-        ],
-        "policy": "static-contact-v1"
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "unknown_people",
@@ -2016,96 +1801,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "unconfirmed_effect",
@@ -2281,96 +2037,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "overlap",
@@ -2522,96 +2249,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "zero_gain_prerequisite",
@@ -2770,96 +2468,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "closing_access",
@@ -2981,96 +2650,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "positive_buffer",
@@ -3204,96 +2844,67 @@
           {
             "asset_id": "A",
             "name": "A — assisted evacuation",
-            "policy": "static-contact-v1",
-            "score": 0.6243416490309435,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.38742588673542994,
-                "weight": 0.45,
-                "contribution": 0.17434164903094349
-              },
-              "people": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "value": {
-                "normalised": 1.0,
-                "weight": 0.2,
-                "contribution": 0.2
-              },
-              "assisted": {
-                "normalised": 0.6,
-                "weight": 0.15,
-                "contribution": 0.09
-              }
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "B",
             "name": "B — higher direct value",
-            "policy": "static-contact-v1",
-            "score": 0.401,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.08,
-                "weight": 0.2,
-                "contribution": 0.016
-              },
-              "value": {
-                "normalised": 0.8,
-                "weight": 0.2,
-                "contribution": 0.16000000000000003
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           },
           {
             "asset_id": "C",
             "name": "C — access action",
-            "policy": "static-contact-v1",
-            "score": 0.273,
+            "policy": "forecast-evacuation-window-v2",
             "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
             "components": {
-              "proximity": {
-                "normalised": 0.5,
-                "weight": 0.45,
-                "contribution": 0.225
-              },
-              "people": {
-                "normalised": 0.04,
-                "weight": 0.2,
-                "contribution": 0.008
-              },
-              "value": {
-                "normalised": 0.2,
-                "weight": 0.2,
-                "contribution": 0.04000000000000001
-              },
-              "assisted": {
-                "normalised": 0.0,
-                "weight": 0.15,
-                "contribution": 0.0
-              }
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
             },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
             "review_reasons": []
           }
         ],
         "review": [],
-        "policy": "static-contact-v1"
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
       },
       "response": {
         "scenario_id": "no_feasible_action",

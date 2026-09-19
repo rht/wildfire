@@ -17,6 +17,10 @@ class Location:
     assisted: int | None
     value: float | None
     deadline_min: float | None
+    fire_arrival_min: float | None = None
+    evacuation_min: float | None = None
+    forecast_source: str | None = None
+    evacuation_source: str | None = None
 
 
 @dataclass(frozen=True)
@@ -93,8 +97,17 @@ def validate_locations(locations):
             raise ValueError(f"{a.asset_id}: name is required")
         for field in ("x_m", "y_m"):
             number(getattr(a, field), field, minimum=None)
-        for field in ("distance_m", "value", "deadline_min"):
+        for field in (
+            "distance_m",
+            "value",
+            "deadline_min",
+            "fire_arrival_min",
+            "evacuation_min",
+        ):
             number(getattr(a, field), field, nullable=True)
+        for field in ("forecast_source", "evacuation_source"):
+            if getattr(a, field) is not None and not isinstance(getattr(a, field), str):
+                raise ValueError(f"{field} must be a string or null")
         for field in ("people", "assisted"):
             value = getattr(a, field)
             number(value, field, nullable=True)

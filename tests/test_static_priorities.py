@@ -46,19 +46,114 @@ def ids(result):
     return [s["action_id"] for s in result["steps"]]
 
 
-def test_contacts_value_breaks_equal_distance_but_assisted_people_remain_visible():
-    result = rank_contacts([loc("B", 80), loc("C", 20), loc("A", 100, 80, 60, 316)])
-    assert [r["asset_id"] for r in result["ranked"]] == ["A", "B", "C"]
-    assert "assisted" in result["ranked"][0]["components"]
+def forecast_loc(key, arrival=30, evacuation=10, distance=200, **kwargs):
+    return replace(
+        loc(key, distance=distance, **kwargs),
+        fire_arrival_min=arrival,
+        evacuation_min=evacuation,
+        forecast_source="synthetic forecast",
+        evacuation_source="synthetic estimate",
+    )
+
+
+def test_contacts_use_forecast_arrival_minus_evacuation_not_value():
+    result = rank_contacts(
+        [
+            forecast_loc("B", arrival=20, evacuation=5, value=10000),
+            forecast_loc("C", arrival=20, evacuation=18, value=1),
+            forecast_loc("A", arrival=40, evacuation=30, distance=500, value=100),
+        ]
+    )
+    assert [r["asset_id"] for r in result["ranked"]] == ["C", "A", "B"]
+    assert [r["slack_min"] for r in result["ranked"]] == [2, 10, 15]
 
 
 def test_unknown_is_not_zero_and_ties_are_stable():
     result = rank_contacts(
-        [loc("Z"), loc("B"), loc("unknown", people=None, assisted=None)]
+        [
+            forecast_loc("Z"),
+            forecast_loc("B"),
+            forecast_loc("unknown", arrival=None),
+        ]
     )
     assert [r["asset_id"] for r in result["ranked"]] == ["B", "Z"]
     assert result["review"][0]["asset_id"] == "unknown"
-    assert result["review"][0]["score"] is None
+    assert result["review"][0]["slack_min"] is None
+
+
+def test_farther_location_can_be_more_urgent_due_to_spread_prediction():
+    result = rank_contacts(
+        [
+            forecast_loc("near", arrival=60, evacuation=10, distance=100),
+            forecast_loc("far", arrival=15, evacuation=10, distance=1000),
+        ]
+    )
+    assert result["ranked"][0]["asset_id"] == "far"
+
+
+def test_elapsed_time_buffer_and_negative_windows_are_visible():
+    from fireline.contact_priority import ContactPolicy
+
+    result = rank_contacts(
+        [forecast_loc("A", arrival=20, evacuation=10)],
+        ContactPolicy(now_min=7, buffer_min=5),
+    )
+    row = result["ranked"][0]
+    assert row["time_to_impact_min"] == 13
+    assert row["slack_min"] == -2
+    assert row["status"] == "window_exhausted"
+    assert row["latest_start_min"] == 5
+    zero = rank_contacts(
+        [forecast_loc("A", arrival=20, evacuation=10)],
+        ContactPolicy(now_min=5, buffer_min=5),
+    )["ranked"][0]
+    assert zero["slack_min"] == 0 and zero["status"] == "window_exhausted"
+
+
+def test_missing_forecast_or_evacuation_and_evidence_need_review():
+    result = rank_contacts(
+        [
+            forecast_loc("no_evac", evacuation=None),
+            replace(forecast_loc("no_source"), forecast_source=None),
+            replace(forecast_loc("no_evac_source"), evacuation_source=None),
+        ]
+    )
+    assert not result["ranked"]
+    assert len(result["review"]) == 3
+
+
+def test_people_value_and_missing_geographic_distance_do_not_override_known_window():
+    result = rank_contacts(
+        [
+            forecast_loc("A", distance=None, people=None, assisted=None, value=None),
+            forecast_loc("B", arrival=50, value=100000),
+        ]
+    )
+    assert [r["asset_id"] for r in result["ranked"]] == ["A", "B"]
+
+
+def test_equal_windows_use_arrival_then_geographic_distance_then_id():
+    result = rank_contacts(
+        [
+            forecast_loc("Z", arrival=30, evacuation=20, distance=200),
+            forecast_loc("C", arrival=20, evacuation=10, distance=500),
+            forecast_loc("B", arrival=20, evacuation=10, distance=100),
+        ]
+    )
+    assert [r["asset_id"] for r in result["ranked"]] == ["B", "C", "Z"]
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"fire_arrival_min": -1},
+        {"evacuation_min": float("nan")},
+        {"evacuation_min": -2},
+    ],
+)
+def test_invalid_contact_timing_rejected(changes):
+    with pytest.raises(ValueError):
+        rank_contacts([replace(forecast_loc("A"), **changes)])
 
 
 def test_lookahead_takes_zero_benefit_prerequisite_before_high_value_detour():

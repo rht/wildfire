@@ -205,7 +205,7 @@ def build(path, fixture, test_results):
     y = (
         report.para(
             "A location ranking cannot represent an action that unlocks or benefits another location. "
-            "The prototype separates <b>independent contact scores</b> from a <b>constrained action-sequence search</b>.",
+            "The prototype separates <b>forecast-based contact urgency</b> from a <b>constrained action-sequence search</b>.",
             y,
         )
         - 16
@@ -239,39 +239,50 @@ def build(path, fixture, test_results):
     y = report.start(
         "02 / Contact priority",
         "Rank locations independently.",
-        "Contact priority is an explainable heuristic; it does not determine a crew itinerary.",
+        "Contact urgency depends on forecast arrival and evacuation duration; it does not determine a crew itinerary.",
     )
-    y = report.section("Fixed normalisation and explicit policy", y)
+    y = report.section("Time remaining to start evacuation", y)
     y = (
         report.para(
-            "P = 1 / (1 + distance / 200 m)<br/>N = min(people / 100, 1)<br/>"
-            "V = min(value / 100, 1)<br/>H = min(assisted people / 100, 1)<br/>"
-            "<b>Contact score = 0.45 P + 0.20 N + 0.20 V + 0.15 H</b>",
+            "Time to impact = predicted fire arrival - current time<br/>"
+            "Latest start = predicted fire arrival - evacuation duration - buffer<br/>"
+            "<b>Remaining window = latest start - current time</b><br/>"
+            "Contact the location with the smallest remaining window first.",
             y,
         )
         - 15
     )
-    rows = [["Location", "Distance (m)", "People / assisted", "Value", "Score"]]
+    rows = [["Location", "Distance (m)", "Fire arrival", "Evacuation", "Window"]]
     for row in base["contacts"]["ranked"]:
         a = next(a for a in scenario.locations if a.asset_id == row["asset_id"])
         rows.append(
             [
                 a.asset_id,
                 f"{a.distance_m:.1f}",
-                f"{a.people} / {a.assisted}",
-                a.value,
-                f"{row['score']:.3f}",
+                f"{a.fire_arrival_min:g} min",
+                f"{a.evacuation_min:g} min",
+                f"{row['slack_min']:g} min",
             ]
         )
-    y = report.table(rows, [60, 100, 130, 75, SPAN - 365], y)
+    y = report.table(rows, [60, 105, 115, 115, SPAN - 395], y)
     y = (
         report.para(
-            "Weights and normalisation scales are prototype configuration, not validated emergency policy. "
-            "Equal scores use stable asset IDs. Unknown distance, people, assisted count or value produces a separate review record "
-            "with a null score; unknown never becomes zero.",
+            "These are synthetic spread predictions and duration estimates at minute zero with no buffer. "
+            "Evacuation includes mobilisation, preparation/loading and onward movement. "
+            "A is first because its window is only two minutes, not because of its property value. "
+            "Equal windows use earlier predicted arrival, then geographic distance, then asset ID.",
             y,
         )
-        - 18
+        - 12
+    )
+    y = (
+        report.para(
+            "A farther location can be more urgent when the fire is spreading toward it. "
+            "Missing forecasts, evacuation estimates or sources stay in an unranked review queue. "
+            "Zero or negative windows are flagged for immediate review, not treated as an evacuation instruction.",
+            y,
+        )
+        - 16
     )
     y = report.section("Static input contract", y)
     y = report.table(
@@ -279,7 +290,7 @@ def build(path, fixture, test_results):
             ["Input", "Required meaning"],
             [
                 "Location",
-                "Stable ID, local metric coordinates, distance, people, assisted people, value, impact deadline.",
+                "ID, coordinates, distance, sourced fire arrival and evacuation duration; people, assistance, value and action deadline for response planning.",
             ],
             [
                 "Action",
@@ -447,7 +458,7 @@ def build(path, fixture, test_results):
         report.para(
             "Checks include stable ties, reverse input order, deadline equality, buffers, unavailable legs, "
             "capabilities, partial overlap, unknown counts, dependency cycles, invalid/non-finite values, duplicate IDs "
-            "and the action-count limit. An independent permutation oracle compares small generated problems with the exact planner.",
+            "and the action-count limit. Contact checks cover forecast-driven ordering, longer evacuations, negative/zero windows, missing evidence and distance tie-breaks. An independent permutation oracle compares small generated problems with the exact planner.",
             y,
         )
         - 18
@@ -467,7 +478,7 @@ def build(path, fixture, test_results):
         '<link href="https://developers.google.com/optimization/routing/penalties" color="#157A79">'
         "Google OR-Tools: Penalties and Dropping Visits</link> explains optional visits when all locations cannot be served. "
         "Here, unserved locations are explicit and the objective uses separate benefit priorities. Neither source validates "
-        "the wildfire assumptions or policy weights.",
+        "the wildfire forecasts, evacuation estimates or response objectives.",
         y,
         size=9.5,
     )
@@ -495,7 +506,7 @@ def build(path, fixture, test_results):
     y = (
         report.para(
             "<b>fixtures/static_priority.json</b> - editable locations, actions and directed travel inputs.<br/>"
-            "<b>fireline/contact_priority.py</b> - independent contact scores.<br/>"
+            "<b>fireline/contact_priority.py</b> - forecast-based contact urgency.<br/>"
             "<b>fireline/response_priority.py</b> - sequence search and myopic comparator.<br/>"
             "<b>reports/static-priority-results.json</b> - scenario results, coverage and alternatives.<br/>"
             "<b>tests/test_static_priorities.py</b> - executable behaviours and oracle checks.",
@@ -508,7 +519,7 @@ def build(path, fixture, test_results):
     y = (
         report.para(
             "The geometry is a synthetic local-metre layout; the southeast arrow does not estimate fire arrival. "
-            "Deadlines, durations, access and benefit effects must be supplied. The code does not model smoke, fire intensity, "
+            "Fire arrival predictions, evacuation estimates, action deadlines, access and benefit effects must be supplied. The code does not model smoke, fire intensity, "
             "suppression effectiveness, changing routes, safe crew egress, return to base, multiple crews, partial evacuation capacity "
             "or live weather. A completed action is assumed to deliver its declared persistent effect. Maximum coverage is a "
             "conservative overlap rule, not a simulation of distinct groups being rescued.",
