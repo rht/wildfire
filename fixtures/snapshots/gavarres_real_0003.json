@@ -1,5 +1,5 @@
 {
- "schema_version": "1.0",
+ "schema_version": "1.1",
  "scenario_id": "gavarres_real",
  "incident_id": "5769dcea-385a-4ee5-9313-804f55ddb5fa",
  "snapshot_id": "gavarres_real-0003",
@@ -269,9 +269,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -298,6 +303,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class hospital: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted patients; ambulances and staff assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -333,10 +349,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "class_ambiguous"
+    "class_ambiguous",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -363,6 +384,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -398,9 +430,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -427,6 +464,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -462,9 +510,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -491,6 +544,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -526,9 +590,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -555,6 +624,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -590,9 +670,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -619,6 +704,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -654,9 +750,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -683,6 +784,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -718,9 +830,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -747,6 +864,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -782,9 +910,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -811,6 +944,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -846,9 +990,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -875,6 +1024,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -910,9 +1070,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -939,6 +1104,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -974,9 +1150,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1003,6 +1184,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1038,9 +1230,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1067,6 +1264,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1102,9 +1310,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1131,6 +1344,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1166,9 +1390,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1195,6 +1424,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1230,9 +1470,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1259,6 +1504,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1294,9 +1550,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1323,6 +1584,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1358,9 +1630,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1387,6 +1664,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1422,9 +1710,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1451,6 +1744,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1486,9 +1790,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1515,6 +1824,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1550,9 +1870,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1579,6 +1904,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1614,9 +1950,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1643,6 +1984,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1678,9 +2030,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1707,6 +2064,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1742,9 +2110,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1771,6 +2144,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1806,9 +2190,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1835,6 +2224,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1870,9 +2270,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1899,6 +2304,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1934,9 +2350,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1963,6 +2384,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -1998,9 +2430,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2027,6 +2464,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2062,9 +2510,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2091,6 +2544,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2126,9 +2590,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2155,6 +2624,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2190,9 +2670,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2219,6 +2704,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2254,9 +2750,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2283,6 +2784,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2318,9 +2830,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2347,6 +2864,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2382,9 +2910,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2411,6 +2944,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2446,9 +2990,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2475,6 +3024,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2510,9 +3070,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2539,6 +3104,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2574,9 +3150,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2603,6 +3184,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2638,9 +3230,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2667,6 +3264,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2702,9 +3310,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2731,6 +3344,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2766,9 +3390,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2795,6 +3424,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2830,9 +3470,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2859,6 +3504,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2894,9 +3550,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2923,6 +3584,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -2958,9 +3630,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -2987,6 +3664,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3022,9 +3710,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3051,6 +3744,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3086,9 +3790,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3115,6 +3824,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3150,9 +3870,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3179,6 +3904,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3214,9 +3950,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3243,6 +3984,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3278,9 +4030,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3307,6 +4064,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3342,9 +4110,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3371,6 +4144,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3406,9 +4190,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3435,6 +4224,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3470,9 +4270,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3499,6 +4304,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3534,9 +4350,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3563,6 +4384,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3598,9 +4430,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3627,6 +4464,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3662,9 +4510,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3691,6 +4544,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3726,9 +4590,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3755,6 +4624,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3790,9 +4670,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3819,6 +4704,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3854,9 +4750,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3883,6 +4784,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3918,9 +4830,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -3947,6 +4864,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -3982,9 +4910,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4011,6 +4944,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4046,9 +4990,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4075,6 +5024,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4110,9 +5070,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4139,6 +5104,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4174,9 +5150,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4203,6 +5184,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4238,9 +5230,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4267,6 +5264,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4302,9 +5310,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4331,6 +5344,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4366,9 +5390,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4395,6 +5424,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4430,9 +5470,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4459,6 +5504,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4494,9 +5550,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4523,6 +5584,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4558,9 +5630,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4587,6 +5664,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4622,9 +5710,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4651,6 +5744,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4686,9 +5790,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4715,6 +5824,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4750,9 +5870,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4779,6 +5904,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4814,9 +5950,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4843,6 +5984,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4878,9 +6030,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4907,6 +6064,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -4942,9 +6110,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -4971,6 +6144,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5006,9 +6190,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5035,6 +6224,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5070,9 +6270,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5099,6 +6304,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5134,9 +6350,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5163,6 +6384,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5198,9 +6430,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5227,6 +6464,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5262,9 +6510,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5291,6 +6544,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5326,9 +6590,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5355,6 +6624,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5390,9 +6670,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5419,6 +6704,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5454,9 +6750,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5483,6 +6784,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5518,9 +6830,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5547,6 +6864,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5582,9 +6910,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5611,6 +6944,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5646,9 +6990,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5675,6 +7024,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5710,9 +7070,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5739,6 +7104,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5774,9 +7150,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5803,6 +7184,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5838,9 +7230,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5867,6 +7264,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5902,9 +7310,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5931,6 +7344,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -5966,9 +7390,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -5995,6 +7424,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6030,9 +7470,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6059,6 +7504,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6094,9 +7550,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6123,6 +7584,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6158,9 +7630,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6187,6 +7664,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6222,9 +7710,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6251,6 +7744,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6286,9 +7790,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6315,6 +7824,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6350,9 +7870,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6379,6 +7904,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6414,9 +7950,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6443,6 +7984,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6478,9 +8030,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6507,6 +8064,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6542,9 +8110,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6571,6 +8144,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6606,11 +8190,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6646,6 +8235,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6681,11 +8281,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6721,6 +8326,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6756,11 +8372,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6796,6 +8417,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6831,11 +8463,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6871,6 +8508,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6906,11 +8554,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -6946,6 +8599,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -6981,11 +8645,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7021,6 +8690,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7056,11 +8736,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7096,6 +8781,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7131,11 +8827,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7171,6 +8872,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7206,11 +8918,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7246,6 +8963,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7281,11 +9009,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7321,6 +9054,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7356,11 +9100,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7396,6 +9145,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7431,11 +9191,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7471,6 +9236,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7506,11 +9282,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7546,6 +9327,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7581,11 +9373,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7621,6 +9418,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7656,11 +9464,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7696,6 +9509,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7731,11 +9555,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7771,6 +9600,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7806,11 +9646,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7846,6 +9691,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7881,11 +9737,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7921,6 +9782,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -7956,11 +9828,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -7996,6 +9873,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8031,11 +9919,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8071,6 +9964,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8106,11 +10010,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8146,6 +10055,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8181,11 +10101,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8221,6 +10146,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8256,11 +10192,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8296,6 +10237,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8331,11 +10283,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8371,6 +10328,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8406,11 +10374,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8446,6 +10419,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8481,11 +10465,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8521,6 +10510,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8556,11 +10556,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8596,6 +10601,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8631,11 +10647,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8671,6 +10692,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8706,11 +10738,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8746,6 +10783,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8781,11 +10829,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8821,6 +10874,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8856,11 +10920,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8896,6 +10965,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -8931,11 +11011,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -8971,6 +11056,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9006,11 +11102,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9046,6 +11147,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9081,11 +11193,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9121,6 +11238,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9156,11 +11284,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9196,6 +11329,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9231,11 +11375,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9271,6 +11420,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9306,11 +11466,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9346,6 +11511,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9381,11 +11557,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9421,6 +11602,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9456,11 +11648,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9496,6 +11693,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9531,11 +11739,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9571,6 +11784,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9606,11 +11830,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9646,6 +11875,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9681,11 +11921,16 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
     "occupancy_seasonal",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9724,6 +11969,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -9756,10 +12012,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9795,6 +12056,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9830,10 +12102,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9869,6 +12146,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9904,10 +12192,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -9943,6 +12236,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -9978,10 +12282,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10020,6 +12329,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -10052,10 +12372,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10094,6 +12419,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -10126,10 +12462,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10165,6 +12506,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -10200,10 +12552,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10242,6 +12599,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -10274,10 +12642,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10316,6 +12689,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -10348,10 +12732,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10390,6 +12779,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -10422,10 +12822,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10464,6 +12869,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -10496,10 +12912,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10538,6 +12959,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -10570,10 +13002,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10609,6 +13046,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -10644,10 +13092,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10686,6 +13139,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -10718,10 +13182,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10760,6 +13229,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -10792,10 +13272,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10831,6 +13316,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -10866,10 +13362,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10905,6 +13406,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -10940,10 +13452,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -10979,6 +13496,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -11014,10 +13542,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11053,6 +13586,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -11088,10 +13632,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11127,6 +13676,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -11162,10 +13722,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11201,6 +13766,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -11236,10 +13812,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11278,6 +13859,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -11310,10 +13902,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11352,6 +13949,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -11384,10 +13992,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11426,6 +14039,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -11458,10 +14082,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11500,6 +14129,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -11532,10 +14172,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11574,6 +14219,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -11606,10 +14262,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11645,6 +14306,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [
@@ -11680,10 +14352,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -11719,6 +14396,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [

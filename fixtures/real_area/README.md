@@ -32,3 +32,8 @@ Municipalities with located rows (24): Begur, Bordils, Calonge i Sant Antoni, Ca
   recorded Deepfire satellite perimeters** (`fixtures/fire/deepfire/real/`, `input_mode: recorded`);
   the register extract (2026-09-19) postdates the fire (July 2026), so this is a recorded-input demo,
   not historical as-of replay (readme section 4).
+- **No forecast covers the real area** (no per-location spread product has been recorded for the incident),
+  so in the real snapshots every asset has `fire_arrival_at` null with `forecast_unavailable` (schema 1.1);
+  arrival is never derived from distance, and the consumer shows them as an unranked review queue.
+  `evacuation_min` comes from `config.EVACUATION_POLICY` (evacuation-proto-2026-09-19) for the
+  classes hospital, care_home, school and campsite; no row has an unknown class.

@@ -39,6 +39,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -68,6 +72,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class hospital: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted patients; ambulances and staff assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "PALAMÓS"
@@ -92,6 +107,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
@@ -122,6 +141,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "PALAMÓS"
@@ -146,6 +176,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -175,6 +209,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -199,6 +244,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -228,6 +277,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -252,6 +312,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -281,6 +345,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Bordils"
@@ -305,6 +380,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -334,6 +413,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -358,6 +448,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -387,6 +481,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -411,6 +516,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -440,6 +549,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -464,6 +584,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -493,6 +617,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -517,6 +652,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -546,6 +685,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -570,6 +720,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -599,6 +753,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -623,6 +788,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -652,6 +821,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -676,6 +856,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -705,6 +889,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Celrà"
@@ -729,6 +924,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -758,6 +957,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Corçà"
@@ -782,6 +992,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -811,6 +1025,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
@@ -835,6 +1060,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -864,6 +1093,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
@@ -888,6 +1128,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -917,6 +1161,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Flaçà"
@@ -941,6 +1196,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -970,6 +1229,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Llagostera"
@@ -994,6 +1264,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1023,6 +1297,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Mont-ras"
@@ -1047,6 +1332,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1076,6 +1365,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -1100,6 +1400,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1129,6 +1433,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -1153,6 +1468,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1182,6 +1501,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -1206,6 +1536,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1235,6 +1569,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -1259,6 +1604,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1288,6 +1637,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -1312,6 +1672,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1341,6 +1705,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -1365,6 +1740,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1394,6 +1773,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -1418,6 +1808,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1447,6 +1841,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -1471,6 +1876,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1500,6 +1909,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -1524,6 +1944,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1553,6 +1977,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -1577,6 +2012,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1606,6 +2045,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -1630,6 +2080,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1659,6 +2113,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Pals"
@@ -1683,6 +2148,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1712,6 +2181,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "La Pera"
@@ -1736,6 +2216,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1765,6 +2249,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
@@ -1789,6 +2284,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1818,6 +2317,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Santa Cristina d'Aro"
@@ -1842,6 +2352,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1871,6 +2385,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -1895,6 +2420,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1924,6 +2453,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -1948,6 +2488,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -1977,6 +2521,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Ullà"
@@ -2001,6 +2556,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2030,6 +2589,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Ullastret"
@@ -2054,6 +2624,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2083,6 +2657,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -2107,6 +2692,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2136,6 +2725,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Begur"
@@ -2160,6 +2760,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2189,6 +2793,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -2213,6 +2828,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2242,6 +2861,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -2266,6 +2896,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2295,6 +2929,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -2319,6 +2964,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2348,6 +2997,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -2372,6 +3032,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2401,6 +3065,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -2425,6 +3100,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2454,6 +3133,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -2478,6 +3168,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2507,6 +3201,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -2531,6 +3236,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2560,6 +3269,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Llagostera"
@@ -2584,6 +3304,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2613,6 +3337,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -2637,6 +3372,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2666,6 +3405,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Santa Cristina d'Aro"
@@ -2690,6 +3440,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2719,6 +3473,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -2743,6 +3508,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2772,6 +3541,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -2796,6 +3576,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2825,6 +3609,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Celrà"
@@ -2849,6 +3644,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2878,6 +3677,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Llagostera"
@@ -2902,6 +3712,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2931,6 +3745,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -2955,6 +3780,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -2984,6 +3813,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -3008,6 +3848,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3037,6 +3881,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -3061,6 +3916,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3090,6 +3949,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -3114,6 +3984,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3143,6 +4017,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -3167,6 +4052,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3196,6 +4085,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -3220,6 +4120,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3249,6 +4153,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Celrà"
@@ -3273,6 +4188,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3302,6 +4221,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -3326,6 +4256,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3355,6 +4289,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -3379,6 +4324,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3408,6 +4357,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Celrà"
@@ -3432,6 +4392,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3461,6 +4425,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -3485,6 +4460,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3514,6 +4493,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -3538,6 +4528,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3567,6 +4561,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Vall-llobrega"
@@ -3591,6 +4596,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3620,6 +4629,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Mont-ras"
@@ -3644,6 +4664,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3673,6 +4697,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Ullastret"
@@ -3697,6 +4732,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3726,6 +4765,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -3750,6 +4800,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3779,6 +4833,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Celrà"
@@ -3803,6 +4868,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3832,6 +4901,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Vall-llobrega"
@@ -3856,6 +4936,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3885,6 +4969,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -3909,6 +5004,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3938,6 +5037,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -3962,6 +5072,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -3991,6 +5105,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -4015,6 +5140,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4044,6 +5173,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Forallac"
@@ -4068,6 +5208,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4097,6 +5241,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -4121,6 +5276,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4150,6 +5309,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Llagostera"
@@ -4174,6 +5344,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4203,6 +5377,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -4227,6 +5412,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4256,6 +5445,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -4280,6 +5480,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4309,6 +5513,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
@@ -4333,6 +5548,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4362,6 +5581,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Llagostera"
@@ -4386,6 +5616,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4415,6 +5649,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Celrà"
@@ -4439,6 +5684,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4468,6 +5717,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -4492,6 +5752,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4521,6 +5785,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Parlavà"
@@ -4545,6 +5820,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4574,6 +5853,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Santa Cristina d'Aro"
@@ -4598,6 +5888,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4627,6 +5921,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -4651,6 +5956,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4680,6 +5989,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Sant Martí Vell"
@@ -4704,6 +6024,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4733,6 +6057,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -4757,6 +6092,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4786,6 +6125,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Flaçà"
@@ -4810,6 +6160,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4839,6 +6193,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Corçà"
@@ -4863,6 +6228,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4892,6 +6261,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Pals"
@@ -4916,6 +6296,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4945,6 +6329,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -4969,6 +6364,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -4998,6 +6397,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -5022,6 +6432,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -5051,6 +6465,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -5075,6 +6500,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -5104,6 +6533,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -5128,6 +6568,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -5157,6 +6601,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -5181,6 +6636,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -5210,6 +6669,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -5234,6 +6704,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -5263,6 +6737,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Forallac"
@@ -5287,6 +6772,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5326,6 +6815,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -5350,6 +6850,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5389,6 +6893,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -5413,6 +6928,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5452,6 +6971,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -5476,6 +7006,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5515,6 +7049,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -5539,6 +7084,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5578,6 +7127,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -5602,6 +7162,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5641,6 +7205,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -5665,6 +7240,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5704,6 +7283,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -5728,6 +7318,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5767,6 +7361,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Begur"
@@ -5791,6 +7396,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5830,6 +7439,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -5854,6 +7474,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5893,6 +7517,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Begur"
@@ -5917,6 +7552,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -5956,6 +7595,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -5980,6 +7630,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6019,6 +7673,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Vall-llobrega"
@@ -6043,6 +7708,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6082,6 +7751,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -6106,6 +7786,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6145,6 +7829,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -6169,6 +7864,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6208,6 +7907,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -6232,6 +7942,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6271,6 +7985,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -6295,6 +8020,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6334,6 +8063,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Pals"
@@ -6358,6 +8098,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6397,6 +8141,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -6421,6 +8176,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6460,6 +8219,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -6484,6 +8254,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6523,6 +8297,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -6547,6 +8332,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6586,6 +8375,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -6610,6 +8410,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6649,6 +8453,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Pals"
@@ -6673,6 +8488,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6712,6 +8531,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Pals"
@@ -6736,6 +8566,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6775,6 +8609,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Llagostera"
@@ -6799,6 +8644,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6838,6 +8687,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -6862,6 +8722,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6901,6 +8765,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -6925,6 +8800,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -6964,6 +8843,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -6988,6 +8878,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7027,6 +8921,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Mont-ras"
@@ -7051,6 +8956,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7090,6 +8999,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -7114,6 +9034,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7153,6 +9077,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -7177,6 +9112,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7216,6 +9155,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Mont-ras"
@@ -7240,6 +9190,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7279,6 +9233,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -7303,6 +9268,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7342,6 +9311,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -7366,6 +9346,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7405,6 +9389,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -7429,6 +9424,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7468,6 +9467,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Pals"
@@ -7492,6 +9502,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7531,6 +9545,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -7555,6 +9580,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7594,6 +9623,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -7618,6 +9658,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7657,6 +9701,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -7681,6 +9736,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7720,6 +9779,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Pals"
@@ -7744,6 +9814,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7783,6 +9857,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -7807,6 +9892,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7846,6 +9935,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Santa Cristina d'Aro"
@@ -7870,6 +9970,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
@@ -7909,6 +10013,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Santa Cristina d'Aro"
@@ -7933,6 +10048,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -7971,6 +10090,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -7995,6 +10125,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8033,6 +10167,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Llagostera"
@@ -8057,6 +10202,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8095,6 +10244,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Bisbal d'Empordà, la"
@@ -8119,6 +10279,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8157,6 +10321,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -8181,6 +10356,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8219,6 +10398,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -8243,6 +10433,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8281,6 +10475,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -8305,6 +10510,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8343,6 +10552,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -8367,6 +10587,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8405,6 +10629,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -8429,6 +10664,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8467,6 +10706,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -8491,6 +10741,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8529,6 +10783,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -8553,6 +10818,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8591,6 +10860,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Llagostera"
@@ -8615,6 +10895,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8653,6 +10937,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Celrà"
@@ -8677,6 +10972,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8715,6 +11014,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -8739,6 +11049,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8777,6 +11091,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Bisbal d'Empordà, la"
@@ -8801,6 +11126,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8839,6 +11168,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"
@@ -8863,6 +11203,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8901,6 +11245,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -8925,6 +11280,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -8963,6 +11322,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -8987,6 +11357,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9025,6 +11399,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -9049,6 +11434,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9087,6 +11476,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -9111,6 +11511,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9149,6 +11553,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -9173,6 +11588,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9211,6 +11630,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -9235,6 +11665,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9273,6 +11707,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -9297,6 +11742,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9335,6 +11784,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -9359,6 +11819,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9397,6 +11861,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palafrugell"
@@ -9421,6 +11896,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9459,6 +11938,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Bisbal d'Empordà, la"
@@ -9483,6 +11973,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9521,6 +12015,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -9545,6 +12050,10 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown"
@@ -9583,6 +12092,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     }
    ],
    "municipality": "Palamós"

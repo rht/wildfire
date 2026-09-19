@@ -4,13 +4,21 @@
     .venv/bin/python scripts/make_snapshots.py
 
 Writes
+  fixtures/forecast/synthetic_gavarres_0001.json    hand-designed SYNTHETIC per-asset arrival estimates issued 08:00Z
+  fixtures/forecast/synthetic_gavarres_0002.json    same, issued 10:00Z (forecast-input-1, see SYNTHETIC_FORECAST)
   fixtures/snapshots/synthetic_gavarres_0001.json   12 fixture assets + 1 unlocated care home, fire at 08:00Z
   fixtures/snapshots/synthetic_gavarres_0002.json   same assets, fire grown ~1.7 km downwind (SSE), 10:00Z
   fixtures/real_area/assets_gavarres.json           every data/assets_in.json row inside GAVARRES_BBOX plus
                                                     unlocated care homes / campsites of the same municipalities
   fixtures/real_area/README.md                      counts and limitations
   fixtures/snapshots/gavarres_real_0001..0003.json  real facilities + three REAL recorded Deepfire satellite
-                                                    perimeters (fixtures/fire/deepfire/real/, incident 5769dcea)
+                                                    perimeters (fixtures/fire/deepfire/real/, incident 5769dcea);
+                                                    no forecast covers them, so every asset is forecast_unavailable
+
+The synthetic snapshots get their v1.1 `fire_arrival_at` from the synthetic forecast files through
+`forecast_input.load_forecast` + `snapshot.build_snapshot(forecast=...)`; the real snapshots have no
+forecast (no per-location spread product has been recorded) and never derive one from distance.
+Evacuation durations come from `config.EVACUATION_POLICY` by class in both cases.
 
 The real-area extract needs data/assets_in.json and data/unlocated.json (from `scripts/fetch_data.py
 registers`, gitignored); when they are absent only the synthetic snapshots are rebuilt.
@@ -34,6 +42,7 @@ sys.path.insert(0, str(ROOT))
 
 from fireline import config  # noqa: E402
 from fireline.fire_state import FireState  # noqa: E402
+from fireline.forecast_input import SYNTHETIC_LABEL, load_forecast  # noqa: E402
 from fireline.grid import xy_to_lonlat  # noqa: E402
 from fireline.snapshot import asset_record, build_snapshot, validate_snapshot, write_snapshot  # noqa: E402
 
@@ -41,6 +50,7 @@ FIX = ROOT / "fixtures"
 DATA = ROOT / "data"
 SNAP_DIR = FIX / "snapshots"
 REAL_DIR = FIX / "real_area"
+FORECAST_DIR = FIX / "forecast"
 
 # Same as feeds.GAVARRES_BBOX (lon_min, lat_min, lon_max, lat_max); inline so this script never imports feeds.
 GAVARRES_BBOX = (2.85, 41.80, 3.20, 42.05)
@@ -114,6 +124,94 @@ def grown_perimeter(fs: FireState, advance_m: float = 1500.0, radius_m: float = 
     dy = advance_m * math.cos(math.radians(bearing_deg))
     head = Point(cx + dx, cy + dy).buffer(radius_m)
     return unary_union([fs.perimeter, head]).convex_hull.simplify(25.0)
+
+
+# --------------------------------------------------------------- synthetic forecast (FIXTURE AUTHORING)
+# Hand-designed per-asset arrival estimates for the two synthetic snapshots. These numbers are the
+# fixture: they were chosen by hand from each asset's bearing/range to the ignition (the synthetic
+# fire grows SSE, wind from 340) so the consumer's readme-11 "Priority" checks are demonstrable, and
+# they are written to fixtures/forecast/*.json through `write_synthetic_forecasts`. Nothing here is a
+# model, nothing here is called by the pipeline: the pipeline only reads the written files back with
+# `forecast_input.load_forecast`. Minutes are after the file's `issued_at`; None = no estimate.
+FORECAST_SOURCE_LABEL = "fixture:synthetic_forecast (hand-designed per-asset arrival times)"
+FORECAST_HORIZON_H = 12
+SYNTHETIC_FORECAST = {
+    # sequence: {asset_id: (p10_min, p50_min, burn_probability)}
+    1: {   # issued 08:00Z, fire = 300 m ignition disc; evacuation policy: nucleus 105, camp 90, masia 60,
+           # care_home/hospital 180, school 90, campsite 70 min; buffer 30 min
+        "fixture:sant_pol":             (140, 180, 0.95),   # 718 m, downwind (151): window 5 min, tight but open
+        "fixture:pou_del_glac":         (180, 230, 0.90),   # 1762 m, downwind (156): earlier than the nearer upwind care home
+        "fixture:can_xic":              (240, 300, 0.80),   # 2698 m, S (180), flank
+        "fixture:escola_cruilles":      (240, 300, 0.60),   # 1229 m, crosswind W (283): slow flank spread
+        "fixture:camping_gavarres":     (300, 380, 0.75),   # 7824 m, downwind (153)
+        "fixture:mas_pla":              (330, 420, 0.70),   # 8860 m, downwind (161): EARLIER than sant_sadurni at 4292 m (a)
+        "fixture:les_cabanyes":         (360, 450, 0.60),   # 9998 m, downwind (166)
+        "fixture:residencia_la_bisbal": (420, 540, 0.35),   # 1188 m, UPWIND (26): nearest care home but late arrival
+        "fixture:hospital_palamos":     (540, 660, 0.40),   # 13559 m, downwind-ish (143)
+        "fixture:monells":              (600, 720, 0.20),   # 4220 m, upwind-ish (304): identical to sant_sadurni (d)
+        "fixture:sant_sadurni":         (600, 720, 0.20),   # 4292 m, crosswind W (277): tie with monells (d)
+        # fixture:vall_repos (13254 m, SSW 191) deliberately absent: outside the synthetic run's domain (c)
+        # fixture:residencia_sense_coordenades: no coordinates, no estimate (c)
+    },
+    2: {   # issued 10:00Z, fire grown ~1.5 km SSE (sant_pol and pou_del_glac now inside the perimeter)
+        "fixture:sant_pol":             (0, 0, 1.0),        # inside the 10:00 perimeter: arrival = issue time, window exhausted (b)
+        "fixture:pou_del_glac":         (0, 0, 1.0),        # inside the 10:00 perimeter: exhausted (b)
+        "fixture:can_xic":              (45, 70, 0.95),     # 677 m from the head's west flank: 45 - 60 - 30 < 0, exhausted (b)
+        "fixture:camping_gavarres":     (120, 165, 0.85),   # 5640 m, head accelerating: window 20 min, now ahead of the school (b)
+        "fixture:escola_cruilles":      (150, 210, 0.65),   # 1229 m, crosswind: window 30 min (was ahead of the campsite at 08:00)
+        "fixture:mas_pla":              (180, 240, 0.80),   # 6671 m, downwind
+        "fixture:les_cabanyes":         (210, 280, 0.70),   # 7808 m, downwind
+        "fixture:residencia_la_bisbal": (300, 420, 0.40),   # 1197 m, upwind: consistent with the 08:00 issue (15:00Z)
+        "fixture:hospital_palamos":     (360, 450, 0.50),   # 11449 m
+        "fixture:monells":              (480, 600, 0.25),   # 4225 m: identical to sant_sadurni again (d)
+        "fixture:sant_sadurni":         (480, 600, 0.25),   # 4292 m: tie (d)
+    },
+}
+SYNTHETIC_FORECAST_NOTE = (
+    f"{SYNTHETIC_LABEL}. Hand-designed arrival times for the synthetic Gavarres scenario (fire grows SSE, wind "
+    "from 340), written by scripts/make_snapshots.py (SYNTHETIC_FORECAST) so the evacuation-window ranking checks of "
+    "readme section 11 are demonstrable: (a) downwind assets get earlier arrivals than nearer off-axis ones, e.g. "
+    "mas_pla (8.9 km, bearing 161) arrives before sant_sadurni (4.3 km, bearing 277) and pou_del_glac (1.8 km, "
+    "156) before residencia_la_bisbal (1.2 km, 26), so the farther asset outranks the nearer one; (b) at 10:00Z "
+    "sant_pol and pou_del_glac are inside the perimeter and can_xic is 45 min out, so their windows (arrival - "
+    "policy evacuation duration - 30 min buffer) are exhausted, and camping_gavarres moves ahead of escola_cruilles "
+    "compared with the 08:00Z issue; (c) vall_repos is located but has no estimate (outside the run's domain) and "
+    "the unlocated care home has none, both forecast_unavailable; (d) monells and sant_sadurni (both nucleus) share "
+    "identical arrival times so the tie resolves by distance then asset_id. p50 = p10 plus roughly a quarter; "
+    "burn_probability falls with arrival. Not derived from distance by any rule and not a spread model output."
+)
+
+
+def synthetic_forecast(sequence: int, issued_at: datetime) -> dict:
+    """forecast-input-1 dict for one synthetic snapshot from the hand-designed table above."""
+    horizon = issued_at + timedelta(hours=FORECAST_HORIZON_H)
+
+    def at(minutes):
+        return None if minutes is None else (issued_at + timedelta(minutes=minutes)).isoformat()
+
+    estimates = {aid: {"arrival_p10_at": at(p10), "arrival_p50_at": at(p50), "burn_probability": bp}
+                 for aid, (p10, p50, bp) in sorted(SYNTHETIC_FORECAST[sequence].items())}
+    return {
+        "schema_version": "forecast-input-1",
+        "forecast_source": FORECAST_SOURCE_LABEL,
+        "input_mode": "synthetic",
+        "issued_at": issued_at.isoformat(),
+        "forecast_horizon_at": horizon.isoformat(),
+        "basis": "p10",
+        "note": SYNTHETIC_FORECAST_NOTE,
+        "estimates": estimates,
+    }
+
+
+def write_synthetic_forecasts() -> list[Path]:
+    """Write fixtures/forecast/synthetic_gavarres_000{1,2}.json and return their paths (fixture authoring)."""
+    FORECAST_DIR.mkdir(parents=True, exist_ok=True)
+    paths = []
+    for seq, t in ((1, T1), (2, T2)):
+        path = FORECAST_DIR / f"synthetic_gavarres_{seq:04d}.json"
+        path.write_text(json.dumps(synthetic_forecast(seq, t), indent=1, ensure_ascii=False) + "\n")
+        paths.append(path)
+    return paths
 
 
 # --------------------------------------------------------------------------------- real area
@@ -220,6 +318,11 @@ def write_real_area(located, unlocated) -> list[dict]:
         "  recorded Deepfire satellite perimeters** (`fixtures/fire/deepfire/real/`, `input_mode: recorded`);",
         "  the register extract (2026-09-19) postdates the fire (July 2026), so this is a recorded-input demo,",
         "  not historical as-of replay (readme section 4).",
+        "- **No forecast covers the real area** (no per-location spread product has been recorded for the incident),",
+        "  so in the real snapshots every asset has `fire_arrival_at` null with `forecast_unavailable` (schema 1.1);",
+        "  arrival is never derived from distance, and the consumer shows them as an unranked review queue.",
+        f"  `evacuation_min` comes from `config.EVACUATION_POLICY` ({config.EVACUATION_POLICY['version']}) for the",
+        "  classes hospital, care_home, school and campsite; no row has an unknown class.",
         "",
     ]
     (REAL_DIR / "README.md").write_text("\n".join(lines))
@@ -234,24 +337,33 @@ def synthetic_assets() -> list[dict]:
     return rows + [dict(UNLOCATED_FIXTURE, register="fixture")]
 
 
-def build_pair(assets, fires, scenario_id: str, incident_id: str, input_mode: str = "synthetic") -> list[dict]:
+def build_pair(assets, fires, scenario_id: str, incident_id: str, input_mode: str = "synthetic",
+               forecasts: list[dict | None] | None = None) -> list[dict]:
+    """One snapshot per (fire, as_of); `forecasts[i]` (a loaded forecast-input-1 dict or None) goes to
+    `build_snapshot(forecast=...)`; without one every asset is forecast_unavailable."""
     snaps = []
-    for seq, (fire, t) in enumerate(fires, start=1):
+    forecasts = forecasts or [None] * len(fires)
+    for seq, ((fire, t), forecast) in enumerate(zip(fires, forecasts), start=1):
         observed = datetime.fromisoformat(fire["observed_at"]) if fire.get("observed_at") else None
         age = (t - observed).total_seconds() if observed else None
         snap = build_snapshot(assets, fire, scenario_id=scenario_id, incident_id=incident_id, sequence=seq,
                               as_of=t, input_mode=input_mode,
                               computed_at=t + timedelta(seconds=COMPUTE_LAG_S),
-                              metrics={"source_age_s": age, "processing_s": float(COMPUTE_LAG_S)})
+                              metrics={"source_age_s": age, "processing_s": float(COMPUTE_LAG_S)},
+                              forecast=forecast)
         errs = validate_snapshot(snap)
         if errs:
             raise SystemExit(f"{snap['snapshot_id']} invalid: {errs}")
         path = write_snapshot(snap, SNAP_DIR / f"{snap['snapshot_id'].replace('-', '_', 1)}.json")
         near = sorted((a for a in snap["assets"] if a["distance_to_fire_m"] is not None),
                       key=lambda a: (a["distance_to_fire_m"], a["asset_id"]))[:3]
-        print(f"{path.relative_to(ROOT)}: {len(snap['assets'])} assets, data_status {snap['data_status']}, "
+        n = len(snap["assets"])
+        arrivals = sum(a["fire_arrival_at"] is not None for a in snap["assets"])
+        evacs = sum(a["evacuation_min"] is not None for a in snap["assets"])
+        print(f"{path.relative_to(ROOT)}: {n} assets, data_status {snap['data_status']}, "
               f"{sum(a['intersects_fire'] is True for a in snap['assets'])} intersecting, "
               f"{sum(a['needs_review'] for a in snap['assets'])} need review, "
+              f"fire_arrival_at set {arrivals} / null {n - arrivals}, evacuation_min set {evacs} / null {n - evacs}, "
               f"{path.stat().st_size / 1e6:.2f} MB; nearest: "
               + ", ".join(f"{a['name']} {a['distance_to_fire_m']:.0f} m" for a in near))
         snaps.append(snap)
@@ -264,7 +376,11 @@ def main() -> int:
         (fire_update(fs, fs.perimeter, T1, "08:00 ignition disc"), T1),
         (fire_update(fs, grown_perimeter(fs), T2, "10:00 perimeter grown ~1.5 km downwind, synthetic"), T2),
     ]
-    build_pair(synthetic_assets(), fires, "synthetic_gavarres", fs.cluster_id)
+    forecast_paths = write_synthetic_forecasts()
+    for p in forecast_paths:
+        print(f"{p.relative_to(ROOT)}: synthetic forecast-input-1, {len(json.loads(p.read_text())['estimates'])} estimates")
+    build_pair(synthetic_assets(), fires, "synthetic_gavarres", fs.cluster_id,
+               forecasts=[load_forecast(p) for p in forecast_paths])
 
     real = real_area_rows()
     if real is None:

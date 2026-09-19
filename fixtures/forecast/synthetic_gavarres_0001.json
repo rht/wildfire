@@ -1,0 +1,66 @@
+{
+ "schema_version": "forecast-input-1",
+ "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+ "input_mode": "synthetic",
+ "issued_at": "2026-07-03T08:00:00+00:00",
+ "forecast_horizon_at": "2026-07-03T20:00:00+00:00",
+ "basis": "p10",
+ "note": "synthetic, not a provider forecast. Hand-designed arrival times for the synthetic Gavarres scenario (fire grows SSE, wind from 340), written by scripts/make_snapshots.py (SYNTHETIC_FORECAST) so the evacuation-window ranking checks of readme section 11 are demonstrable: (a) downwind assets get earlier arrivals than nearer off-axis ones, e.g. mas_pla (8.9 km, bearing 161) arrives before sant_sadurni (4.3 km, bearing 277) and pou_del_glac (1.8 km, 156) before residencia_la_bisbal (1.2 km, 26), so the farther asset outranks the nearer one; (b) at 10:00Z sant_pol and pou_del_glac are inside the perimeter and can_xic is 45 min out, so their windows (arrival - policy evacuation duration - 30 min buffer) are exhausted, and camping_gavarres moves ahead of escola_cruilles compared with the 08:00Z issue; (c) vall_repos is located but has no estimate (outside the run's domain) and the unlocated care home has none, both forecast_unavailable; (d) monells and sant_sadurni (both nucleus) share identical arrival times so the tie resolves by distance then asset_id. p50 = p10 plus roughly a quarter; burn_probability falls with arrival. Not derived from distance by any rule and not a spread model output.",
+ "estimates": {
+  "fixture:camping_gavarres": {
+   "arrival_p10_at": "2026-07-03T13:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T14:20:00+00:00",
+   "burn_probability": 0.75
+  },
+  "fixture:can_xic": {
+   "arrival_p10_at": "2026-07-03T12:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T13:00:00+00:00",
+   "burn_probability": 0.8
+  },
+  "fixture:escola_cruilles": {
+   "arrival_p10_at": "2026-07-03T12:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T13:00:00+00:00",
+   "burn_probability": 0.6
+  },
+  "fixture:hospital_palamos": {
+   "arrival_p10_at": "2026-07-03T17:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T19:00:00+00:00",
+   "burn_probability": 0.4
+  },
+  "fixture:les_cabanyes": {
+   "arrival_p10_at": "2026-07-03T14:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T15:30:00+00:00",
+   "burn_probability": 0.6
+  },
+  "fixture:mas_pla": {
+   "arrival_p10_at": "2026-07-03T13:30:00+00:00",
+   "arrival_p50_at": "2026-07-03T15:00:00+00:00",
+   "burn_probability": 0.7
+  },
+  "fixture:monells": {
+   "arrival_p10_at": "2026-07-03T18:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T20:00:00+00:00",
+   "burn_probability": 0.2
+  },
+  "fixture:pou_del_glac": {
+   "arrival_p10_at": "2026-07-03T11:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T11:50:00+00:00",
+   "burn_probability": 0.9
+  },
+  "fixture:residencia_la_bisbal": {
+   "arrival_p10_at": "2026-07-03T15:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T17:00:00+00:00",
+   "burn_probability": 0.35
+  },
+  "fixture:sant_pol": {
+   "arrival_p10_at": "2026-07-03T10:20:00+00:00",
+   "arrival_p50_at": "2026-07-03T11:00:00+00:00",
+   "burn_probability": 0.95
+  },
+  "fixture:sant_sadurni": {
+   "arrival_p10_at": "2026-07-03T18:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T20:00:00+00:00",
+   "burn_probability": 0.2
+  }
+ }
+}
