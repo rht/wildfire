@@ -109,6 +109,8 @@ def test_dynamic_package_compiles_to_bound_hosted_contract(tmp_path):
     compiled = json.loads((dest / 'build/slng/agent.json').read_text())
     variables = set(re.findall(r'\{\{(\w+)\}\}', compiled['system_prompt'] + compiled['greeting']))
     assert variables == set(ARGUMENTS)
+    assert compiled['template_variable_options'] == {
+        key: {'required': True} for key in ARGUMENTS}
     assert not set(('request_id', 'asset_id', 'snapshot_id')) & compiled.get('template_defaults', {}).keys()
     runtime_names = {v['name'] for v in compiled['runtime_variables']}
     assert {'identity_confirmed', 'whole_household_confirmed', 'wants_human',

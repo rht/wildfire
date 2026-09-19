@@ -1494,3 +1494,19 @@ No dynamic deployment, browser speech, live outbound smoke test, model availabil
 check for this new agent, or account concurrency verification has been performed.
 Offline compilation does not establish live model quality, speech behavior,
 operational readiness, human transfer or resource dispatch.
+
+Verification for this task: **615 passed, 1 skipped**, including offline Unmute
+0.5.5 validation/compilation and exact HTTP payload checks; no live providers are
+called by the suite. Scoped independent review has no outstanding findings after
+clarifying the new-agent deployment instructions and asserting compiled required
+variables. Norma scans are clean for all five changed Python files; YAML, text
+and Markdown have no applicable rules. Norma audit registration was unavailable
+because the session is not linked to a repository. The protected capacity
+predicate was not changed.
+
+The verified `call-briefings` export at commit `8f1757d` was loaded read-only and
+exercised through this adapter's offline HTTP transport for readiness-only and
+approved-route examples, preserving all seven arguments and all three IDs.
+Its branch still needs integration alongside this PR. The package retains the
+existing English speech bindings; a language argument alone does not validate
+multilingual STT/TTS support.
