@@ -909,14 +909,118 @@ Commands prepared for a subsequent authorized session (not run here):
 
 Replace `SCENARIO_UTC_EPOCH` with the incident's common UTC ISO epoch, never a fresh time on
 restart. Browser and outbound creation are separate explicit commands. No background polling
-or credential-wait loop runs. The implementation leaves snapshot ranking, the crew sequence,
-UI integration and Workstream B untouched.
+or credential-wait loop runs. The original A1–A4 implementation left snapshot ranking, the crew sequence,
+UI integration and Workstream B untouched; the mock UI integration is described below.
 
 
-Final offline verification: **344 Python tests passed** (253 baseline plus 91 voice tests),
+Original A1–A4 offline verification before the main-branch rebase: **344 Python tests passed** (253 baseline plus 91 voice tests),
 `git diff --check` passed, and all nine demo cases replayed with **11 tasks before and after**.
 The baseline modes were A=`assisted_evacuation`, B=`self_evacuate`, C=`undetermined`; every
 case retained `evacuation_status="not_confirmed"`. Verification artifacts are ignored local
 files under `data/agent-session/` (`voice-demo.json`, `voice-replay.json`, `voice-pytest.txt`).
 The implementation was independently reviewed; all reported findings were fixed and verified.
 These are offline software checks, not validation of provider audio, telephony or hardware.
+
+### Mock scenario replay and dashboard updates
+
+The expanded mock exercise on `codex/slng-voice-agent` runs **25 isolated scenarios** through the
+existing contact ranking, one-crew response planner, interview normalization, readiness checks and
+persistent task store. Fixtures are in `fixtures/voice/replay_scenarios.json`; the reproducible
+outcome report is [reports/mock-voice-results.json](reports/mock-voice-results.json). This tests
+structured synthetic answers, not SLNG speech recognition, generated conversation, real calls or
+successful human transfer. The phone number is fictional and the runner has no provider calls.
+
+Run all cases and write a report, or advance one case a single event at a time:
+
+```sh
+.venv/bin/python scripts/replay_voice_scenarios.py --case all \
+  --db-dir data/voice-replay-validation --output reports/mock-voice-results.json
+.venv/bin/python scripts/replay_voice_scenarios.py --case baseline --step
+.venv/bin/streamlit run fireline/app.py --server.port 8511
+```
+
+Open `http://localhost:8511/?demo=voice`, or enable **Mock voice scenarios** in the sidebar. Select a case, then
+**Apply next mock event** to inspect each result or **Apply all remaining mock events**. **Start a
+fresh mock run** creates a new database and preserves previous runs. Each case has its own database
+under `data/voice-replay/` (override with `FIRELINE_MOCK_DB_DIR`); the CLI and UI can use the same
+case database. Reopening the page resumes its revision. Changing fixtures requires a fresh run.
+An existing ordinary incident database is rejected without modifying its contents.
+
+| Scenario group | Expected system behavior |
+|---|---|
+| All eight combinations of low/high synthetic confidence, assistance needed/not needed, and human requested/not requested | Retain each reported fact. Low confidence or a human request requires a callback and keeps the evacuation mode unresolved; reported assistance remains visible alongside the uncertainty. |
+| Confirmed inability to self-evacuate, or no suitable transport, with sufficiently supported synthetic answers | Propose `assisted_evacuation`; create assistance, departure and arrival follow-up work. |
+| Supported ability and transport, suitable approved centre and route | Propose `self_evacuate`; show destination and instruction/departure/arrival checks. Agreement is not proof of departure or arrival. |
+| Confidence 0.85 / 0.849999 / unknown | Exercise the inclusive prototype threshold and review paths. These supplied synthetic scores do not calibrate an LLM or authorize a live decision. |
+| Missing evidence, contradiction, bad audio, no answer, failed/declined call, partial human request, failed transfer | Keep unresolved and create or retain human follow-up. A request for a person is honoured before the interview is complete. |
+| Centre lacks space or route is unconfirmed | Do not propose a destination; retain reception/assistance and human follow-up needs. |
+| Forecast update reduces B's fire arrival to minute 3 | Contact order becomes B → A → C; B's window is -1 minute and its previous self-evacuation proposal is withdrawn for review. |
+| Crew loses assisted-evacuation capability | Response proposal changes from C → A to B → C; A's action is explicitly blocked and its assistance need remains. |
+
+The two algorithms remain separate:
+
+1. **Whom to contact first:** `rank_contacts` orders the smallest remaining window first:
+   `fire_arrival_min - now_min - evacuation_min - buffer_min`. In the baseline, A has 2 minutes,
+   B has 8 and C has 10, so contacts are **A → B → C**. Ties use earlier fire arrival, nearer
+   geographic distance and stable ID. Missing timing evidence goes to review; exhausted windows
+   remain urgent. Property value does not override this ordering. The fixture uses zero buffer;
+   the snapshot dashboard's separately configured policy uses 30 minutes.
+2. **Which action the crew should take next:** `plan_response` enumerates feasible sequences for
+   one crew (at most eight actions), checking travel, action time, deadlines, capabilities and
+   prerequisites. It compares assisted-person benefit first, then total-person benefit, then
+   asset-value benefit, with timing/tie rules. The baseline selects **C → A** because C explicitly
+   unlocks assistance at A; a greedy B-first choice misses that opportunity. Geometry alone does
+   not create a protective effect. The mock output includes sequence, timings, blocked actions,
+   unserved locations and the declared benefit assumptions.
+
+The interview/readiness policy updates household proposals and tasks alongside those algorithms.
+A call reporting help does not supply a revised headcount, travel time or action duration, so it
+cannot silently change the crew model's numerical inputs or remove a household from consideration.
+`response_review_required` makes that gap visible. The mock scenarios do not simulate elapsed call
+minutes or in-progress crew movements: event order advances at a fixed scenario epoch. A changed
+forecast/capability recomputes an unexecuted static proposal, not a live dispatch plan. The current
+readiness API also withholds the old crew proposal when supplied a nonzero elapsed time.
+
+**What the UI receives:** `MockReplay.state()` returns a `mock-coordination-state-1` object with
+`case_id`, `snapshot_id`, `revision`, `as_of`, `pending_events`, `calls`, `plan`, `tasks`,
+`response_review_required`, `input_mode="synthetic"`, `dispatch=false` and `live_validation=false`.
+`plan` contains both algorithm outputs, household modes and proposed reception capacity. Calls
+retain confidence/basis, evidence, reported assistance, human requests and escalation reasons.
+The UI can download the complete state as JSON.
+
+Each accepted event also appends a durable `mock-coordination-update-1` notification:
+
+```json
+{
+  "schema_version": "mock-coordination-update-1",
+  "case_id": "baseline",
+  "revision": 1,
+  "event_id": "mock-voice-baseline:0",
+  "kind": "call_result",
+  "changed_asset_ids": ["A"],
+  "refresh": "full_state",
+  "input_mode": "synthetic"
+}
+```
+
+Voice facts, task changes, revision and notification commit in **one SQLite transaction**. A
+crash rolls them back together; duplicate replay does not advance the revision or duplicate work.
+`updates(after_revision=...)` supports ordered catch-up. Task status/ownership persist separately;
+only analyst action closes existing work. In particular, initial callback/contact tasks remain
+open even after a successful synthetic interview. Reception capacity remains a per-case proposal,
+not a production reservation ledger.
+
+**Transport choice:** the panel uses Streamlit's
+[`st.fragment(run_every="2s")`](https://docs.streamlit.io/develop/api-reference/execution-flow/st.fragment)
+to reread the durable state while open. This already exposes updates from another CLI/process
+without adding a separate WebSocket server. The notification is an invalidation hint: refresh the
+full state, including indirectly changed ranks. A future separate frontend can consume an
+authenticated SSE stream for server-to-browser notifications, or WebSockets if bidirectional
+interaction warrants them, and fetch current state after reconnecting. A socket is transport,
+not the durable output or source of truth. No new SSE/WebSocket endpoint is deployed here.
+
+Validation after integration: **451 tests passed**, including all eight combinations, additional
+adverse cases, both algorithm update examples, cross-reader refresh/restart, duplicate delivery,
+crash rollback, existing-database protection, CLI output and Streamlit interaction tests.
+Independent review findings about partial commits and incomplete invalidation IDs were fixed and
+covered by regression tests. These checks do not validate real fire predictions or live voice quality.

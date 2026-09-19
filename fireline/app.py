@@ -449,6 +449,10 @@ def render_selected(sess: Session, asset: dict) -> None:
 
 # ----------------------------------------------------------------------------- main
 def main() -> None:
+    if st.sidebar.toggle("Mock voice scenarios", value=st.query_params.get("demo") == "voice", key="mock_voice_mode"):
+        from fireline.voice_demo_panel import render_voice_demo
+        render_voice_demo()
+        return
     sess = session()
     if sess.scenario_id is None and sess.scenario_ids:
         sess.select_scenario(DEFAULT_SCENARIO if DEFAULT_SCENARIO in sess.scenario_ids else sess.scenario_ids[0])
