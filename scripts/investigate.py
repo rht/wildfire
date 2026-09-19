@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-"""One agent investigation (readme 8, CONTRACTS 6): live model call when ANTHROPIC_API_KEY is set,
-otherwise a clearly labelled replay of fixtures/agent/prerecorded_investigation.json.
+"""One agent investigation (readme 8, CONTRACTS 6): live model call when an LLM API key is set
+(NEBIUS_API_KEY, else ANTHROPIC_API_KEY), otherwise a clearly labelled replay of
+fixtures/agent/prerecorded_investigation.json.
 
     .venv/bin/python scripts/investigate.py [snapshot.json] [--asset ASSET_ID] [--asset-json asset.json]
                                             [--fake] [--record] [--max-steps N]
@@ -8,7 +9,8 @@ otherwise a clearly labelled replay of fixtures/agent/prerecorded_investigation.
 Loads a snapshot (default fixtures/snapshots/synthetic_gavarres_0001.json), ranks it by remaining
 evacuation window with fireline.priority.rank_snapshot when importable, picks the asset (--asset or
 the first needs_review asset) and runs fireline.agent.investigate. `--record` writes the record to the prerecorded fixture
-path; `--fake` forces the offline FakeLLM (used to generate a labelled fixture when no key exists).
+path; `--fake` forces the offline FakeLLM (used to generate a labelled fixture when no key exists);
+`--model` overrides the provider model id (default fireline.llm.DEFAULT_NEBIUS_MODEL on Nebius).
 """
 
 from __future__ import annotations
@@ -24,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from fireline import agent  # noqa: E402
-from fireline.llm import AnthropicLLM, FakeLLM  # noqa: E402
+from fireline.llm import FakeLLM, live_llm  # noqa: E402
 
 DEFAULT_SNAPSHOT = ROOT / "fixtures" / "snapshots" / "synthetic_gavarres_0001.json"
 PRERECORDED = ROOT / "fixtures" / "agent" / "prerecorded_investigation.json"
@@ -142,19 +144,23 @@ def main(argv=None) -> int:
     ap.add_argument("--asset-json", default=None, help="path of a single asset record (or list) instead of a snapshot")
     ap.add_argument("--fake", action="store_true", help="force the offline FakeLLM even if a key is set")
     ap.add_argument("--record", action="store_true", help=f"write the record to {PRERECORDED}")
+    ap.add_argument("--model", default=None, help="provider model id (overrides FIRELINE_MODEL)")
     ap.add_argument("--max-steps", type=int, default=6)
     args = ap.parse_args(argv)
 
     from fireline import env
-    have_key = env.has_anthropic_key()   # loads .env first
+    if args.model:
+        os.environ["FIRELINE_MODEL"] = args.model
+    provider = env.live_llm_provider()   # loads .env first
+    have_key = provider is not None
     if not have_key and not args.fake and not args.record:
         if PRERECORDED.exists():
-            print(f"PRERECORDED FALLBACK: no ANTHROPIC_API_KEY; replaying {PRERECORDED.relative_to(ROOT)}")
+            print(f"PRERECORDED FALLBACK: no LLM API key; replaying {PRERECORDED.relative_to(ROOT)}")
             record = json.loads(PRERECORDED.read_text(encoding="utf-8"))
             print(f"recorded_at:  {record.get('recorded_at')}   source: {record.get('input')}")
             print_record(record)
             return 0
-        print(f"PRERECORDED FALLBACK: no ANTHROPIC_API_KEY and no {PRERECORDED.relative_to(ROOT)}; "
+        print(f"PRERECORDED FALLBACK: no LLM API key and no {PRERECORDED.relative_to(ROOT)}; "
               f"running the offline FakeLLM instead")
         args.fake = True
 
@@ -167,12 +173,12 @@ def main(argv=None) -> int:
         llm = FakeLLM()
         label = ("prerecorded with FakeLLM (no API key available on "
                  f"{datetime.now(timezone.utc).date().isoformat()}); rerun scripts/investigate.py --record with "
-                 "ANTHROPIC_API_KEY to replace with a live transcript")
+                 "an LLM API key to replace with a live transcript")
     else:
-        llm = AnthropicLLM()
-        label = f"live transcript, model {llm.model}"
+        llm = live_llm()
+        label = f"live transcript, {provider} model {llm.model}"
     print(f"input:        {where}")
-    print(f"mode:         {'FakeLLM (offline)' if isinstance(llm, FakeLLM) else 'live ' + llm.model}")
+    print(f"mode:         {'FakeLLM (offline)' if isinstance(llm, FakeLLM) else f'live {provider} ' + llm.model}")
     record = agent.investigate(wb, asset["asset_id"], llm=llm, max_steps=args.max_steps)
     record["label"] = label
     record["recorded_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")

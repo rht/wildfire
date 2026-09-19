@@ -1,43 +1,45 @@
 {
- "asset_id": "fixture:pou_del_glac",
- "name": "Pou del Glaç",
+ "asset_id": "fixture:residencia_sense_coordenades",
+ "name": "Residència sense coordenades",
  "review_reasons": [
-  "occupancy_unknown",
-  "occupancy_seasonal"
+  "location_unknown",
+  "exposure_unknown",
+  "forecast_unavailable"
  ],
- "steps": 5,
+ "steps": 4,
  "tool_calls": [
   {
    "name": "get_asset",
    "input": {
-    "asset_id": "fixture:pou_del_glac"
+    "asset_id": "fixture:residencia_sense_coordenades"
    },
    "result": {
-    "asset_id": "fixture:pou_del_glac",
-    "name": "Pou del Glaç",
-    "asset_type": "camp",
-    "municipality": "la Bisbal d'Empordà",
-    "latitude": 41.933,
-    "longitude": 3.04,
-    "capacity": null,
+    "asset_id": "fixture:residencia_sense_coordenades",
+    "name": "Residència sense coordenades",
+    "asset_type": "care_home",
+    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+    "latitude": null,
+    "longitude": null,
+    "capacity": 40,
     "estimated_occupancy": null,
-    "occupancy_basis": null,
-    "value_score": 0.8,
-    "intersects_fire": false,
-    "queue": "ranked",
+    "occupancy_basis": "register capacity (fixture); maximum places, not a headcount",
+    "value_score": 1.0,
+    "intersects_fire": null,
+    "queue": "needs_review",
     "review_reasons": [
-     "occupancy_unknown",
-     "occupancy_seasonal"
+     "location_unknown",
+     "exposure_unknown",
+     "forecast_unavailable"
     ],
-    "fire_arrival_at": "2026-07-03T11:00:00+00:00",
-    "fire_arrival_basis": "p10",
-    "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
-    "evacuation_min": 90,
+    "fire_arrival_at": null,
+    "fire_arrival_basis": null,
+    "forecast_source": null,
+    "evacuation_min": 180,
     "evacuation_source": "evacuation-proto-2026-09-19",
-    "distance_to_fire_m": 1762,
-    "slack_min": 60,
-    "priority_status": "window_open",
-    "priority_rank": 2,
+    "distance_to_fire_m": null,
+    "slack_min": null,
+    "priority_status": "needs_review",
+    "priority_rank": null,
     "open_tasks": [],
     "confirmed_overrides": [],
     "pending_proposals": 0
@@ -46,169 +48,166 @@
   {
    "name": "lookup_facility",
    "input": {
-    "query": "Pou del Glaç",
-    "municipality": "la Bisbal d'Empordà"
+    "query": "Residència sense coordenades",
+    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
    },
    "result": [
     {
-     "evidence_id": "ev:pou_del_glac:page",
-     "name": "Pou del Glaç",
-     "municipality": "la Bisbal d'Empordà",
-     "register": null,
-     "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
+     "evidence_id": "ev:residencia_sense_coordenades:register",
+     "name": "Residència sense coordenades",
+     "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+     "register": "fixture:care_homes",
+     "url": null,
      "source": "manual enrichment",
-     "capacity": 120,
-     "asset_type": "camp",
-     "snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
-     "observed_at": "2026-06-15",
+     "capacity": 40,
+     "asset_type": "care_home",
+     "snippet": "Residència sense coordenades, Servei de residència assistida per a gent gran, Carrer de la Font, 12, Cruïlles (Cruïlles, Monells i Sant Sadurní de l'Heura), capacitat 40.",
+     "observed_at": "2026-03-01",
      "fetched_at": "2026-09-19T13:47:00+00:00",
      "fields": {
-      "evidence_id": "ev:pou_del_glac:page",
-      "name": "Pou del Glaç",
-      "municipality": "la Bisbal d'Empordà",
-      "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
-      "snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
-      "observed_at": "2026-06-15",
+      "evidence_id": "ev:residencia_sense_coordenades:register",
+      "name": "Residència sense coordenades",
+      "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+      "url": null,
+      "register": "fixture:care_homes",
+      "address": "Carrer de la Font, 12, 17116 Cruïlles",
+      "snippet": "Residència sense coordenades, Servei de residència assistida per a gent gran, Carrer de la Font, 12, Cruïlles (Cruïlles, Monells i Sant Sadurní de l'Heura), capacitat 40.",
+      "observed_at": "2026-03-01",
       "fetched_at": "2026-09-19T13:47:00+00:00",
-      "capacity": 120,
-      "asset_type": "camp",
+      "capacity": 40,
+      "asset_type": "care_home",
       "source": "manual enrichment",
-      "notes": "synthetic fixture evidence for the demo; URL illustrative"
-     },
-     "score": 100
-    },
-    {
-     "evidence_id": "reg:fixture:equipaments:6",
-     "name": "Pou del Glaç",
-     "municipality": "la Bisbal d'Empordà",
-     "register": "fixture:equipaments",
-     "url": null,
-     "source": "fixture:equipaments",
-     "capacity": null,
-     "asset_type": null,
-     "snippet": "Pou del Glaç, la Bisbal d'Empordà, capacity unknown",
-     "observed_at": null,
-     "fetched_at": null,
-     "fields": {
-      "name": "Pou del Glaç",
-      "municipality": "la Bisbal d'Empordà",
-      "categoria": "Centre",
-      "adreca": "Camí del Pou del Glaç, s/n",
-      "lon": 3.04,
-      "lat": 41.933
-     },
-     "score": 100
-    },
-    {
-     "evidence_id": "reg:fixture:schools:0",
-     "name": "Pou del Glaç",
-     "municipality": "la Bisbal d'Empordà",
-     "register": "fixture:schools",
-     "url": null,
-     "source": "fixture:schools",
-     "capacity": null,
-     "asset_type": null,
-     "snippet": "Pou del Glaç, la Bisbal d'Empordà, capacity unknown",
-     "observed_at": null,
-     "fetched_at": null,
-     "fields": {
-      "name": "Pou del Glaç",
-      "municipality": "la Bisbal d'Empordà",
-      "tipologia": "casa de colònies",
-      "titularitat": "privada"
+      "notes": "synthetic fixture register row for the unlocated asset fixture:residencia_sense_coordenades (municipality as in fixtures/snapshots/synthetic_gavarres_0001.json); the address is the evidence for the location_unknown escalation"
      },
      "score": 100
     }
    ]
   },
   {
-   "name": "propose_update",
+   "name": "escalate",
    "input": {
-    "asset_id": "fixture:pou_del_glac",
-    "field": "capacity",
-    "value": 120,
-    "source": "manual enrichment",
-    "quoted_snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
-    "confidence": "medium",
-    "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
-    "observed_at": "2026-06-15"
+    "asset_id": "fixture:residencia_sense_coordenades",
+    "question": "Confirm the address/coordinates for Residència sense coordenades. The register row states: \"Carrer de la Font, 12, 17116 Cruïlles\". Is this the correct location?",
+    "options": [
+     "Confirmed: Carrer de la Font, 12, 17116 Cruïlles",
+     "Different address — analyst will supply",
+     "Coordinates unknown, leave unlocated"
+    ],
+    "default": "Coordinates unknown, leave unlocated"
    },
    "result": {
-    "proposal_id": "prop-001-pou_del_glac",
-    "asset_id": "fixture:pou_del_glac",
-    "field": "capacity",
-    "value": 120,
-    "previous": null,
-    "source": "manual enrichment",
-    "quoted_snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
-    "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
-    "observed_at": "2026-06-15",
-    "confidence": "medium",
-    "status": "pending",
-    "created_at": "2026-09-19T14:10:47+00:00"
+    "question_id": "q-001-residencia_sense_coordenades",
+    "asset_id": "fixture:residencia_sense_coordenades",
+    "question": "Confirm the address/coordinates for Residència sense coordenades. The register row states: \"Carrer de la Font, 12, 17116 Cruïlles\". Is this the correct location?",
+    "options": [
+     "Confirmed: Carrer de la Font, 12, 17116 Cruïlles",
+     "Different address — analyst will supply",
+     "Coordinates unknown, leave unlocated"
+    ],
+    "default": "Coordinates unknown, leave unlocated",
+    "status": "open",
+    "answer": null,
+    "created_at": "2026-09-19T19:09:24+00:00"
    }
   },
   {
    "name": "escalate",
    "input": {
-    "asset_id": "fixture:pou_del_glac",
-    "question": "Pou del Glaç: in session today (people on site)? If yes, how many are present?",
+    "asset_id": "fixture:residencia_sense_coordenades",
+    "question": "Exposure cannot be computed: there is no fire geometry and no location for this asset. How should exposure be handled?",
     "options": [
-     "yes",
-     "no"
+     "Leave exposure unknown until location and fire geometry exist",
+     "Analyst will supply exposure from another source"
     ],
-    "default": "yes"
+    "default": "Leave exposure unknown until location and fire geometry exist"
    },
    "result": {
-    "question_id": "q-001-pou_del_glac",
-    "asset_id": "fixture:pou_del_glac",
-    "question": "Pou del Glaç: in session today (people on site)? If yes, how many are present?",
+    "question_id": "q-002-residencia_sense_coordenades",
+    "asset_id": "fixture:residencia_sense_coordenades",
+    "question": "Exposure cannot be computed: there is no fire geometry and no location for this asset. How should exposure be handled?",
     "options": [
-     "yes",
-     "no"
+     "Leave exposure unknown until location and fire geometry exist",
+     "Analyst will supply exposure from another source"
     ],
-    "default": "yes",
+    "default": "Leave exposure unknown until location and fire geometry exist",
     "status": "open",
     "answer": null,
-    "created_at": "2026-09-19T14:10:47+00:00"
+    "created_at": "2026-09-19T19:09:24+00:00"
+   }
+  },
+  {
+   "name": "escalate",
+   "input": {
+    "asset_id": "fixture:residencia_sense_coordenades",
+    "question": "No spread forecast covers this location, so the evacuation window cannot be computed. Keep the asset in the review queue pending a forecast?",
+    "options": [
+     "Keep in review pending a forecast",
+     "Remove from review queue"
+    ],
+    "default": "Keep in review pending a forecast"
+   },
+   "result": {
+    "question_id": "q-003-residencia_sense_coordenades",
+    "asset_id": "fixture:residencia_sense_coordenades",
+    "question": "No spread forecast covers this location, so the evacuation window cannot be computed. Keep the asset in the review queue pending a forecast?",
+    "options": [
+     "Keep in review pending a forecast",
+     "Remove from review queue"
+    ],
+    "default": "Keep in review pending a forecast",
+    "status": "open",
+    "answer": null,
+    "created_at": "2026-09-19T19:09:24+00:00"
    }
   }
  ],
- "final_text": "Recommendation, not an order. Pou del Glaç: 1762 m from the fire, queue ranked; proposed capacity=120 from manual enrichment (pending analyst confirmation); escalated 'Pou del Glaç: in session today (people on site)? If yes, how many are present?' default 'yes'.",
- "proposals_added": [
-  {
-   "proposal_id": "prop-001-pou_del_glac",
-   "asset_id": "fixture:pou_del_glac",
-   "field": "capacity",
-   "value": 120,
-   "previous": null,
-   "source": "manual enrichment",
-   "quoted_snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
-   "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
-   "observed_at": "2026-06-15",
-   "confidence": "medium",
-   "status": "pending",
-   "created_at": "2026-09-19T14:10:47+00:00"
-  }
- ],
+ "final_text": "Recommendation, not an order.\n\n- Found: the register row (fixture:care_homes, observed 2026-03-01) matches name and municipality and states \"Carrer de la Font, 12, Cruïlles (Cruïlles, Monells i Sant Sadurní de l'Heura), capacitat 40\" — capacity 40 is already on the record, so no capacity proposal is needed; it is a ceiling, not a headcount.\n- Escalated (all open, nothing applied): q-001 confirm the address/coordinates, quoting \"Carrer de la Font, 12, 17116 Cruïlles\", default \"Coordinates unknown, leave unlocated\"; q-002 how to handle exposure with no fire geometry or location, default \"Leave exposure unknown until location and fire geometry exist\"; q-003 keep in the review queue pending a forecast, default \"Keep in review pending a forecast\".\n- No forecast arrival, coordinates or exposure figure was proposed — none is supported by evidence.",
+ "proposals_added": [],
  "questions_added": [
   {
-   "question_id": "q-001-pou_del_glac",
-   "asset_id": "fixture:pou_del_glac",
-   "question": "Pou del Glaç: in session today (people on site)? If yes, how many are present?",
+   "question_id": "q-001-residencia_sense_coordenades",
+   "asset_id": "fixture:residencia_sense_coordenades",
+   "question": "Confirm the address/coordinates for Residència sense coordenades. The register row states: \"Carrer de la Font, 12, 17116 Cruïlles\". Is this the correct location?",
    "options": [
-    "yes",
-    "no"
+    "Confirmed: Carrer de la Font, 12, 17116 Cruïlles",
+    "Different address — analyst will supply",
+    "Coordinates unknown, leave unlocated"
    ],
-   "default": "yes",
+   "default": "Coordinates unknown, leave unlocated",
    "status": "open",
    "answer": null,
-   "created_at": "2026-09-19T14:10:47+00:00"
+   "created_at": "2026-09-19T19:09:24+00:00"
+  },
+  {
+   "question_id": "q-002-residencia_sense_coordenades",
+   "asset_id": "fixture:residencia_sense_coordenades",
+   "question": "Exposure cannot be computed: there is no fire geometry and no location for this asset. How should exposure be handled?",
+   "options": [
+    "Leave exposure unknown until location and fire geometry exist",
+    "Analyst will supply exposure from another source"
+   ],
+   "default": "Leave exposure unknown until location and fire geometry exist",
+   "status": "open",
+   "answer": null,
+   "created_at": "2026-09-19T19:09:24+00:00"
+  },
+  {
+   "question_id": "q-003-residencia_sense_coordenades",
+   "asset_id": "fixture:residencia_sense_coordenades",
+   "question": "No spread forecast covers this location, so the evacuation window cannot be computed. Keep the asset in the review queue pending a forecast?",
+   "options": [
+    "Keep in review pending a forecast",
+    "Remove from review queue"
+   ],
+   "default": "Keep in review pending a forecast",
+   "status": "open",
+   "answer": null,
+   "created_at": "2026-09-19T19:09:24+00:00"
   }
  ],
  "postcheck_ok": true,
- "llm_mode": "fake",
- "label": "prerecorded with FakeLLM (no API key available on 2026-09-19); rerun scripts/investigate.py --record with ANTHROPIC_API_KEY to replace with a live transcript",
- "recorded_at": "2026-09-19T14:10:47+00:00",
+ "llm_mode": "live",
+ "label": "live transcript, nebius model deepseek-ai/DeepSeek-V4.1-Flash",
+ "recorded_at": "2026-09-19T19:09:25+00:00",
  "input": "snapshot fixtures/snapshots/synthetic_gavarres_0001.json (synthetic_gavarres-0001)"
 }

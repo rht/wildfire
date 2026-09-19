@@ -1,14 +1,20 @@
 """LLM back-ends for the investigation agent (CONTRACTS section 6, readme 8).
 
-Two classes with the same `.create(system, messages, tools)` interface, both returning an object
+Three classes with the same `.create(system, messages, tools)` interface, all returning an object
 with `.content` (blocks with `.type` in {"text", "tool_use"}) and `.stop_reason`:
 
-- `AnthropicLLM` wraps `anthropic.Anthropic().messages.create` (network, needs credentials).
+- `NebiusLLM` calls an open-weight model on Nebius AI Studio over its OpenAI-compatible
+  `/chat/completions` endpoint (network, needs `NEBIUS_API_KEY`). It translates the Anthropic-shaped
+  tools and message blocks `agent` speaks into OpenAI `tools` / `tool_calls` and back, so the loop
+  in `agent.investigate` does not know which provider answered.
+- `AnthropicLLM` wraps `anthropic.Anthropic().messages.create` (network, needs `ANTHROPIC_API_KEY`).
 - `FakeLLM` is deterministic and offline: it reads the asset's review reasons from the first user
   message and scripts the same get_asset -> lookup_facility -> propose_update / escalate steps the
-  system prompt asks of the real model, quoting only numbers that appeared in tool results.
+  system prompt asks of the real model, quoting only numbers that appeared in tool results. It is
+  what the tests and `scripts/validate.py` run, so every check stays offline and reproducible.
 
-`agent.investigate` treats the two identically.
+`live_llm()` returns the live back-end for whichever key is present, or None. `agent.investigate`
+treats all three identically.
 """
 
 from __future__ import annotations
@@ -18,18 +24,165 @@ import os
 import re
 from dataclasses import dataclass, field
 
-DEFAULT_MODEL = "claude-sonnet-5"
-MAX_TOKENS = 1024
+import requests
+
+DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5"
+DEFAULT_NEBIUS_MODEL = "deepseek-ai/DeepSeek-V4.1-Flash"
+NEBIUS_BASE_URL = "https://api.studio.nebius.com/v1"
+MAX_TOKENS = 2048
+TIMEOUT_S = 180
 
 
 # ---------------------------------------------------------------------------
-# Real back-end
+# Response blocks, shared by every back-end
+# ---------------------------------------------------------------------------
+@dataclass
+class TextBlock:
+    text: str
+    type: str = "text"
+
+
+@dataclass
+class ToolUseBlock:
+    id: str
+    name: str
+    input: dict
+    type: str = "tool_use"
+
+
+@dataclass
+class FakeResponse:
+    """The shape `agent.investigate` reads: `.content` blocks and `.stop_reason`. Named for the
+    offline back-end it was written for; `NebiusLLM` returns one too."""
+
+    content: list = field(default_factory=list)
+    stop_reason: str = "end_turn"
+
+
+Response = FakeResponse   # provider-neutral name for the same shape
+
+
+# ---------------------------------------------------------------------------
+# Nebius back-end (open-weight models over the OpenAI-compatible API)
+# ---------------------------------------------------------------------------
+def to_openai_tools(tools: list[dict]) -> list[dict]:
+    """Anthropic tool definitions -> OpenAI function definitions (same JSON schema inside)."""
+    return [{"type": "function",
+             "function": {"name": t["name"], "description": t["description"],
+                          "parameters": t["input_schema"]}}
+            for t in tools]
+
+
+def to_openai_messages(system: str, messages: list[dict]) -> list[dict]:
+    """The conversation `agent.investigate` builds -> OpenAI chat messages.
+
+    Anthropic keeps tool calls and their results as content blocks inside assistant/user messages;
+    OpenAI puts the calls on the assistant message as `tool_calls` and each result in its own
+    message with role "tool". Nothing else about the conversation changes.
+    """
+    out: list[dict] = [{"role": "system", "content": system}]
+    for msg in messages:
+        content = msg["content"]
+        if isinstance(content, str):
+            out.append({"role": msg["role"], "content": content})
+            continue
+        if msg["role"] == "assistant":
+            text = "".join(b.get("text", "") for b in content if b.get("type") == "text")
+            calls = [{"id": b["id"], "type": "function",
+                      "function": {"name": b["name"], "arguments": json.dumps(b.get("input") or {},
+                                                                              ensure_ascii=False)}}
+                     for b in content if b.get("type") == "tool_use"]
+            out.append({"role": "assistant", "content": text or None, **({"tool_calls": calls} if calls else {})})
+            continue
+        for b in content:
+            if b.get("type") == "tool_result":
+                res = b.get("content")
+                out.append({"role": "tool", "tool_call_id": b["tool_use_id"],
+                            "content": res if isinstance(res, str) else json.dumps(res, ensure_ascii=False)})
+            elif b.get("type") == "text":
+                out.append({"role": "user", "content": b["text"]})
+    return out
+
+
+def from_openai_message(message: dict) -> FakeResponse:
+    """One OpenAI assistant message -> the block response `agent.investigate` reads. A tool call
+    whose arguments are not valid JSON becomes an empty input, which the tool layer rejects as a
+    missing required argument rather than acting on a guess."""
+    blocks: list = []
+    if message.get("content"):
+        blocks.append(TextBlock(text=message["content"]))
+    for call in message.get("tool_calls") or []:
+        fn = call.get("function") or {}
+        try:
+            args = json.loads(fn.get("arguments") or "{}")
+        except (json.JSONDecodeError, TypeError):
+            args = {}
+        blocks.append(ToolUseBlock(id=call.get("id") or "", name=fn.get("name") or "",
+                                   input=args if isinstance(args, dict) else {}))
+    stop = "tool_use" if any(b.type == "tool_use" for b in blocks) else "end_turn"
+    return FakeResponse(content=blocks, stop_reason=stop)
+
+
+class NebiusLLM:
+    """An open-weight model on Nebius AI Studio, over its OpenAI-compatible chat endpoint.
+
+    Model from env `FIRELINE_MODEL`, default `DEFAULT_NEBIUS_MODEL`; key from `NEBIUS_API_KEY`.
+    `temperature=0` because the analyst reads these proposals: the same asset and the same evidence
+    should give the same investigation as far as the provider allows.
+    """
+
+    def __init__(self, model: str | None = None, *, api_key: str | None = None,
+                 base_url: str = NEBIUS_BASE_URL, max_tokens: int = MAX_TOKENS,
+                 temperature: float = 0.0, session=None):
+        self.model = model or os.environ.get("FIRELINE_MODEL") or DEFAULT_NEBIUS_MODEL
+        self.base_url = base_url.rstrip("/")
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        self._api_key = api_key
+        self._session = session
+
+    @property
+    def api_key(self) -> str:
+        if self._api_key is None:
+            from . import env as _env
+
+            _env.load_env()
+            key = os.environ.get("NEBIUS_API_KEY")
+            if not key:
+                raise RuntimeError("NEBIUS_API_KEY is not set (looked in the environment and .env)")
+            self._api_key = key
+        return self._api_key
+
+    @property
+    def session(self):
+        if self._session is None:
+            self._session = requests.Session()
+        return self._session
+
+    def create(self, system: str, messages: list[dict], tools: list[dict]) -> FakeResponse:
+        body = {"model": self.model, "messages": to_openai_messages(system, messages),
+                "tools": to_openai_tools(tools), "temperature": self.temperature,
+                "max_tokens": self.max_tokens}
+        response = self.session.post(f"{self.base_url}/chat/completions", json=body,
+                                     headers={"Authorization": f"Bearer {self.api_key}"},
+                                     timeout=TIMEOUT_S)
+        if response.status_code != 200:
+            raise RuntimeError(f"Nebius {self.model} returned {response.status_code}: {response.text[:400]}")
+        payload = response.json()
+        choices = payload.get("choices") or []
+        if not choices:
+            raise RuntimeError(f"Nebius {self.model} returned no choices: {str(payload)[:400]}")
+        return from_openai_message(choices[0].get("message") or {})
+
+
+# ---------------------------------------------------------------------------
+# Anthropic back-end
 # ---------------------------------------------------------------------------
 class AnthropicLLM:
     """Thin wrapper over the Anthropic Messages API. Model from env FIRELINE_MODEL."""
 
     def __init__(self, model: str | None = None, client=None, max_tokens: int = MAX_TOKENS):
-        self.model = model or os.environ.get("FIRELINE_MODEL", DEFAULT_MODEL)
+        self.model = model or os.environ.get("FIRELINE_MODEL", DEFAULT_ANTHROPIC_MODEL)
         self.max_tokens = max_tokens
         self._client = client
 
@@ -54,26 +207,6 @@ class AnthropicLLM:
 # ---------------------------------------------------------------------------
 # Fake back-end (offline, deterministic)
 # ---------------------------------------------------------------------------
-@dataclass
-class TextBlock:
-    text: str
-    type: str = "text"
-
-
-@dataclass
-class ToolUseBlock:
-    id: str
-    name: str
-    input: dict
-    type: str = "tool_use"
-
-
-@dataclass
-class FakeResponse:
-    content: list = field(default_factory=list)
-    stop_reason: str = "end_turn"
-
-
 _HEADCOUNT_KEYS = ("headcount", "estimated_occupancy", "people_present")
 
 
@@ -322,3 +455,22 @@ class FakeLLM:
         if isinstance(plan, TextBlock):
             return FakeResponse(content=[plan], stop_reason="end_turn")
         return FakeResponse(content=list(plan), stop_reason="tool_use")
+
+
+# ---------------------------------------------------------------------------
+# Choosing a back-end
+# ---------------------------------------------------------------------------
+def live_llm():
+    """The live back-end for whichever key is configured, or None when there is none.
+
+    Nebius first: it is the provider the project is set up for (readme 8). Callers fall back to
+    `FakeLLM` when this returns None, so the UI, the CLI and the checks all work offline.
+    """
+    from . import env as _env
+
+    provider = _env.live_llm_provider()
+    if provider == "nebius":
+        return NebiusLLM()
+    if provider == "anthropic":
+        return AnthropicLLM()
+    return None

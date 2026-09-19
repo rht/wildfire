@@ -45,7 +45,7 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 | Tool set | Closed | `get_asset, lookup_facility, propose_update, escalate` in `agent.py` |
 | Autonomy | Closed | every update is a pending proposal; `confirm_proposal` persists it as an analyst override |
 | Evidence cache | Closed | `fixtures/evidence.json` (labelled manual enrichment plus copied register rows) |
-| Live LLM demo | Partial | `scripts/investigate.py` runs live with `ANTHROPIC_API_KEY`; no key was available, so the committed `fixtures/agent/prerecorded_investigation.json` is a labelled FakeLLM record. Rerun with `--record` and a key. |
+| Live LLM demo | Closed | `fireline/llm.py` `NebiusLLM` runs the four-tool loop on an open-weight model over Nebius AI Studio (default `deepseek-ai/DeepSeek-V4.1-Flash`, `FIRELINE_MODEL` to override); `fixtures/agent/prerecorded_investigation.json` is a live transcript recorded 2026-09-19 and `scripts/validate.py --live` records the live agent check in `VALIDATION.md`. `FakeLLM` stays as the offline back-end for the tests and the keyless checks. |
 
 ## 4. Fire input and exposure (readme sections 3 and 4)
 
@@ -91,8 +91,10 @@ checks the window arithmetic; `VALIDATION.md` is regenerated.
 
 ## Still open after this pass
 
-1. Run one live investigation (`scripts/investigate.py --record --asset fixture:pou_del_glac`) and
-   replace the FakeLLM fixture; hold out examples before tuning the prompt.
+1. Hold out investigation examples before further prompt tuning. The live model now runs the loop
+   (`scripts/validate.py --live`, 7 investigations, 0 unsupported proposals, 0 occupancy-from-capacity),
+   but the fixture assets were used while writing the system prompt, so its accuracy on unseen
+   facilities is still unmeasured.
 2. Real-area occupancy: no located register row carries a capacity or headcount, so occupancy stays
    an investigation item even where a forecast exists. Disclosed in `VALIDATION.md`.
 3. Install Superpowers for the next session.

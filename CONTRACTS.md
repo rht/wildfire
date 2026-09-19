@@ -17,7 +17,7 @@ fireline/
   priority.py    Consumer: SnapshotSequence guard, apply_overrides(), rank_snapshot(), queues (evacuation window)
   tasks.py       SQLite TaskStore: tasks, roster, confirmed overrides, snapshot bookkeeping, events
   agent.py       Four tools (get_asset, lookup_facility, propose_update, escalate) + investigate loop
-  llm.py         AnthropicLLM and FakeLLM (same .create interface)
+  llm.py         NebiusLLM, AnthropicLLM and FakeLLM (same .create interface); live_llm() picks by key
   app.py         Streamlit: map, ranked table, review queue, details + timing breakdown, tasks, change log
   feeds.py       HTTP/cache layer, Gencat registers, Open-Meteo, DeepfireClient (unchanged API)
   --- v0 modules, gated by config.FEATURES, not used by the v4 path by default ---
@@ -35,7 +35,7 @@ fixtures/
 scripts/
   make_snapshots.py         Build fixture + real-area snapshots (no network)
   fetch_data.py             Real data into data/ (network)
-  investigate.py            One agent investigation: live call if ANTHROPIC_API_KEY, else labelled prerecorded
+  investigate.py            One agent investigation: live call if an LLM API key is set, else labelled prerecorded
 tests/                      pytest, no network, no LLM
 ```
 

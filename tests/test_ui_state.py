@@ -238,8 +238,33 @@ def test_set_evacuation_moves_asset_to_ranked_and_attaches_evidence(session):
     assert session.status()["counts"]["needs_review"] == 0
 
 
-def test_investigate_fake_then_confirm_clears_flag_and_reranks(session, monkeypatch):
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+def test_investigate_live_uses_the_provider_back_end_and_labels_its_model(session, monkeypatch):
+    """With a key set, `live=True` runs the provider back-end; the label names the model the
+    analyst's proposals came from."""
+    from fireline import env
+    from fireline import llm as llm_mod
+    from fireline.llm import NebiusLLM
+
+    monkeypatch.setattr(env, "_loaded", ["already-loaded"])
+    monkeypatch.setenv("NEBIUS_API_KEY", "k")
+    calls = []
+
+    class Stub(NebiusLLM):
+        def create(self, system, messages, tools):
+            calls.append(messages)
+            from fireline.llm import TextBlock, Response
+
+            return Response([TextBlock("Recommendation, not an order. Nothing to add.")], "end_turn")
+
+    monkeypatch.setattr(llm_mod, "live_llm", lambda: Stub(api_key="k"))
+    record, label = session.investigate(POU, live=True)
+    assert calls and record["llm_mode"] == "live"
+    assert label == f"live ({llm_mod.DEFAULT_NEBIUS_MODEL})"
+    assert ui_state.llm_available() is True
+
+
+def test_investigate_fake_then_confirm_clears_flag_and_reranks(session):
+    # conftest.no_llm_keys strips NEBIUS_API_KEY and ANTHROPIC_API_KEY, so live=True still falls back
     record, label = session.investigate(POU, live=True)
     assert label == ui_state.FAKE_LABEL_NO_KEY and record["llm_mode"] == "fake"
     assert record["tool_calls"] and record["final_text"]
