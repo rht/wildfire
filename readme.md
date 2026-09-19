@@ -747,6 +747,92 @@ not implemented in this static extension; its input contract is ready to receive
 Verification: 253 tests pass, including 36 readiness cases; targeted lint and whitespace checks
 pass. Independent code review found no important issues within the static scope.
 
+### Priority queue for outbound calls
+
+The outbound worker consumes the existing contact-priority algorithm. It stores approved
+call requests in SQLite, selects the most urgent eligible contact, and keeps filling free
+slots while earlier calls ring or continue their conversations. @mirrdj owns this
+coordination layer; the location/risk algorithm still supplies forecast arrival and total
+evacuation duration.
+
+Configure these optional variables in the private `.env` (these are also the defaults):
+
+```dotenv
+MAX_CONCURRENT_CALLS=5
+MAX_CALL_STARTS_PER_SECOND=1
+```
+
+`MAX_CONCURRENT_CALLS` is a positive integer covering calls being created, ringing,
+conversing, or awaiting reconciliation after an uncertain dispatch. A completed interview
+answer does not release a slot: a verified terminal provider lifecycle does.
+`MAX_CALL_STARTS_PER_SECOND` is a positive finite number; `0.5` means at most one start every
+two seconds. Call creation requests are serialized and spaced after each provider response
+to prevent slow network requests causing a burst. Conversations remain concurrent. These
+are application limits, not confirmed SLNG account entitlements. SLNG's account limits still
+need confirmation; Vonage's documented default is three new outbound calls per second.
+
+The queue uses the same order as `rank_contacts`: smallest evacuation window, then forecast
+arrival, distance (unknown last), and asset ID. It stores the absolute latest evacuation
+start relative to the common scenario epoch so contacts enqueued at different times remain
+comparable. Property value does not override the contact-window ordering. Missing timing
+stays in human review; missing contact records are explicitly reported. The remaining
+pending contacts wait until there is capacity. An active call to the same phone number or
+asset prevents another simultaneous call to that contact.
+
+`fireline.voice_queue.VoiceCallQueue.enqueue(locations, requests,
+approved_targets=..., policy=...)` accepts existing `Location` and `CallRequest` objects.
+The approval mapping is `{request_id: approved_phone_number}` and must match every live
+request exactly. Each batch refers to one snapshot, with one request per asset. Registering
+the same request again is idempotent; it never resets a started or cancelled call.
+This is a static queue: enqueueing again does not refresh instructions or priorities.
+For a changed forecast, cancel affected pending requests and supply a new reviewed snapshot
+and request IDs. Started calls retain their original instructions and need the existing
+human follow-up process for changes.
+
+Run from the repository root with the project Python environment:
+
+```bash
+# Inspect only: no provider calls. Reuse the same scenario epoch for this database.
+python -m scripts.dispatch_voice_queue --db data/voice-queue.sqlite \
+  --epoch 2026-09-19T12:00:00Z
+
+# Enqueue only: private requests.json is an array of CallRequest objects;
+# approvals.json maps each request_id to its explicitly approved contact number.
+python -m scripts.dispatch_voice_queue --mode enqueue \
+  --db data/voice-queue.sqlite --epoch 2026-09-19T12:00:00Z \
+  --locations fixtures/static_priority.json \
+  --requests-file data/requests.json --approval-file data/approvals.json
+
+# Starts real calls to the queued approved targets; SLNG credentials/agent/trunk required.
+python -m scripts.dispatch_voice_queue --mode run --dispatch \
+  --db data/voice-queue.sqlite --epoch 2026-09-19T12:00:00Z
+
+# Withdraw an unstarted request; active calls are never hung up by this command.
+python -m scripts.dispatch_voice_queue --mode cancel --request-id req-A \
+  --db data/voice-queue.sqlite --epoch 2026-09-19T12:00:00Z
+```
+
+The worker polls active provider calls every five seconds, persists completed answers through
+`VoiceStore.sync`, and checks for a free slot between polls. `--once` performs one
+sync/dispatch pass. Stopping the worker leaves its queue and call associations intact;
+restart resumes them. Unknown dispatch outcomes hold capacity and create human follow-up;
+there is no automatic redial. A crash during creation also holds further creation until the
+attempt is reconciled. Verified provider association through the existing explicit sync
+flow permits recovery. Failed status polling keeps the slot occupied.
+
+Use one shared database and identical limits for all workers serving this provider account.
+SQLite serializes admission and dispatch claims across workers. Calls already tracked in
+that database also consume capacity. Calls started from another database, directly through
+SLNG, or through the older single-call command are not governed by this queue; route all
+automated outbound traffic through this worker to enforce the limits. This worker is a CLI
+integration; dashboard controls and WebSocket events are separate work.
+
+Offline regression coverage includes the A/B/C priority order, slot refill, fractional and
+three-per-second pacing, restarts, simultaneous worker claims, slow dispatch responses,
+uncertain outcomes, failed polling, duplicate contact numbers, missing timing, cancellation,
+explicit target approval and private-data-free command output. No live calls are used in
+these tests.
+
 ### Workstream A implementation notes
 
 Implementation plan (19 September 2026; authorized scope A1–A4): use the existing
