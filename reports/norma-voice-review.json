@@ -1,0 +1,839 @@
+{
+  "repository": "https://github.com/rht/wildfire",
+  "base_commit": "d1e2cfe",
+  "scope": "11 branch-owned production Python files, checked via Norma MCP Livecheck. Does not certify repository-wide compliance.",
+  "repository_scan_status": {
+    "outcome": "no_linked_repository",
+    "link_attempt": "auto_import_not_available"
+  },
+  "files": [
+    {
+      "file": "fireline/evacuation_readiness.py",
+      "before": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "cc313869e9299a3b5e76522efe8cd952ecb7262c521acecbc45aac7a82c61b11"
+    },
+    {
+      "file": "fireline/route_guidance.py",
+      "before": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "9f37ac1a2fa6e5c8780e470c4848e4639331b68003e3e04f1b8e52c5b2a4159b"
+    },
+    {
+      "file": "fireline/voice_store.py",
+      "before": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "6e6abab493a1967729c1600899add6406303f5af970203f6ad4cc77e9cbac7dd"
+    },
+    {
+      "file": "fireline/voice_models.py",
+      "before": {
+        "outcome": "issues",
+        "rules": {
+          "py-arch-type-eq": {
+            "rule_name": "type(x) == X",
+            "severity": "HIGH",
+            "impact_area": "architecture",
+            "description": "Checks an object's type too strictly; rejects valid subtypes that should also be accepted.",
+            "remediation_action": "Use isinstance.",
+            "good_code": "if isinstance(x, int): ...",
+            "bad_code": "if type(x) == int: ...",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-arch-type-eq",
+            "file": "fireline/voice_models.py",
+            "line": 102,
+            "column": 38,
+            "snippet": "            if value is not None and type(value) is not bool:"
+          },
+          {
+            "rule_id": "py-arch-type-eq",
+            "file": "fireline/voice_models.py",
+            "line": 105,
+            "column": 16,
+            "snippet": "            if type(getattr(self, key)) is not bool:"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "2ed0dbae330bbdeb8b22b0613c825e937c5111310fb4c10161d052211594292a"
+    },
+    {
+      "file": "fireline/voice_ingest.py",
+      "before": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "de7f75f183a3423167c1ca087a75e4e56abba27d625178cda39d076d1080d415"
+    },
+    {
+      "file": "fireline/voice_interview.py",
+      "before": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "8b069a7a377862deaf9ab38bda24c0d0a84a263779498af853ea30f1b6dc14ff"
+    },
+    {
+      "file": "fireline/voice_replay.py",
+      "before": {
+        "outcome": "issues",
+        "rules": {
+          "py-perf-open-no-with": {
+            "rule_name": "open() not used in a with block",
+            "severity": "HIGH",
+            "impact_area": "performance",
+            "description": "Opens a file without guaranteeing it will be closed. Can leak file handles or leave files locked.",
+            "remediation_action": "Wrap in `with open(...) as f:`.",
+            "good_code": "with open(\"data.txt\") as f:\n    data = f.read()",
+            "bad_code": "f = open(\"data.txt\")\ndata = f.read()",
+            "estimated_time_to_fix": 5
+          },
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          },
+          "py-perf-double-lookup": {
+            "rule_name": "Double dict lookup",
+            "severity": "LOW",
+            "impact_area": "performance",
+            "description": "Looks up the same key in a dictionary twice in a row when one lookup is enough.",
+            "remediation_action": "Use d.get(k).",
+            "good_code": "try:\n    v = d[k]\nexcept KeyError:\n    # Manage case of not existing",
+            "bad_code": "if k in d:\n    v = d[k]",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-perf-open-no-with",
+            "file": "fireline/voice_replay.py",
+            "line": 80,
+            "column": 9,
+            "snippet": "        fd = os.open(str(self.path) + '.lock', os.O_CREAT | os.O_RDWR, 0o600)"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/voice_replay.py",
+            "line": 27,
+            "column": 32,
+            "snippet": "    neighbourhood = json.loads(NEIGHBOURHOOD.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/voice_replay.py",
+            "line": 30,
+            "column": 34,
+            "snippet": "    return expanded + json.loads(FIXTURE.read_text())['cases']"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/voice_replay.py",
+            "line": 35,
+            "column": 30,
+            "snippet": "        fixture = json.loads(FIXTURE.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/voice_replay.py",
+            "line": 46,
+            "column": 34,
+            "snippet": "            profile = json.loads(NEIGHBOURHOOD.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/voice_replay.py",
+            "line": 51,
+            "column": 40,
+            "snippet": "            scenario_data = json.loads((ROOT / 'fixtures/static_priority.json').read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/voice_replay.py",
+            "line": 52,
+            "column": 41,
+            "snippet": "            self.readiness = json.loads((ROOT / 'fixtures/evacuation_readiness.json').read_text())"
+          },
+          {
+            "rule_id": "py-perf-double-lookup",
+            "file": "fireline/voice_replay.py",
+            "line": 133,
+            "column": 17,
+            "snippet": "                if 'road_warnings' in event:\n                    warnings = event['road_warnings']"
+          }
+        ],
+        "issues_returned": 8,
+        "total_issues": 8,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "issues",
+        "rules": {
+          "fa-prf-file-open-sync": {
+            "rule_name": "Sync file open in async handler",
+            "severity": "HIGH",
+            "impact_area": "performance",
+            "description": "open() inside async def blocks the event loop on every disk I/O operation.",
+            "remediation_action": "Use aiofiles.",
+            "good_code": "@app.get(\"/cfg\")\nasync def cfg():\n    async with aiofiles.open(path) as f:\n        return await f.read()",
+            "bad_code": "@app.get(\"/cfg\")\nasync def cfg():\n    with open(path) as f:\n        return f.read()",
+            "estimated_time_to_fix": 10
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "fa-prf-file-open-sync",
+            "file": "fireline/voice_replay.py",
+            "line": 80,
+            "column": 14,
+            "snippet": "        with open(str(self.path) + '.lock', 'a+b',\n                  opener=lambda path, flags: os.open(path, flags, 0o600)) as lock_file:"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "aeb35fa65e035aa52a14d54505c08f6b6f62a96af25eccccec2a7931efc6a633"
+    },
+    {
+      "file": "fireline/voice_demo_panel.py",
+      "before": {
+        "outcome": "issues",
+        "rules": {
+          "fa-scl-global-state": {
+            "rule_name": "Mutable global state",
+            "severity": "HIGH",
+            "impact_area": "scalability",
+            "description": "Module-level dict/list/set mutated from inside a route — breaks horizontal scaling and creates race conditions.",
+            "remediation_action": "Move to Redis/DB.",
+            "good_code": "@app.post(\"/set\")\nasync def set_v(k: str, v: str, redis = Depends(get_redis)):\n    await redis.set(k, v)",
+            "bad_code": "_cache: dict = {}\n@app.post(\"/set\")\nasync def set_v(k: str, v: str):\n    _cache[k] = v",
+            "estimated_time_to_fix": 20
+          },
+          "fa-arch-logic-in-route": {
+            "rule_name": "Business logic in route",
+            "severity": "HIGH",
+            "impact_area": "architecture",
+            "description": "Pure business logic (loops, calculations, branches) directly in the route handler — violates layered architecture.",
+            "remediation_action": "Move into a service class.",
+            "good_code": "@app.post(\"/order\")\nasync def create(o: OrderIn, svc: OrderService = Depends()):\n    return await svc.create(o)",
+            "bad_code": "@app.post(\"/order\")\nasync def create(o: OrderIn):\n    total = 0\n    for it in o.items:\n        for d in it.discounts:\n            total += it.price - d",
+            "estimated_time_to_fix": 20
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "fa-scl-global-state",
+            "file": "fireline/voice_demo_panel.py",
+            "line": 25,
+            "column": 9,
+            "snippet": "        st.session_state['mock_run_' + name] = uuid.uuid4().hex[:12]"
+          },
+          {
+            "rule_id": "fa-arch-logic-in-route",
+            "file": "fireline/voice_demo_panel.py",
+            "line": 38,
+            "column": 13,
+            "snippet": "            while state['pending_events']:\n                state = replay.advance()"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "issues",
+        "rules": {
+          "fa-scl-global-state": {
+            "rule_name": "Mutable global state",
+            "severity": "HIGH",
+            "impact_area": "scalability",
+            "description": "Module-level dict/list/set mutated from inside a route — breaks horizontal scaling and creates race conditions.",
+            "remediation_action": "Move to Redis/DB.",
+            "good_code": "@app.post(\"/set\")\nasync def set_v(k: str, v: str, redis = Depends(get_redis)):\n    await redis.set(k, v)",
+            "bad_code": "_cache: dict = {}\n@app.post(\"/set\")\nasync def set_v(k: str, v: str):\n    _cache[k] = v",
+            "estimated_time_to_fix": 20
+          },
+          "fa-arch-logic-in-route": {
+            "rule_name": "Business logic in route",
+            "severity": "HIGH",
+            "impact_area": "architecture",
+            "description": "Pure business logic (loops, calculations, branches) directly in the route handler — violates layered architecture.",
+            "remediation_action": "Move into a service class.",
+            "good_code": "@app.post(\"/order\")\nasync def create(o: OrderIn, svc: OrderService = Depends()):\n    return await svc.create(o)",
+            "bad_code": "@app.post(\"/order\")\nasync def create(o: OrderIn):\n    total = 0\n    for it in o.items:\n        for d in it.discounts:\n            total += it.price - d",
+            "estimated_time_to_fix": 20
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "fa-scl-global-state",
+            "file": "fireline/voice_demo_panel.py",
+            "line": 25,
+            "column": 9,
+            "snippet": "        st.session_state['mock_run_' + name] = uuid.uuid4().hex[:12]"
+          },
+          {
+            "rule_id": "fa-arch-logic-in-route",
+            "file": "fireline/voice_demo_panel.py",
+            "line": 38,
+            "column": 13,
+            "snippet": "            while state['pending_events']:\n                state = replay.advance()"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "a2138d6f2498b3a4e5db70ff05cd81784d0a1aef97a5b2511c32b7bbccc32275"
+    },
+    {
+      "file": "fireline/slng_voice.py",
+      "before": {
+        "outcome": "issues",
+        "rules": {
+          "py-arch-type-eq": {
+            "rule_name": "type(x) == X",
+            "severity": "HIGH",
+            "impact_area": "architecture",
+            "description": "Checks an object's type too strictly; rejects valid subtypes that should also be accepted.",
+            "remediation_action": "Use isinstance.",
+            "good_code": "if isinstance(x, int): ...",
+            "bad_code": "if type(x) == int: ...",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-arch-type-eq",
+            "file": "fireline/slng_voice.py",
+            "line": 102,
+            "column": 16,
+            "snippet": "            if type(body['max_session_seconds']) is not int or body['max_session_seconds'] < 60:"
+          },
+          {
+            "rule_id": "py-arch-type-eq",
+            "file": "fireline/slng_voice.py",
+            "line": 176,
+            "column": 8,
+            "snippet": "    if type(version) is not int or version < 1:"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "7ba9edf3aa17299e75b5308c3c1a3056f4ccd2cb775c01853e099a5f2f21f6e1"
+    },
+    {
+      "file": "scripts/voice_demo.py",
+      "before": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/voice_demo.py",
+            "line": 23,
+            "column": 23,
+            "snippet": "    return json.loads(Path(path).read_text())"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/voice_demo.py",
+            "line": 23,
+            "column": 23,
+            "snippet": "    return json.loads(Path(path).read_text())"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "70835274e4d8f62aa835e79305c5f2d336f87659ebc83e6e1b647c0cce7a2950"
+    },
+    {
+      "file": "scripts/replay_voice_scenarios.py",
+      "before": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/replay_voice_scenarios.py",
+            "line": 57,
+            "column": 9,
+            "snippet": "        args.output.write_text(json.dumps(report, indent=2) + '\\n')"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "after": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "sha256": "992ba1599a8b2625c8a7ae0dcb4a27629d6aeb01aaad921aa2b6a439fccd6379"
+    }
+  ],
+  "reviewed_inapplicable_findings": [
+    {
+      "file": "fireline/voice_demo_panel.py",
+      "rule_id": "fa-scl-global-state",
+      "line": 25,
+      "reason": "render_voice_demo is decorated with st.fragment, not a FastAPI route. st.session_state holds a per-session mock run identifier, not mutable module-global incident data. Replay domain state is persisted in SQLite."
+    },
+    {
+      "file": "fireline/voice_demo_panel.py",
+      "rule_id": "fa-arch-logic-in-route",
+      "line": 38,
+      "reason": "The Streamlit UI invokes MockReplay.advance until the persisted event queue is exhausted. Domain behavior is already in MockReplay; this is not a FastAPI handler."
+    },
+    {
+      "file": "fireline/voice_replay.py",
+      "rule_id": "fa-prf-file-open-sync",
+      "line": 80,
+      "reason": "MockReplay._lock is a synchronous @contextmanager def, and the entire offline replay service is synchronous. No async handler or event loop exists in this module."
+    }
+  ],
+  "delegated_fix": {
+    "file": "scripts/voice_demo.py",
+    "rule_id": "py-mng-open-no-encoding",
+    "owner": "SLNG result database integration",
+    "note": "Companion branch adds explicit UTF-8; must recheck after integration."
+  },
+  "verification": {
+    "regression_red": "2 tests failed before fixes: published integer subclass rejected and descriptor left open on unlock failure.",
+    "targeted_tests": "139 passed; tests/test_voice_provider.py tests/test_voice_interview.py tests/test_voice_store.py tests/test_voice_replay.py tests/test_voice_neighbourhood.py tests/test_voice_replay_ui.py"
+  },
+  "integration_recheck": {
+    "base_commit": "59d5f40",
+    "scope": "Five result-persistence production files after cherry-pick; full applicable per-file coverage.",
+    "files": [
+      {
+        "file": "fireline/slng_results.py",
+        "sha256": "519d7b27ff5fec4487327cbc6ab44f1ecc8443e177f5ecba9545f32bec0ad960",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      {
+        "file": "fireline/voice_store.py",
+        "sha256": "b9c242015444d79fb4c324f4b9e7111210cb39d6b11297824f0b50efb06075ad",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        },
+        "before": {
+          "outcome": "issues",
+          "rules": {
+            "py-perf-double-lookup": {
+              "rule_name": "Double dict lookup",
+              "severity": "LOW",
+              "impact_area": "performance",
+              "description": "Looks up the same key in a dictionary twice in a row when one lookup is enough.",
+              "remediation_action": "Use d.get(k).",
+              "good_code": "try:\n    v = d[k]\nexcept KeyError:\n    # Manage case of not existing",
+              "bad_code": "if k in d:\n    v = d[k]",
+              "estimated_time_to_fix": 2
+            }
+          },
+          "issues": [
+            {
+              "rule_id": "py-perf-double-lookup",
+              "file": "fireline/voice_store.py",
+              "line": 221,
+              "column": 25,
+              "snippet": "                        if key in previous['evidence']:\n                            evidence[key] = previous['evidence'][key]\n                            evidence_times[key] = previous.get('evidence_observed_at', {}).get(key, previous['observed_at'])"
+            }
+          ],
+          "issues_returned": 1,
+          "total_issues": 1,
+          "capped": false,
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      {
+        "file": "fireline/voice_models.py",
+        "sha256": "e95fd2ab6934ebaad6e1631e5ce1978ac932bff9e00476434f0eee0d5648b6ce",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      {
+        "file": "fireline/voice_interview.py",
+        "sha256": "f5fe2e08c1e55c9c0d9ca89e69da51a52e877282622e0cd671ddb20ef48dc59e",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      {
+        "file": "scripts/voice_demo.py",
+        "sha256": "8d51da7021eaa3f604f1c12604e20c3970e066235782f850f1f030357f1bd999",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      }
+    ]
+  },
+  "main_integration_recheck": {
+    "file": "fireline/app.py",
+    "sha256": "a114fe8ef325b1e2e54edf4f4c16b14787b43555ce8b47c59f8b43438fc7b314",
+    "result": {
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    }
+  }
+}

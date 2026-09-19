@@ -58,6 +58,30 @@ Municipalities with located rows (28): , Begur, Bordils, Calonge i Sant Antoni, 
   per-location forecast comes from `forecast_input.deepfire_spread_to_forecast` (hourly isochrone crossing,
   t0 = createdAt assumed). Its 12 h burned area is about 20 ha and the nearest located facility is 5.3 km
   away, so **0 of 99 located facilities get a `fire_arrival_at`** (the 5-member run at member fraction 0.2
-  also covers none); the adapter path is demonstrated, not tuned to produce arrivals.
+  also covers none); the adapter path is demonstrated, not tuned to produce arrivals. The adapter does
+  keep the run's own probability for every located facility: all 99 get `burn_probability: 0.0` with the
+  run named in `forecast_source` and in a `sources` entry. A `0.0` there is the forecast's statement that
+  it covers that location and puts no burned area on it within its 12 h horizon, which is not the same as
+  the `null` the 69 unlocated rows keep, meaning no forecast covers them at all; neither is inferred from
+  distance, and both still carry `forecast_unavailable` for want of an arrival.
   `evacuation_min` comes from `config.EVACUATION_POLICY` (evacuation-proto-2026-09-19) for the
   classes hospital, care_home, school and campsite; no row has an unknown class.
+- **Value at risk** (`config.FEATURES["value_at_risk"]`, policy value-at-risk-proto-2026-09-19):
+  every snapshot above carries `people_exposed`, `people_at_risk_p50` / `_p10` and `expected_loss_eur_low`
+  / `_mid` / `_high`. People exposed is the estimated headcount times the burn probability; people at risk
+  is the whole headcount of an asset whose remaining evacuation window at that arrival quantile is
+  exhausted, and it does not model partial clearance. The euros are an **assumed per-class replacement
+  value times an assumed damage ratio**, rounded placeholders for a per-asset figure with no per-asset
+  basis: the band shown is the damage-ratio band only, so the value uncertainty is at least as large.
+  They are total economic loss, insured and uninsured, not an insurer's figure, and they never enter the
+  ranking, the sort or a filter. A field is null, never zero, when an input is missing (no headcount, no
+  burn probability, no evacuation estimate, no forecast, no location, or a class with no replacement value
+  such as `nucleus`), so a total is always reported with the count of assets left out of it. The
+  CA-derived burn probabilities of `gavarres_real_0001..0003` are uncalibrated and, under light wind, the
+  ensemble percolates almost isotropically, so those probabilities are high across most of the grid and
+  the expected loss is correspondingly pessimistic (handoff 001 recalibrates; the interface does not
+  change). Totals over the located assets of each snapshot:
+  - `gavarres_real-0001`: 1866.7 people exposed, 0 at risk at p50 and 0 at p10, expected loss EUR 13,280,000 (band 4,980,000 to 26,560,000); of 111 located assets, 24 are left out of the people totals and 12 out of the euro totals for want of an input.
+  - `gavarres_real-0002`: 6632.5 people exposed, 0 at risk at p50 and 45 at p10, expected loss EUR 43,390,000 (band 16,290,000 to 86,780,000); of 111 located assets, 24 are left out of the people totals and 12 out of the euro totals for want of an input.
+  - `gavarres_real-0003`: 18433.9 people exposed, 1680 at risk at p50 and 3040 at p10, expected loss EUR 137,420,000 (band 51,720,000 to 274,840,000); of 111 located assets, 24 are left out of the people totals and 12 out of the euro totals for want of an input.
+  - `gavarres_real-0004`: 0 people exposed, 0 at risk at p50 and 0 at p10, expected loss EUR 0 (band 0 to 0); of 111 located assets, 24 are left out of the people totals and 12 out of the euro totals for want of an input.

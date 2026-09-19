@@ -10,7 +10,7 @@ old contract is preserved at the end for reference.
 
 ```
 fireline/
-  config.py      Policies and flags: VALUE_POLICY, EVACUATION_POLICY, CONTACT_POLICY, FRESHNESS, FEATURES (+ v0 params)
+  config.py      Policies and flags: VALUE_POLICY, VALUE_AT_RISK_POLICY, EVACUATION_POLICY, CONTACT_POLICY, FRESHNESS, FEATURES (+ v0 params)
   forecast_input.py  Per-location fire arrival estimates: Deepfire fire-spread or a labelled recorded/synthetic file
   snapshot.py    Producer: build_snapshot(), asset_exposure(), validate_snapshot(), read/write
   fire_input.py  Fire updates: Deepfire poll or recorded responses -> FireUpdate; dedupe; data_status; latency
@@ -48,7 +48,8 @@ tests/                      pytest, no network, no LLM
 - Times: ISO 8601 UTC strings in JSON (`2026-07-03T08:00:00+00:00`), tz-aware `datetime` in Python.
 - Coordinates exchanged as WGS84 (`longitude`, `latitude`; GeoJSON is lon/lat order). Distances in
   metres computed in EPSG:25831 (`grid.lonlat_to_xy`).
-- Unknown is `null`, never zero. Every key listed for a record is always present.
+- Unknown is `null`, never zero. Every key listed for a record is always present, except the optional
+  value-at-risk keys of section 2.2, which `validate_snapshot` requires all eight of or none of.
 - Records are plain dicts; pandas only in the UI.
 - Stable ids: `asset_id = f"{source}:{source_id}"` (e.g. `fixture:can_xic`, `equipaments:3620043`,
   `schools:17001234`). Coordinates are attributes, not identity.
@@ -96,6 +97,11 @@ tests/                      pytest, no network, no LLM
   "forecast_horizon_at": str | None, "forecast_source": str | None,
   "fire_arrival_at": str | None, "fire_arrival_basis": str | None,   # v1.1: selected arrival estimate + its semantics
   "evacuation_min": float | None, "evacuation_source": str | None,   # v1.1: total evacuation duration (minutes) + basis
+  # value-at-risk layer (optional, FEATURES["value_at_risk"]): all eight keys present together or all absent
+  "replacement_value_eur": float | int | None, "replacement_value_basis": str | None,   # config.VALUE_AT_RISK_POLICY; null together
+  "expected_loss_eur_low": float | None, "expected_loss_eur_mid": float | None, "expected_loss_eur_high": float | None,
+  "people_exposed": float | None,                                   # estimated_occupancy x burn_probability
+  "people_at_risk_p50": int | None, "people_at_risk_p10": int | None,   # whole estimated_occupancy, or 0
   "needs_review": bool, "review_reasons": [str],   # location_unknown, occupancy_unknown, occupancy_seasonal,
                                                    # class_ambiguous, value_unknown, exposure_unknown,
                                                    # forecast_unavailable, evacuation_unknown (v1.1)
@@ -118,8 +124,10 @@ given a `forecast=` (section 2.5), or by the CA raster (`snapshot._enrich_foreca
 `config.FEATURES["forecast_enrichment"]` is on in the `cfg` passed to `build_snapshot`
 (`forecast_source` then names the method, `"ca_ensemble (labelled enrichment, not validated)"`, and
 `fire_arrival_basis` is `"p10 (ca_ensemble, labelled enrichment, not validated)"`); otherwise they are
-null. The global flag stays False; `scripts/make_snapshots.py` passes a cfg shim with it on only for
-`gavarres_real_0001..0003` (below). A CA arrival is a provided per-location estimate with source
+null. The global flag stays False; `scripts/make_snapshots.py` passes a cfg shim with it on for every
+real snapshot, and `build_snapshot`'s gate then applies the raster only where no provider forecast
+covers that snapshot (`gavarres_real_0001..0003`; `0004` has one, and the two are never combined).
+A CA arrival is a provided per-location estimate with source
 semantics, so the timing rules of this section apply to it unchanged.
 Point fallback for distance is recorded in `sources` with `fields: ["distance_to_fire_m", "intersects_fire"]` and a note
 `"point fallback: facility footprint missing"`.
@@ -135,6 +143,50 @@ duration (mobilisation + preparation/loading + movement to a receiving location)
 a labelled prototype assumption with its component minutes and assumptions in the `sources` note), or
 `"analyst override: …"` after confirmation. Unknown class -> null and `evacuation_unknown`.
 
+Value-at-risk layer (readme 5.2, handoff 002), behind `config.FEATURES["value_at_risk"]`, off by
+default. `snapshot.VALUE_AT_RISK_KEYS` names the eight keys in record order; they are present in full
+or absent in full, `schema_version` stays `1.1`, and a snapshot built with the flag off is
+byte-identical to one built before the layer existed. All eight are in `_COMPUTED_FIELDS`, so a v4
+record fed back into `build_snapshot` is recomputed and its stale value provenance dropped.
+`derive_value_at_risk` fills them after the forecast pass, never from distance:
+
+```
+people_exposed         = estimated_occupancy x burn_probability          # rounded to 1 decimal; capacity is never a headcount
+people_at_risk_p50     = estimated_occupancy if slack_p50 <= 0 else 0
+people_at_risk_p10     = estimated_occupancy if slack_p10 <= 0 else 0
+expected_loss_eur_low  = burn_probability x d_low x replacement_value_eur    # whole euros; _mid and _high alike
+slack_pXX              = arrival_pXX_at - evacuation_min - CONTACT_POLICY["buffer_min"] - now_at
+```
+
+`slack_pXX` is the section 4 window evaluated at each arrival quantile instead of at the selected
+arrival, and the threshold is `<= 0`, the `window_exhausted` boundary, because `people_at_risk`
+re-labels that status weighted by headcount. It counts the whole headcount and does not model partial
+clearance. `replacement_value_eur` and the damage ratios `d_low` / `d_mid` / `d_high` come from
+`config.VALUE_AT_RISK_POLICY` by class (`value_basis: "assumed"`): rounded per-class placeholders for a
+per-asset figure, not a valuation, and the band is the damage-ratio band only, so the value uncertainty
+is at least as large. The euros are total economic loss, insured and uninsured, not an insurer's figure,
+and no consumer may sort, filter or rank on them (readme 5.2). `value_score` is unrelated and unchanged.
+
+Every field is `null`, never zero, when an input is null: no `estimated_occupancy` (including a
+`capacity`-only row), no `burn_probability`, no `evacuation_min`, no `forecast_source`, no location, or a class
+with no `replacement_value_eur` (`nucleus`, or any class outside the policy). `burn_probability = 0.0` is
+a value and gives zeros; an asset a forecast covers whose quantile is null is not reached inside the
+horizon, so `people_at_risk_* = 0` rather than null. An unusable arrival timestamp leaves it null. An
+asset whose class is in the policy and has at least one non-null field carries one `sources` entry
+naming exactly the fields it set,
+`source: "config.VALUE_AT_RISK_POLICY"`, with the formulas, the band and those caveats in its note; it
+replaces any earlier entry for those fields, so re-deriving after an override does not stack provenance.
+No review reason is added for a class that is not valued: `REVIEW_REASONS` is unchanged, and the count
+of assets excluded for null inputs carries that message instead.
+
+`validate_snapshot` checks, when the keys are present: `replacement_value_eur` nonnegative and finite,
+null iff `replacement_value_basis` is null; `people_exposed` nonnegative and finite, null iff
+`estimated_occupancy` or `burn_probability` is null; `people_at_risk_*` a nonnegative int equal to `0` or
+to the whole `estimated_occupancy`, and non-null only with `estimated_occupancy`, `evacuation_min` and
+`forecast_source` all set; `expected_loss_eur_*` nonnegative and finite, null iff `burn_probability` or
+`replacement_value_eur` is null, and `expected_loss_eur_low <= _mid <= _high` when all three are set.
+Records without the keys (schema 1.0 and 1.1 files alike) stay valid.
+
 ### 2.3 API
 
 ```python
@@ -147,6 +199,13 @@ snapshot.build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, 
     # fire: fire_input.FireUpdate dict or None (None -> fire fields null, data_status "unavailable").
     # arrival: optional spread.ArrivalRaster; used only when FEATURES["forecast_enrichment"].
     # forecast: optional forecast-input-1 dict (section 2.5); takes precedence over `arrival`.
+    # cfg.FEATURES["value_at_risk"]: adds the eight value-at-risk keys after the forecast pass.
+snapshot.derive_value_at_risk(rec, now_at=None, cfg=config) -> None
+    # fills snapshot.VALUE_AT_RISK_KEYS on one record in place from its own fields (section 2.2).
+    # now_at: the snapshot `as_of`, the epoch for people_at_risk_*; None derives only the
+    # time-independent fields (replacement_value_*, expected_loss_*, people_exposed) and leaves
+    # people_at_risk_* as it found them, rather than computing them from a wrong epoch.
+snapshot.VALUE_AT_RISK_KEYS                       # the eight keys, in record order
 snapshot.validate_snapshot(snap) -> list[str]     # [] when valid; messages otherwise
 snapshot.write_snapshot(snap, path) / snapshot.read_snapshot(path) -> dict
 ```
@@ -167,7 +226,10 @@ faster than the real fire did (p50 burned area about 10,000 ha at 12 h against t
 over about 17 h), so these arrivals are a pipeline demonstration, not validated predictions.
 `gavarres_real_0004.json` is the real facilities with a real recorded Deepfire fire-spread run of
 2026-09-19 seeded at the July incident centroid (`fire_geometry_kind: "simulated"`), which covers no
-facility within its 12 h horizon (every asset `forecast_unavailable`).
+facility within its 12 h horizon: its 99 located assets carry `burn_probability = 0.0` with the run as
+their `forecast_source`, the 69 unlocated ones keep null, and every asset stays `forecast_unavailable`
+for want of an arrival. All committed snapshots are built with `value_at_risk` on, so their records carry
+the eight keys of section 2.2.
 
 ### 2.5 Forecast input — `fireline/forecast_input.py`
 
@@ -184,11 +246,24 @@ forecast_input.attach_forecast(assets, forecast) -> None        # in place: fore
 forecast_input.deepfire_spread_to_forecast(body, received_at, asset_points, *, min_burn_probability=None,
                                            input_mode="recorded") -> dict
     # body: a COMPLETED /v1/fire-spread/simulations/{id} response (hourly cumulative burned-area polygons;
-    # ensemble bands with burn_probability). asset_points: {asset_id: (lon, lat)}. arrival_at = createdAt +
-    # elapsed_seconds of the first hour whose polygon (union of bands >= min_burn_probability, default 1/N)
-    # covers the point; horizon = createdAt + durationHours. t0 = createdAt is an assumption (undocumented).
+    # ensemble bands with burn_probability). asset_points: {asset_id: (lon, lat)}; EVERY one gets an estimate.
+    # arrival_at = createdAt + elapsed_seconds of the first hour whose polygon (union of bands >=
+    # min_burn_probability, default 1/N) covers the point, else null. burn_probability = the maximum band
+    # probability covering the point at any hour within the horizon, else 0.0; every band is scanned,
+    # including those below min_burn_probability, which selects only the arrival union.
+    # horizon = createdAt + durationHours. t0 = createdAt is an assumption (undocumented).
 forecast_input.forecast_from_recorded_spread(path, asset_points, *, min_burn_probability=None) -> dict
 ```
+
+The fire-spread adapter returns an estimate for every located asset it is given, not only the covered
+ones, and `burn_probability = 0.0` and `burn_probability = null` mean different things: **`0.0` means the
+run covers that location and puts no burned area there within its horizon; `null` means no forecast covers
+it at all.** Neither is derived from distance; both come from containment only. A single-member
+(deterministic) run carries no band probability, so a covered point is `1.0` and an uncovered one `0.0`.
+An estimate with `burn_probability` but no `arrival_at` still leaves the asset `forecast_unavailable`
+after `attach_forecast`, with `burn_probability`, `forecast_horizon_at` and `forecast_source` set and
+listed in its `sources` entry; `fire_arrival_at` stays null. Raising `min_burn_probability` can therefore
+move an arrival but never lowers a location's `burn_probability`.
 
 Selection order for `fire_arrival_at`: p10 (`fire_arrival_basis` `"p10"`), then p50 (`"p50"`), then
 `arrival_at` (basis = the forecast's `basis` string, e.g. the Deepfire isochrone-crossing label), else
@@ -247,7 +322,8 @@ Contact priority is the remaining evacuation window (readme 6), policy `config.C
 
 ```python
 priority.SnapshotSequence().accept(snap) -> bool   # False on duplicate snapshot_id or sequence <= last for scenario_id
-priority.apply_overrides(assets, overrides) -> list[dict]   # copies; overrides from tasks.TaskStore.overrides()
+priority.apply_overrides(assets, overrides, cfg=config, now_at=None) -> list[dict]   # copies; overrides from tasks.TaskStore.overrides()
+    # now_at (the snapshot as_of, passed by rank_snapshot) is the epoch for re-derived people_at_risk_*
 priority.rank_asset(asset, now_at, cfg=config) -> dict      # adds the coordination keys below (priority_rank stays None)
 priority.rank_snapshot(snap, cfg=config, overrides=None, now_at=None) -> {"ranked": [...], "needs_review": [...], "flagged": [...], "all": [...], "now_at": str, "policy": {...}}
     # now_at defaults to snap["as_of"] (CONTACT_POLICY["now"]); flagged = ranked assets that still carry review reasons
@@ -286,7 +362,10 @@ the readme) with timestamps converted to minutes from `now_at`; a test asserts a
 "analyst override: <source>"` and clears `evacuation_unknown`. An `asset_type` override also re-derives
 the policy evacuation duration for the confirmed class (with a `config.EVACUATION_POLICY` sources entry)
 unless an analyst-confirmed duration is already in place. Overrides on `fire_arrival_at` are not
-accepted (forecasts come from the producer).
+accepted (forecasts come from the producer). On an asset that carries the optional value-at-risk keys
+(section 2.2) every override also re-derives them through `snapshot.derive_value_at_risk`, so a confirmed
+class, headcount or evacuation duration moves the euros and the people counts with it; without `now_at`
+only the time-independent fields move and `people_at_risk_*` is left untouched.
 
 ## 5. Tasks and roster — `fireline/tasks.py` (SQLite)
 
@@ -368,13 +447,49 @@ styled differently) and assets coloured by queue/remaining window; ranked table;
 asset details with the timing breakdown (arrival, evacuation duration, buffer, window), input age and sources; proposals awaiting confirmation; task
 controls (create, assign with roster check, progress, block, release); change log from `events()`.
 
+Value at risk (section 2.2, handoff 002), when the snapshot carries the layer.
+`ui_state.value_at_risk_totals(assets)` is the scenario aggregate, and `Session.status()["value_at_risk"]`
+holds it for the assets on screen with the confirmed overrides applied, so a confirmed headcount or class
+moves the totals. Its keys: `layer` (False when the snapshot has none of the eight keys, so the header
+says the layer is off instead of reporting zeros), the sums `people_exposed`, `people_at_risk_p50`,
+`people_at_risk_p10`, `expected_loss_eur_low` / `_mid` / `_high` over **located** assets with non-null
+values, `located`, `excluded_people` and `excluded_eur` (located assets left out of each total for a null
+input, counted separately because they differ), `covered` and `reached` (located assets with a
+`forecast_source`, and of those the ones with a positive `burn_probability`), `horizon_at`, `enrichment`
+(a `forecast_source` labelled unvalidated enrichment) and `policy_version`. It is the single
+definition of the aggregate: `scripts/make_snapshots.py value_totals` calls it for the totals it writes
+into the real-area README, so the header and that file cannot disagree.
+
+A second header metrics row shows people exposed, people at risk at p50 (p10 in the tooltip), expected
+loss mid with its band, and the excluded-asset count, each `help` naming what it excludes. The caption
+under it states the totals and the known limits: assumed per-class values with no per-asset basis, the
+damage-ratio band only, total economic loss rather than an insurer's figure, no partial clearance, and
+the uncalibrated CA bias when the scenario's forecast is labelled enrichment. `covered` without `reached`
+is reported as a zero, not a gap ("0 exposed within the N h horizon", the horizon derived from
+`forecast_horizon_at` and `as_of`): the run covers those locations and puts no burned area there. The
+assets still carry `forecast_unavailable`, which in that case means no arrival time; `REVIEW_REASONS` and
+the review queue are unchanged.
+
+The ranked and needs-review tables gain `people exposed`, `people at risk p50 / p10` and one expected-loss
+column whose label names it an estimate from an assumed replacement cost with its damage-ratio band. That
+column is a formatted **display string**, never a number, so a header click cannot order the table by it;
+no euro field reaches a sort key, a filter or any ranking path, and the ranked order stays smallest
+remaining window first. The selected asset adds `app.value_frame`: headcount x burn probability, the
+replacement value and its basis, the three damage ratios, the three expected losses, and which arrival
+quantile made each `people_at_risk` flag fire; the policy note itself stays in the asset's `sources`
+entry rather than being repeated. Every one of these renders "-" when the layer is absent.
+
 ## 8. Feature flags — `config.FEATURES`
 
-`{"spread_ca": False, "routing": False, "decisions": False, "forecast_enrichment": False}`. The v0
+`{"spread_ca": False, "routing": False, "decisions": False, "forecast_enrichment": False,
+"value_at_risk": False}`. `value_at_risk` gates the eight value-at-risk keys of section 2.2 in
+`build_snapshot`; with it off the snapshot is byte-identical to one built before the layer existed. The v0
 scenario pipeline (`scripts/precompute.py`, `scenario.Scenario`) remains runnable when the flags are on;
 the v4 path never imports the raster stack unless `forecast_enrichment` is set. The globals stay False;
-`scripts/make_snapshots.py` enables `forecast_enrichment` through a per-call cfg shim only when building
-`gavarres_real_0001..0003` (section 2.3 fixtures). Forecast-driven tiers are optional context only.
+`scripts/make_snapshots.py` enables them through per-call cfg shims: `forecast_enrichment` for every
+real snapshot, which enriches the ones no provider forecast covers (section 2.3 fixtures), and
+`value_at_risk` for every committed snapshot, so the fixtures carry the layer while the library
+default stays off. Forecast-driven tiers are optional context only.
 
 ---
 

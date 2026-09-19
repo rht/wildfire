@@ -7,7 +7,9 @@ A forecast is a plain dict in the `forecast-input-1` shape, read from a labelled
 its p50, else the single `arrival_at` estimate (basis = the forecast's declared `basis`), else null;
 `fire_arrival_basis` states which. Nothing in this module derives an arrival time, a quantile or a
 probability from distance: assets that the forecast does not cover get null and the
-`forecast_unavailable` review reason (readme section 4 "Spread forecast").
+`forecast_unavailable` review reason (readme section 4 "Spread forecast"). A `burn_probability` of 0.0
+from the Deepfire adapter is different from null: the run covers that location and puts no burned area
+there within its horizon, still by containment and never by distance.
 
 File format `forecast-input-1`:
 
@@ -220,43 +222,75 @@ def attach_forecast(assets, forecast) -> None:
 # body {id, status, model, durationHours, ensembleMembers, latitude, longitude, locationName,
 # ignitionPointCount, ignition, createdAt, summary, result, links}. `result.features` are CUMULATIVE
 # burned-area MultiPolygons per hour with properties {hour, elapsed_seconds}; an ensemble run splits each
-# hour into disjoint bands with an extra `burn_probability` (multiples of 1/ensembleMembers). No absolute
-# time other than createdAt is given, so t0 = createdAt is an assumption stated in the note.
+# hour into disjoint bands with an extra `burn_probability` (multiples of 1/ensembleMembers), which the
+# adapter keeps as the asset's `burn_probability`. No absolute time other than createdAt is given, so
+# t0 = createdAt is an assumption stated in the note.
 T0_ASSUMPTION = "t0 = createdAt (the response states no simulation start time)"
 
 
-def _spread_hours(features, min_burn_probability: float | None):
-    """{hour: (elapsed_seconds, shapely geometry)} of the covering polygon per hour, ascending.
+def _spread_bands(features):
+    """[(hour, elapsed_seconds, burn_probability, geometry)] for every feature, ascending by hour.
 
-    One member: the hour's geometry. Ensemble: union of that hour's bands whose `burn_probability` is
-    >= `min_burn_probability`. Missing `burn_probability` is treated as 1.0 (deterministic run). Provider
-    polygons are passed through `shapely.make_valid` (the recorded ensemble bands are not all valid)."""
-    per_hour: dict[int, list] = {}
+    Each provider polygon is validated once with `shapely.make_valid` (the recorded ensemble bands are
+    not all valid) and reused by both the arrival union and the band-probability scan. Missing
+    `burn_probability` is 1.0: a single-member run carries no band probability."""
+    bands = []
     for ft in features:
         props = ft.get("properties") or {}
         if "hour" not in props or "elapsed_seconds" not in props:
             raise ValueError("fire-spread feature without hour/elapsed_seconds")
         bp = props.get("burn_probability")
         bp = 1.0 if bp is None else float(bp)      # a single-member run carries no band probability
+        bands.append((int(props["hour"]), int(props["elapsed_seconds"]), bp, make_valid(shape(ft["geometry"]))))
+    bands.sort(key=lambda b: (b[0], b[1]))
+    return bands
+
+
+def _spread_hours(bands, min_burn_probability: float | None):
+    """{hour: (elapsed_seconds, shapely geometry)} of the covering polygon per hour, ascending.
+
+    One member: the hour's geometry. Ensemble: union of that hour's bands whose `burn_probability` is
+    >= `min_burn_probability`. This selects the arrival only; the band-probability scan below reads
+    every band, whatever its probability."""
+    per_hour: dict[tuple[int, int], list] = {}
+    for hour, elapsed, bp, geom in bands:
         if min_burn_probability is not None and bp < min_burn_probability:
             continue
-        per_hour.setdefault((int(props["hour"]), int(props["elapsed_seconds"])), []).append(make_valid(shape(ft["geometry"])))
+        per_hour.setdefault((hour, elapsed), []).append(geom)
     out = {}
     for (hour, elapsed), geoms in sorted(per_hour.items()):
         out[hour] = (elapsed, unary_union(geoms) if len(geoms) > 1 else geoms[0])
     return out
 
 
+def _probability_levels(bands):
+    """[(burn_probability, geometry)] descending, one geometry per distinct band probability.
+
+    Bands of the same probability are unioned across every hour, so the maximum band probability
+    covering a point is the first level whose geometry covers it: at most one containment test per
+    distinct probability (a multiple of 1/ensembleMembers), not one per feature."""
+    per_prob: dict[float, list] = {}
+    for _hour, _elapsed, bp, geom in bands:
+        per_prob.setdefault(bp, []).append(geom)
+    return [(bp, unary_union(geoms) if len(geoms) > 1 else geoms[0])
+            for bp, geoms in sorted(per_prob.items(), reverse=True)]
+
+
 def deepfire_spread_to_forecast(body: dict, received_at, asset_points: dict, *, min_burn_probability=None,
                                 input_mode: str = "recorded") -> dict:
     """Deepfire fire-spread simulation response -> forecast-input-1 dict (hourly isochrone crossing).
 
-    `asset_points` is `{asset_id: (longitude, latitude)}` for the located assets. For each hour in
-    ascending order the covering polygon is the hour's cumulative burned area (one member) or the union
-    of that hour's bands with `burn_probability >= min_burn_probability` (ensemble; default
-    1/ensembleMembers, i.e. reached by any member: the conservative earliest arrival). The first hour
-    whose polygon covers the facility point gives `arrival_at = createdAt + elapsed_seconds`; assets not
-    covered by the last hour get no estimate (`attach_forecast` marks them forecast_unavailable) and
+    `asset_points` is `{asset_id: (longitude, latitude)}` for the located assets; every one of them gets
+    an estimate. For each hour in ascending order the covering polygon is the hour's cumulative burned
+    area (one member) or the union of that hour's bands with `burn_probability >= min_burn_probability`
+    (ensemble; default 1/ensembleMembers, i.e. reached by any member: the conservative earliest arrival).
+    The first hour whose polygon covers the facility point gives `arrival_at = createdAt +
+    elapsed_seconds`; a point no such polygon covers keeps `arrival_at` null and `attach_forecast` marks
+    it forecast_unavailable. `burn_probability` is the maximum band probability among the bands covering
+    the point at any hour within the horizon -- every band is scanned, including those below
+    `min_burn_probability`, which only selects the arrival union -- and `0.0` when no band covers it,
+    which is the run's own statement about that location, not a distance inference. A single-member run
+    carries no band probability, so a covered point is 1.0 and an uncovered one 0.0.
     `forecast_horizon_at = createdAt + durationHours` makes the horizon explicit. Point-in-polygon is
     evaluated in WGS84 (containment only, no distances). `input_mode` is "recorded" when replayed from a
     file and "live" when polled. Status other than COMPLETED -> ValueError.
@@ -278,21 +312,31 @@ def deepfire_spread_to_forecast(body: dict, received_at, asset_points: dict, *, 
     created = _utc(body["createdAt"])
     horizon = created + timedelta(hours=float(body["durationHours"]))
     features = (body["result"] or {}).get("features") or []
-    hours = _spread_hours(features, min_burn_probability)
+    bands = _spread_bands(features)
+    hours = _spread_hours(bands, min_burn_probability)      # arrival: bands at or above the member fraction
+    levels = _probability_levels(bands)                     # burn probability: every band, highest first
     estimates = {}
     for asset_id, (lon, lat) in sorted(asset_points.items()):
         pt = Point(float(lon), float(lat))
-        for hour, (elapsed, geom) in hours.items():
+        arrival = None
+        for _hour, (elapsed, geom) in hours.items():
             if geom.covers(pt):
                 arrival = created + timedelta(seconds=elapsed)
-                estimates[asset_id] = {"arrival_p10_at": None, "arrival_p50_at": None,
-                                       "burn_probability": None, "arrival_at": arrival.isoformat()}
                 break
+        burn_probability = 0.0                              # no band covers it within the horizon
+        for level, geom in levels:
+            if geom.covers(pt):
+                burn_probability = level
+                break
+        estimates[asset_id] = {"arrival_p10_at": None, "arrival_p50_at": None,
+                               "burn_probability": burn_probability,
+                               "arrival_at": None if arrival is None else arrival.isoformat()}
     if members == 1:
-        basis = f"hourly isochrone crossing, deterministic {body['model']}, {T0_ASSUMPTION.split(' (')[0]}"
+        basis = (f"hourly isochrone crossing, deterministic {body['model']}, burn probability 1.0 inside the "
+                 f"burned area and 0.0 outside it, {T0_ASSUMPTION.split(' (')[0]}")
     else:
-        basis = (f"hourly isochrone crossing, member fraction >= {min_burn_probability:g}, {body['model']}, "
-                 f"{T0_ASSUMPTION.split(' (')[0]}")
+        basis = (f"hourly isochrone crossing, member fraction >= {min_burn_probability:g}, burn probability = "
+                 f"max band probability covering the point, {body['model']}, {T0_ASSUMPTION.split(' (')[0]}")
     summary = body.get("summary") or {}
     note = (f"Deepfire fire-spread simulation {body['id']} ({body['model']}, {members} member(s), "
             f"{body['durationHours']} h, {body.get('ignitionPointCount')} ignition point(s) at "
@@ -301,7 +345,14 @@ def deepfire_spread_to_forecast(body: dict, received_at, asset_points: dict, *, 
             f"per-location arrival = first hourly cumulative burned-area polygon"
             + (f" (union of bands with burn_probability >= {min_burn_probability:g})" if members > 1 else "")
             + f" covering the facility point, elapsed_seconds after t0; {T0_ASSUMPTION}; assets not covered by hour "
-            f"{max(hours) if hours else 0} have no estimate; received {_iso(received_at)}. Simulated point ignition, "
+            f"{max(hours) if hours else 0} keep arrival_at null. burn_probability = the maximum band probability "
+            "among the bands covering the point at any hour within the horizon, and 0.0 when no band covers it "
+            "(the run's statement about that location, not a distance inference); every band is scanned, including "
+            + (f"those below the member fraction {min_burn_probability:g} used for the arrival union, and band "
+               f"probabilities are multiples of 1/{members}. " if members > 1 else
+               "bands of any probability, and a single-member run carries no band probability, so a covered point "
+               "is 1.0 and an uncovered one 0.0. ")
+            + f"Received {_iso(received_at)}. Simulated point ignition, "
             "not an observed fire; no distance-based fallback.")
     forecast = {
         "schema_version": SCHEMA_VERSION,

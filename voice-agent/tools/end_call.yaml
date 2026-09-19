@@ -1,0 +1,3 @@
+description: End this simulation when the tester says goodbye, asks to stop, or confirms that the interview is finished.
+builtin:
+  id: end_call

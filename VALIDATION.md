@@ -1,6 +1,6 @@
 # FireLine v4 MVP validation (readme.md section 11)
 
-Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it to refresh. Every check ran offline on the committed fixtures (no network, no Deepfire credentials) except the live agent check, which called nebius `deepseek-ai/DeepSeek-V4.1-Flash` over the network. Outcomes and numbers below are what the script measured on that run; nothing here is a claim beyond those measurements. Fixture content is synthetic except the Gencat register extract in `fixtures/real_area/`.
+Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it to refresh. Every check ran offline on the committed fixtures (no network, no Deepfire credentials, no LLM key). Outcomes and numbers below are what the script measured on that run; nothing here is a claim beyond those measurements. Fixture content is synthetic except the Gencat register extract in `fixtures/real_area/`.
 
 ## Summary
 
@@ -12,12 +12,12 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 | Updates | pass | 12 assets changed on seq 2; missing ['fixture:pou_del_glac'], 2 tasks kept |
 | Tasks | pass | suggestions 7 then 0; 8 tasks survive reload |
 | Agent (FakeLLM) | pass | 8 runs: 4 proposals {'capacity': 2, 'asset_type': 1, 'criticality_tier': 1}, 6 escalations, 0 occupancy-from-capacity |
-| Agent (live model) | pass | deepseek-ai/DeepSeek-V4.1-Flash: 7 runs, 3 proposals {'capacity': 2, 'asset_type': 1}, 8 escalations, 0 unsupported, 0 occupancy-from-capacity |
+| Agent (live model) | not verified |  |
 | Criticality | pass |  |
-| Latency | pass | median 0.179 s for 180 assets (target < 60 s); source age 300 s |
+| Latency | pass | median 0.172 s for 180 assets (target < 60 s); source age 300 s |
 | Stale data | pass | None->unavailable, 0->current, 3599->current, 3600->stale, 21599->stale, 21600->unavailable, -60->current |
 
-10 pass, 0 fail, 0 not verified.
+9 pass, 0 fail, 1 not verified.
 
 ## Recorded outcomes
 
@@ -94,18 +94,9 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 - evacuation_min proposal prop-005-residencia_la_bisbal confirmed: evacuation 150.0 min from 'analyst override: phone call with the director', review_reasons ['occupancy_unknown'], window 240.0: True
 - held-out examples: no investigation examples were held back from prompt development; the FakeLLM is a script, so a held-out check is only meaningful on the live model and remains not verified
 
-### Agent (live model): pass
+### Agent (live model): not verified
 
-- model: nebius `deepseek-ai/DeepSeek-V4.1-Flash` at temperature 0 (fireline.llm.NebiusLLM translates the five tools to the OpenAI-compatible schema; the loop, guards and post-check are the same code the FakeLLM runs)
-- 7/7 investigations completed over the flagged fixture assets of synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou
-- proposals 3 by field {'capacity': 2, 'asset_type': 1}; escalations 8; per asset {id: (reasons, proposals, questions, steps)}: {'residencia_sense_coordenades': (['location_unknown', 'exposure_unknown', 'forecast_unavailable'], 0, 3, 4), 'mas_nou': (['occupancy_unknown'], 0, 1, 5), 'pou_del_glac': (['occupancy_unknown', 'occupancy_seasonal'], 1, 1, 4), 'escola_cruilles': (['occupancy_seasonal'], 0, 1, 4), 'mas_pla': (['occupancy_seasonal'], 0, 1, 5), 'camping_gavarres': (['class_ambiguous'], 1, 0, 4), 'residencia_la_bisbal': (['occupancy_unknown'], 1, 1, 4)}
-- supported proposals (quoted snippet found verbatim in a tool result of the same loop): 3/3; unsupported: none
-- estimated_occupancy proposed from capacity evidence: 0 (none); the CapacityAsOccupancyError guard refuses these regardless
-- number post-check failed on: none; empty final message on: none; stopped at the step cap: none
-- must-escalate cases ['fixture:mas_nou'] escalated: True (all)
-- criticality: 4/4 investigations over one real asset per assessed class of gavarres_real_0002; tiers proposed {'Parc de Bombers de Calonge i Sant Antoni': {'tier': 'high', 'factors': ['emergency_response_capability']}, 'IRTA Monells (IRTA-Monells)': {'tier': 'elevated', 'factors': ['national_research_infrastructure']}, 'Heliport de Costa Brava Centre': {'tier': 'routine', 'factors': []}, 'Hospital de Palamós': {'tier': 'high', 'factors': ['sole_regional_service']}}
-- criticality proposals valid against config.CRITICALITY_POLICY (tier in the enum, factors in the closed list, minimum factor count met): 4/4; supported by a verbatim snippet from their own tool results: 4/4; post-check failed on: none; empty final message on: none (a fail: the loop read its evidence and said nothing); no tier proposed on: none
-- held-out examples: the fixture assets were used while writing the system prompt, so these are not held-out examples; this run measures whether the model obeys the evidence and escalation rules, not its accuracy on unseen facilities. The criticality tiers above are the model's judgement on real facilities and are proposals awaiting an analyst, not measured accuracy: no ground truth for them exists in this repo
+- not run: --live was not passed, so no tokens were spent; supported proposals, correct escalations and unsupported claims are unmeasured for the real model
 
 ### Criticality: pass
 
@@ -121,10 +112,10 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ### Latency: pass
 
 - input: 180 real-area assets (fixtures/real_area/assets_gavarres.json) + recorded update 20260703T100500Z_satellite-perimeters.json (deepfire:satellite-perimeters, SYNTHETIC content, observed 2026-07-03T10:00:00+00:00, received 2026-07-03T10:05:00+00:00) through fire_input.load_recorded
-- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.176, 0.179, 0.179] s; median 0.179 s
-- stages of run 1: build 0.094 s, score 0.029 s, apply+suggest 0.053 s; validate errors 0
+- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.174, 0.145, 0.172] s; median 0.172 s
+- stages of run 1: build 0.094 s, score 0.030 s, apply+suggest 0.050 s; validate errors 0
 - result: 0 ranked, 180 needs_review; 103 assets changed vs seq 1, 0 new suggestions on the update (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry no per-location forecast arrival and every asset is a review item until a forecast covers it)
-- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.17853711097268388} (separate numbers, never combined)
+- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.17211915797088295} (separate numbers, never combined)
 - target < 60 s processing for the selected area: met on x86_64, Python 3.14.7
 
 ### Stale data: pass
@@ -136,7 +127,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ## Not verified
 
 - Live Deepfire authentication and a real response: no credentials were available; fixtures/fire/deepfire is synthetic content in the documented response shape (fixtures/fire/deepfire/README.md).
-- Live LLM accuracy on unseen facilities: the live agent check measures whether the model obeys the evidence, guard and escalation rules on the fixture assets, which were used while writing the system prompt. No examples were held back, so its accuracy on facilities it has not been prompted against is unmeasured.
+- Live LLM investigation: the live agent check did not run (no key, or --live not passed), so the agent check ran the scripted FakeLLM and the prerecorded fixture is a labelled FakeLLM transcript. Supported proposals, correct escalations and unsupported claims are unmeasured for the real model.
 - Forecast accuracy and evacuation estimates: no provider forecast was validated; the ranking checks use constructed synthetic arrivals and policy evacuation durations, and distance-based exposure is not time to impact.
 - Evacuation decisions: nothing here validates an evacuation or confinement decision, lead time against historical response, or superiority over historical emergency response.
 - Operational validity of the contact policy: the priority checks verify the window arithmetic, ordering, ties and missing-input handling of the implementation, not that forecast-evacuation-window-v2 with the prototype evacuation durations (evacuation-proto-2026-09-19) orders contacts correctly.

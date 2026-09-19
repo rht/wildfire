@@ -18,6 +18,7 @@ FEATURES = {
     "decisions": False,           # confine / evacuate rule; `recommendation` stays null otherwise
     "forecast_enrichment": False, # fill burn_probability / arrival_* on snapshot assets from a raster
     "asset_criticality": True,   # per-asset criticality tier proposed by the agent (CRITICALITY_POLICY)
+    "value_at_risk": False,       # people exposed / at risk and expected loss in euros per location (assumed values)
 }
 
 # Stale-data thresholds on the fire observation age (readme 3, 5.1 data_status).
@@ -41,6 +42,37 @@ VALUE_POLICY = {
         "university": 0.8,
         "research_facility": 0.7,
         "aerodrome": 0.7,
+    },
+}
+
+# People and euros at risk per location, behind FEATURES["value_at_risk"] (readme 5.2, handoff 002). An
+# assumed per-class policy, never a per-asset valuation: `replacement_value_eur` is the ATC 2025
+# replacement-cost table (docs/VALUE_AT_RISK.md section 6) times an assumed built area per class times 1.4
+# for fees, VAT and contents, and `d_low`/`d_mid`/`d_high` are the assumed share of that value lost when the
+# fire reaches the building. Both are rounded placeholders standing in for a per-asset figure; the band they
+# give is the damage-ratio band only, so the value uncertainty is at least as large. The euros are total
+# economic loss (insured and uninsured), not an insurer's figure, and they never enter the ranking, the sort
+# or a filter: they are a display column and a scenario header total. `VALUE_POLICY` above is unrelated and
+# stays an operational-importance score, not money. A class whose `replacement_value_eur` is None is not
+# valued and its expected-loss fields stay null.
+VALUE_AT_RISK_POLICY = {
+    "version": "value-at-risk-proto-2026-09-19",
+    "value_basis": "assumed",
+    "by_type": {
+        "hospital":  {"replacement_value_eur": 25_000_000, "d_low": 0.10, "d_mid": 0.25, "d_high": 0.50,
+                      "note": "confinable masonry; equipment not separately valued"},
+        "care_home": {"replacement_value_eur": 5_000_000, "d_low": 0.10, "d_mid": 0.25, "d_high": 0.50,
+                      "note": "confinable masonry"},
+        "school":    {"replacement_value_eur": 4_000_000, "d_low": 0.15, "d_mid": 0.40, "d_high": 0.80,
+                      "note": None},
+        "camp":      {"replacement_value_eur": 3_000_000, "d_low": 0.15, "d_mid": 0.40, "d_high": 0.80,
+                      "note": None},
+        "campsite":  {"replacement_value_eur": 3_000_000, "d_low": 0.30, "d_mid": 0.60, "d_high": 0.90,
+                      "note": "tents and caravans"},
+        "masia":     {"replacement_value_eur": 400_000, "d_low": 0.30, "d_mid": 0.60, "d_high": 0.90,
+                      "note": "rural housing in forest"},
+        "nucleus":   {"replacement_value_eur": None, "d_low": 0.15, "d_mid": 0.40, "d_high": 0.80,
+                      "note": "no dwelling count in the data: not valued"},
     },
 }
 

@@ -118,24 +118,24 @@ adapter), `fireline/voice_store.py` (call lifecycle persistence and task linkage
 `scripts/voice_demo.py` (offline and explicit live modes), `tests/test_voice_*.py`, synthetic JSON
 under `fixtures/voice/`. Keep provider details outside the readiness algorithm.
 
-- [ ] **A1 — Contract and offline interview.** Read the existing readiness module. Write failing
+- [x] **A1 — Contract and offline interview.** Read the existing readiness module. Write failing
   tests for a confirmed self-evacuating household, assistance needed, requested person, low/unknown
   confidence, missing evidence, contradictory answers and no answer. Implement validation and
   normalization; demonstrate all outcomes without an API key. Assert that no-answer/low-confidence
   results cannot become `self_evacuate` and that every location retains a follow-up path.
-- [ ] **A2 — SLNG adapter.** Verify current official API schemas before writing the client.
+- [x] **A2 — SLNG adapter.** Verify current official API schemas before writing the client.
   Implement explicit configuration, HTTP timeouts, sanitized errors, agent configuration and
   browser-session creation; separate outbound dispatch from both. Validate `SLNG_API_KEY`, agent ID
   and outbound-connection requirements. Use injectable HTTP transport in unit tests. Do not blindly
   retry an ambiguous call-creation timeout, since that may dial twice. A missing key produces a clear
   not-configured result while the offline demo continues to work.
-- [ ] **A3 — Results and human handoff.** Add authenticated result ingestion or a verified polling
+- [x] **A3 — Results and human handoff.** Add authenticated result ingestion or a verified polling
   path (choose based on current SLNG support). Persist requests/results, enforce idempotency and
   ordering, and map only evidenced answers to the readiness input. Add a human callback task for a
   requested person, low/unknown confidence, incomplete interview, bad audio, no answer or failed
   transfer. Do not label a transfer successful before the provider confirms connection. Extend
   `TaskStore` only where needed, preserving assigned work across snapshots and restarts.
-- [ ] **A4 — Demonstrable local flow.** Provide an offline command that consumes the same location
+- [x] **A4 — Demonstrable local flow.** Provide an offline command that consumes the same location
   fixture and prints the call result, proposed mode and remaining tasks. Test restart/replay, wrong
   call identity, timeout, duplicate event and failed transfer. Keep any UI adapter separate from
   @rht's ongoing priority/UI work. Run the full Python suite, request code review, document exact
@@ -250,7 +250,9 @@ faster than the real fire did (its p50 burned area at 12 h is about 10,000 ha, a
 1,263 to 3,867 ha over about 17 h), so its arrivals are early and its ranking is a demonstration of the
 pipeline on real inputs, not an assessment of the July incident. Nothing is inferred from distance.
 `gavarres_real_0004` holds a real recorded Deepfire fire-spread run seeded at the July centroid; its 12 h
-burned area reaches no facility, so every asset there is `forecast_unavailable`.
+burned area reaches no facility, so its 99 located assets carry `burn_probability = 0.0` with the run named
+as their `forecast_source` -- the run's own statement about those locations -- and every asset stays
+`forecast_unavailable` for want of an arrival.
 
 What is real and what is synthetic: the facilities in `fixtures/real_area/` are a real Gencat
 Equipaments and schools extract for the Gavarres area (2026-09-19), with real enrolled-pupil counts
@@ -340,7 +342,7 @@ Use a sorted asset table for ranking. A graph is deferred until route connectivi
 | Fire footprint | Deepfire for one incident. Cache original responses and timestamps. Confirm authentication and one usable response at kickoff. |
 | Facility location/class | One Gencat Equipaments extract for the selected area. Cache it, record extraction time and preserve source IDs. |
 | Size | Estimated people present where sourced. Capacity may be a clearly labelled proxy; it is not a confirmed headcount. Missing values remain null. |
-| Value | Analyst-configured operational importance by facility class: a prototype policy, not monetary valuation or an established emergency-service rule. |
+| Value | Analyst-configured operational importance by facility class: a prototype policy, not monetary valuation or an established emergency-service rule. Euros appear only in the optional value-at-risk layer (section 5.2), from a separate assumed per-class replacement-cost policy, and never enter the ranking. |
 | Criticality | Per-asset, for the classes a class average cannot describe (`CRITICALITY_POLICY["assess_classes"]`): a tier and its named factors, proposed by the investigation agent from quoted evidence and confirmed by the analyst. A separate strategic view; it never enters contact urgency. Behind `FEATURES["asset_criticality"]`, on since 2026-09-20. |
 | Notability evidence | Committed Wikipedia/Wikidata extract (`fixtures/notability.json`) for the criticality question only: title, url, intro summary, instance-of, operator, inception, with fetch times. Read offline; most facilities have no record, which is the answer for an ordinary school. |
 | Investigation evidence | Small cache of registry records or facility pages with URLs, snippets and dates. Label manual enrichment; avoid several ingestion pipelines. |
@@ -378,7 +380,7 @@ Ignore duplicate snapshot IDs and lower/equal sequences within a scenario. Prese
 
 ### 5.2 Per-location fields
 
-All keys are present. Unknown measurements are `null`, not zero. Times are ISO 8601 UTC; distances are metres; normalised scores and probabilities are in [0, 1]. GeoJSON coordinates use longitude, latitude order.
+All keys are present, except the optional value-at-risk layer below, which is present in full or not at all. Unknown measurements are `null`, not zero. Times are ISO 8601 UTC; distances are metres; normalised scores and probabilities are in [0, 1]; monetary values are euros. GeoJSON coordinates use longitude, latitude order.
 
 | Fields | Type | Meaning |
 |---|---|---|
@@ -391,13 +393,31 @@ All keys are present. Unknown measurements are `null`, not zero. Times are ISO 8
 | `value_score`, `value_basis` | Number or null; string or null | Class-based operational importance and versioned analyst policy. |
 | `criticality_tier`, `criticality_factors`, `criticality_basis` | String or null; array of strings or null; string or null | Per-asset criticality above the class average, and the closed-enum factors that justify it (`config.CRITICALITY_POLICY`). The producer never asserts a tier: it arrives only through an analyst-confirmed override of an agent proposal, and all three are null together. Optional keys, like the v1.1 timing keys: a snapshot written before this layer stays valid. |
 | `distance_to_fire_m`, `intersects_fire` | Nonnegative number or null; boolean or null | Geometric exposure; record point/footprint approximation in provenance. |
-| `burn_probability` | Number or null | Optional provider estimate over its documented horizon; null when unsupported. |
+| `burn_probability` | Number or null | Optional provider estimate over its documented horizon; null when unsupported. `0.0` is a value, not a gap: the forecast covers the location and puts no fire there within its horizon. Null means no forecast covers it. Neither is derived from distance. |
 | `arrival_p10_at`, `arrival_p50_at` | Timestamps or null | Optional arrival quantiles only when supported by the provider. Null does not establish safety. |
 | `forecast_horizon_at`, `forecast_source` | Timestamp or null; string or null | Forecast horizon and source/method; required provenance for forecast-based contact ranking. |
 | `fire_arrival_at`, `fire_arrival_basis` | Timestamp or null; string or null | Selected spread-predicted arrival estimate and meaning, e.g. p10 when supported. Never infer it from distance alone. |
 | `evacuation_min`, `evacuation_source` | Nonnegative number or null; string or null | Total estimated evacuation duration in minutes, including mobilisation, preparation/loading and onward movement, with its basis. |
+| `people_exposed` | Nonnegative number or null | Optional value-at-risk layer: `estimated_occupancy` x `burn_probability`. |
+| `people_at_risk_p50`, `people_at_risk_p10` | Nonnegative integers or null | The whole `estimated_occupancy` when the remaining evacuation window at that arrival quantile is exhausted, else 0. |
+| `replacement_value_eur`, `replacement_value_basis` | Nonnegative number or null; string or null | Assumed per-class replacement cost and the policy that gave it; null together, and null for a class the policy does not value. Not a per-asset valuation. |
+| `expected_loss_eur_low`, `expected_loss_eur_mid`, `expected_loss_eur_high` | Nonnegative numbers or null | `burn_probability` x the class damage ratio x `replacement_value_eur`, at the low, mid and high ratio. |
 | `needs_review`, `review_reasons` | Boolean; array of strings | Such as `location_unknown`, `occupancy_unknown`, `occupancy_seasonal`, `class_ambiguous`, `value_unknown`, `exposure_unknown`, `criticality_unassessed`. |
 | `sources` | Array of objects | Field-level provenance: `fields`, `source`, `observed_at`, `available_at`, `fetched_at`, `notes`. Unknown source times remain null. |
+
+**Value at risk** (`people_exposed` through `expected_loss_eur_high` above) is an optional layer behind `config.FEATURES["value_at_risk"]`, off by default. All eight keys are present together or absent together; `schema_version` stays `1.1` and a snapshot without them is valid, so a producer with the flag off emits exactly what it emitted before. The layer is computed after the forecast, never from distance:
+
+```text
+people_exposed         = estimated_occupancy x burn_probability
+people_at_risk_p50     = estimated_occupancy if slack_p50 <= 0 else 0
+people_at_risk_p10     = estimated_occupancy if slack_p10 <= 0 else 0
+expected_loss_eur_low  = burn_probability x d_low x replacement_value_eur      # mid and high alike
+slack_pXX              = arrival_pXX_at - evacuation_min - buffer - as_of
+```
+
+`slack_pXX` is the remaining evacuation window of section 6 evaluated at that arrival quantile rather than at the selected arrival. The threshold is `<= 0`, the boundary of `window_exhausted`, because `people_at_risk` re-labels that status weighted by headcount; it counts the whole headcount of such an asset and does not model partial clearance. Occupancy means `estimated_occupancy`; `capacity` is never used as a headcount here. Every field is `null`, never zero, when an input is null: no headcount, no `burn_probability`, no `evacuation_min`, no forecast covering the asset, no location, or a class the policy does not value. A `burn_probability` of `0.0` is a statement rather than a gap and yields zeros, and an asset a forecast covers but does not reach inside its horizon is not at risk (`0`), not unknown.
+
+Replacement values and damage ratios are assumed per-class placeholders from `config.VALUE_AT_RISK_POLICY` (`value_basis = "assumed"`), standing in for a per-asset figure; the band shown is the damage-ratio band only, so the value uncertainty is at least as large. The euros are total economic loss, insured and uninsured, not an insurer's figure. **Euros never enter the ranking, the sort or any filter**: they are a display column and a scenario header total, and there is no euro figure for lives anywhere in the UI. `value_score` is unrelated and unchanged: it stays a class-based operational-importance score and is not derived from this table. The fatality chain, a value of a statistical life, VaR and CVaR, a Catastro footprint fetch and a land ledger are deliberately not built; `docs/VALUE_AT_RISK.md` keeps them as the upgrade path.
 
 For historical replay, evidence must have been available by `as_of`; missing availability information cannot establish that. Document any forecast-to-asset aggregation method. Missing forecasts do not block ingestion or manual tasks, but they do block automatic contact ranking.
 
@@ -466,7 +486,7 @@ stay reproducible; `scripts/validate.py --live` records what the real model did 
 
 ## 9. Interface and implementation
 
-One screen contains the fire/facility map, ranked table, visible review queue, selected-facility evidence and timing breakdown, team/task controls, and change log. Show input mode, timestamps and stale-data state. Live and recorded inputs use the same screen; a "next update" control suffices for the demo.
+One screen contains the fire/facility map, ranked table, visible review queue, selected-facility evidence and timing breakdown, team/task controls, and change log. Show input mode, timestamps and stale-data state. Live and recorded inputs use the same screen; a "next update" control suffices for the demo. When the snapshot carries the value-at-risk layer (section 5.2) the header adds people exposed, people at risk and expected loss with its band, each stating how many located assets are excluded for a null input, and the ranked and review tables gain the matching per-asset columns; the euro column is a display string with its band, never a sort key.
 
 **Moving through the sequence (2026-09-19):** the sidebar walks the scenario's snapshots in both directions - "Previous" / "Next update" and a slider labelled with each snapshot's `as_of` (`1 - 2026-07-03 13:20Z` ... `4 - 2026-09-19 13:49Z` on `gavarres_real`). Forward past the store's accepted sequence applies the update as before (exposure bookkeeping, affected tasks, suggested tasks). Anywhere at or below it is a **view**: the snapshot is re-ranked with the analyst's confirmed overrides and shown on the map, the ranked table and the review queue, while tasks, the change log and the store's accepted sequence stay where they are and nothing is suggested from the earlier moment. The store's snapshot log is append-only (`tasks.SnapshotSequence`), so an earlier moment is reviewable but never replayed; a banner says which sequence is under review and where the store stands.
 
@@ -615,3 +635,758 @@ Verification: the unchanged baseline passed 294 tests; the remediation passes 30
 XML behavior: the local stdlib parser (Expat 2.6.3) expanded a small internal entity but rejected an external entity reference with `ParseError`; external-file disclosure was not demonstrated. The report extra now includes `defusedxml>=0.7.1`, and JUnit parsing explicitly forbids DTDs as well as the library's default entity restrictions. Plain JUnit still renders and failed tests still prevent a success report. This does not replace parser updates or impose general input-size/resource limits. See [Python XML security](https://docs.python.org/3/library/xml.html#xml-security) and [defusedxml](https://github.com/tiran/defusedxml).
 
 UTF-8 is now explicit for the audited text formats. Legacy local files written in a different encoding require conversion; generated fixtures are UTF-8. The risk-assessment/location-snapshot/coordination boundary and snapshot schema remain unchanged.
+## 17. Household evacuation readiness and voice contact
+
+@mirrdj owns this coordination extension. Every location stays in the output even when the
+one-crew planner cannot visit it. A structured contact assessment distinguishes self-evacuation
+from assisted evacuation and from an unresolved contact. Ability is never inferred from property
+value, facility class, a successful call connection, or lack of an assistance record.
+
+Completed implementation (static inputs first):
+
+- [x] Add `fireline/evacuation_readiness.py` and tests for explicit, evidenced call answers,
+  low/unknown confidence, no answer, human requests, stale evidence and contradictory reports.
+- [x] Allocate whole households, in contact-priority order, to supplied approved reception centres
+  with sufficient remaining capacity and a confirmed usable route within the supplied time windows.
+  Return an unresolved record when no destination qualifies; never use geographic proximity alone.
+- [x] Add a combined CLI/fixture showing all locations, unchanged contact ranking and response
+  sequence, proposed evacuation modes, reception assignments and outstanding follow-up tasks.
+- [x] Verify the complete suite, document the provider choice and limitations here, and push the
+  task branch. Voice transport selection is separate from the deterministic assessment logic.
+
+The proposed contact interview introduces the automated assistant, relays only an analyst-supplied
+situation message, confirms the location and whether the respondent speaks for the whole household,
+asks whether everyone can leave without emergency assistance and has suitable transport, and asks
+whether they want a person. Record evidence for each answer. Missing or contradictory answers,
+uncertain transcription/extraction, a failed call, or a human request produce human follow-up.
+A confidence threshold is a configurable prototype review rule, not a probability of safety.
+
+Reception centres are explicit analyst-approved inputs (a hospital is not automatically a reception
+centre). Self-evacuation readiness requires confirmed household ability and transport plus a
+feasible assigned destination. Acknowledgement, departure and confirmed arrival are distinct from
+readiness. This extension produces proposals and tasks; it does not issue evacuation orders or
+place calls while evaluating the algorithm.
+
+### Static readiness API and example
+
+`coordinate_evacuation(scenario, assessments, centres, routes, contact_policy=...,
+readiness_policy=...)` in `fireline/evacuation_readiness.py` combines the existing contact queue and
+crew sequence with one readiness record per location. Inputs use the existing scenario epoch in
+minutes. Dataclasses define the exact fields:
+
+| Input | Required information |
+|---|---|
+| `CallAssessment` | Asset/call IDs, completed/no-answer/failed/declined status, observation time, source and supporting interview evidence; nullable booleans for confirmed identity, whole-household coverage, ability, transport and human request; nullable confidence and a contradiction flag |
+| `ReceptionCentre` | Stable centre ID, name, remaining places, analyst approval, availability deadline and source |
+| `EvacuationRoute` | Origin and centre IDs, travel time, total evacuation duration including preparation, confirmed usability, availability deadline and source |
+| `ReadinessPolicy` | Confidence threshold (prototype default 0.85), evidence maximum age (prototype default 15 minutes), policy version |
+
+Only the latest assessment per asset is accepted; duplicate assessments/IDs, unknown references,
+invalid booleans and non-finite/out-of-range numbers are rejected. Evidence time must not be in the
+future. Confidence is supplied by the caller/integration, not calculated or calibrated by this
+module. A single number should conservatively represent uncertainty in the critical answers; a
+high score cannot bypass missing evidence, incomplete answers or an explicit human request.
+
+A positive call that conflicts with a known assistance count requires human reconciliation.
+A trustworthy negative ability/transport answer produces `assisted_evacuation` and an
+`arrange_assistance` task. Missing or uncertain evidence produces `undetermined` and a contact or
+human-callback task. Assisted transport and its destination require an analyst/team plan; this
+prototype only allocates reception capacity for self-evacuating households.
+
+For confirmed self-evacuating households, select the eligible centre with the shortest supplied
+travel time (then centre ID for ties). Reserve the whole household's known headcount in contact
+priority order. This is a deterministic greedy allocation, not a global transport optimizer.
+Use the greater of the route-specific total evacuation duration and the upstream total estimate;
+never silently shorten the upstream estimate or count travel twice. A strictly positive window
+must remain before the fire-arrival, route and reception deadlines, including the contact buffer.
+An unapproved, full, unknown or expired destination never becomes the default just because it is
+nearby. If nothing qualifies, keep the location unresolved with a human follow-up task.
+
+Output modes are `self_evacuate`, `assisted_evacuation` and `undetermined`, with reasons, call
+provenance, destination provenance, remaining window, suggested tasks and capacity remaining.
+`self_evacuate` is a proposal, not an issued order. Every record starts with
+`evacuation_status: not_confirmed`; confirming instructions, departure and arrival are separate
+follow-up tasks. The crew's declared action coverage does not count as arrival confirmation.
+
+```sh
+.venv/bin/python scripts/static_priorities.py \
+  --readiness-input fixtures/evacuation_readiness.json
+.venv/bin/python -m pytest tests/test_evacuation_readiness.py -q
+```
+
+The synthetic example retains A, B and C: A needs assisted evacuation; B can self-evacuate to the
+approved community centre despite not being visited in the C → A crew sequence; C's unanswered
+call needs human follow-up. The closer hospital is rejected because it is not an approved reception
+site. No real call was placed and the interview confidence values are synthetic.
+
+Capacity reservations are local to one evaluation. Persist actual reservations, contact history,
+confirmed arrivals and assigned tasks before enabling repeated/live execution; this module does
+not update SQLite or the Streamlit UI. Existing crew inputs/objectives are unchanged; assistance
+reports create coordination tasks rather than automatically rewriting counts or actions. At a
+nonzero current time the result omits the old crew plan and sets `response_replanning_required`:
+a time-zero sequence must not be presented as a fresh dispatch plan. The existing PDF continues
+to describe the original 14 static priority scenarios; this extension is documented here.
+
+### Voice-provider research (19 September 2026)
+
+The event's **SLNG challenge** explicitly accepts speech-to-text, text-to-speech or a full voice
+agent, with bonus points for unmute. SLNG's managed-agent documentation supports browser sessions,
+outbound calls with telephony configured, and a transfer-call capability. This is the closest fit
+for the proposed household interview. [Event challenges](https://www.hackbcn.com/en/events/aisummit26),
+[SLNG managed agents](https://docs.slng.ai/voice-agents).
+
+Vonage also supports outbound voice calls and audio bridges, but its listed hackathon challenge
+specifically judges integration of the **Video API**; using Voice API alone does not establish
+eligibility for that prize. Mastra's challenge is a possible messaging alternative. Neither prize
+eligibility nor simultaneous entry should be inferred beyond the published event rules.
+[Vonage call flow](https://developer.vonage.com/en/voice/voice-api/concepts/call-flow).
+
+A Pi and SIM dongle can supply network connectivity for a cloud voice agent. Calling directly
+through that SIM additionally requires a voice-capable modem and accessible two-way audio. The
+Huawei E3372-325's documented data/SMS functionality does not establish voice/audio compatibility;
+do not assume it works with a Huawei voice driver for a different model. Direct SIM calling with
+that model has not been verified. [Manufacturer specifications](https://brovi-tech.com/productshow.php?cid=2&id=248).
+The provider transport, interview extraction, authenticated callbacks and human-transfer path are
+not implemented in this static extension; its input contract is ready to receive those outcomes.
+
+Verification: 253 tests pass, including 36 readiness cases; targeted lint and whitespace checks
+pass. Independent code review found no important issues within the static scope.
+
+### Priority queue for outbound calls
+
+The outbound worker consumes the existing contact-priority algorithm. It stores approved
+call requests in SQLite, selects the most urgent eligible contact, and keeps filling free
+slots while earlier calls ring or continue their conversations. @mirrdj owns this
+coordination layer; the location/risk algorithm still supplies forecast arrival and total
+evacuation duration.
+
+Configure these optional variables in the private `.env` (these are also the defaults):
+
+```dotenv
+MAX_CONCURRENT_CALLS=5
+MAX_CALL_STARTS_PER_SECOND=1
+```
+
+`MAX_CONCURRENT_CALLS` is a positive integer covering calls being created, ringing,
+conversing, or awaiting reconciliation after an uncertain dispatch. A completed interview
+answer does not release a slot: a verified terminal provider lifecycle does.
+`MAX_CALL_STARTS_PER_SECOND` is a positive finite number; `0.5` means at most one start every
+two seconds. Call creation requests are serialized and spaced after each provider response
+to prevent slow network requests causing a burst. Conversations remain concurrent. These
+are application limits, not confirmed SLNG account entitlements. SLNG's account limits still
+need confirmation; Vonage's documented default is three new outbound calls per second.
+
+The queue uses the same order as `rank_contacts`: smallest evacuation window, then forecast
+arrival, distance (unknown last), and asset ID. It stores the absolute latest evacuation
+start relative to the common scenario epoch so contacts enqueued at different times remain
+comparable. Property value does not override the contact-window ordering. Missing timing
+stays in human review; missing contact records are explicitly reported. The remaining
+pending contacts wait until there is capacity. An active call to the same phone number or
+asset prevents another simultaneous call to that contact.
+
+`fireline.voice_queue.VoiceCallQueue.enqueue(locations, requests,
+approved_targets=..., policy=...)` accepts existing `Location` and `CallRequest` objects.
+The approval mapping is `{request_id: approved_phone_number}` and must match every live
+request exactly. Each batch refers to one snapshot, with one request per asset. Registering
+the same request again is idempotent; it never resets a started or cancelled call.
+This is a static queue: enqueueing again does not refresh instructions or priorities.
+For a changed forecast, cancel affected pending requests and supply a new reviewed snapshot
+and request IDs. Started calls retain their original instructions and need the existing
+human follow-up process for changes.
+
+Run from the repository root with the project Python environment:
+
+```bash
+# Inspect only: no provider calls. Reuse the same scenario epoch for this database.
+python -m scripts.dispatch_voice_queue --db data/voice-queue.sqlite \
+  --epoch 2026-09-19T12:00:00Z
+
+# Enqueue only: private requests.json is an array of CallRequest objects;
+# approvals.json maps each request_id to its explicitly approved contact number.
+python -m scripts.dispatch_voice_queue --mode enqueue \
+  --db data/voice-queue.sqlite --epoch 2026-09-19T12:00:00Z \
+  --locations fixtures/static_priority.json \
+  --requests-file data/requests.json --approval-file data/approvals.json
+
+# Starts real calls to the queued approved targets; SLNG credentials/agent/trunk required.
+python -m scripts.dispatch_voice_queue --mode run --dispatch \
+  --db data/voice-queue.sqlite --epoch 2026-09-19T12:00:00Z
+
+# Withdraw an unstarted request; active calls are never hung up by this command.
+python -m scripts.dispatch_voice_queue --mode cancel --request-id req-A \
+  --db data/voice-queue.sqlite --epoch 2026-09-19T12:00:00Z
+```
+
+The worker polls active provider calls every five seconds, persists completed answers through
+`VoiceStore.sync`, and checks for a free slot between polls. `--once` performs one
+sync/dispatch pass. Stopping the worker leaves its queue and call associations intact;
+restart resumes them. Unknown dispatch outcomes hold capacity and create human follow-up;
+there is no automatic redial. A crash during creation also holds further creation until the
+attempt is reconciled. Verified provider association through the existing explicit sync
+flow permits recovery. Failed status polling keeps the slot occupied.
+
+Use one shared database and identical limits for all workers serving this provider account.
+SQLite serializes admission and dispatch claims across workers. Calls already tracked in
+that database also consume capacity. Calls started from another database, directly through
+SLNG, or through the older single-call command are not governed by this queue; route all
+automated outbound traffic through this worker to enforce the limits. This worker is a CLI
+integration; dashboard controls and WebSocket events are separate work.
+
+Offline regression coverage includes the A/B/C priority order, slot refill, fractional and
+three-per-second pacing, restarts, simultaneous worker claims, slow dispatch responses,
+uncertain outcomes, failed polling, duplicate contact numbers, missing timing, cancellation,
+explicit target approval and private-data-free command output. No live calls are used in
+these tests.
+
+### Workstream A implementation notes
+
+Implementation plan (19 September 2026; authorized scope A1–A4): use the existing
+readiness algorithm unchanged, with strict transport-neutral records, a separate SLNG HTTP
+adapter and a SQLite lifecycle store sharing the existing `TaskStore` database. No UI or
+snapshot/window-ranking changes. Baseline at `736253b`: 253 tests passed.
+
+1. A1: add `voice_models.py` and `voice_interview.py`; first exercise malformed records,
+   evidence/identity/time gates and all readiness outcomes in `test_voice_interview.py`.
+   Normalize unknowns to null; only labelled synthetic confidence may pass the
+   automated readiness review gate. Real interviews require independent human review.
+   Preserve acknowledgement separately from departure/arrival.
+2. A2: add `slng_voice.py` with an injectable `requests` transport, fixed official API host,
+   explicit timeouts and sanitized failures. Test documented create-agent, web-session,
+   dispatch and GET-call schemas offline before implementing them. Outbound dispatch is a
+   separate explicit operation, never retried after ambiguous creation failure.
+3. A3: add `voice_store.py` and `voice_ingest.py`; test authenticated ingestion, immutable
+   request/call association, restart/replay, event ordering, task linkage and failed handoff.
+   Persist provider facts separately from interview answers. Use a bearer-authenticated API
+   Request tool for answers and authenticated GET-call polling for lifecycle facts; never
+   parse undocumented runtime diagnostics as confirmed answers or transfer connection.
+4. A4: add synthetic `fixtures/voice/` cases and `scripts/voice_demo.py`, reusing
+   `fixtures/static_priority.json` and reception/route inputs from the readiness fixture.
+   Exercise no-key demo and persistent replay, run the full suite, request independent code
+   review, fix findings, then commit and push. A5 remains deferred; no live calls or messages.
+
+Each step uses failing behavior tests, implementation, focused verification and a pushed
+checkpoint. Current primary references are the [SLNG OpenAPI schema](https://docs.slng.ai/api-reference/agents/agents.oas.yaml),
+[API Request tool guide](https://docs.slng.ai/guides/agents/tools-and-mcp/api-request-tool),
+[dispatch guide](https://docs.slng.ai/guides/agents/telephony/dispatch-calls), and
+[browser integration guide](https://docs.slng.ai/guides/agents/production/embed-in-website).
+Older `/voice-agents` and `/examples/agents-api` README links returned 404 during this check.
+
+
+**Workstream A delivery status:** A1–A4 implemented and verified offline on
+`codex/slng-voice-agent`; A5 remains deferred. No provider session, phone call, message,
+transfer, hardware interaction or live credentialed API request was performed. Independent
+code review found and verified fixes for follow-up after completed tasks, transfer event
+ordering, callback timing, the outbound preflight endpoint and browser-token file reservation.
+
+#### Running the offline flow
+
+From `.worktrees/slng-voice-agent`:
+
+```sh
+uv --cache-dir data/uv-cache venv
+uv --cache-dir data/uv-cache pip install -e ".[dev]"
+.venv/bin/python scripts/voice_demo.py
+.venv/bin/python scripts/voice_demo.py --case all --db data/voice-all.sqlite
+.venv/bin/python scripts/voice_demo.py --case all --db data/voice-all.sqlite
+.venv/bin/python scripts/voice_demo.py --mode check-config
+.venv/bin/python -m pytest -q
+git diff --check
+```
+
+The default demo uses `fixtures/static_priority.json`, reception/route data from
+`fixtures/evacuation_readiness.json`, and entirely synthetic interviews in
+`fixtures/voice/interviews.json`. It proposes assistance for A, self evacuation for B, and
+human follow-up for unanswered C. All three evacuation outcomes remain `not_confirmed`.
+`--case all` also demonstrates requested person, low/unknown confidence, missing evidence,
+contradictions, bad audio, missed call and failed transfer. Each report prints normalized
+synthetic call results, per-location proposals and durable remaining tasks. Repeating with
+the same database does not duplicate tasks. Use a fresh database when changing scenario
+inputs or language; immutable request identities deliberately reject altered replay inputs.
+`--language en` is configurable, but the supplied conversations are English fixtures and do
+not validate another language's spoken quality.
+
+The offline mode does not load credentials or create an HTTP client. `check-config` uses
+`fireline.env.load_env()` and prints only configuration status/missing variable names. During
+verification it returned `not_configured`, missing `SLNG_API_KEY` and `SLNG_AGENT_ID`, with no
+outbound connection configured. No key is required for the demo or tests.
+
+#### Provider/backend integration
+
+`SlngClient` accepts an injectable HTTP transport. Its documented operations use Bearer auth
+at `https://api.agents.slng.ai`: `POST /v1/agents`,
+`POST /v1/agents/{agent_id}/web-sessions`, `POST /v1/agents/{agent_id}/calls`,
+`GET /v1/agents/{agent_id}`, and `GET /v1/agents/{agent_id}/calls/{call_id}`.
+Outbound preflight checks the typed agent response's ID and `sip_outbound_trunk_id` against
+configuration. HTTP connect/read timeouts default to 5/20 seconds; redirects and retries
+are disabled. Errors omit provider response bodies, contacts, tokens and transcripts.
+A POST timeout, malformed success or server failure has an ambiguous outcome. The store
+claims the attempt durably **before** HTTP; both `attempting` after a crash and
+`outcome_unknown` prohibit another automated dispatch. Reconcile against provider records
+manually; `bind(request_id, verified_provider_call_id)` can link a verified existing call.
+Do not create a fresh request ID merely to bypass an ambiguous attempt.
+
+Generate a private agent configuration offline with explicitly selected provider model codes:
+
+```sh
+.venv/bin/python scripts/voice_demo.py --mode agent-config \
+  --stt SELECTED_STT_CODE --llm SELECTED_LLM_CODE \
+  --tts SELECTED_TTS_CODE --voice SELECTED_VOICE_CODE \
+  --output data/voice-agent-config.json
+```
+
+Those names are placeholders to replace with the account's available models, not tested
+model IDs. `agent_configuration()` accepts published `tool_refs` and an optional outbound
+connection ID; `SlngClient.create_agent(configuration)` implements agent creation. Nothing
+is provisioned by generating the JSON. Browser creation returns the documented LiveKit URL,
+token and session duration; the CLI exclusively reserves a private output file before HTTP
+and never prints the token. Joining its audio room still needs a browser client using the
+[official LiveKit embedding flow](https://docs.slng.ai/guides/agents/production/embed-in-website).
+
+Answer delivery uses `result_tool_configuration(https_url, vault_secret_name)` and
+`result_tool_attachment(tool_id, published_version)` from `fireline/slng_voice.py`. Create,
+test and publish that API Request tool in SLNG, store the dedicated result secret in its
+Vault, then attach the published version. The attachment locks request, asset and snapshot
+IDs from call arguments and the provider call ID from `{{@call_id}}`. It uses the documented
+raw JSON/Bearer format; `fireline.voice_ingest.make_app(store_factory, token)` supplies the
+WSGI `POST /voice/results` receiver. Deploy it behind HTTPS with a dedicated random token
+of at least 32 characters, a per-request `VoiceStore` connection and the same scenario epoch.
+No public endpoint or service was deployed during this task. The receiver has a 32 KiB body
+limit and returns sanitized errors; it does not log request bodies or authorization headers.
+
+The receiver accepts only answer fields, evidence excerpts, contradiction/bad-audio flags
+and the pinned association IDs. Model-supplied lifecycle, confidence and transfer-success
+fields are rejected. It records the receiver's first observation time as `observed_at`,
+with the additional `evidence_time_basis="receipt_only"` field: this is **not** the time the
+respondent spoke. `evidence_time_unknown` therefore requires human review. Replayed payloads
+retain their first timestamp. Transport-neutral records with a genuine source observation
+retain it unchanged (`evidence_time_basis="source_observation"`); future or pre-epoch evidence
+is rejected. No transcript extraction from SLNG's undocumented internal runtime report is
+attempted. Only minimal submitted excerpts and latest answers are retained locally.
+
+Authenticated polling verifies call/agent IDs and all three request arguments, then records
+provider lifecycle separately. Unknown statuses stay unresolved; terminal states cannot be
+downgraded. A tool execution marked `succeeded` does not establish connection to a person.
+Transfer remains `requested`/`failed`; the available stable schema has no explicit connection
+proof used by this implementation. A request for a person creates human follow-up immediately,
+regardless of confidence. An approved published transfer tool may be attached separately;
+its destination and actual connection must be verified in A5. The stored
+`human_callback_number` never triggers an automatic transfer or call.
+
+Provider confidence is never calibrated safety certainty and cannot automatically clear the
+readiness gate. Only explicitly synthetic scores exercise successful proposals in the demo.
+Real/recorded interviews produce conservative readiness inputs and independent human tasks;
+an analyst follows up and records the operational decision separately. Neither a completed
+call nor acknowledgement closes tasks or establishes departure/arrival.
+
+`VoiceStore` shares a database with `TaskStore`. A minimal `create_task(commit=False)` extension
+lets call state and task linkage commit atomically. Voice work uses existing analyst actions
+(`contact_facility`, `request_resources`) with stable `voice:` reasons. Assigned work is reused
+across snapshots and restarts. A distinct adverse event after an analyst closed the prior task
+creates fresh work without reopening the old task; exact replays create none. Initial callback
+work remains for analyst disposition even after a successful synthetic proposal. Departure and
+arrival checks are separate tasks. Uncontacted locations also retain tasks in the demo's plan.
+New CLI databases/token files are created with private file modes; use ignored `data/` storage
+and retain/delete local evidence under the incident's operational retention policy. Existing
+files' permissions are not changed. SQLite storage is local, not encrypted by this feature.
+
+#### Exact prerequisites for A5 (not executed)
+
+1. Supply `SLNG_API_KEY` and a created/reviewed `SLNG_AGENT_ID` via the ignored `.env`;
+   choose available STT, LLM, TTS, voice, region and language. Publish/attach the answer tool
+   and provide its authenticated HTTPS receiver, matching Vault secret and scenario epoch.
+2. Explicitly approve a browser test. Use a private `CallRequest` JSON and a separate
+   persistent database; consume the returned credentials with the LiveKit browser client.
+3. For a later phone test, supply an explicitly approved consenting test destination and
+   an active outbound connection assigned to that agent. Set
+   `SLNG_OUTBOUND_CONNECTION_ID`. A private approval JSON must contain the exact
+   `request_id` and matching `approved_target`; credentials alone do not authorize dispatch.
+4. For human transfer, configure the published transfer tool, approved human destination
+   and outbound telephony; verify actual audio and connection. A tool success is insufficient.
+   Spanish/Catalan model availability and spoken quality remain unverified.
+
+Commands prepared for a subsequent authorized session (not run here):
+
+```sh
+.venv/bin/python scripts/voice_demo.py --mode browser \
+  --request-file data/approved-browser-request.json --epoch SCENARIO_UTC_EPOCH \
+  --db data/voice-live.sqlite --output data/private-browser-session.json
+.venv/bin/python scripts/voice_demo.py --mode poll \
+  --request-file data/approved-browser-request.json --epoch SCENARIO_UTC_EPOCH \
+  --db data/voice-live.sqlite
+.venv/bin/python scripts/voice_demo.py --mode outbound \
+  --request-file data/approved-phone-request.json --approval-file data/phone-approval.json \
+  --epoch SCENARIO_UTC_EPOCH --db data/voice-phone.sqlite
+```
+
+Replace `SCENARIO_UTC_EPOCH` with the incident's common UTC ISO epoch, never a fresh time on
+restart. Browser and outbound creation are separate explicit commands. No background polling
+or credential-wait loop runs. The original A1–A4 implementation left snapshot ranking, the crew sequence,
+UI integration and Workstream B untouched; the mock UI integration is described below.
+
+
+Original A1–A4 offline verification before the main-branch rebase: **344 Python tests passed** (253 baseline plus 91 voice tests),
+`git diff --check` passed, and all nine demo cases replayed with **11 tasks before and after**.
+The baseline modes were A=`assisted_evacuation`, B=`self_evacuate`, C=`undetermined`; every
+case retained `evacuation_status="not_confirmed"`. Verification artifacts are ignored local
+files under `data/agent-session/` (`voice-demo.json`, `voice-replay.json`, `voice-pytest.txt`).
+The implementation was independently reviewed; all reported findings were fixed and verified.
+These are offline software checks, not validation of provider audio, telephony or hardware.
+
+### Mock scenario replay and dashboard updates
+
+The expanded mock exercise on `codex/slng-voice-agent` runs **34 isolated scenarios** through the
+existing contact ranking, one-crew response planner, interview normalization, readiness checks and
+persistent task store. Fixtures are in `fixtures/voice/replay_scenarios.json` and
+`fixtures/voice/neighbourhood.json`; the reproducible
+outcome report is [reports/mock-voice-results.json](reports/mock-voice-results.json). This tests
+structured synthetic answers, not SLNG speech recognition, generated conversation, real calls or
+successful human transfer. The phone number is fictional and the runner has no provider calls.
+
+Run all cases and write a report, or advance one case a single event at a time:
+
+```sh
+.venv/bin/python scripts/replay_voice_scenarios.py --case all \
+  --db-dir data/voice-replay-validation --output reports/mock-voice-results.json
+.venv/bin/python scripts/replay_voice_scenarios.py --case baseline --step
+.venv/bin/streamlit run fireline/app.py --server.port 8511
+```
+
+Open `http://localhost:8511/?demo=voice`, or enable **Mock voice scenarios** in the sidebar. Select a case, then
+**Apply next mock event** to inspect each result or **Apply all remaining mock events**. **Start a
+fresh mock run** creates a new database and preserves previous runs. Each case has its own database
+under `data/voice-replay/` (override with `FIRELINE_MOCK_DB_DIR`); the CLI and UI can use the same
+case database. Reopening the page resumes its revision. Changing fixtures requires a fresh run.
+An existing ordinary incident database is rejected without modifying its contents.
+
+| Scenario group | Expected system behavior |
+|---|---|
+| All eight combinations of low/high synthetic confidence, assistance needed/not needed, and human requested/not requested | Retain each reported fact. Low confidence or a human request requires a callback and keeps the evacuation mode unresolved; reported assistance remains visible alongside the uncertainty. |
+| Confirmed inability to self-evacuate, or no suitable transport, with sufficiently supported synthetic answers | Propose `assisted_evacuation`; create assistance, departure and arrival follow-up work. |
+| Supported ability and transport, suitable approved centre and route | Propose `self_evacuate`; show destination and instruction/departure/arrival checks. Agreement is not proof of departure or arrival. |
+| Confidence 0.85 / 0.849999 / unknown | Exercise the inclusive prototype threshold and review paths. These supplied synthetic scores do not calibrate an LLM or authorize a live decision. |
+| Missing evidence, contradiction, bad audio, no answer, failed/declined call, partial human request, failed transfer | Keep unresolved and create or retain human follow-up. A request for a person is honoured before the interview is complete. |
+| Centre lacks space or route is unconfirmed | Do not propose a destination; retain reception/assistance and human follow-up needs. |
+| Forecast update reduces B's fire arrival to minute 3 | Contact order becomes B → A → C; B's window is -1 minute and its previous self-evacuation proposal is withdrawn for review. |
+| Crew loses assisted-evacuation capability | Response proposal changes from C → A to B → C; A's action is explicitly blocked and its assistance need remains. |
+
+The default exercise is now a **six-building village with 49 people**, rather than just the A/B/C
+layout. It includes a care home (20 people), school (12), three households (6, 5 and 4), and an
+equipment depot (2). Two approved reception centres have 10 and 5 available places. The dashboard
+shows the local layout, the next event, per-building call outcomes and proposed remaining capacity.
+The original A/B/C cases remain available in the selector.
+
+| Village exercise | Interaction being tested |
+|---|---|
+| Shared capacity | Lower-priority households answer first. A later, more urgent answer moves a proposed destination to the second centre; no centre is overbooked and the depot cannot yet be accommodated. |
+| Mixed escalations | Different buildings report low confidence plus assistance, missing transport, a human request, no answer, or supported self-evacuation. Each keeps its own evidence and follow-up work. |
+| Road closure | Oak Lane closes after the interviews. Oak apartments loses both supplied routes; the incident-wide warning requires fresh acknowledgement from all buildings and appears in the next-call briefing. |
+| Reception centre closes | The 10-place hall loses approval; only the five-person household fits in the annex. |
+| Fire changes direction | Mill house's updated arrival forecast leaves a negative evacuation window. It moves to the front of the contact queue and loses its self-evacuation proposal. |
+| Later assistance request | Oak apartments initially reports self-evacuation, then reports needing help. Both calls remain in history and the latest assessment changes its mode. |
+| Crew capability loss | The crew loses transport and assisted-evacuation capabilities. Care-home and school actions become blocked, and the proposed sequence changes. |
+| Named dangerous road | Mill Road is excluded even if a route was previously confirmed. Mill house uses the eligible annex route; calls carry the named warning and evidenced acknowledgement. |
+| Warning not understood | Mill house cannot acknowledge the road restriction. Its mode remains unresolved and a human callback is required, even if its other interview answers were confirmed. |
+
+The village contact order initially is **CARE → SCHOOL → H1 → H2 → H3 → DEPOT**; its one-crew
+proposal is **CARE → SCHOOL**. Capacity is allocated only to proposed **self-evacuating** groups.
+The care home and school still require an analyst to arrange assisted transport and receiving
+capacity; the 15 places do not accommodate all 49 people. These exercises use six actions and
+one crew, not multiple concurrent teams. Building positions are a schematic in local metres;
+travel times and forecast arrivals are independent supplied inputs.
+
+Allocations can change after a later answer because they are **uncommunicated proposals**. The
+prototype does not model instructions already sent to residents or automatically preserve an
+issued destination; changing such instructions needs an analyst decision.
+
+The two algorithms remain separate:
+
+1. **Whom to contact first:** `rank_contacts` orders the smallest remaining window first:
+   `fire_arrival_min - now_min - evacuation_min - buffer_min`. In the baseline, A has 2 minutes,
+   B has 8 and C has 10, so contacts are **A → B → C**. Ties use earlier fire arrival, nearer
+   geographic distance and stable ID. Missing timing evidence goes to review; exhausted windows
+   remain urgent. Property value does not override this ordering. The fixture uses zero buffer;
+   the snapshot dashboard's separately configured policy uses 30 minutes.
+2. **Which action the crew should take next:** `plan_response` enumerates feasible sequences for
+   one crew (at most eight actions), checking travel, action time, deadlines, capabilities and
+   prerequisites. It compares assisted-person benefit first, then total-person benefit, then
+   asset-value benefit, with timing/tie rules. The baseline selects **C → A** because C explicitly
+   unlocks assistance at A; a greedy B-first choice misses that opportunity. Geometry alone does
+   not create a protective effect. The mock output includes sequence, timings, blocked actions,
+   unserved locations and the declared benefit assumptions.
+
+The interview/readiness policy updates household proposals and tasks alongside those algorithms.
+A call reporting help does not supply a revised headcount, travel time or action duration, so it
+cannot silently change the crew model's numerical inputs or remove a household from consideration.
+`response_review_required` makes that gap visible. The mock scenarios do not simulate elapsed call
+minutes or in-progress crew movements: event order advances at a fixed scenario epoch. A changed
+forecast/capability recomputes an unexecuted static proposal, not a live dispatch plan. The current
+readiness API also withholds the old crew proposal when supplied a nonzero elapsed time.
+
+**Road restrictions in the escalation-to-voice handoff:** `EvacuationRoute.road_ids` lists the
+roads used by each supplied route. `coordinate_evacuation(..., road_warnings=[...])` accepts the
+current incident-scoped restrictions from the analyst/upstream feed. Each warning requires
+`road_id`, `road_name`, `reason` and `source`, for example:
+
+```json
+{
+  "road_id": "mill-road",
+  "road_name": "Mill Road",
+  "reason": "fire reported beside the bridge",
+  "source": "Synthetic incident command update"
+}
+```
+
+Every location output carries `road_warnings`, `road_warning_version` and
+`current_road_warning_acknowledged`; a selected destination also carries
+`route_road_ids`. A warning overrides a route's previous `confirmed` flag. While restrictions are
+active, a route with no road IDs cannot establish avoidance and is rejected. A supplied alternative
+must still meet the existing timing, capacity and confirmation checks. With no eligible option,
+the household remains unresolved with human follow-up. The system does not generate detours or
+interpret a missing destination as an instruction to remain in place. These road constraints apply
+to household evacuation routes; the one-crew planner still uses its separately supplied travel
+matrix, which must also be updated if crew travel is affected.
+
+The caller copies the location's current `road_warnings` into its `CallRequest` alongside the
+analyst-supplied `incident_brief`. This is automatic for mock replay; callers using the private JSON
+request interface must supply the warnings for that snapshot. SLNG receives a per-call
+`road_warning_brief`, such as **“Do not take Mill Road: fire reported beside the bridge.”** The
+prompt requires the road name and reported reason to be relayed with any approved evacuation
+instruction; a conflicting direction is withheld for human review. It asks residents to repeat
+which roads to avoid and records `road_warning_acknowledged` plus the supporting excerpt in
+`evidence.road_warning_acknowledged`. Missing, negative or unevidenced acknowledgement adds
+`road_warning_unconfirmed` and prevents an automatic self-evacuation proposal. A generic readback
+or agreement to evacuate does not satisfy this check.
+
+Warnings create persistent `communicate_road_warning` tasks. They remain open until an analyst
+handles them, consistent with the other follow-up tasks. A content version binds acknowledgement
+to the exact road names, reasons and sources in the persisted call request. Changed restrictions
+invalidate the current acknowledgement and create fresh communication/callback work if the old
+work was completed; repeated delivery of the same version does not duplicate it. Earlier call
+answers remain historical evidence, and reported assistance needs stay visible. All buildings in
+these mock incidents receive the incident-wide restrictions; none silently inherits an earlier
+warning's readback. The dashboard's **Road warnings for the
+next call** panel and downloadable `voice_briefings` show the current restriction text; they are
+not delivery receipts. Stored requests retain the warnings supplied at call creation. A later
+closure refreshes the preview and follow-up work, but does not interrupt an active call or
+redeliver instructions automatically. Feed operators must supply current restrictions and complete
+route road IDs; this prototype does not discover road hazards or expire stale reports. Changed
+village fixtures require **Start a fresh mock run** for previously saved exercises.
+
+**What the UI receives:** `MockReplay.state()` returns a `mock-coordination-state-1` object with
+`case_id`, `snapshot_id`, `revision`, `as_of`, `pending_events`, `calls`, `plan`, `tasks`,
+`response_review_required`, `layout`, `reception_centres`, `voice_briefings`, `input_mode="synthetic"`, `dispatch=false`
+and `live_validation=false`.
+`plan` contains both algorithm outputs, household modes and proposed reception capacity. Calls
+retain confidence/basis, evidence, reported assistance, human requests and escalation reasons.
+The UI can download the complete state as JSON.
+
+Each accepted event also appends a durable `mock-coordination-update-1` notification:
+
+```json
+{
+  "schema_version": "mock-coordination-update-1",
+  "case_id": "baseline",
+  "revision": 1,
+  "event_id": "mock-voice-baseline:0",
+  "kind": "call_result",
+  "changed_asset_ids": ["A"],
+  "refresh": "full_state",
+  "input_mode": "synthetic"
+}
+```
+
+Voice facts, task changes, revision and notification commit in **one SQLite transaction**. A
+crash rolls them back together; duplicate replay does not advance the revision or duplicate work.
+`updates(after_revision=...)` supports ordered catch-up. Task status/ownership persist separately;
+only analyst action closes existing work. In particular, initial callback/contact tasks remain
+open even after a successful synthetic interview. Reception capacity remains a per-case proposal,
+not a production reservation ledger.
+
+**Transport choice:** the panel uses Streamlit's
+[`st.fragment(run_every="2s")`](https://docs.streamlit.io/develop/api-reference/execution-flow/st.fragment)
+to reread the durable state while open. This already exposes updates from another CLI/process
+without adding a separate WebSocket server. The notification is an invalidation hint: refresh the
+full state, including indirectly changed ranks. A future separate frontend can consume an
+authenticated SSE stream for server-to-browser notifications, or WebSockets if bidirectional
+interaction warrants them, and fetch current state after reconnecting. A socket is transport,
+not the durable output or source of truth. No new SSE/WebSocket endpoint is deployed here.
+
+Validation after integration: **479 tests passed**, including all eight combinations, additional
+adverse cases, both algorithm update examples, cross-reader refresh/restart, duplicate delivery,
+crash rollback, existing-database protection, CLI output and Streamlit interaction tests.
+Independent review findings about partial commits and incomplete invalidation IDs were fixed and
+covered by regression tests. These checks do not validate real fire predictions or live voice quality.
+
+### Unmute / SLNG / Vonage mock-call test plan
+
+**Goal:** exercise an explicitly simulated readiness conversation with Unmute's
+SLNG-hosted target, then verify a Vonage phone connection when the account has
+an active SIP trunk and the tester has supplied an authorized destination.
+This follows the agreed conversation and Vonage architecture in this session.
+
+The package in `voice-agent/` is a connectivity smoke test. It uses fictional
+incident details and records conversation variables on SLNG. The local `sync`
+command saves completed answers in FireLine's database. The package does not
+dispatch assistance or transfer to a real responder. The offline voice demo tests
+FireLine's validation and persistent follow-up. A working greeting alone does
+not prove recognition, reasoning, answer persistence, or two-way phone audio.
+
+- [x] Install checksum-verified Unmute 0.5.5 and VoiceAI CLI 0.1.19 locally
+  under ignored `data/tools/`.
+- [x] Author `voice-agent/agent.yaml`, `targets.yaml`, `instructions.md` and
+  `tools/end_call.yaml`; keep generated builds and credentials ignored.
+- [x] Run `unmute validate voice-agent --target slng` and
+  `unmute compile voice-agent --target slng`; inspect the generated prompt,
+  greeting and conversation variables for the simulated call.
+- [x] Verify the SLNG key with read-only requests and preview deployment with
+  `unmute deploy voice-agent --target slng --dry-run`. The account returned
+  zero agents; no agent ID or outbound connection ID is configured locally.
+  This does not establish whether an account-level SIP connection exists.
+- [x] Run the regression suite: **492 tests passed**, including persistence
+  of live-shaped assistance reports and follow-up tasks after database restart.
+- [x] Deploy the dedicated mock agent after approval. SLNG accepted agent
+  `be7b9f79-8b5c-46f0-948f-08ccc43e9397` and created a browser session.
+- [ ] Verify a spoken browser conversation. A Vonage test additionally requires
+  an active Manual outbound SIP connection and an explicitly authorized test
+  number. Report every unavailable prerequisite without claiming live success.
+
+`fixtures/voice/unmute_smoke.json` contains eight manual scripts for browser
+testing: complete answers, assistance, human requests, interruptions, unknown
+answers, wrong location, assistance-question polarity and corrections. These
+are expected results, not recorded calls. The agent classifies each field as
+`yes`, `no` or `inconclusive`, with exact tester quotes. Those values correspond
+to FireLine's `true`, `false` and `null`. Initial message receipt and final
+readback acknowledgement are separate. Hosted model execution and memory capture
+were verified with an authorized Vonage phone call; browser speech and the full
+interruption/correction scripts still need manual testing.
+
+Durable hosted answer capture uses `scripts/voice_demo.py --mode sync`, which
+authenticates a read-only SLNG call fetch and saves lifecycle, true/false/null
+answers, evidence and its provenance atomically through `VoiceStore`. `poll`
+remains lifecycle-only. There is no background sync or hosted FireLine submission
+tool. Human requests are recorded; no real human-transfer tool is configured.
+
+Readiness now exposes `reported_can_self_evacuate`,
+`reported_transport_available` and `reported_needs_assistance` separately from
+operational `mode`. An evidenced assistance need for a confirmed household
+creates an `arrange_assistance` proposal alongside human review. It does not
+dispatch resources or reserve capacity. Non-synthetic results still require
+review because provider confidence is unverified; even complete answers do
+not automatically make operational readiness determined. Route, capacity and
+timing checks remain separate. The capacity validation and UTF-8 fixes from
+readiness PR #8 are included while retaining this branch's road warnings.
+
+On 2026-09-19, the approved deployment created `fireline-mock-interview-slng`.
+The example Gemini model failed with `AGENT_MODEL_UNAVAILABLE`; the Nemotron
+binding in SLNG's current [Think guide](https://docs.slng.ai/guides/agents/configure/think)
+was accepted. At initial deployment, a follow-up GET verified the saved models
+and confirmed both SIP trunk fields were null. Browser-session creation succeeded with a 300-second
+limit when supplied the required JSON body (`arguments` and `participant_name`).
+This verifies session creation, not two-way speech or captured answers.
+
+To speak to it, open the [SLNG dashboard](https://app.slng.ai), select
+`fireline-mock-interview-slng`, then **Test agent → Web session**, and allow microphone
+access. Follow the smoke scripts above. A Vonage call was confirmed working by
+the tester; real human handoff remains unverified. The SLNG API key remains in the existing shared environment;
+browser connection tokens are never committed.
+
+**Vonage connection update:** the account's `vonage` connection is active with
+caller ID `+442039856256`. Attachment to the initial `eu-north` deployment failed
+because its LiveKit project was incompatible. A single CLI update setting both
+the region to `eu-central` and the outbound connection succeeded; a fresh GET
+and connection-options query confirmed it is current and selectable. Inbound
+calling remains unconfigured. Two explicitly authorized test calls completed.
+The first lasted about 119 seconds and the tester confirmed it worked; the
+repeat lasted about 198 seconds and ended when the participant disconnected.
+Both were imported into the ignored local `data/voice-slng-mock.sqlite`.
+The first contains assistance and human follow-up answers. The repeat returned
+all memory variables unset and is saved as incomplete, requiring follow-up.
+
+To import an existing call, use a private JSON `CallRequest` with the correct
+request, asset and snapshot IDs, and a separate persistent database:
+
+```bash
+SLNG_AGENT_ID=be7b9f79-8b5c-46f0-948f-08ccc43e9397 PYTHONPATH=. \
+  .venv/bin/python scripts/voice_demo.py --mode sync \
+  --provider-call-id YOUR_CALL_UUID --request-file data/private-request.json \
+  --db data/voice-slng-mock.sqlite --epoch 2026-09-19T20:39:59.576264Z
+```
+
+Use the same epoch for every operation on that database. The explicit call ID
+authorizes the initial local association for legacy calls lacking request
+arguments; subsequent syncs omit it and use the stored call/agent binding.
+Conflicting provider arguments are rejected. Repeating both real imports was
+verified to create no duplicate events or tasks after reopening the database.
+SLNG redacted caller transcript turns on the first call, so extracted quotes
+remain labelled `provider_reported`. Provider record timestamps are not exact
+speech timestamps. No confidence is inferred; live results require review.
+Explicit assistance and human requests survive partial later reports.
+
+Dispatch through the generic FireLine adapter returned HTTP 400 for the fixed
+mock agent in this session. These two calls used the VoiceAI CLI's argument-free dispatch
+and an explicit local association. The generic `--mode outbound` path needs a
+compatible agent configuration before use with this fixed mock package.
+
+**Redeployment caveat:** Unmute 0.5.5 rejects `eu-central`, although the hosted
+agent API accepts it. Keep the compilable target in `targets.yaml` and apply
+this patch after an Unmute deployment, before attempting phone calls. The CLI
+expects `VOICEAI_API_KEY` to contain the existing SLNG key:
+
+```bash
+data/tools/voiceai-0.1.19/voiceai agents update be7b9f79-8b5c-46f0-948f-08ccc43e9397 --file - <<'JSON'
+{
+  "region": "eu-central",
+  "sip_outbound_trunk_id": "6c43b683-9bae-4cc2-af6b-850f5dbd0d05"
+}
+JSON
+```
+
+Recheck the saved region and attachment with `voiceai agents get`, and the
+connection with `voiceai trunks get vonage --direction outbound`. This patch
+does not place a call or change the carrier's credentials.
+
+The carrier route is configured in SLNG's Telephony dashboard using Vonage's
+termination host and SIP credentials, not a `carrier: vonage` Unmute setting.
+Local `VONAGE_API_KEY` alone does not establish a SIP connection. Use a dedicated
+mock agent and recheck its outbound connection after deployment. References:
+[Unmute hosted target](https://github.com/slng-ai/unmute/blob/main/docs-site/targets/slng.mdx),
+[SLNG outbound setup](https://docs.slng.ai/guides/agents/telephony/outbound),
+[Vonage SIP setup](https://developer.vonage.com/en/sip/sip-dashboard).
+
+### Voice integration delivery plan
+
+Goal: merge the voice work onto current main and save completed SLNG interviews
+through FireLine's existing durable store. The user authorized implementation,
+parallel work, review fixes, PR creation and merging after verification.
+
+- [x] Rebase the voice commits onto `origin/main`, preserving upstream Norma
+  remediation and Nebius investigations. Publish `codex/slng-voice-integration`
+  without rewriting the existing published voice branch.
+- [x] Evaluate branch-owned Python with Norma, fix actionable violations and
+  verify the fixes. Repository scan status and per-file checks remain distinct.
+- [x] Add authenticated completed-call import/sync to the existing SLNG adapter
+  and voice CLI, with an explicit FireLine request/call association. Normalize
+  memory answers to true/false/null, retain provider evidence and redaction
+  limitations, and commit results idempotently through `VoiceStore`.
+- [x] Cover mismatched associations, duplicate delivery, missing/unknown answers,
+  human and assistance requests, provider failures and database restart. Use a
+  sanitized provider fixture; keep phone numbers, credentials and raw reports
+  out of Git. Save the authorized mock call to an isolated local demo database.
+- [x] Review the combined implementation, run the full suite and provider-package
+  validation, and prepare PR #14 for the authorized merge.
+
+The capture path preserves the boundary between household reports and operational
+readiness: live answers remain human-review input; this work does not declare
+evacuation complete, reserve resources, or place additional calls.
+
+Integration verification after incorporating main's value-at-risk update:
+**575 passed, 1 skipped**; Unmute SLNG validation and compilation passed.
+Importing display helpers no longer launches the Streamlit dashboard, preventing
+form state from leaking into the voice UI tests. The regression failed before
+the startup guard and passes with it.
+Norma per-file checks fixed actionable findings; the evidence ledger is
+`reports/norma-voice-review.json`. Three remaining findings apply FastAPI rules
+to synchronous replay/Streamlit code and are documented as inapplicable.
+Repository-wide scan and audit registration were unavailable because repository
+linking returned `auto_import_not_available`; this is not a repository-wide
+compliance claim.

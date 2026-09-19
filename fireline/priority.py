@@ -23,7 +23,7 @@ from __future__ import annotations
 import copy
 from datetime import datetime, timezone
 
-from fireline import config
+from fireline import config, snapshot
 from fireline.contact_priority import contact_sort_key, missing_timing, window_arithmetic
 
 OVERRIDE_CONFLICT = "override_conflict"
@@ -145,7 +145,7 @@ def criticality_value(value, cfg=config) -> tuple[str, list[str]]:
     return tier, factors
 
 
-def _apply_one(asset: dict, override: dict, cfg) -> None:
+def _apply_one(asset: dict, override: dict, cfg, now_at=None) -> None:
     field = override["field"]
     value = override["value"]
     if field == "fire_arrival_at":
@@ -235,6 +235,23 @@ def _apply_one(asset: dict, override: dict, cfg) -> None:
         reasons.append(OVERRIDE_CONFLICT)
     asset["review_reasons"] = reasons
     asset["needs_review"] = bool(reasons)
+    _rederive_value_at_risk(asset, now_at, cfg)
+
+
+def _rederive_value_at_risk(asset: dict, now_at, cfg) -> None:
+    """Re-derive the optional value-at-risk fields after an override changed one of their inputs.
+
+    A no-op on an asset that does not carry them (the producer had the flag off). Without `now_at` only
+    the time-independent fields are re-derived, so `people_at_risk_*` is never recomputed from a wrong
+    epoch. The override's own provenance entry is kept last, as the evacuation re-derivation does.
+    """
+    if not all(k in asset for k in snapshot.VALUE_AT_RISK_KEYS):
+        return
+    snapshot.derive_value_at_risk(asset, now_at, cfg)
+    sources = asset.get("sources") or []
+    if len(sources) >= 2 and set(sources[-1].get("fields") or []) & set(snapshot.VALUE_AT_RISK_KEYS):
+        entry = sources.pop()
+        sources.insert(len(sources) - 1, entry)             # before the override's own entry
 
 
 def _policy_evacuation(asset_type, cfg=config):
@@ -264,7 +281,8 @@ def window_bucket(slack_min, cfg=config) -> str | None:
     return "small" if slack_min <= cfg.CONTACT_POLICY.get("attention_min", 60) else "open"
 
 
-def apply_overrides(assets: list[dict], overrides: list[dict] | None, cfg=config) -> list[dict]:
+def apply_overrides(assets: list[dict], overrides: list[dict] | None, cfg=config,
+                    now_at=None) -> list[dict]:
     """Return deep copies of `assets` with confirmed overrides applied in confirmed_at order.
 
     Each override sets `asset[field] = value`, appends an `analyst override: <source>` provenance
@@ -274,6 +292,11 @@ def apply_overrides(assets: list[dict], overrides: list[dict] | None, cfg=config
     An asset_type override re-derives value_score from the value policy. An evacuation_min override
     sets `evacuation_source = "analyst override: <source>"` and clears `evacuation_unknown`.
     Overrides on `fire_arrival_at` raise ValueError: forecasts come from the producer.
+
+    On an asset that carries the optional value-at-risk fields (`snapshot.VALUE_AT_RISK_KEYS`) every
+    override also re-derives them through `snapshot.derive_value_at_risk`, so a confirmed class or
+    headcount moves the euros and the people counts with it. `now_at` (the snapshot `as_of`, passed by
+    `rank_snapshot`) is the epoch for `people_at_risk_*`; without it those two are left untouched.
     """
     copies = [copy.deepcopy(a) for a in assets]
     if not overrides:
@@ -284,7 +307,7 @@ def apply_overrides(assets: list[dict], overrides: list[dict] | None, cfg=config
     for asset in copies:
         for override in sorted(by_asset.get(asset["asset_id"], []),
                                key=lambda o: (o.get("confirmed_at") or "", o.get("override_id") or "")):
-            _apply_one(asset, override, cfg)
+            _apply_one(asset, override, cfg, now_at)
     return copies
 
 
@@ -431,7 +454,7 @@ def rank_snapshot(snap: dict, cfg=config, overrides: list[dict] | None = None, n
     now = _parse_time(now_at)
     if now is None:
         raise ValueError(f"rank_snapshot needs now_at or a valid snapshot as_of, got {now_at!r}")
-    assets = apply_overrides(snap.get("assets") or [], overrides, cfg)
+    assets = apply_overrides(snap.get("assets") or [], overrides, cfg, now_at=now)
     scored = [rank_asset(a, now, cfg) for a in assets]
     ranked = sorted((a for a in scored if a["queue"] == "ranked"), key=ranked_sort_key)
     for i, a in enumerate(ranked, start=1):

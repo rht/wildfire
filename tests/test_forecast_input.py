@@ -209,7 +209,12 @@ def feat(geom, hour, **props):
     return {"type": "Feature", "geometry": mapping(geom), "properties": dict({"hour": hour, "elapsed_seconds": 3600 * hour}, **props)}
 
 
-def test_adapter_first_covering_hour_gives_arrival_and_uncovered_gets_nothing():
+def arrived(fc):
+    """asset ids the forecast gives an arrival, i.e. covered by the thresholded hourly union."""
+    return {k for k, e in fc["estimates"].items() if e["arrival_at"] is not None}
+
+
+def test_adapter_first_covering_hour_gives_arrival_and_uncovered_gets_zero_probability():
     h1, h2 = box(3.0, 41.9, 3.01, 41.91), box(3.0, 41.9, 3.03, 41.93)     # cumulative, nested
     body = spread_body([feat(h2, 2), feat(h1, 1)])                          # out of order on purpose
     pts = {"a:hour1": (3.005, 41.905), "a:hour2": (3.02, 41.92), "a:never": (3.1, 41.95)}
@@ -217,17 +222,27 @@ def test_adapter_first_covering_hour_gives_arrival_and_uncovered_gets_nothing():
     validate_forecast(fc)
     assert fc["input_mode"] == "recorded" and fc["forecast_source"] == "deepfire:fire-spread/elmfire/run-1"
     assert fc["issued_at"] == T_CREATED.isoformat() and fc["forecast_horizon_at"] == (T_CREATED + timedelta(hours=12)).isoformat()
-    assert fc["basis"] == "hourly isochrone crossing, deterministic elmfire, t0 = createdAt"
-    assert set(fc["estimates"]) == {"a:hour1", "a:hour2"}
+    assert fc["basis"] == ("hourly isochrone crossing, deterministic elmfire, burn probability 1.0 inside the "
+                           "burned area and 0.0 outside it, t0 = createdAt")
+    assert set(fc["estimates"]) == {"a:hour1", "a:hour2", "a:never"}   # every located asset gets an estimate
     assert fc["estimates"]["a:hour1"]["arrival_at"] == (T_CREATED + timedelta(hours=1)).isoformat()
     assert fc["estimates"]["a:hour2"]["arrival_at"] == (T_CREATED + timedelta(hours=2)).isoformat()
-    assert fc["estimates"]["a:hour1"]["arrival_p10_at"] is None and fc["estimates"]["a:hour1"]["burn_probability"] is None
-    for needle in ("run-1", "1 member(s)", "41.89134,3.02283", "Cruïlles, Girona", "t0 = createdAt", "hour 2 have no estimate"):
+    assert fc["estimates"]["a:hour1"]["arrival_p10_at"] is None and fc["estimates"]["a:hour1"]["arrival_p50_at"] is None
+    # a deterministic run carries no band probability: covered is 1.0, uncovered is 0.0, never null
+    assert fc["estimates"]["a:hour1"]["burn_probability"] == 1.0
+    assert fc["estimates"]["a:hour2"]["burn_probability"] == 1.0
+    assert fc["estimates"]["a:never"] == {"arrival_p10_at": None, "arrival_p50_at": None,
+                                          "burn_probability": 0.0, "arrival_at": None}
+    for needle in ("run-1", "1 member(s)", "41.89134,3.02283", "Cruïlles, Girona", "t0 = createdAt",
+                   "hour 2 keep arrival_at null", "0.0 when no band covers it", "not a distance inference"):
         assert needle in fc["note"], needle
     rec = asset("a:hour2"); never = asset("a:never")
     attach_forecast([rec, never], fc)
     assert rec["fire_arrival_at"] == (T_CREATED + timedelta(hours=2)).isoformat() and rec["fire_arrival_basis"] == fc["basis"]
+    assert rec["burn_probability"] == 1.0
+    # no arrival, but the run does cover this location and says 0.0 there: still forecast_unavailable
     assert never["fire_arrival_at"] is None and "forecast_unavailable" in never["review_reasons"]
+    assert never["burn_probability"] == 0.0 and never["forecast_source"] == "deepfire:fire-spread/elmfire/run-1"
     live = deepfire_spread_to_forecast(body, T_CREATED, pts, input_mode="live")
     assert live["input_mode"] == "live"
 
@@ -241,12 +256,61 @@ def test_adapter_ensemble_unions_bands_above_the_member_fraction():
     pts = {"p:core": (3.005, 41.905), "p:fringe": (3.015, 41.905), "p:outer": (3.025, 41.905)}
     any_member = deepfire_spread_to_forecast(body, T_CREATED, pts)          # default 1/5: any member
     assert set(any_member["estimates"]) == {"p:core", "p:fringe", "p:outer"}
-    assert any_member["basis"] == "hourly isochrone crossing, member fraction >= 0.2, elmfire, t0 = createdAt"
+    assert arrived(any_member) == {"p:core", "p:fringe", "p:outer"}
+    assert any_member["basis"] == ("hourly isochrone crossing, member fraction >= 0.2, burn probability = "
+                                   "max band probability covering the point, elmfire, t0 = createdAt")
     assert "union of bands with burn_probability >= 0.2" in any_member["note"]
     at_04 = deepfire_spread_to_forecast(body, T_CREATED, pts, min_burn_probability=0.4)
-    assert set(at_04["estimates"]) == {"p:core", "p:fringe"}
+    assert arrived(at_04) == {"p:core", "p:fringe"}
     all_members = deepfire_spread_to_forecast(body, T_CREATED, pts, min_burn_probability=1.0)
-    assert set(all_members["estimates"]) == {"p:core"}
+    assert arrived(all_members) == {"p:core"}
+    # the member fraction selects the arrival union only: every band counts towards burn_probability,
+    # so raising the threshold never lowers a location's probability
+    for fc in (any_member, at_04, all_members):
+        assert set(fc["estimates"]) == {"p:core", "p:fringe", "p:outer"}
+        probs = {k: e["burn_probability"] for k, e in fc["estimates"].items()}
+        assert probs == {"p:core": 1.0, "p:fringe": 0.4, "p:outer": 0.2}
+
+
+def test_adapter_two_member_band_probability_is_kept_per_asset():
+    """Handoff 002 Fix A: one asset inside a 0.5 band, one outside every band -> 0.5 and 0.0."""
+    half = box(3.0, 41.9, 3.01, 41.91)                # 1 of 2 members
+    body = spread_body([feat(half, 1, burn_probability=0.5)], members=2)
+    pts = {"m:in_half": (3.005, 41.905), "m:outside": (3.2, 41.95)}
+    fc = deepfire_spread_to_forecast(body, T_CREATED, pts)
+    validate_forecast(fc)
+    assert fc["estimates"]["m:in_half"]["burn_probability"] == 0.5
+    assert fc["estimates"]["m:outside"]["burn_probability"] == 0.0
+    assert arrived(fc) == {"m:in_half"}               # default member fraction 1/2 = 0.5
+    a, b = asset("m:in_half"), asset("m:outside")
+    attach_forecast([a, b], fc)
+    assert a["burn_probability"] == 0.5 and b["burn_probability"] == 0.0
+    assert "max band probability covering the point" in fc["basis"]
+    assert "multiples of 1/2" in fc["note"]
+
+
+def test_adapter_burn_probability_is_the_maximum_over_hours():
+    early = box(3.0, 41.9, 3.02, 41.92)               # hour 1, 1 of 5 members
+    late = box(3.0, 41.9, 3.02, 41.92)                # hour 3, 3 of 5 members over the same ground
+    body = spread_body([feat(early, 1, burn_probability=0.2), feat(late, 3, burn_probability=0.6)], members=5)
+    fc = deepfire_spread_to_forecast(body, T_CREATED, {"h:both": (3.01, 41.91)})
+    assert fc["estimates"]["h:both"]["burn_probability"] == 0.6          # the maximum, not the first hour
+    assert fc["estimates"]["h:both"]["arrival_at"] == (T_CREATED + timedelta(hours=1)).isoformat()   # still the earliest
+
+
+def test_adapter_zero_probability_estimate_carries_provenance_and_stays_unavailable():
+    body = spread_body([feat(box(3.0, 41.9, 3.01, 41.91), 1, burn_probability=0.5)], members=2)
+    fc = deepfire_spread_to_forecast(body, T_CREATED, {"z:outside": (3.2, 41.95)})
+    validate_forecast(fc)                                                # 0.0 is a valid burn_probability
+    rec = asset("z:outside")
+    attach_forecast([rec], fc)
+    assert rec["burn_probability"] == 0.0 and rec["fire_arrival_at"] is None and rec["fire_arrival_basis"] is None
+    assert rec["forecast_source"] == "deepfire:fire-spread/elmfire/run-1"   # non-null: validate_snapshot needs it
+    assert rec["forecast_horizon_at"] == (T_CREATED + timedelta(hours=12)).isoformat()
+    assert rec["review_reasons"] == ["forecast_unavailable"] and rec["needs_review"] is True
+    # 0.0 is not None, so the provenance entry names burn_probability
+    assert rec["sources"][-1]["fields"] == ["burn_probability", "forecast_horizon_at", "forecast_source"]
+    assert "no arrival within the horizon" in rec["sources"][-1]["notes"]
 
 
 def test_adapter_rejects_incomplete_runs_and_bad_bodies():
@@ -260,13 +324,17 @@ def test_adapter_rejects_incomplete_runs_and_bad_bodies():
     with pytest.raises(ValueError, match="input_mode"):
         deepfire_spread_to_forecast(spread_body([]), T_CREATED, {}, input_mode="synthetic")
     empty = deepfire_spread_to_forecast(spread_body([]), T_CREATED, {"x": (3.0, 41.9)})
-    assert empty["estimates"] == {}
+    assert empty["estimates"] == {"x": {"arrival_p10_at": None, "arrival_p50_at": None,
+                                        "burn_probability": 0.0, "arrival_at": None}}
 
 
 def test_adapter_never_uses_distance():
     body = spread_body([feat(box(3.0, 41.9, 3.01, 41.91), 1)])
     fc = deepfire_spread_to_forecast(body, T_CREATED, {"just_outside": (3.0101, 41.905)})   # ~10 m off the polygon
-    assert fc["estimates"] == {}
+    # containment only: a point 10 m outside is outside, with no arrival and no probability borrowed
+    # from how near it is
+    assert fc["estimates"] == {"just_outside": {"arrival_p10_at": None, "arrival_p50_at": None,
+                                                "burn_probability": 0.0, "arrival_at": None}}
 
 
 REAL_DIR = FIX / "fire" / "deepfire" / "real"
@@ -294,10 +362,14 @@ def test_recorded_real_fire_spread_runs_parse_into_valid_forecasts(name):
     assert fc["input_mode"] == "recorded" and fc["forecast_source"] == f"deepfire:fire-spread/elmfire/{run_id}"
     assert fc["issued_at"] == "2026-09-19T13:49:18.165734+00:00" if members == 1 else fc["issued_at"].startswith("2026-09-19T13:49")
     assert fc["estimates"]["probe:ignition"]["arrival_at"] == (datetime.fromisoformat(fc["issued_at"]) + timedelta(hours=1)).isoformat()
+    assert fc["estimates"]["probe:ignition"]["burn_probability"] == 1.0   # every member burns the ignition cell
     real = json.loads((FIX / "real_area" / "assets_gavarres.json").read_text())["assets"]
     pts = {a["asset_id"]: (a["longitude"], a["latitude"]) for a in real if a["latitude"] is not None}
     covered = forecast_from_recorded_spread(REAL_DIR / name, pts, min_burn_probability=0.2 if members > 1 else None)
-    assert covered["estimates"] == {}   # about 20 ha burned, nearest facility 5.3 km away: stated in the READMEs
+    # about 20 ha burned, nearest facility 5.3 km away (stated in the READMEs): no facility is reached,
+    # which the run states as burn_probability 0.0 with no arrival, not as a missing estimate
+    assert len(pts) == 111 and len(covered["estimates"]) == 111
+    assert all(e["arrival_at"] is None and e["burn_probability"] == 0.0 for e in covered["estimates"].values())
     with pytest.raises(ValueError, match="not a fire-spread"):
         read_recorded_spread(REAL_DIR / "20260919T131340Z_clusters.json")
 

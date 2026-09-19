@@ -6,13 +6,19 @@ tests do not depend on `fireline.snapshot` or the fixture snapshot files.
 
 from __future__ import annotations
 
-from fireline import config
+from fireline import config, snapshot
 
 AS_OF = "2026-07-03T08:00:00+00:00"
 
 
-def make_asset(**overrides) -> dict:
-    """A complete asset record with every CONTRACTS 2.2 key present and sensible defaults."""
+def make_asset(value_at_risk=False, **overrides) -> dict:
+    """A complete asset record with every CONTRACTS 2.2 key present and sensible defaults.
+
+    The eight value-at-risk keys are an optional layer (`snapshot.VALUE_AT_RISK_KEYS`) and are left OUT
+    by default, so the consumer tests keep exercising a snapshot built with the flag off. Pass
+    `value_at_risk=True` to derive them from the record with `snapshot.derive_value_at_risk`, exactly as
+    the producer does, or give any of them explicitly as an override.
+    """
     asset_type = overrides.get("asset_type", "school")
     review_reasons = list(overrides.get("review_reasons", []))
     record = {
@@ -47,6 +53,11 @@ def make_asset(**overrides) -> dict:
     record.update(overrides)
     if "needs_review" not in overrides:
         record["needs_review"] = bool(record["review_reasons"])
+    if value_at_risk or any(k in overrides for k in snapshot.VALUE_AT_RISK_KEYS):
+        given = {k: overrides[k] for k in snapshot.VALUE_AT_RISK_KEYS if k in overrides}
+        snapshot.derive_value_at_risk(record, overrides.get("_now_at", AS_OF), config)
+        record.update(given)          # an explicit value wins over the derived one
+    record.pop("_now_at", None)
     return record
 
 

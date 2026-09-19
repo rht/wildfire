@@ -351,3 +351,106 @@ def test_unknown_scenario_and_next_before_select(db):
         s.select_scenario("nope")
     with pytest.raises(RuntimeError):
         s.next_update()
+
+
+# --------------------------------------------------------------- value at risk (handoff 002)
+def var_asset(asset_id, **kw):
+    """A located asset carrying the eight value-at-risk keys, derived from the policy like the producer."""
+    fields = dict(asset_id=asset_id, forecast_source=FORECAST, forecast_horizon_at="2026-07-03T20:00:00+00:00",
+                  evacuation_min=90.0, evacuation_source=EVAC, capacity=None, value_at_risk=True)
+    fields.update(kw)
+    return make_asset(**fields)
+
+
+def test_value_at_risk_totals_sum_located_assets_and_count_the_excluded():
+    """Located assets only; a null field is left out of its sum and counted, never read as zero. The
+    people and euro exclusions differ: occupancy_unknown loses the people, an unvalued class the euros."""
+    assets = [
+        var_asset("a:school", estimated_occupancy=200, burn_probability=0.5),          # school: 200 x 0.5
+        var_asset("a:nucleus", asset_type="nucleus", estimated_occupancy=50, burn_probability=0.4),
+        var_asset("a:no_occupancy", estimated_occupancy=None, burn_probability=0.5,
+                  review_reasons=["occupancy_unknown"]),
+        var_asset("a:unlocated", latitude=None, longitude=None, estimated_occupancy=999,
+                  burn_probability=0.9, review_reasons=["location_unknown"]),
+    ]
+    v = ui_state.value_at_risk_totals(assets)
+    assert v["layer"] is True and v["located"] == 3
+    assert v["people_exposed"] == 200 * 0.5 + 50 * 0.4                 # the unlocated 999 is not summed
+    assert v["excluded_people"] == 1 and v["excluded_eur"] == 1        # occupancy_unknown / nucleus
+    assert v["expected_loss_eur_mid"] == 0.5 * 0.40 * 4_000_000 + 0.5 * 0.40 * 4_000_000
+    assert v["expected_loss_eur_low"] < v["expected_loss_eur_mid"] < v["expected_loss_eur_high"]
+    assert v["policy_version"] == config.VALUE_AT_RISK_POLICY["version"]
+
+
+def test_value_at_risk_totals_say_the_layer_is_off_instead_of_reporting_zeros():
+    v = ui_state.value_at_risk_totals([make_asset(), make_asset(asset_id="fixture:b")])
+    assert v["layer"] is False and v["people_exposed"] == 0 and v["located"] == 2
+
+
+def test_value_at_risk_totals_separate_a_forecast_that_reaches_nothing_from_a_missing_one():
+    """burn_probability 0.0 on a covered asset is a statement: covered without reached, zeros not nulls."""
+    reaches_nothing = [var_asset("a:school", estimated_occupancy=200, burn_probability=0.0)]
+    v = ui_state.value_at_risk_totals(reaches_nothing)
+    assert v["covered"] == 1 and v["reached"] == 0
+    assert v["people_exposed"] == 0 and v["expected_loss_eur_mid"] == 0 and v["excluded_people"] == 0
+    no_forecast = [var_asset("a:school", estimated_occupancy=200, burn_probability=None,
+                             forecast_source=None, forecast_horizon_at=None)]
+    w = ui_state.value_at_risk_totals(no_forecast)
+    assert w["covered"] == 0 and w["reached"] == 0 and w["excluded_people"] == 1
+    assert w["horizon_at"] is None and w["enrichment"] is False
+
+
+def test_value_at_risk_totals_flag_the_uncalibrated_ca_enrichment():
+    ca = var_asset("a:school", estimated_occupancy=10, burn_probability=0.9,
+                   forecast_source="ca_ensemble (labelled enrichment, not validated)")
+    assert ui_state.value_at_risk_totals([ca])["enrichment"] is True
+
+
+def test_status_value_at_risk_totals_follow_a_confirmed_override(tmp_path, db):
+    """The aggregate is taken over the assets the session shows, so a confirmed headcount moves it."""
+    d = tmp_path / "var_snapshots"
+    d.mkdir()
+    snap = make_snapshot([var_asset("a:school", name="School", estimated_occupancy=100, burn_probability=0.5)],
+                         scenario_id="var_test", sequence=1)
+    (d / "var_0001.json").write_text(json.dumps(snap), encoding="utf-8")
+    s = Session(db_path=db, snapshot_dirs=(d,), clock=lambda: NOW)
+    s.select_scenario("var_test")
+    assert s.status()["value_at_risk"]["people_exposed"] == 50.0
+    s.store.confirm_override("a:school", "estimated_occupancy", 300, source="phone call",
+                             snippet="director confirmed 300 pupils", confidence="high", previous=100)
+    s.rescore()
+    assert s.status()["value_at_risk"]["people_exposed"] == 150.0      # 300 x 0.5, re-derived by the override
+
+
+COMMITTED_TOTALS = {
+    "synthetic_gavarres-0001": (438, 0, 0, 6_519_500, 2_711_000, 12_268_000, 6, 6, 12),
+    "synthetic_gavarres-0002": (505.8, 89, 89, 7_623_000, 3_169_000, 14_367_000, 6, 6, 12),
+    # The four strategic classes (fire_station, university, research_facility, aerodrome) add 12 located
+    # assets to the real extract: 99 -> 111. They carry no headcount and no assumed replacement value, so
+    # every people and euro total is unchanged and the 12 only raise the excluded counts (12 -> 24 people,
+    # 0 -> 12 euro), which is the "not valued" path config.VALUE_AT_RISK_POLICY documents for nucleus too.
+    "gavarres_real-0001": (1866.7, 0, 0, 13_280_000, 4_980_000, 26_560_000, 24, 12, 111),
+    "gavarres_real-0002": (6632.5, 0, 45, 43_390_000, 16_290_000, 86_780_000, 24, 12, 111),
+    "gavarres_real-0003": (18433.9, 1680, 3040, 137_420_000, 51_720_000, 274_840_000, 24, 12, 111),
+    "gavarres_real-0004": (0, 0, 0, 0, 0, 0, 24, 12, 111),
+}
+
+
+@pytest.mark.parametrize("scenario", [SYNTHETIC, "gavarres_real"])
+def test_committed_fixtures_report_the_recorded_value_at_risk_totals(scenario):
+    """The header totals of every committed snapshot, the same rule as make_snapshots.value_totals."""
+    s = Session(db_path=":memory:", clock=lambda: NOW)
+    s.select_scenario(scenario)
+    seen = 0
+    while True:
+        v = s.status()["value_at_risk"]
+        expected = COMMITTED_TOTALS[s.snapshot["snapshot_id"]]
+        assert v["layer"] is True
+        assert (v["people_exposed"], v["people_at_risk_p50"], v["people_at_risk_p10"],
+                v["expected_loss_eur_mid"], v["expected_loss_eur_low"], v["expected_loss_eur_high"],
+                v["excluded_people"], v["excluded_eur"], v["located"]) == expected
+        seen += 1
+        if not s.has_next:
+            break
+        s.next_update()
+    assert seen == len([e for e in s.sequence_entries])

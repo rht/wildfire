@@ -19,7 +19,7 @@ import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fireline import env, agent, config, fire_input, priority, tasks
+from fireline import env, agent, config, fire_input, priority, snapshot, tasks
 
 ROOT = Path(__file__).resolve().parent.parent
 SNAPSHOT_DIRS = (ROOT / "fixtures" / "snapshots", ROOT / "data" / "snapshots")
@@ -53,6 +53,44 @@ def discover_snapshots(dirs=SNAPSHOT_DIRS) -> tuple[dict[str, list[dict]], list[
     for entries in scenarios.values():
         entries.sort(key=lambda e: (e["sequence"], e["snapshot_id"]))
     return dict(sorted(scenarios.items())), warnings
+
+
+ENRICHMENT_LABEL = "labelled enrichment, not validated"   # forecast_source of the CA path (handoff 001)
+
+
+def value_at_risk_totals(assets) -> dict:
+    """Scenario totals of the value-at-risk layer over `assets` (handoff 002), or the layer-off answer.
+
+    Located assets only: an unlocated asset can never be reached by a forecast. A null field is left out
+    of its sum and counted instead, so a total is never read as complete - `excluded_people` and
+    `excluded_eur` are the located assets whose headcount, burn probability or class value is missing,
+    and they differ (an `occupancy_unknown` asset is out of the people totals but not the euros; a class
+    the policy does not value is the reverse). The rule is `scripts/make_snapshots.py value_totals`.
+
+    `layer` is False when the snapshot carries none of the eight keys, so a header can say the layer is
+    off instead of reporting zeros. `covered` / `reached` separate a forecast that reaches nothing from a
+    missing forecast: a located asset with a `forecast_source` is covered, and one with a positive
+    `burn_probability` is reached, so `covered` > 0 with `reached` == 0 means the run covers those
+    locations and puts no fire there within `horizon_at` - zero exposure, not a gap.
+    """
+    located = [a for a in assets if a.get("latitude") is not None]
+    keys = ("people_exposed", "people_at_risk_p50", "people_at_risk_p10",
+            "expected_loss_eur_low", "expected_loss_eur_mid", "expected_loss_eur_high")
+    out = {k: round(sum(a[k] for a in located if a.get(k) is not None), 1) for k in keys}
+    covered = [a for a in located if (a.get("forecast_source") or "").strip()]
+    horizons = [a["forecast_horizon_at"] for a in covered if a.get("forecast_horizon_at")]
+    out.update({
+        "layer": any(k in a for a in assets for k in snapshot.VALUE_AT_RISK_KEYS),
+        "located": len(located),
+        "excluded_people": sum(1 for a in located if a.get("people_exposed") is None),
+        "excluded_eur": sum(1 for a in located if a.get("expected_loss_eur_mid") is None),
+        "covered": len(covered),
+        "reached": sum(1 for a in covered if (a.get("burn_probability") or 0) > 0),
+        "horizon_at": max(horizons) if horizons else None,
+        "enrichment": any(ENRICHMENT_LABEL in (a.get("forecast_source") or "") for a in covered),
+        "policy_version": config.VALUE_AT_RISK_POLICY["version"],
+    })
+    return out
 
 
 def db_path_from_env() -> Path:
@@ -344,7 +382,11 @@ class Session:
     # -- status -------------------------------------------------------------------------------
 
     def status(self) -> dict:
-        """Envelope facts for the header: recorded data_status alongside one recomputed now."""
+        """Envelope facts for the header: recorded data_status alongside one recomputed now.
+
+        `value_at_risk` holds the scenario totals of the optional layer (`value_at_risk_totals`) over the
+        assets this session is showing, with the analyst's confirmed overrides applied, so a confirmed
+        headcount or class moves them. Facts only; the header does the formatting."""
         snap = self.snapshot or {}
         now = self.clock()
         metrics = snap.get("metrics") or {}
@@ -393,6 +435,7 @@ class Session:
             "now_at": self.scored["now_at"] if self.scored else snap.get("as_of"),
             "evacuation_policy_version": config.EVACUATION_POLICY["version"],
             "value_policy_version": config.VALUE_POLICY["version"],
+            "value_at_risk": value_at_risk_totals(self.assets_in_order()),
             "db_path": str(self.db_path),
             "now": now.isoformat(timespec="seconds"),
             "counts": counts,

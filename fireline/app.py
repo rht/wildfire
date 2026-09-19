@@ -10,19 +10,22 @@ All workflow logic lives in `fireline.ui_state.Session` (kept in st.session_stat
 
 from __future__ import annotations
 
+from datetime import datetime
+
 import pandas as pd
 import pydeck as pdk
 import streamlit as st
 
-from fireline import config, priority, tasks
+from fireline import config, priority, snapshot, tasks
 from fireline.ui_state import Session, llm_available
-
-st.set_page_config(page_title="FireLine", layout="wide", page_icon=":fire:")
 
 STATUS_COLOUR = {"current": "green", "stale": "orange", "unavailable": "red"}
 GREY = [150, 150, 150, 200]
 RED, ORANGE, YELLOW = [200, 30, 30, 230], [240, 140, 20, 230], [235, 210, 40, 230]
 SMALL_WINDOW_MIN = config.CONTACT_POLICY["attention_min"]   # "small window" threshold shared with task flagging
+# The euro columns are display strings, never numbers: an estimate from an assumed per-class replacement
+# cost, shown with its damage-ratio band, that must never order or filter the table (handoff 002).
+LOSS_COLUMN = "expected loss (estimate, assumed replacement cost, damage-ratio band)"
 DEFAULT_SCENARIO = "gavarres_real"      # the real-area scenario opens first; the synthetic one stays selectable
 
 
@@ -59,6 +62,83 @@ def people(asset: dict) -> str:
     if asset.get("capacity") is not None:
         return f"{asset['capacity']} (capacity proxy)"
     return "unknown"
+
+
+def exposed(asset: dict) -> str:
+    """`people_exposed` (occupancy x burn probability), "-" when the layer is off or an input is null."""
+    v = asset.get("people_exposed")
+    return "-" if v is None else f"{v:g}"
+
+
+def at_risk(asset: dict) -> str:
+    """`people_at_risk_p50` with p10 beside it: the whole headcount of an exhausted window, else 0."""
+    p50, p10 = asset.get("people_at_risk_p50"), asset.get("people_at_risk_p10")
+    if p50 is None and p10 is None:
+        return "-"
+    return f"{'-' if p50 is None else p50} / {'-' if p10 is None else p10}"
+
+
+def loss_eur(asset: dict) -> str:
+    """Expected loss as a display string carrying its band, e.g. `EUR 800,000 (300,000 - 1,600,000)`.
+
+    A string, never a number: the euro columns are an estimate from an assumed per-class replacement
+    cost and must not order the table, so nothing here is sortable into a meaningful ranking."""
+    mid = asset.get("expected_loss_eur_mid")
+    if mid is None:
+        return "not valued" if asset.get("burn_probability") is not None else "-"
+    low, high = asset.get("expected_loss_eur_low"), asset.get("expected_loss_eur_high")
+    return f"EUR {mid:,.0f} ({low:,.0f} - {high:,.0f})"
+
+
+def horizon_hours(horizon_at, as_of) -> str:
+    """`12 h` from the forecast horizon and the snapshot time, or "" when either is missing."""
+    try:
+        h = (datetime.fromisoformat(str(horizon_at).replace("Z", "+00:00"))
+             - datetime.fromisoformat(str(as_of).replace("Z", "+00:00"))).total_seconds() / 3600
+    except (TypeError, ValueError):
+        return ""
+    return f"{h:g} h" if h > 0 else ""
+
+
+def value_summary(v: dict, as_of) -> str:
+    """The header sentence for the value-at-risk totals.
+
+    A forecast that covers every located asset and reaches none of them is a zero, not a gap: it reads
+    "0 exposed within the horizon", not "forecast unavailable". The review queue still carries
+    `forecast_unavailable` for those assets, because none of them has an arrival time.
+    """
+    if not v["layer"]:
+        return ('Value at risk is off for this scenario (config.FEATURES["value_at_risk"]): '
+                "no people or euro totals are computed.")
+    span = horizon_hours(v.get("horizon_at"), as_of)
+    where = f"within the {span} forecast horizon" if span else "within the forecast horizon"
+    if v["covered"] and not v["reached"]:
+        return (f"0 exposed {where}: the forecast covers all {v['covered']} located assets and puts no burned "
+                f"area at any of them, so the zeros are its statement about those locations, not a missing "
+                f"forecast. Every asset still carries forecast_unavailable, which here means no arrival time.")
+    return (f"{v['people_exposed']:g} people exposed {where}, {v['people_at_risk_p50']:g} at risk at p50 and "
+            f"{v['people_at_risk_p10']:g} at p10, expected loss EUR {v['expected_loss_eur_mid']:,.0f} "
+            f"(band {v['expected_loss_eur_low']:,.0f} to {v['expected_loss_eur_high']:,.0f}). Of "
+            f"{v['located']} located assets, {v['excluded_people']} are left out of the people totals and "
+            f"{v['excluded_eur']} out of the euro totals for want of an input, so neither is complete.")
+
+
+def value_limits(v: dict) -> str:
+    """The known limits that must sit next to any of these numbers (handoff 002)."""
+    if not v["layer"]:
+        return ""
+    text = (f"Replacement values and damage ratios are per-class assumptions ({v['policy_version']}, "
+            "value_basis \"assumed\") with no per-asset basis; the band shown is the damage-ratio band only, so "
+            "the value uncertainty is at least as large. The figures are total economic loss, insured and "
+            "uninsured, not an insurer's figure. People at risk counts the whole headcount of an asset whose "
+            "remaining window at that arrival quantile is exhausted; it does not model partial clearance. "
+            "Euros are a display column and this total only: they never enter the ranking, the sort or a "
+            "filter, and there is no euro figure for lives.")
+    if v["enrichment"]:
+        text += (" The burn probabilities behind these totals come from the uncalibrated CA ensemble, which "
+                 "percolates almost isotropically under light wind, so the expected loss is pessimistic by "
+                 "construction (handoff 001).")
+    return text
 
 
 def window_colour(asset: dict) -> list[int]:
@@ -178,6 +258,7 @@ def ranked_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFram
         "evacuation min": a.get("evacuation_min"), "latest start (min from now)": a.get("latest_start_min"),
         "remaining window (min)": a.get("slack_min"), "status": a.get("priority_status"),
         "review flags": ", ".join(a.get("review_reasons") or []), "people": people(a),
+        "people exposed": exposed(a), "people at risk p50 / p10": at_risk(a), LOSS_COLUMN: loss_eur(a),
         "criticality": criticality_label(a),
         "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
     } for a in assets])
@@ -188,6 +269,7 @@ def review_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFram
         "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
         "known distance m": a.get("distance_to_fire_m"), "predicted arrival": a.get("fire_arrival_at"),
         "evacuation min": a.get("evacuation_min"), "people": people(a),
+        "people exposed": exposed(a), "people at risk p50 / p10": at_risk(a), LOSS_COLUMN: loss_eur(a),
         "reasons": ", ".join(a.get("review_reasons") or []), "criticality": criticality_label(a),
         "not ranked because": next((r for r in a["priority_reasons"] if r.startswith("needs review")), ""),
         "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
@@ -213,6 +295,48 @@ def components_frame(asset: dict) -> pd.DataFrame:
         {"component": "remaining window", "value": fmt(asset.get("slack_min")) + " min" if asset.get("slack_min") is not None else "-",
          "basis / source": asset.get("priority_status"), "minutes from now": asset.get("slack_min")},
     ]
+    return pd.DataFrame(rows)
+
+
+def value_frame(asset: dict) -> pd.DataFrame | None:
+    """People and euros at risk for one asset, or None when the snapshot carries no layer.
+
+    Shows the arithmetic rather than the result alone: headcount x burn probability, the assumed class
+    replacement value with its policy basis, the three damage ratios and the three expected losses, and
+    which arrival quantile made each `people_at_risk` flag fire. The policy note itself is already in the
+    asset's `sources` entry for these fields, rendered below; it is not repeated here.
+    """
+    if not any(k in asset for k in snapshot.VALUE_AT_RISK_KEYS):
+        return None
+    occ, bp = asset.get("estimated_occupancy"), asset.get("burn_probability")
+    band = config.VALUE_AT_RISK_POLICY["by_type"].get(asset.get("asset_type"))
+    ratios = "-" if band is None else f"{band['d_low']:g} / {band['d_mid']:g} / {band['d_high']:g}"
+    value, basis = asset.get("replacement_value_eur"), asset.get("replacement_value_basis")
+    rows = [
+        {"component": "people exposed", "value": exposed(asset),
+         "basis / source": (f"occupancy {occ} x burn probability {bp:g}" if occ is not None and bp is not None
+                            else "null: no headcount or no burn probability, never zero")},
+        {"component": "replacement value", "value": "not valued" if value is None else f"EUR {value:,.0f}",
+         "basis / source": basis or f"class {asset.get('asset_type')} has no replacement value in the policy"},
+        {"component": "damage ratio low / mid / high", "value": ratios,
+         "basis / source": (band or {}).get("note") or config.VALUE_AT_RISK_POLICY["version"]},
+        {"component": "expected loss", "value": loss_eur(asset),
+         "basis / source": "burn probability x damage ratio x replacement value; the band is the "
+                           "damage-ratio band only, so the value uncertainty is at least as large"},
+    ]
+    for q in ("p50", "p10"):
+        at = asset.get(f"people_at_risk_{q}")
+        arrival = asset.get(f"arrival_{q}_at")
+        if at is None:
+            why = "null: no headcount, no evacuation estimate or no forecast covering this asset"
+        elif at:
+            why = f"window exhausted at arrival {arrival}: the whole headcount, no partial clearance"
+        elif arrival:
+            why = f"window still open at arrival {arrival}"
+        else:
+            why = "the forecast covers this asset but does not reach it inside its horizon"
+        rows.append({"component": f"people at risk ({q})", "value": "-" if at is None else str(at),
+                     "basis / source": why})
     return pd.DataFrame(rows)
 
 
@@ -435,6 +559,10 @@ def render_selected(sess: Session, asset: dict) -> None:
         for r in asset["priority_reasons"]:
             st.write(f"- {r}")
         st.dataframe(components_frame(asset), width="stretch", hide_index=True)
+        value = value_frame(asset)
+        if value is not None:
+            st.markdown("**People and euros at risk** (estimate; the policy note is in Sources below)")
+            st.dataframe(value, width="stretch", hide_index=True)
         render_evacuation_control(sess, asset)
         age = priority.input_age(asset, sess.clock())
         st.markdown(f"**Input age**: oldest observed `{age['oldest_observed_at'] or 'unknown'}` "
@@ -469,6 +597,11 @@ def render_selected(sess: Session, asset: dict) -> None:
 
 # ----------------------------------------------------------------------------- main
 def main() -> None:
+    st.set_page_config(page_title="FireLine", layout="wide", page_icon=":fire:")
+    if st.sidebar.toggle("Mock voice scenarios", value=st.query_params.get("demo") == "voice", key="mock_voice_mode"):
+        from fireline.voice_demo_panel import render_voice_demo
+        render_voice_demo()
+        return
     sess = session()
     if sess.scenario_id is None and sess.scenario_ids:
         sess.select_scenario(DEFAULT_SCENARIO if DEFAULT_SCENARIO in sess.scenario_ids else sess.scenario_ids[0])
@@ -500,6 +633,28 @@ def main() -> None:
                 help=f"assets above the default criticality tier, analyst-confirmed; "
                      f"{c.get('criticality_unassessed', 0)} still unassessed. A separate view, never a "
                      f"contact order.")
+
+    v = s["value_at_risk"]
+    if v["layer"]:
+        n = st.columns(4)
+        n[0].metric("People exposed", f"{v['people_exposed']:g}",
+                    help=f"sum of estimated occupancy x burn probability over located assets; "
+                         f"{v['excluded_people']} of {v['located']} located assets have no headcount or no "
+                         f"burn probability and are left out, never counted as zero")
+        n[1].metric("People at risk (p50)", f"{v['people_at_risk_p50']:g}",
+                    help=f"whole headcount of every located asset whose remaining evacuation window at the p50 "
+                         f"arrival is exhausted; at p10 it is {v['people_at_risk_p10']:g}. No partial clearance "
+                         f"is modelled, and {v['excluded_people']} located assets are excluded for want of an input")
+        n[2].metric("Expected loss (mid)", f"EUR {v['expected_loss_eur_mid']:,.0f}",
+                    help=f"band EUR {v['expected_loss_eur_low']:,.0f} to {v['expected_loss_eur_high']:,.0f} from the "
+                         f"class damage ratios; assumed per-class replacement costs ({v['policy_version']}), not a "
+                         f"per-asset valuation, and {v['excluded_eur']} of {v['located']} located assets are not valued")
+        n[3].metric("Excluded from totals", f"{v['excluded_people']} people / {v['excluded_eur']} eur",
+                    help=f"located assets left out of each total because an input is null (no headcount, no burn "
+                         f"probability, or a class the policy does not value), so neither total is complete. "
+                         f"{v['located']} located assets in all")
+    limits = value_limits(v)
+    st.caption(value_summary(v, s["as_of"]) + (f" {limits}" if limits else ""))
 
     deck, unlocated = build_deck(sess)
     st.pydeck_chart(deck, width="stretch")
@@ -553,4 +708,5 @@ def main() -> None:
             st.write(f"- {line}")
 
 
-main()
+if __name__ == "__main__":
+    main()
