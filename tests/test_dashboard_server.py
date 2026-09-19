@@ -158,3 +158,50 @@ def test_read_only_database_adapter_never_creates_missing_database(tmp_path):
     assert reader.updates(0) == [{'revision': 1, 'refresh': 'full_state'}]
     with TestClient(create_app(reader)) as client:
         assert client.get('/api/state').json()['revision'] == 1
+
+
+def test_public_projection_redacts_formatted_phones_but_preserves_stable_numeric_ids():
+    state = envelope()
+    state['assets'][0].update(asset_id='123456789', name='First')
+    state['assets'][0]['sources'][0]['notes'] = 'Call 912 345 678 or (212) 555-1234'
+    state['contacts']['ranked'][0]['asset_id'] = '123456789'
+    projected = public_state(state)
+    assert projected['assets'][0]['asset_id'] == '123456789'
+    assert projected['contacts']['ranked'][0]['asset_id'] == '123456789'
+    notes = projected['assets'][0]['sources'][0]['notes']
+    assert '912' not in notes and '555' not in notes
+    assert projected['as_of'] == state['as_of']
+
+
+def test_verified_coordination_export_keeps_readiness_and_response_timings():
+    import json
+    from pathlib import Path
+    state = json.loads(Path('fixtures/dashboard/coordination-export.json').read_text(encoding='utf-8'))
+    projected = public_state(state)
+    assert projected['plan']['locations'][0]['evacuation_status'] == 'not_confirmed'
+    assert projected['plan']['locations'][0]['self_evacuation_ability'] == 'unknown'
+    assert projected['plan']['response']['steps'][0]['depart_min'] == 0
+    assert projected['plan']['response']['steps'][0]['finish_min'] == 3
+    assert projected['plan']['response']['assumptions'] == state['plan']['response']['assumptions']
+
+
+def test_multi_crew_supplied_routes_preserve_lonlat_and_task_status():
+    state = envelope()
+    state['plan']['response'] = {'schema_version': 'multi-response-plan-1', 'teams': [
+        {'team_id': 'truck', 'locked': False, 'remaining_transport_capacity': 2,
+         'tasks': [{'action_id': 'evac', 'asset_id': 'a', 'status': 'proposed', 'depart_min': 3,
+                    'finish_min': 9, 'route_source': 'verified graph fixture',
+                    'path_lonlat': [[3.1, 41.9], [3.2, 41.8]]}]}]}
+    assert public_state(state)['plan']['response'] == state['plan']['response']
+
+
+def test_unserved_assets_and_numeric_coverage_survive_public_response_projection():
+    state = envelope()
+    state['plan']['response'] = {'coverage': {'a': 0, 'api_key': 'secret'},
+        'unserved': {'a': 'needs additional resources', 'private': 'secret'},
+        'blocked_actions': {'act-a': ['missing_route']}, 'review': [{'asset_id': 'a', 'reason': 'unknown_transport'}]}
+    public = public_state(state)['plan']['response']
+    assert public['coverage'] == {'a': 0}
+    assert public['unserved'] == {'a': 'needs additional resources'}
+    assert public['blocked_actions'] == {'act-a': ['missing_route']}
+    assert public['review'] == [{'asset_id': 'a', 'reason': 'unknown_transport'}]

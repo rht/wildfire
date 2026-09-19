@@ -14,9 +14,9 @@
       this.retryDelay = 1000;
     }
     status() {
-      const age = this.state ? this.now() - Date.parse(this.state.as_of) : Infinity;
+      const age = this.state ? this.now() - Date.parse(this.state.snapshot_as_of ?? this.state.as_of) : Infinity;
       this.onStatus({connection:this.connection,
-        stale:!Number.isFinite(age) || age > 120000 || this.state?.data_status === 'stale',
+        stale:!Number.isFinite(age) || age > 120000 || ['stale','unavailable'].includes(this.state?.data_status),
         errors:this.state?.errors?.length || 0});
     }
     accept(state, reset=false) {

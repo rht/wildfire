@@ -2207,32 +2207,108 @@ and identical configured limits.
 
 ## Live dashboard integration — codex/live-dashboard
 
-For @mirrdj: preserve Michella's terminal frame, map, cards, location selection,
-provenance, database view and change log, with backend state as the source of truth.
-The dashboard is read-only; opening it never enqueues a call or changes a task.
-Call approval and dispatch remain in the existing explicit queue workflow.
+For @mirrdj: Michella's terminal frame, map, cards, selection, evidence, database
+view and change log now consume backend state. The dashboard is read-only: loading,
+reconnecting or clicking a location never enqueues a call, assigns a task or
+confirms movement. Call approval/dispatch remain in the existing shared queue flow.
+Her `claude/workflow-setup` branch was merged into this task branch only.
 
-Design: `fireline.dashboard_server.create_app(store)` serves the dashboard and
-`GET /api/state`, plus `WS /api/updates?after_revision=N`. The injected store
-implements synchronous `state()` and `updates(after_revision)` returning complete
-`coordination-state-1` envelopes. Full envelopes make revision gaps recoverable;
-reconnect replays retained revisions or sends current state when history is missing.
-The service projects public fields, preserves nulls and evidence, and never serves
-the repository, credentials, raw phone numbers or private call payloads.
-Browser lists use `contacts.ranked` / `contacts.review` order and asset IDs, never
-frontend scoring. Backend-supplied routes are displayed as proposals with their
-status and provenance; no route or confirmation is inferred. Connection freshness
-and source age are displayed independently. The local CLI binds to 127.0.0.1:8521.
+Public interface:
 
-Implementation plan (approved dispatch scope; execute locally without extra agents):
+- `fireline.dashboard_server.create_app(store, poll_interval=0.5)` accepts a
+  synchronous `state()` / `updates(after_revision)` store. `state()` returns a
+  `coordination-state-1` envelope or `None` before initialization. Updates may be
+  ordered full envelopes, wrapped full envelopes, or `coordination-update-1`
+  notifications with `refresh="full_state"` (the actual coordination export).
+- `GET /api/state` returns the public current envelope; unavailable/uninitialized
+  state returns HTTP 503 with `{"error":"state_unavailable"}`. Responses use
+  `Cache-Control: no-store`. There are no mutation endpoints.
+- `WS /api/updates?after_revision=N` sends complete public envelopes, plus
+  `{"type":"heartbeat","revision":N}` every ten seconds, or
+  `{"type":"error","code":"state_unavailable"}` before closing on failure.
+  Historical full states replay in revision order. Compact notifications resolve
+  to the latest full state and may coalesce intermediate revisions. Reconnect
+  fetches REST first, then subscribes from that revision; duplicate/older frames
+  are ignored. Missing history catches up from a full state. Source age uses
+  `snapshot_as_of` where present; stale/unavailable source and transport failure
+  remain visible while the last good state stays on screen.
+- `CoordinationDatabase(path)` reads the committed `coordination_revisions`
+  table using SQLite `mode=ro`. It never initializes, migrates or refreshes the
+  operational database. Point it at the database written by live-coordination;
+  dashboard polling does not cause coordination ticks or call-worker activity.
 
-- [ ] Write failing API/privacy/revision tests using a store contract double, then
-  implement `dashboard_server.py` and an explicit offline store/fixture.
-- [ ] Write failing UI tests for backend order, unknown values, independent call
-  facts, replay/reconnect and safe text; connect Michella's HTML to client/view JS.
-- [ ] Consume the verified coordination export if available, run relevant/full
-  tests, inspect browser if available, scan changed files with Norma and perform
-  scoped review. Commit/push checkpoints and create a PR to main.
+The envelope keeps `schema_version, scenario_id, snapshot_id, revision, as_of,
+input_mode, assets, contacts:{ranked,review}, calls, plan:{locations,
+remaining_capacity,response}, teams, tasks, events, errors`. Browser order comes
+from `contacts`, joined by stable `asset_id`; no frontend score or routing exists.
+Null facts remain unknown. Call lifecycle/dispatch, reported assistance, human
+request, message acknowledgement and departure/arrival are separate fields.
+Allocation lifecycle and transport/reception confirmations are shown separately.
+The allowlist removes private call payloads and contact fields, redacts phone-like
+public text, preserves stable IDs, and replaces internal error details with a
+public error code. Adding public fields requires reviewing the projection.
 
-The offline demonstration is explicitly labelled and uses the same store/API
-interface. It contains illustrative state only and cannot call anyone.
+Verified sibling boundaries:
+
+- Actual `CoordinationStore` export at `ce9eb6b4870a85af1906b8635f728d4f1ff46501`
+  generated a local SQLite database; REST and WebSocket matched its public state
+  without modifying it. `fixtures/dashboard/coordination-export.json` records
+  its synthetic envelope for regression tests. The optional integration test
+  uses `fireline.coordination` when installed, or an explicitly supplied export.
+- `multi-response-plan-1` in `plan.response` is rendered with per-team tasks and
+  proposed timings. Only supplied `path_lonlat` geometry draws truck paths
+  (converted to Leaflet latitude/longitude order).
+- Optional `plan.locations[].routes[]` accepts `route_id, status, source` and
+  `path` in latitude/longitude order or GeoJSON `geometry`. Route absence draws
+  no line. Current evacuation exports provide allocation/destination facts but
+  do not provide route geometry; those facts display without inventing paths.
+  Their `state`, `instruction_allowed`, `safety` and assistance confirmations
+  are displayed when coordination includes the allocation overlay.
+
+Local usage (Python 3.12+, Node for UI tests):
+
+```sh
+python -m venv .venv
+.venv/bin/python -m pip install -e '.[dashboard,dashboard-test,dev]'
+.venv/bin/python -m fireline.dashboard_server --demo --port 8521
+# Or use the existing coordinator database, without a call worker:
+.venv/bin/python -m fireline.dashboard_server --database /absolute/path/to/coordination.sqlite --port 8521
+npm ci
+npm test
+npm run lint
+PYTHONPATH=. .venv/bin/python -m pytest
+```
+
+The CLI binds only `127.0.0.1`; open `http://127.0.0.1:8521/`. `--demo` is explicitly
+labelled, static and illustrative, using backend `rank_contacts` and the same
+store/API contract. It cannot call anyone. Port 8511 is untouched. The optional
+`npm run test:browser` expects the local demo on 8521 and an installed Playwright
+Chromium; `DASHBOARD_BROWSER_EXECUTABLE` can select an existing local binary.
+Screenshots are local ignored artifacts under `data/dashboard-verification/`.
+
+Implementation plan and validation:
+
+- [x] Failing API/privacy/revision tests, then server and offline store.
+- [x] Failing UI tests for backend order, unknown facts, reconnect and safe text,
+  then integrate the existing visual shell.
+- [x] Verify actual coordination export, full regression suite, real-browser
+  smoke and scoped review; fix review findings before final push/PR.
+
+No deployment or live calls were performed. Remaining integration is producer
+work: live-coordination must refresh its shared database and include approved
+allocation/multi-crew exports; route geometry must be supplied by the backend.
+Leaflet and the reference satellite basemap still require external network access;
+if Leaflet is unavailable, the location list and evidence remain usable. This is
+a local read-only viewer, without a hosted authentication/deployment layer.
+
+Validation at handoff: `DASHBOARD_COORDINATION_EXPORT=data/dashboard-verification/coordination.py
+PYTHONPATH=. .venv/bin/python -m pytest -q` passed **616 tests, 1 existing skip**
+(using the verified sibling export locally; without it the optional integration
+case skips until `fireline.coordination` is available). **13 Node tests**, ESLint
+and real Chromium REST/WebSocket/navigation/reconnect checks passed; browser
+requests were read-only and had no page errors. One dependency deprecation warning
+comes from Starlette's test client. Scoped review findings were fixed and rechecked.
+Norma scanned dashboard changes only; details are in
+`reports/norma-dashboard-review.json`. Remaining JS flags were reviewed as false
+positives (WebSocket handler, caller-caught fetch rejection); JS coverage was
+reduced, CJS unsupported, and the final package scan returned a tool error.

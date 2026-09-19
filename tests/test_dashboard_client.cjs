@@ -48,3 +48,9 @@ test('bad JSON retains last good state and schedules recovery',async()=>{
   assert.equal(h.sockets[0].closed,true);h.client.stop();
 });
 module.exports={state};
+test('fresh refresh does not hide old or unavailable snapshot evidence',async()=>{
+  const h=harness(),s=state();s.snapshot_as_of='2026-09-20T08:00:00Z';h.setLatest(s);
+  await h.client.start();assert.equal(h.statuses.at(-1).stale,true);
+  h.client.stop();s.snapshot_as_of=s.as_of;s.data_status='unavailable';h.setLatest(s);
+  await h.client.start();assert.equal(h.statuses.at(-1).stale,true);h.client.stop();
+});

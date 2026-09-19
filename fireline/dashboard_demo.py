@@ -11,7 +11,7 @@ class DemoStore:
     """Static, explicitly labelled fixture. Updates can only replay its one revision."""
     def __init__(self):
         assets = json.loads((Path(__file__).resolve().parents[1] /
-                             'fixtures/dashboard/assets.json').read_text())
+                             'fixtures/dashboard/assets.json').read_text(encoding='utf-8'))
         locations = [Location(
             asset_id=a['asset_id'], name=a['name'], x_m=0, y_m=0,
             distance_m=a['distance_to_fire_m'], people=a['estimated_occupancy'],

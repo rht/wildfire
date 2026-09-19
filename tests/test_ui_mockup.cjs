@@ -65,3 +65,35 @@ test('removed selected asset clears detail and absent routes never get invented'
  assert.equal(h.lines.length,0);s.assets=s.assets.filter(x=>x.asset_id!=='a');s.contacts.ranked=s.contacts.ranked.slice(0,1);
  h.view.render(s);assert.match(h.document.getElementById('detailPanel').textContent,/Select a location/);h.dom.window.close();
 });
+test('verified coordination export displays actual plan status and proposed response timings',()=>{
+ const h=load(),s=JSON.parse(fs.readFileSync(path.join(__dirname,'../fixtures/dashboard/coordination-export.json'),'utf8'));
+ h.view.render(s);h.document.querySelector('[data-asset-id="A"]').click();
+ const text=h.document.getElementById('detailPanel').textContent;
+ assert.match(text,/Evacuation statusnot_confirmed/);assert.match(text,/Plan modeundetermined/);
+ assert.match(h.document.getElementById('responsePlan').textContent,/act_C/);
+ assert.match(h.document.getElementById('responsePlan').textContent,/Proposed departure \(min\)0/);
+ h.dom.window.close();
+});
+test('multi-crew paths use supplied lonlat geometry and retain proposed status',()=>{
+ const h=load(),s=sample();s.plan.response={schema_version:'multi-response-plan-1',teams:[
+ {team_id:'truck',tasks:[{action_id:'evac',asset_id:'a',status:'proposed',depart_min:3,finish_min:9,
+ route_source:'verified graph fixture',path_lonlat:[[3.1,41.9],[3.2,41.8]]}]}]};
+ h.view.render(s);assert.deepEqual(Array.from(h.lines[0],p=>Array.from(p)),[[41.9,3.1],[41.8,3.2]]);
+ assert.match(h.document.getElementById('responsePlan').textContent,/proposed/);h.dom.window.close();
+});
+test('allocation lifecycle and assistance confirmations display supplied backend facts',()=>{
+ const h=load(),s=sample();s.plan.locations=[{asset_id:'a',allocation_id:'alloc',state:'departed',
+ destination_id:'shelter',instruction_allowed:false,safety:'review',assistance:{transport_confirmed:true,reception_confirmed:null,pickup_min:4}}];
+ h.view.render(s);h.document.querySelector('[data-asset-id="a"]').click();
+ const text=h.document.getElementById('detailPanel').textContent;
+ assert.match(text,/Allocation statedeparted/);assert.match(text,/Transport confirmedyes/);
+ assert.match(text,/Reception confirmedunknown/);h.dom.window.close();
+});
+test('response panel exposes uncovered and unassigned assets with backend reasons',()=>{
+ const h=load(),s=sample();s.plan.response={coverage:{a:0},unserved:{a:'needs additional resources'},
+ unassigned:[{asset_id:'b',reasons:['no_available_team']}],review:[{asset_id:'a',reason:'unknown_transport'}],
+ blocked_actions:{'act-a':['missing_route']}};
+ h.view.render(s);const text=h.document.getElementById('responsePlan').textContent;
+ for(const reason of ['needs additional resources','no_available_team','unknown_transport','missing_route']) assert.ok(text.includes(reason),reason);
+ h.dom.window.close();
+});

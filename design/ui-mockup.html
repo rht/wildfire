@@ -125,6 +125,7 @@
     background: var(--paper); border-left: 1px solid var(--line); overflow-y: auto;
   }
   .card {
+    flex-shrink: 0;
     background: var(--panel); border-radius: 10px; margin: 10px 12px 0;
     box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 0 0 1px var(--line); overflow: hidden;
   }
@@ -268,6 +269,8 @@
   #changeLog .cl-entry:last-child { border-bottom: none; }
 
   button:disabled { opacity: 0.65; cursor: default; }
+  #responsePlan { padding: 0 14px 14px; }
+  .qrow .info { flex: 1; }
   #detailPanel .v { overflow-wrap: anywhere; }
   .leaflet-tooltip.fire-tip { font-size: 11px; }
 </style>
@@ -342,6 +345,7 @@
         <div id="detailPanel"><p style="color:var(--muted);font-size:13px;padding:0 14px">Select a location from the list, or a pin on the map.</p></div>
       </div>
 
+      <div class="card"><div class="panelHead">Supplied response plan</div><div id="responsePlan"></div></div>
       <div class="card">
         <div id="reviewQueue"></div>
       </div>
