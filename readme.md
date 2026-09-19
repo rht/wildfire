@@ -1515,3 +1515,287 @@ approved-route examples, preserving all seven arguments and all three IDs.
 Its branch still needs integration alongside this PR. The package retains the
 existing English speech bindings; a language argument alone does not validate
 multilingual STT/TTS support.
+
+
+## Galtea evaluation of the SLNG voice agent
+
+Research checked against official documentation on **2026-09-20**. The apparent
+integration mismatch is real: Galtea's documented SLNG HTTP integration exercises
+the **text layer**, while the hosted SLNG agent runs a voice session. This section
+records documented capabilities, not a successful live integration test.
+
+| Evaluation path | What it exercises | Current documented boundary |
+| --- | --- | --- |
+| SLNG Context Router via Galtea Endpoint Connection | Prompt, greeting, conversational answers and guardrails | Text only; explicitly excludes speech recognition and speech synthesis. |
+| Galtea Phone Connection | A real call to an SLNG agent's inbound phone number | Requires working inbound telephony; Galtea initiates the call. |
+| Galtea WebRTC Connection | Planned Pipecat Cloud voice sessions | Connections can be configured, but running evaluations is marked coming soon; this is not an SLNG LiveKit connector. |
+| Imported conversation sessions | The supplied transcript and conversation-level metrics | No agent endpoint needed; synthetic transcripts do not demonstrate actual agent behavior. |
+
+Sources: [Galtea's SLNG integration](https://docs.galtea.ai/sdk/integrations/slng),
+[Phone Connection](https://docs.galtea.ai/concepts/product/phone-connection),
+[WebRTC availability](https://docs.galtea.ai/concepts/product/webrtc-connection),
+and [conversation ingestion](https://docs.galtea.ai/sdk/tutorials/evaluating-conversations).
+
+### Text integration setup and interpretation
+
+For a prompt regression run, create a conversational Galtea product and an HTTP
+Endpoint Connection: POST to
+`https://us.context-router.slng.ai/v1/chat/completions` (the guide also lists `in`),
+Bearer authentication using the private SLNG key, JSON content type, 60-second
+timeout, and output mapping `$.choices[0].message.content`. The request must include
+the resolved system prompt, appropriate greeting, every previous turn and the next
+user message. The guide uses `model: slng/auto`, a stable `slng_agent_id` label and
+`slng_session_id: {{ galtea_session_id }}`. Test the connection before creating a
+version pointing to it. Update the template whenever the prompt changes.
+[Official connection setup](https://docs.galtea.ai/sdk/integrations/slng).
+
+The Context Router's agent label scopes request grouping/cache; it does not select
+or load a saved hosted voice agent. Router model selection depends on its
+configuration. Therefore, record the tested prompt, fixture arguments and actual
+model/configuration before claiming parity with a deployed agent. A successful
+HTTP answer does not prove hosted tool execution, captured call results or audio
+behavior. This conclusion follows from the
+[SLNG router contract](https://docs.slng.ai/guides/execution-layer/llm/integration-guide).
+
+### Evaluate prepared scripts without an endpoint
+
+Create a Galtea version with the intended prompt recorded, without attaching an
+endpoint. Then ingest each complete conversation as a separate development
+session. The current documented Python SDK sequence is:
+
+```python
+session = galtea.sessions.create(
+    version_id=version_id,
+    custom_id=case_id,
+    is_production=False,
+    context=scenario_context,
+    metadata={"source": "synthetic-script", "prompt_revision": prompt_revision},
+)
+galtea.traces.create_batch(
+    session_id=session.id,
+    conversation_turns=conversation_turns,
+)
+evaluations = galtea.evaluations.create(
+    session_id=session.id,
+    metrics=[{"name": "Role Adherence"}, {"name": "Conversation Completeness"}],
+)
+```
+
+This is setup guidance, not an executed remote evaluation. `conversation_turns`
+contains ordered dictionaries with `role` (`user` or `assistant`) and `content`.
+Explicitly set `is_production=False`: sessions without a test case otherwise default
+to production. Non-production imported sessions do not require a test case.
+Keep batches to the recommended maximum of 100 turns. The final call can instead
+use `specification_ids` to resolve linked metrics. These methods upload data and
+request evaluation; they are not local, cost-free checks.
+[Version creation](https://docs.galtea.ai/sdk/api/version/create),
+[session creation](https://docs.galtea.ai/sdk/api/session/create),
+[trace batches](https://docs.galtea.ai/sdk/api/trace/create-batch), and
+[evaluation creation](https://docs.galtea.ai/sdk/api/evaluation/create).
+
+For this readiness interview, review both good and intentionally failing scripts
+against explicit criteria: simulation disclosure; one question at a time;
+clarification of missing or contradictory answers; accurate road-warning readback;
+recording a human-contact request without claiming a transfer; and no invented
+resource dispatch or evacuation completion. These are project-specific evaluation
+criteria, not claims about Galtea's built-in metrics. Label scores from prepared
+assistant responses as **script review**. To measure the agent, substitute actual
+responses captured from its model or voice sessions and retain their provenance.
+
+### Full voice testing and remaining gaps
+
+Galtea's supported documented route for SLNG is to dial an inbound number attached
+to the agent. Set **Agent Speaks First** for this interviewer and use a separate
+Phone-target version. Phone runs produce recorded audio and transcribed turns;
+the documented metrics score the transcript. Listen to recordings and separately
+check interruption, pause handling, pronunciation and latency before making
+claims about those behaviors.
+[Galtea Phone Connection](https://docs.galtea.ai/concepts/product/phone-connection).
+
+SLNG inbound setup uses a carrier-owned number, with either Twilio webhook routing
+or SIP forwarding to an active inbound connection attached to one agent. An
+existing outbound trunk alone does not establish this inbound route. Our dynamic
+package also needs a reviewed way to supply its required call-start bindings for
+an inbound test; the Galtea phone connection documentation does not establish
+that those arguments can be supplied. Treat inbound setup and fixture binding as
+unverified prerequisites.
+[SLNG inbound routing](https://docs.slng.ai/guides/agents/telephony/inbound).
+
+SLNG browser sessions return LiveKit connection credentials and carry audio plus
+transcripts; the documented transcript topic is `slng.transcript.v1`. Those
+transcripts can feed the ingestion flow after normalization, but this requires
+our own capture path. Galtea's documented WebRTC adapter targets Pipecat Cloud
+and explicitly cannot run evaluations yet. We have no evidence of a working
+Galtea-to-SLNG LiveKit adapter; that does not exclude a private or future adapter.
+[SLNG browser integration](https://docs.slng.ai/guides/agents/production/embed-in-website)
+and [Galtea WebRTC limitation](https://docs.galtea.ai/concepts/product/webrtc-connection).
+
+No provider configuration, inbound connection, paid Galtea run or live voice call
+was created by this research. Next evidence needed is either actual captured
+transcripts for content evaluation or an authorized, correctly bound phone test
+for the complete voice path.
+
+### Revised interview wording and speech probes (2026-09-20)
+
+The fixed mock, dynamic package and REST-generated prompt now use shorter spoken
+questions, explicit AI/simulation disclosure, natural message receipt, and an
+immediate pause for human requests. Internal asset IDs and instruction versions
+are not spoken. If a readable intended location is missing, the interview pauses
+for human review instead of assuming an identity match. The seven dynamic call
+arguments and existing answer schema remain compatible. These repository edits
+have not been deployed to the hosted agent.
+
+`fixtures/voice_script_probes.json` contains 13 synthetic conversation checkpoints:
+human requests, assistance needs, uncertain corrections, repeatedly unclear audio
+represented as text, conflicting roads, unknown alternative roads, wrong or
+missing locations, incomplete household knowledge, readiness without departure,
+role overrides, and natural acknowledgements. List them without network access:
+
+```bash
+python -m scripts.evaluate_voice_script
+```
+
+To generate fresh continuations with the configured Nebius model (paid requests;
+synthetic data only), run:
+
+```bash
+python -m scripts.evaluate_voice_script --run-live-nebius \
+  --output data/voice-script-probes.json
+# Add --case missing-location-name to probe only that checkpoint.
+```
+
+The checked-in `reports/voice-script-probes-2026-09-20.json` captures 13 actual
+DeepSeek-V4.1-Flash continuations with the resolved prompts and source hashes.
+Preceding turns are scripted fixtures. Codex's content review found 10 meeting
+their speech criteria and three concerns: assistance was not explicitly
+acknowledged, a blocked route was repeated before being rejected, and a role
+override response was too long and repeated the introduction. These are content
+review findings, not Galtea scores or production acceptance. New runs start with
+every response awaiting review; generated text is never automatically a pass.
+
+This probe has no audio or tools and does not run SLNG's configured Nemotron model.
+It cannot validate interruptions, real transcription errors, saved answers,
+handoff, call routing or end-to-end coordination. Existing offline interview and
+readiness tests separately exercise conservative answer normalization and task
+creation. The first live probe also exposed Nebius rejecting `tools: []`; the
+client now omits that field for tool-free requests, with a regression test.
+
+A fresh SLNG account check found the mock agent in `eu-central` with an outbound
+Vonage trunk and no inbound trunk; the available trunk listing showed only that
+outbound connection. Galtea credentials were not configured at that check.
+
+### Galtea voice setup prepared for @mirrdj
+
+After the request to set up full voice testing, a separate SLNG agent was created:
+`fireline-galtea-synthetic`, ID `772b87f7-c37a-4199-8586-68250c31d01d`, region
+`eu-central`. A fresh GET verified the revised prompt and greeting match the
+prepared configuration, its template variables are empty, and both trunk fields
+are null. No phone call was placed. The existing mock agent was not updated.
+
+This test agent resolves the dynamic prompt against a fixed fictional Willow
+House incident before deployment. It retains the configured Nemotron, Deepgram
+speech models, conversation variables and end-call tool. It avoids assuming
+Galtea can provide SLNG inbound call-start arguments. It tests the prompt with a
+fixed incident; it does not test dispatch-time binding to real snapshots.
+
+Rebuild its configuration locally after editing the dynamic package:
+
+```bash
+unmute compile voice-agent/dynamic --target slng
+python -m scripts.prepare_galtea_voice
+# Produces ignored data/galtea-agent/agent.json; does not deploy or call.
+```
+
+The generator deliberately clears both trunk attachments. Before any later push
+to the same hosted test agent, preserve/reapply its reviewed inbound connection;
+otherwise an update would detach it. Keep this test configuration separate from
+the operational dynamic agent.
+
+Prepared Galtea BEHAVIOR imports:
+
+- `fixtures/galtea/voice_smoke.csv`: one human-request case, capped at six turns.
+- `fixtures/galtea/voice_regression.csv`: twelve cases covering ordinary readiness,
+  assistance, uncertainty, wrong location, incomplete household knowledge, road
+  misunderstandings, unknown alternatives, role overrides, transport and stopping.
+  Each row caps the conversation at six to sixteen turns.
+
+These are actual CSV import files, not results. They all use the fixed incident.
+Missing-location and changed-brief tests from the text probes require different
+fixture deployments and are deliberately absent here. Uncertainty expressed in
+clear speech does not test noisy audio; configure noise separately when needed.
+The column names and pipe-separated stopping criteria follow the
+[Galtea behavior dataset format](https://docs.galtea.ai/concepts/product/dataset/behavior-datasets).
+
+Two prerequisites remain before an end-to-end voice run:
+
+1. Add `GALTEA_API_KEY` to the ignored `.env` and select/create a Galtea
+   conversational product. No Galtea resources or evaluations have been created.
+2. In the SLNG dashboard, create an inbound connection and route a dedicated test
+   number to it through the carrier, then attach it to the synthetic agent above.
+   Verify this route reaches the agent before giving that number to Galtea.
+   SLNG's public API cannot create/edit telephony connections, although it can
+   attach an existing connection to an agent.
+   [SLNG telephony administration](https://docs.slng.ai/guides/agents/telephony/overview).
+
+In Galtea, create a Phone Connection for that verified inbound number, with
+**Agent Speaks First** enabled. Create a version referencing that connection and
+record the resolved system prompt from `data/galtea-agent/agent.json`. Create a
+capability specification and link explicitly selected metrics to this rubric:
+AI/simulation disclosure, identity confirmation, accurate road restrictions,
+unknowns instead of guesses, immediate handling of human/stop requests, and no
+unsupported dispatch, callback, route or evacuation-completion claims. Do not
+treat a model's text confidence as verified readiness.
+
+Upload only `voice_smoke.csv` into a dedicated smoke specification first. The
+documented SDK setup for an existing product, with `galtea==5.3.1`, is:
+
+```python
+phone = galtea.phone_connections.create(
+    product_id=product_id, name="FireLine synthetic phone",
+    phone_number=verified_inbound_number, agent_speaks_first=True,
+)
+version = galtea.versions.create(
+    product_id=product_id, name="FireLine phone smoke",
+    system_prompt=resolved_prompt, phone_connection_id=phone.id,
+)
+spec = galtea.specifications.create(
+    product_id=product_id, name="Readiness phone smoke",
+    description=reviewed_rubric, type="CAPABILITY", metric_ids=validated_metric_ids,
+)
+dataset = galtea.datasets.create(
+    product_id=product_id, name="Readiness phone smoke", type="BEHAVIOR",
+    dataset_file_path="fixtures/galtea/voice_smoke.csv",
+    specification_id=spec.id, language="en", strategies=["spoken"],
+)
+```
+
+Resolve metric IDs from `galtea.metrics.list(include_legacy=False)`; do not assume
+a description-only specification has runnable metrics. Check each creation
+returned an object and save its ID before proceeding; do not blindly rerun the
+creation sequence. The SDK has no product-creation method. Set CSV conversation
+limits in each row; dataset-level limits do not override imported rows.
+[Dataset creation](https://docs.galtea.ai/sdk/api/dataset/create),
+[phone connection creation](https://docs.galtea.ai/sdk/api/phone-connection/create),
+[specification creation](https://docs.galtea.ai/sdk/api/specification/create).
+
+After verifying the smoke specification contains exactly that one-case dataset
+and selected metrics, an explicit run places a real call to the test agent:
+
+```python
+job = galtea.evaluations.run(version_id=version.id, specification_ids=[spec.id])
+status = galtea.jobs.get_status(job_id=job["jobId"])
+```
+
+Always scope `specification_ids`; omitting it could run unrelated datasets. Job
+completion establishes inference completion, not that every metric has finished
+scoring or passed. Review the recording, transcript, metrics and SLNG saved
+variables before enabling the separate regression dataset. This SDK sequence is
+prepared guidance, not an executed Galtea run.
+[Run API](https://docs.galtea.ai/sdk/api/evaluation/run),
+[job status](https://docs.galtea.ai/sdk/api/job/get-status).
+
+Local verification of this revision: 682 tests passed and one skipped with the
+Unmute compilation check enabled. Both voice packages validated. The final
+text-probe report's fixture and prompt hashes match the checked-in sources.
+Review corrected the missing-location stop condition and the wrong-location
+voice persona; the three surrogate-model speech concerns above remain visible.

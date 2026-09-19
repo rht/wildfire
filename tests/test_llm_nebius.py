@@ -143,6 +143,14 @@ def test_model_comes_from_fireline_model_env(monkeypatch):
     assert NebiusLLM("zai-org/GLM-5.3", api_key="k").model == "zai-org/GLM-5.3"
 
 
+def test_text_only_request_omits_tools_instead_of_sending_rejected_empty_list():
+    session = StubSession([{'content': 'Hello.'}])
+    response = NebiusLLM(api_key='test', session=session).create(
+        'Speak briefly.', [{'role': 'user', 'content': 'Hello'}], [])
+    assert 'tools' not in session.requests[0]['body']
+    assert response.content[0].text == 'Hello.'
+
+
 def test_http_error_is_raised_with_the_model_and_status():
     llm = NebiusLLM(api_key="k", session=StubSession([{}], status_code=429))
     with pytest.raises(RuntimeError, match="429"):

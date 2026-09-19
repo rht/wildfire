@@ -166,7 +166,7 @@ def agent_configuration(request, *, name, region, models, tool_refs=None, outbou
     prompt = (interview_prompt(request, template=True) +
               '\nInternal call binding: request_id={{request_id}}; snapshot_id={{snapshot_id}}. '
               'Never speak these internal identifiers or change the call binding.')
-    config = dict(name=name, system_prompt=prompt, greeting='I am an AI readiness assistant. {{scenario_notice}}. May I confirm your location?',
+    config = dict(name=name, system_prompt=prompt, greeting="{{scenario_notice}}. I'm an AI readiness assistant. What building or address are you at?",
                   language=request.language, region=region, models=dict(models),
                   tool_mode='shared', tool_refs=list(tool_refs or []), mcp_refs=[],
                   template_defaults={'scenario_notice': 'SIMULATION', 'road_warning_brief': road_warning_brief([])})

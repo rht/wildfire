@@ -133,7 +133,7 @@ tools:
 conversation:
   greeting:
     speaks_first: agent
-    text: "I am an AI readiness assistant. {{scenario_notice}}. May I confirm that you are at {{asset_id}}?"
+    text: "{{scenario_notice}}. I'm an AI readiness assistant. What building or address are you at?"
   interruption:
     enabled: true
 
