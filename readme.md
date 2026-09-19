@@ -15,25 +15,34 @@ Use [Superpowers](https://github.com/obra/superpowers) for development. Work in 
 ```sh
 make setup        # uv venv + uv pip install -e ".[dev]"
 make test         # pytest, no network, no LLM key
-make snapshots    # rebuild fixtures/snapshots/ (synthetic fire; real-area facilities) with scripts/make_snapshots.py
+make snapshots    # rebuild fixtures/snapshots/ (synthetic fire + synthetic forecasts; real-area facilities) with scripts/make_snapshots.py
 make demo         # streamlit run fireline/app.py: map, ranked table, review queue, tasks, change log
 make investigate  # one agent investigation; live with ANTHROPIC_API_KEY, else a labelled prerecorded replay
 make fetch        # pull real Gencat registers and Open-Meteo wind into data/ (network)
 make precompute   # v0 engine demo (spread CA, routing, decisions); labelled enrichment behind config.FEATURES
 ```
 
-`CONTRACTS.md` holds the module APIs that implement section 5 and the coordination side. `fireline/`
-has `snapshot.py` (producer), `fire_input.py` (Deepfire poll or recorded responses, stale status,
-latency), `priority.py` and `tasks.py` (consumer: scoring, SQLite tasks, roster, confirmed overrides),
-`agent.py` and `llm.py` (four-tool investigation), `app.py` (Streamlit) and `config.py` (policies and
-feature flags). The v0 engine (`spread.py`, `routing.py`, `decide.py`, `scenario.py`, `grid.py`,
-`fire_state.py`) stays in the tree behind `config.FEATURES`, off by default.
+`CONTRACTS.md` (v1.1) holds the module APIs that implement section 5 and the coordination side.
+`fireline/` has `snapshot.py` (producer), `fire_input.py` (Deepfire poll or recorded responses, stale
+status, latency), `forecast_input.py` (per-location fire arrival estimates: a labelled forecast file or
+a Deepfire fire-spread run), `priority.py` and `tasks.py` (consumer: evacuation-window ranking, SQLite
+tasks, roster, confirmed overrides), `agent.py` and `llm.py` (four-tool investigation), `app.py`
+(Streamlit) and `config.py` (policies and feature flags). The v0 engine (`spread.py`, `routing.py`,
+`decide.py`, `scenario.py`, `grid.py`, `fire_state.py`) stays in the tree behind `config.FEATURES`,
+off by default.
 
-**Divergence note (after merging `origin/main` d0473c1):** section 6 below specifies contact ranking
-by remaining evacuation window. The snapshot pipeline in `priority.py`, the UI breakdown and the
-`validate.py` Priority check still implement the earlier weighted proximity–size–value score; the
-window ranking currently exists only as the standalone static prototype of section 16
-(`fireline/contact_priority.py`). The gap is tracked in `V4_GAPS.md`.
+**Ranking as implemented (2026-09-19):** the snapshot pipeline ranks by the remaining evacuation
+window of section 6 (`priority.rank_snapshot`, sharing the arithmetic and ordering of section 16's
+`contact_priority.rank_contacts`); the earlier weighted proximity–size–value score is removed.
+"Current time" is the snapshot `as_of`, the buffer is 30 minutes (`config.CONTACT_POLICY`). Evacuation
+durations come from `config.EVACUATION_POLICY`, a versioned class-based prototype (mobilisation,
+preparation/loading, movement, with the assistance and transport assumptions in each asset's
+`sources`) that the analyst can override per asset; nothing is derived from headcount. Fire arrival
+comes from a forecast input: the synthetic scenarios use hand-designed, labelled synthetic forecasts
+(`fixtures/forecast/`); Deepfire fire-spread was verified live on 2026-09-19 but only runs forward from
+the current hotspots, so the recorded July incident has no forecast and every real asset is an
+unranked review item (`forecast_unavailable`). `gavarres_real_0004` holds a real recorded fire-spread
+run seeded at the July centroid; its 12 h burned area reaches no facility.
 
 What is real and what is synthetic: the facilities in `fixtures/real_area/` are a real Gencat
 Equipaments and schools extract for the Gavarres area (2026-09-19); care homes and campsites carry no
@@ -41,9 +50,10 @@ coordinates in their registers and are listed with `location_unknown`. The `gava
 use **real recorded Deepfire satellite perimeters** of the July 2026 incident in the bbox
 (`fixtures/fire/deepfire/real/`, pulled on 2026-09-19 with the credentials in `.env`, loaded by
 `fireline/env.py`); the `synthetic_gavarres` snapshots and the top-level recorded responses are
-**synthetic**, built to the same schema. `fixtures/evidence.json` is
-labelled manual enrichment. No located register row carries a capacity, so the real-area ranked
-table is empty until capacities are sourced or confirmed; every real asset sits in the review queue.
+**synthetic**, built to the same schema, as are the forecasts in `fixtures/forecast/`.
+`fixtures/evidence.json` is labelled manual enrichment. The real-area ranked table is empty because
+no forecast covers the recorded July incident (and no located register row carries a capacity);
+every real asset sits in the review queue.
 Tasks and overrides persist in `data/fireline.sqlite` (`FIRELINE_DB`). Recorded check outcomes are in
 `VALIDATION.md` (`scripts/validate.py --write`).
 
@@ -345,7 +355,7 @@ Review questions do not disappear when another action is selected. Partial cover
 
 Validation includes 14 labelled scenario variants, independent enumeration of 12 simple and 30 constrained four-action instances, boundary and malformed-input tests, CLI checks, and the pre-existing suite. The PDF includes the test count from the latest supplied JUnit file. Independent code review found and prompted regression fixes for fractional-minute window boundaries and scalar capability parsing.
 
-This implementation is a standalone Python API/CLI experiment alongside the existing engine, not yet integrated into its Streamlit UI or live snapshot loop. It supports one crew, at most eight actions, a fixed horizon and supplied deadlines/effects. It does not infer suppression success, provide safe routes, check crew return/egress, allocate partial evacuation capacity, or dispatch teams. Real snapshot adaptation, preservation of completed/assigned work during re-planning, and multi-crew scheduling remain subsequent work.
+The contact ranking of this prototype is now the snapshot pipeline's ranking too: `priority.rank_snapshot` converts snapshot timestamps to minutes from `as_of` and applies the same window arithmetic and ordering (a test asserts agreement). The response-order planner remains a standalone Python API/CLI experiment, not integrated into the Streamlit UI or live snapshot loop. It supports one crew, at most eight actions, a fixed horizon and supplied deadlines/effects. It does not infer suppression success, provide safe routes, check crew return/egress, allocate partial evacuation capacity, or dispatch teams. Real snapshot adaptation, preservation of completed/assigned work during re-planning, and multi-crew scheduling remain subsequent work.
 
 ### Contact policy revision: forecast and evacuation time
 
