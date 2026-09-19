@@ -851,9 +851,42 @@ def test_enrichment_config_is_a_copy_with_the_flag_on():
     mod = _make_snapshots_module()
     cfg = mod.enrichment_config()
     assert cfg.FEATURES["forecast_enrichment"] is True and config.FEATURES["forecast_enrichment"] is False
+    assert cfg.FEATURES["value_at_risk"] is True and config.FEATURES["value_at_risk"] is False
     assert cfg.EVACUATION_POLICY == config.EVACUATION_POLICY and cfg.FRESHNESS == config.FRESHNESS
     cfg.EVACUATION_POLICY["by_type"]["school"]["mobilisation_min"] = 999
     assert config.EVACUATION_POLICY["by_type"]["school"]["mobilisation_min"] != 999   # deep copy
+    # the synthetic snapshots take their arrivals from a forecast file, so only the value layer is on
+    syn = mod.snapshot_config()
+    assert syn.FEATURES["value_at_risk"] is True and syn.FEATURES["forecast_enrichment"] is False
+    assert mod.feature_config().FEATURES == config.FEATURES     # no flags: an untouched copy
+    with pytest.raises(KeyError):
+        mod.feature_config(not_a_flag=True)
+
+
+def test_ca_arrival_runs_only_when_a_wind_value_exists(tmp_path, capsys):
+    """Fix B: the CA is the fallback for a real snapshot with no provider forecast, but it must not run on a
+    guessed wind. Without a usable wind value `ca_arrival` returns None and the assets stay unforecast."""
+    mod = _make_snapshots_module()
+    fire, as_of = mod.recorded_real_fires()[0]
+    empty = tmp_path / "wind"
+    empty.mkdir()
+    assert mod.ca_arrival(fire, as_of, label="gavarres_real-0009", wind_dir=empty) is None
+    out = capsys.readouterr().out
+    assert "gavarres_real-0009" in out and "no usable wind" in out and "forecast_unavailable" in out
+    null_wind = tmp_path / "nulls"                              # a file exists, but the series has no value
+    null_wind.mkdir()
+    (null_wind / "41.90_3.05.json").write_text(json.dumps(
+        {"lat": 41.9, "lon": 3.05, "model": "m", "slice": "s", "time": ["2026-07-03T13:00"],
+         "wind_speed_10m": [None], "wind_direction_10m": [None]}))
+    assert mod.ca_arrival(fire, as_of, label="gavarres_real-0009", wind_dir=null_wind) is None
+    # with the committed wind file it runs and carries that wind and hour into the provenance note
+    c = mod.perimeter_geometry(fire).centroid
+    cx, cy = lonlat_to_xy(c.x, c.y)
+    grid = Grid(cx - 2000, cy - 2000, cx + 2000, cy + 2000, 100.0)
+    arrival = mod.ca_arrival(fire, as_of, grid, label="gavarres_real-0001")
+    assert arrival is not None and arrival.wind["file"] == "fixtures/wind/41.90_3.05.json"
+    assert "wind 5.80 m/s from 15 deg" in arrival.note and mod.WIND_SOURCE in arrival.note
+    assert arrival.wind["exact_hour"] is True and "nearest available hour" not in arrival.summary
 
 
 def test_build_pair_arrivals_path_enriches_only_under_the_enrichment_config(tmp_path, capsys):
@@ -911,6 +944,72 @@ def test_committed_real_snapshot_4_uses_the_recorded_fire_spread_run():
     assert min(a["distance_to_fire_m"] for a in located) > 5000
     assert all(snapshot.SIMULATED_NOTE in [s for s in a["sources"] if "distance_to_fire_m" in s["fields"]][0]["notes"]
                for a in located)
+    # Fix A: the run states a burn probability for every location it covers. 0.0 ("covered, nothing burns
+    # here within the horizon") is not the null of the unlocated rows ("no forecast covers this asset").
+    assert all(a["burn_probability"] == 0.0 and a["forecast_source"] is not None for a in located)
+    assert all(a["forecast_source"].startswith("deepfire:fire-spread/elmfire/4bbd8e98") for a in located)
+    unlocated = [a for a in s4["assets"] if a["latitude"] is None]
+    assert len(unlocated) == 69
+    assert all(a["burn_probability"] is None and a["forecast_source"] is None
+               and "location_unknown" in a["review_reasons"] for a in unlocated)
+    # a forecast that reaches nothing is a zero, not a gap: the header says "0 exposed", not "unavailable"
+    valued = [a for a in located if a["estimated_occupancy"] is not None and a["replacement_value_eur"] is not None]
+    assert valued and all(a["people_exposed"] == 0 and a["people_at_risk_p50"] == 0 and a["people_at_risk_p10"] == 0
+                          and a["expected_loss_eur_low"] == a["expected_loss_eur_mid"]
+                          == a["expected_loss_eur_high"] == 0 for a in valued)
+
+
+def test_committed_snapshots_carry_the_value_at_risk_layer():
+    """Every committed snapshot is built with FEATURES["value_at_risk"] on, so all eight keys are present on
+    every asset, the arithmetic is the policy's, and a missing input gives null and never a zero."""
+    policy = config.VALUE_AT_RISK_POLICY
+    buffer_min = float(config.CONTACT_POLICY["buffer_min"])
+    names = ["synthetic_gavarres_0001.json", "synthetic_gavarres_0002.json", "gavarres_real_0001.json",
+             "gavarres_real_0002.json", "gavarres_real_0003.json", "gavarres_real_0004.json"]
+    seen_unvalued = seen_occupancy_unknown = seen_at_risk = False
+    for name in names:
+        s = _load(name)
+        assert validate_snapshot(s) == [], name
+        for a in s["assets"]:
+            assert [k for k in snapshot.VALUE_AT_RISK_KEYS if k not in a] == [], (name, a["asset_id"])
+            band = policy["by_type"].get(a["asset_type"])
+            value = None if band is None else band["replacement_value_eur"]
+            # the class value is a property of the class, known even without a location or a forecast
+            assert a["replacement_value_eur"] == value
+            assert (a["replacement_value_basis"] is None) == (value is None)
+            if value is None:
+                seen_unvalued = True
+                assert a["expected_loss_eur_mid"] is None
+            occ, bp = a["estimated_occupancy"], a["burn_probability"]
+            if occ is None or bp is None:
+                seen_occupancy_unknown = seen_occupancy_unknown or (occ is None and a["latitude"] is not None)
+                assert a["people_exposed"] is None                      # null, never 0
+            else:
+                assert a["people_exposed"] == round(occ * bp, 1)
+            if value is not None and bp is not None:
+                for level in ("low", "mid", "high"):
+                    assert a[f"expected_loss_eur_{level}"] == round(bp * band[f"d_{level}"] * value)
+            else:
+                assert all(a[f"expected_loss_eur_{level}"] is None for level in ("low", "mid", "high"))
+            if a["latitude"] is None:                                   # unlocated: no risk, only a class value
+                assert all(a[k] is None for k in snapshot.VALUE_AT_RISK_KEYS
+                           if k not in ("replacement_value_eur", "replacement_value_basis"))
+            for key, quantile in (("people_at_risk_p50", "arrival_p50_at"), ("people_at_risk_p10", "arrival_p10_at")):
+                if occ is None or a["evacuation_min"] is None or not a["forecast_source"] or a["latitude"] is None:
+                    assert a[key] is None
+                    continue
+                if a[quantile] is None:                                 # covered but not reached: 0, not null
+                    assert a[key] == 0
+                    continue
+                slack = ((datetime.fromisoformat(a[quantile]) - datetime.fromisoformat(s["as_of"])).total_seconds() / 60.0
+                         - a["evacuation_min"] - buffer_min)
+                assert a[key] == (occ if slack <= 0 else 0)
+                seen_at_risk = seen_at_risk or a[key] > 0
+            if a["replacement_value_eur"] is not None:
+                entry = next(e for e in a["sources"] if "replacement_value_eur" in e["fields"])
+                assert entry["source"] == "config.VALUE_AT_RISK_POLICY" and policy["version"] in entry["notes"]
+                assert "never enter the ranking" in entry["notes"] and "not an insurer's figure" in entry["notes"]
+    assert seen_unvalued and seen_occupancy_unknown and seen_at_risk    # each rule is actually exercised
 
 
 @pytest.mark.parametrize("operation", ["read", "write"])
