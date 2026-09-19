@@ -15,11 +15,11 @@ Use [Superpowers](https://github.com/obra/superpowers) for development. Work in 
 ```sh
 make setup        # uv venv + uv pip install -e ".[dev]"
 make test         # pytest, no network, no LLM key
-make snapshots    # rebuild fixtures/snapshots/ (synthetic fire + synthetic forecasts; real-area facilities) with scripts/make_snapshots.py
+make snapshots    # rebuild fixtures/snapshots/ (synthetic fire + synthetic forecasts; real facilities + real perimeters + labelled CA arrival enrichment) with scripts/make_snapshots.py
 make demo         # streamlit run fireline/app.py: map, ranked table, review queue, tasks, change log
 make investigate  # one agent investigation; live with ANTHROPIC_API_KEY, else a labelled prerecorded replay
 make fetch        # pull real Gencat registers and Open-Meteo wind into data/ (network)
-make precompute   # v0 engine demo (spread CA, routing, decisions); labelled enrichment behind config.FEATURES
+make precompute   # v0 engine demo (spread CA, routing, decisions); the same uncalibrated CA enriches gavarres_real_0001..0003 (labelled, see below)
 ```
 
 `CONTRACTS.md` (v1.1) holds the module APIs that implement section 5 and the coordination side.
@@ -40,9 +40,22 @@ preparation/loading, movement, with the assistance and transport assumptions in 
 `sources`) that the analyst can override per asset; nothing is derived from headcount. Fire arrival
 comes from a forecast input: the synthetic scenarios use hand-designed, labelled synthetic forecasts
 (`fixtures/forecast/`); Deepfire fire-spread was verified live on 2026-09-19 but only runs forward from
-the current hotspots, so the recorded July incident has no forecast and every real asset is an
-unranked review item (`forecast_unavailable`). `gavarres_real_0004` holds a real recorded fire-spread
-run seeded at the July centroid; its 12 h burned area reaches no facility.
+the current hotspots, so no provider forecast covers the recorded July incident. The `gavarres_real_0001..0003`
+snapshots therefore carry a **labelled model enrichment** instead: the v0 cellular-automaton spread
+ensemble (`fireline/spread.py`, `config.CA`, Alexandridis et al. 2008 style, not calibrated on Gavarres)
+seeded from each real recorded perimeter, driven by the real recorded Open-Meteo previous-runs wind for
+the snapshot hour (`fixtures/wind/`), 20 runs, 12 h horizon, 100 m cells, no fuel or slope layers, one
+wind sample per snapshot. Assets its burned area reaches within 12 h get `fire_arrival_at = arrival_p10_at`,
+`fire_arrival_basis = "p10 (ca_ensemble, labelled enrichment, not validated)"`,
+`forecast_source = "ca_ensemble (labelled enrichment, not validated)"`, a horizon, a `burn_probability`
+and a `sources` entry, and are ranked (18, 65 and 94 of the 99
+located facilities in snapshots 0001..0003); the rest keep a null arrival and stay unranked
+(`forecast_unavailable`). The CA is a stand-in, not a provider forecast and not validated: it spreads much
+faster than the real fire did (its p50 burned area at 12 h is about 10,000 ha, against the real growth from
+1,263 to 3,867 ha over about 17 h), so its arrivals are early and its ranking is a demonstration of the
+pipeline on real inputs, not an assessment of the July incident. Nothing is inferred from distance.
+`gavarres_real_0004` holds a real recorded Deepfire fire-spread run seeded at the July centroid; its 12 h
+burned area reaches no facility, so every asset there is `forecast_unavailable`.
 
 What is real and what is synthetic: the facilities in `fixtures/real_area/` are a real Gencat
 Equipaments and schools extract for the Gavarres area (2026-09-19), with real enrolled-pupil counts
@@ -52,9 +65,13 @@ use **real recorded Deepfire satellite perimeters** of the July 2026 incident in
 (`fixtures/fire/deepfire/real/`, pulled on 2026-09-19 with the credentials in `.env`, loaded by
 `fireline/env.py`); the `synthetic_gavarres` snapshots and the top-level recorded responses are
 **synthetic**, built to the same schema, as are the forecasts in `fixtures/forecast/`.
-`fixtures/evidence.json` is labelled manual enrichment. The real-area ranked table is empty because
-no forecast covers the recorded July incident (and no located register row carries a capacity);
-every real asset sits in the review queue.
+`fixtures/evidence.json` is labelled manual enrichment. The wind in `fixtures/wind/` is **real recorded**
+Open-Meteo previous-runs data (model `ecmwf_ifs025`, `_previous_day1` slice: the run initialised about 24 h
+before the valid time, hour containing each snapshot `as_of`, 0.1 deg grid point nearest the perimeter
+centroid). The **fire arrivals on the real scenario are a model output**, the uncalibrated CA ensemble
+above, labelled as such in `forecast_source` / `fire_arrival_basis`; no located register row carries a
+capacity, so occupancy on the real scenario is still an investigation item. Real assets the CA does not
+reach in 12 h sit in the review queue.
 Tasks and overrides persist in `data/fireline.sqlite` (`FIRELINE_DB`). Recorded check outcomes are in
 `VALIDATION.md` (`scripts/validate.py --write`).
 
@@ -82,7 +99,7 @@ The [challenge brief](https://github.com/rht/wildfire/blob/main/challenge.md) em
 | Interface | Map, ranked location table, selected-location details, task queue and change log. |
 | Validation | Matching, geometry, scoring, missing-data behaviour, update latency and task persistence. |
 
-Deferred from day one: custom spread models, fuel/elevation rasters, wind what-ifs, multiple satellite feeds, Catalonia-wide discovery, road graphs, route calculation, road-cut forecasts, automatic confine/evacuate rules, receiving-centre optimisation, population allocation, all-building discovery, automatic team scheduling, free-form chat and multilingual alerts.
+Deferred from day one: custom spread models (the existing uncalibrated v0 CA is used only as a labelled enrichment on the real scenario, not developed further), fuel/elevation rasters, wind what-ifs, multiple satellite feeds, Catalonia-wide discovery, road graphs, route calculation, road-cut forecasts, automatic confine/evacuate rules, receiving-centre optimisation, population allocation, all-building discovery, automatic team scheduling, free-form chat and multilingual alerts.
 
 ## 3. Architecture and update flow
 
@@ -138,7 +155,7 @@ Select classes after inspecting coverage. Include the complete matching set with
 
 Calculate minimum distance between asset and fire footprints; overlap gives zero. Fall back to the representative asset point and label the approximation when its footprint is missing. Use an appropriate metric CRS (EPSG:25831 for the selected Catalan area), while exchanging WGS84 coordinates. A hotspot centre without a usable footprint is not silently treated as a surveyed fire perimeter.
 
-Distance-based exposure is not burn probability or time to impact. Keep unsupported forecast fields null and display "forecast unavailable". Do not infer arrival quantiles or probability from distance.
+Distance-based exposure is not burn probability or time to impact. Keep unsupported forecast fields null and display "forecast unavailable". Do not infer arrival quantiles or probability from distance. The CA enrichment on the `gavarres_real` snapshots satisfies this rule as a provided per-location arrival estimate: it is a spread simulation seeded from the observed perimeter and the recorded wind, its `forecast_source` and `fire_arrival_basis` name the method and its unvalidated status, and locations it does not reach keep null fields.
 
 Recorded responses demonstrate update handling. Only claim historical as-of replay when availability times for all inputs, including facility evidence, are established. Otherwise label it a recorded-input demo; do not claim lead time against historical evacuation decisions.
 
@@ -305,7 +322,7 @@ Use labelled synthetic fixtures for development and failure cases. Present real 
 
 ## 14. After the MVP
 
-Only expand after completion criteria pass: road graphs and route constraints, shared exits, receiving-centre suitability, expert-reviewed evacuation/confinement recommendations, more incidents/classes/providers, automated resource scheduling and multilingual alerts. Custom spread modelling and wind what-ifs are separate future work.
+Only expand after completion criteria pass: road graphs and route constraints, shared exits, receiving-centre suitability, expert-reviewed evacuation/confinement recommendations, more incidents/classes/providers, automated resource scheduling and multilingual alerts. Custom spread modelling and wind what-ifs are separate future work; the uncalibrated v0 CA that enriches the real scenario is a labelled stand-in for a provider forecast, not that work.
 
 ## 15. Kickoff decisions and references
 

@@ -154,6 +154,7 @@ def ranked_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFram
     return pd.DataFrame([{
         "rank": a["priority_rank"], "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
         "distance m": a.get("distance_to_fire_m"), "predicted arrival": a.get("fire_arrival_at"),
+        "forecast source": a.get("forecast_source"),
         "evacuation min": a.get("evacuation_min"), "latest start (min from now)": a.get("latest_start_min"),
         "remaining window (min)": a.get("slack_min"), "status": a.get("priority_status"),
         "review flags": ", ".join(a.get("review_reasons") or []), "people": people(a),
@@ -423,7 +424,9 @@ def main() -> None:
     st.caption(f"Contact priority is the remaining evacuation window: forecast arrival - total evacuation duration "
                f"- buffer ({s['buffer_min']} min), relative to the snapshot time {s['now_at']}. A zero or negative "
                "window means immediate analyst review, not an evacuation instruction. Forecast and evacuation "
-               "estimates are the producer's / policy's inputs, not validated predictions. Recommendations, not orders.")
+               "estimates are the producer's / policy's inputs, not validated predictions. Arrivals whose forecast "
+               "source says 'labelled enrichment, not validated' come from an uncalibrated spread model seeded on the "
+               "observed perimeter, not from a provider forecast. Recommendations, not orders.")
     m = st.columns(6)
     m[0].metric("Ranked", c["ranked"])
     m[1].metric("Window exhausted", c["window_exhausted"], help="remaining window <= 0; review first")

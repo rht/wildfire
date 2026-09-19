@@ -10,9 +10,9 @@ import pytest
 from shapely.geometry import Point, mapping
 from shapely.ops import transform as shapely_transform
 
-from fireline import config, snapshot
+from fireline import config, snapshot, spread
 from fireline.fire_state import FireState
-from fireline.grid import lonlat_to_xy, xy_to_lonlat
+from fireline.grid import Grid, lonlat_to_xy, xy_to_lonlat
 from fireline.routing import RoadGraph
 from fireline.scenario import Scenario
 from fireline.snapshot import asset_exposure, build_snapshot, read_snapshot, validate_snapshot, write_snapshot
@@ -318,10 +318,15 @@ def test_committed_real_area_fixtures():
     assert (FIX / "real_area" / "README.md").read_text().count("2026-09-19") >= 1
 
 
-def test_make_snapshots_script_is_deterministic(tmp_path):
+def _make_snapshots_module():
     spec = importlib.util.spec_from_file_location("make_snapshots", ROOT / "scripts" / "make_snapshots.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
+    return mod
+
+
+def test_make_snapshots_script_is_deterministic(tmp_path):
+    mod = _make_snapshots_module()
     fs = FireState.from_json(FIX / "synthetic_ignition.json")
     grown = mod.grown_perimeter(fs)
     assert grown.area > fs.perimeter.area and grown.centroid.y < fs.perimeter.centroid.y
@@ -562,14 +567,124 @@ def test_committed_forecast_fixtures_demonstrate_readme_11_priority_checks():
     assert order1.index("fixture:monells") + 1 == order1.index("fixture:sant_sadurni")
 
 
-def test_committed_real_snapshots_have_no_forecast_and_policy_evacuation():
+CA_LABEL = "ca_ensemble (labelled enrichment, not validated)"
+CA_BASIS = "p10 (ca_ensemble, labelled enrichment, not validated)"
+
+
+def test_committed_real_snapshots_carry_labelled_ca_arrivals_and_policy_evacuation():
+    """No provider forecast covers the July perimeters; `fire_arrival_at` on gavarres_real_0001..0003 is the
+    v0 CA ensemble attached as labelled enrichment (forecast_source / basis say so), the wind and CA
+    settings are in the provenance note, unlocated assets never get one, and nothing comes from distance."""
+    mod = _make_snapshots_module()
+    real_fires = mod.recorded_real_fires()
+    readme = (FIX / "real_area" / "README.md").read_text()
+    assert "fixtures/wind/" in readme and "ca_ensemble (labelled enrichment, not validated)" in readme
     for n in (1, 2, 3):
         s = _load(f"gavarres_real_{n:04d}.json")
         assert s["schema_version"] == "1.1" and validate_snapshot(s) == []
-        assert all(a["fire_arrival_at"] is None and "forecast_unavailable" in a["review_reasons"] for a in s["assets"])
-        assert all(a["forecast_source"] is None for a in s["assets"])
-        assert all(a["evacuation_min"] is not None and a["evacuation_source"] == config.EVACUATION_POLICY["version"]
-                   for a in s["assets"])
+        as_of = datetime.fromisoformat(s["as_of"])
+        located = [a for a in s["assets"] if a["latitude"] is not None]
+        with_arrival = [a for a in s["assets"] if a["fire_arrival_at"] is not None]
+        assert 0 < len(with_arrival) < len(located), n          # some ranked, some still forecast_unavailable
+        _, wind = mod.real_fire_state(*real_fires[n - 1])         # the committed wind file, hour containing as_of
+        assert wind["file"] == "fixtures/wind/41.90_3.05.json" and wind["exact_hour"] is True
+        wind_text = f"wind {wind['wind_speed_mps']:.2f} m/s from {wind['wind_dir_deg']:.0f} deg valid {wind['valid_time'][:16]}Z"
+        for a in s["assets"]:
+            assert a["evacuation_min"] is not None and a["evacuation_source"] == config.EVACUATION_POLICY["version"]
+            assert (a["forecast_source"] is not None) == (a["burn_probability"] is not None)   # raster coverage
+            if a["latitude"] is None:
+                assert a["fire_arrival_at"] is None and a["forecast_source"] is None and a["burn_probability"] is None
+            if a["fire_arrival_at"] is None:
+                assert "forecast_unavailable" in a["review_reasons"] and a["needs_review"] is True
+                assert a["fire_arrival_basis"] is None and a["arrival_p10_at"] is None
+                continue
+            assert "forecast_unavailable" not in a["review_reasons"]
+            assert a["forecast_source"] == CA_LABEL and a["fire_arrival_basis"] == CA_BASIS
+            assert a["arrival_p10_at"] == a["fire_arrival_at"] and 0.1 <= a["burn_probability"] <= 1.0
+            arrival, horizon = datetime.fromisoformat(a["fire_arrival_at"]), datetime.fromisoformat(a["forecast_horizon_at"])
+            assert as_of < arrival <= horizon == as_of + timedelta(minutes=mod.CA_HORIZON_MIN)
+            src = next(e for e in a["sources"] if "fire_arrival_at" in e["fields"])
+            assert src["source"] == CA_LABEL and "not validated" in src["notes"]
+            assert f"spread.run_ca n_runs {mod.CA_N_RUNS}" in src["notes"] and wind_text in src["notes"]
+            assert "fixtures/wind/41.90_3.05.json" in src["notes"] and "not an observation" in src["notes"]
+    # the fixture wind file is the Previous Runs slice the README describes
+    wind_file = json.loads((FIX / "wind" / "41.90_3.05.json").read_text())
+    assert wind_file["model"] == "ecmwf_ifs025" and wind_file["slice"] == "previous_day1"
+    assert len(wind_file["time"]) == len(wind_file["wind_speed_10m"]) == len(wind_file["wind_direction_10m"]) == 72
+
+
+def test_real_wind_helpers_pick_nearest_grid_point_and_hour(tmp_path):
+    mod = _make_snapshots_module()
+    utc = timezone.utc
+    # committed fixture: every July perimeter centroid (near 3.027E, 41.90N) resolves to the one committed file
+    assert mod.nearest_wind_file(3.027, 41.905).name == "41.90_3.05.json"
+    wind_dir = tmp_path / "wind"
+    wind_dir.mkdir()
+    for name in ("41.90_3.05.json", "41.90_2.95.json", "42.00_3.05.json"):
+        (wind_dir / name).write_text("{}")
+    assert mod.nearest_wind_file(2.97, 41.93, wind_dir).name == "41.90_2.95.json"
+    assert mod.nearest_wind_file(3.04, 41.96, wind_dir).name == "42.00_3.05.json"
+    assert mod.nearest_wind_file(3.10, 41.85, wind_dir).name == "41.90_3.05.json"
+    with pytest.raises(FileNotFoundError):
+        mod.nearest_wind_file(3.0, 41.9, tmp_path / "empty")
+    series = {"time": ["2026-07-03T12:00", "2026-07-03T13:00", "2026-07-03T14:00"],
+              "wind_speed_10m": [7.24, 5.8, None], "wind_direction_10m": [6, 15, 20]}
+    exact = mod.wind_at(series, datetime(2026, 7, 3, 13, 20, 1, tzinfo=utc))       # hour containing as_of
+    assert exact == {"valid_time": "2026-07-03T13:00:00+00:00", "exact_hour": True,
+                     "wind_speed_mps": 5.8, "wind_dir_deg": 15.0}
+    null_hour = mod.wind_at(series, datetime(2026, 7, 3, 14, 30, tzinfo=utc))        # 14:00 is null -> 13:00
+    assert null_hour["valid_time"] == "2026-07-03T13:00:00+00:00" and null_hour["exact_hour"] is False
+    outside = mod.wind_at(series, datetime(2026, 7, 6, 0, 0, tzinfo=utc))            # after the series -> last value
+    assert outside["valid_time"] == "2026-07-03T13:00:00+00:00" and outside["exact_hour"] is False
+    with pytest.raises(ValueError):
+        mod.wind_at({"time": ["2026-07-03T12:00"], "wind_speed_10m": [None], "wind_direction_10m": [None]},
+                    datetime(2026, 7, 3, 12, tzinfo=utc))
+    # FireState from the first committed real perimeter: EPSG:25831 polygon, wind of the as_of hour
+    fire, as_of = mod.recorded_real_fires()[0]
+    fs, wind = mod.real_fire_state(fire, as_of)
+    assert fs.cluster_id == fire["incident_id"] and fs.t == as_of and fs.perimeter.is_valid and not fs.perimeter.is_empty
+    assert 400_000 < fs.perimeter.centroid.x < 600_000 and 4_600_000 < fs.perimeter.centroid.y < 4_700_000
+    assert (fs.wind_speed_mps, fs.wind_dir_deg) == (wind["wind_speed_mps"], wind["wind_dir_deg"]) == (5.8, 15.0)
+    assert wind["valid_time"] == "2026-07-03T13:00:00+00:00" and wind["exact_hour"] is True
+    assert wind["file"] == "fixtures/wind/41.90_3.05.json" and (wind["lat"], wind["lon"]) == (41.9, 3.05)
+    assert wind["source"] == "ecmwf_ifs025 previous_day1"
+
+
+def test_enrichment_config_is_a_copy_with_the_flag_on():
+    mod = _make_snapshots_module()
+    cfg = mod.enrichment_config()
+    assert cfg.FEATURES["forecast_enrichment"] is True and config.FEATURES["forecast_enrichment"] is False
+    assert cfg.EVACUATION_POLICY == config.EVACUATION_POLICY and cfg.FRESHNESS == config.FRESHNESS
+    cfg.EVACUATION_POLICY["by_type"]["school"]["mobilisation_min"] = 999
+    assert config.EVACUATION_POLICY["by_type"]["school"]["mobilisation_min"] != 999   # deep copy
+
+
+def test_build_pair_arrivals_path_enriches_only_under_the_enrichment_config(tmp_path, capsys):
+    mod = _make_snapshots_module()
+    fs = FireState.from_json(FIX / "synthetic_ignition.json")
+    fire = mod.fire_update(fs, fs.perimeter, mod.T1, "x")
+    cx, cy = fs.perimeter.centroid.x, fs.perimeter.centroid.y
+    grid = Grid(cx - 2000, cy - 2000, cx + 2000, cy + 2000, 100.0)      # 40 x 40 cells: sub-second CA
+    raster = spread.run_ca(fs, grid, n_runs=5, horizon_min=240, seed=1)
+    arrival = mod.CaArrival(raster=raster, wind={}, note="wind 8.00 m/s from 340 deg (test)", summary="test CA")
+    rows = mod.synthetic_assets()
+    common = dict(scenario_id="ca_test", incident_id=fs.cluster_id, arrivals=[arrival], out_dir=tmp_path)
+    on = mod.build_pair(rows, [(fire, mod.T1)], cfg=mod.enrichment_config(), **common)[0]
+    off = mod.build_pair(rows, [(fire, mod.T1)], **common)[0]           # module config: flag off
+    assert (tmp_path / "ca_test_0001.json").exists() and validate_snapshot(on) == [] and validate_snapshot(off) == []
+    assert config.FEATURES["forecast_enrichment"] is False
+    assert all(a["fire_arrival_at"] is None and a["forecast_source"] is None for a in off["assets"])
+    by_id = {a["asset_id"]: a for a in on["assets"]}
+    sant_pol = by_id["fixture:sant_pol"]                                 # 718 m downwind of the ignition
+    assert sant_pol["fire_arrival_at"] is not None and sant_pol["forecast_source"] == CA_LABEL
+    assert sant_pol["fire_arrival_basis"] == CA_BASIS and "forecast_unavailable" not in sant_pol["review_reasons"]
+    src = next(e for e in sant_pol["sources"] if "fire_arrival_at" in e["fields"])
+    assert src["notes"].endswith("; wind 8.00 m/s from 340 deg (test)")
+    assert by_id["fixture:hospital_palamos"]["forecast_source"] is None    # outside the tiny grid: untouched
+    unl = by_id["fixture:residencia_sense_coordenades"]
+    assert unl["fire_arrival_at"] is None and unl["forecast_source"] is None and "forecast_unavailable" in unl["review_reasons"]
+    assert all("forecast_unavailable" in a["review_reasons"] for a in on["assets"] if a["fire_arrival_at"] is None)
+    assert "arrival from test CA" in capsys.readouterr().out
 
 
 def test_simulated_fire_geometry_kind_is_labelled_and_validated():

@@ -386,8 +386,9 @@ def _minutes_to_iso(base: datetime, minutes) -> str | None:
     return (base + timedelta(minutes=m)).isoformat()
 
 
-def _enrich_forecast(rec: dict, arrival, as_of: datetime) -> None:
-    """Fill burn_probability / arrival_* from an ArrivalRaster (labelled, unvalidated enrichment)."""
+def _enrich_forecast(rec: dict, arrival, as_of: datetime, note: str | None = None) -> None:
+    """Fill burn_probability / arrival_* from an ArrivalRaster (labelled, unvalidated enrichment).
+    `note` (optional) is appended to the provenance entry, e.g. the wind and run settings behind the raster."""
     if arrival is None or rec["latitude"] is None or rec["longitude"] is None:
         return
     bp = _num(arrival.sample("burn_prob", rec["longitude"], rec["latitude"]))
@@ -407,21 +408,23 @@ def _enrich_forecast(rec: dict, arrival, as_of: datetime) -> None:
     rec["sources"].append(_source_entry(
         fields, rec["forecast_source"], observed_at=as_of,
         notes="nearest raster cell at the representative point; minutes after as_of; "
-              "fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres"))
+              "fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres"
+              + (f"; {note}" if note else "")))
 
 
 # ---------------------------------------------------------------------------------------- builder
 def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of, input_mode,
                    computed_at=None, data_status=None, metrics=None, arrival=None, forecast=None,
-                   cfg=config) -> dict:
+                   arrival_note=None, cfg=config) -> dict:
     """Snapshot envelope (CONTRACTS 2.1) with one record per input asset, input order preserved.
 
     `fire` is a FireUpdate-shaped dict (`observed_at`, `geometry`, `geometry_kind`, `source`,
     `incident_id`, ...) or None. `forecast` is a `forecast_input` forecast-input-1 dict applied with
     `attach_forecast` (per-location arrival estimates -> `fire_arrival_at`); when given it takes
     precedence over `arrival` (spread.ArrivalRaster), which is used only when
-    `cfg.FEATURES["forecast_enrichment"]` is on. Every asset without `fire_arrival_at` afterwards
-    carries `forecast_unavailable`; nothing is inferred from distance.
+    `cfg.FEATURES["forecast_enrichment"]` is on (`arrival_note`, optional, is appended to that
+    enrichment's provenance entry). Every asset without `fire_arrival_at` afterwards carries
+    `forecast_unavailable`; nothing is inferred from distance.
     """
     if input_mode not in INPUT_MODES:
         raise ValueError(f"input_mode {input_mode!r} not in {INPUT_MODES}")
@@ -468,7 +471,7 @@ def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of
             rec["review_reasons"].append("exposure_unknown")
             rec["needs_review"] = True
         if enrich:
-            _enrich_forecast(rec, arrival, as_of_dt)
+            _enrich_forecast(rec, arrival, as_of_dt, arrival_note)
         assets.append(rec)
     if forecast is not None:
         attach_forecast(assets, forecast)

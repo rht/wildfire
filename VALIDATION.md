@@ -13,7 +13,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 | Tasks | pass | suggestions 7 then 0; 8 tasks survive reload |
 | Agent (FakeLLM) | pass | 7 runs: 3 proposals {'capacity': 2, 'asset_type': 1}, 6 escalations, 0 occupancy-from-capacity |
 | Agent (live model) | not verified |  |
-| Latency | pass | median 0.156 s for 168 assets (target < 60 s); source age 300 s |
+| Latency | pass | median 0.159 s for 168 assets (target < 60 s); source age 300 s |
 | Stale data | pass | None->unavailable, 0->current, 3599->current, 3600->stale, 21599->stale, 21600->unavailable, -60->current |
 
 8 pass, 0 fail, 1 not verified.
@@ -100,10 +100,10 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ### Latency: pass
 
 - input: 168 real-area assets (fixtures/real_area/assets_gavarres.json) + recorded update 20260703T100500Z_satellite-perimeters.json (deepfire:satellite-perimeters, SYNTHETIC content, observed 2026-07-03T10:00:00+00:00, received 2026-07-03T10:05:00+00:00) through fire_input.load_recorded
-- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.156, 0.156, 0.162] s; median 0.156 s
-- stages of run 1: build 0.084 s, score 0.026 s, apply+suggest 0.046 s; validate errors 0
+- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.15, 0.162, 0.159] s; median 0.159 s
+- stages of run 1: build 0.079 s, score 0.026 s, apply+suggest 0.045 s; validate errors 0
 - result: 0 ranked, 168 needs_review; 91 assets changed vs seq 1, 0 new suggestions on the update (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry no per-location forecast arrival and every asset is a review item until a forecast covers it)
-- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.15641179401427507} (separate numbers, never combined)
+- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.1585000610211864} (separate numbers, never combined)
 - target < 60 s processing for the selected area: met on x86_64, Python 3.14.7
 
 ### Stale data: pass

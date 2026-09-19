@@ -232,11 +232,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8613.8,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 180.0,
@@ -293,6 +293,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "PALAMÓS"
@@ -312,11 +326,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8051.8,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 180.0,
@@ -374,6 +388,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "PALAMÓS"
@@ -393,11 +421,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 2662.0,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -464,6 +492,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -483,11 +525,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 2784.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -554,6 +596,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -573,11 +629,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14672.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -644,6 +700,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Bordils"
@@ -663,19 +733,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 4759.7,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
+   "burn_probability": 0.1,
+   "arrival_p10_at": "2026-07-03T16:40:01.981000+00:00",
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T16:40:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -734,6 +802,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -753,11 +837,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 6915.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -824,6 +908,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -843,11 +941,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7053.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.05,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -914,6 +1012,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -933,11 +1045,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10685.9,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -1004,6 +1116,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -1023,11 +1149,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10954.4,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -1094,6 +1220,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -1113,19 +1253,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8078.4,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "burn_probability": 0.55,
+   "arrival_p10_at": "2026-07-03T18:36:01.981000+00:00",
+   "arrival_p50_at": "2026-07-03T18:52:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:36:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -1184,6 +1322,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -1203,19 +1357,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8315.0,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "burn_probability": 0.5,
+   "arrival_p10_at": "2026-07-03T18:47:37.981366+00:00",
+   "arrival_p50_at": "2026-07-03T19:18:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:47:37.981366+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -1274,6 +1426,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -1293,11 +1461,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 15398.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -1364,6 +1532,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Celrà"
@@ -1383,11 +1565,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 5832.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -1454,6 +1636,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Corçà"
@@ -1473,11 +1669,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 2388.4,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -1544,6 +1740,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
@@ -1563,11 +1773,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 4982.4,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -1634,6 +1844,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
@@ -1653,11 +1877,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 13579.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -1724,6 +1948,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Flaçà"
@@ -1743,19 +1981,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11236.9,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
+   "burn_probability": 0.45,
+   "arrival_p10_at": "2026-07-03T20:16:01.981000+00:00",
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T20:16:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -1814,6 +2050,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Llagostera"
@@ -1833,11 +2085,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7825.7,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -1904,6 +2156,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Mont-ras"
@@ -1923,11 +2189,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9567.7,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -1994,6 +2260,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -2013,11 +2293,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9163.0,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2084,6 +2364,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -2103,11 +2397,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9025.0,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2174,6 +2468,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -2193,11 +2501,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9805.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2264,6 +2572,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -2283,11 +2605,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9681.9,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2354,6 +2676,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -2373,11 +2709,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9204.0,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2444,6 +2780,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -2463,11 +2813,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9395.5,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2534,6 +2884,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -2553,11 +2917,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9494.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2624,6 +2988,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -2643,11 +3021,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8891.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2714,6 +3092,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palamós"
@@ -2733,11 +3125,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8755.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2804,6 +3196,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palamós"
@@ -2823,11 +3229,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9024.5,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2894,6 +3300,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palamós"
@@ -2913,11 +3333,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10718.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -2984,6 +3404,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Pals"
@@ -3003,11 +3437,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9828.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3074,6 +3508,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "La Pera"
@@ -3093,11 +3541,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 3526.9,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3164,6 +3612,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
@@ -3183,19 +3645,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7390.8,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "burn_probability": 0.7,
+   "arrival_p10_at": "2026-07-03T18:16:01.981000+00:00",
+   "arrival_p50_at": "2026-07-03T18:20:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:16:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -3254,6 +3714,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Santa Cristina d'Aro"
@@ -3273,11 +3749,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14598.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3344,6 +3820,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -3363,11 +3853,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14912.0,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3434,6 +3924,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -3453,11 +3957,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14267.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3524,6 +4028,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Ullà"
@@ -3543,11 +4061,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8298.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3614,6 +4132,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Ullastret"
@@ -3633,11 +4165,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7355.4,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3704,6 +4236,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palamós"
@@ -3723,11 +4269,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10344.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3794,6 +4340,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Begur"
@@ -3813,11 +4373,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 3512.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3884,6 +4444,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -3903,11 +4477,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9140.0,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -3964,6 +4538,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -3983,11 +4571,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7855.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -4054,6 +4642,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palamós"
@@ -4073,11 +4675,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 2965.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -4144,6 +4746,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -4163,11 +4779,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11029.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -4234,6 +4850,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -4253,11 +4883,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9390.4,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -4324,6 +4954,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -4343,19 +4987,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7798.1,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
+   "burn_probability": 0.45,
+   "arrival_p10_at": "2026-07-03T18:25:37.981366+00:00",
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:25:37.981366+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -4414,6 +5056,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -4433,19 +5091,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11337.7,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
+   "burn_probability": 0.35,
+   "arrival_p10_at": "2026-07-03T20:40:01.981000+00:00",
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T20:40:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -4504,6 +5160,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Llagostera"
@@ -4523,11 +5195,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14940.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -4594,6 +5266,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -4613,19 +5299,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7358.1,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "burn_probability": 0.7,
+   "arrival_p10_at": "2026-07-03T18:16:01.981000+00:00",
+   "arrival_p50_at": "2026-07-03T18:20:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:16:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -4684,6 +5368,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Santa Cristina d'Aro"
@@ -4703,11 +5403,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14348.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -4774,6 +5474,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -4793,19 +5507,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8080.0,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "burn_probability": 0.55,
+   "arrival_p10_at": "2026-07-03T18:36:01.981000+00:00",
+   "arrival_p50_at": "2026-07-03T18:52:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:36:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -4864,6 +5576,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -4883,11 +5611,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 15346.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -4954,6 +5682,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Celrà"
@@ -4973,19 +5715,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11468.5,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "burn_probability": 0.5,
+   "arrival_p10_at": "2026-07-03T20:11:37.981366+00:00",
+   "arrival_p50_at": "2026-07-03T20:38:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T20:11:37.981366+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -5044,6 +5784,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Llagostera"
@@ -5063,11 +5819,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8599.5,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -5134,6 +5890,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -5153,11 +5923,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11295.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -5224,6 +5994,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -5243,19 +6027,18 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7998.7,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
+   "burn_probability": 0.35,
+   "arrival_p10_at": "2026-07-03T18:30:25.980634+00:00",
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:30:25.980634+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
-    "forecast_unavailable"
+    "occupancy_unknown"
    ],
    "sources": [
     {
@@ -5304,6 +6087,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -5323,11 +6122,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14115.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -5394,6 +6193,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -5413,11 +6226,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 2770.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -5484,6 +6297,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -5503,11 +6330,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8870.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -5574,6 +6401,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palamós"
@@ -5593,11 +6434,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 15309.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -5664,6 +6505,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Celrà"
@@ -5683,19 +6538,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 4175.5,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
+   "burn_probability": 0.15,
+   "arrival_p10_at": "2026-07-03T16:22:25.980634+00:00",
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T16:22:25.980634+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -5754,6 +6607,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -5773,11 +6642,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14117.9,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -5834,6 +6703,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -5853,11 +6736,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 15367.7,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -5914,6 +6797,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Celrà"
@@ -5933,11 +6830,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10017.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6004,6 +6901,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -6023,19 +6934,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 4670.8,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
+   "burn_probability": 0.1,
+   "arrival_p10_at": "2026-07-03T16:36:01.981000+00:00",
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T16:36:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -6094,6 +7003,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -6113,11 +7038,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 6853.4,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6174,6 +7099,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Vall-llobrega"
@@ -6193,11 +7132,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7835.5,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6264,6 +7203,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Mont-ras"
@@ -6283,11 +7236,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8300.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6344,6 +7297,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Ullastret"
@@ -6363,11 +7330,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7008.8,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6434,6 +7401,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -6453,11 +7434,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 15416.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6524,6 +7505,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Celrà"
@@ -6543,11 +7538,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 6828.5,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6614,6 +7609,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Vall-llobrega"
@@ -6633,11 +7642,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11494.8,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6704,6 +7713,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -6723,11 +7746,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10112.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6794,6 +7817,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -6813,11 +7850,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8687.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6884,6 +7921,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -6903,11 +7954,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 3478.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -6974,6 +8025,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Forallac"
@@ -6993,11 +8058,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14640.3,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -7064,6 +8129,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Torroella de Montgrí"
@@ -7083,19 +8162,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11191.3,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
+   "burn_probability": 0.45,
+   "arrival_p10_at": "2026-07-03T19:50:25.980634+00:00",
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T19:50:25.980634+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -7154,6 +8231,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Llagostera"
@@ -7173,19 +8266,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8301.2,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "burn_probability": 0.5,
+   "arrival_p10_at": "2026-07-03T18:47:37.981366+00:00",
+   "arrival_p50_at": "2026-07-03T19:18:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:47:37.981366+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -7244,6 +8335,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -7263,11 +8370,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8097.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -7334,6 +8441,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palamós"
@@ -7353,11 +8474,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 4954.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -7424,6 +8545,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
@@ -7443,19 +8578,17 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11742.5,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
+   "burn_probability": 0.4,
+   "arrival_p10_at": "2026-07-03T20:14:49.980268+00:00",
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T20:14:49.980268+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": true,
-   "review_reasons": [
-    "forecast_unavailable"
-   ],
+   "needs_review": false,
+   "review_reasons": [],
    "sources": [
     {
      "fields": [
@@ -7514,6 +8647,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Llagostera"
@@ -7533,11 +8682,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 15112.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -7604,6 +8753,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Celrà"
@@ -7623,11 +8786,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 1822.1,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -7694,6 +8857,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -7713,11 +8890,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9719.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -7784,6 +8961,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Parlavà"
@@ -7803,19 +8994,18 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7967.2,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "burn_probability": 0.9,
+   "arrival_p10_at": "2026-07-03T18:40:01.981000+00:00",
+   "arrival_p50_at": "2026-07-03T18:42:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:40:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
-    "forecast_unavailable"
+    "occupancy_unknown"
    ],
    "sources": [
     {
@@ -7864,6 +9054,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Santa Cristina d'Aro"
@@ -7883,11 +9089,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7114.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -7954,6 +9160,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -7973,11 +9193,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12819.9,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8044,6 +9264,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Sant Martí Vell"
@@ -8063,11 +9297,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9472.4,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8134,6 +9368,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -8153,11 +9401,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 13609.4,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8224,6 +9472,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Flaçà"
@@ -8243,11 +9505,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 5863.4,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8314,6 +9576,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Corçà"
@@ -8333,11 +9609,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10485.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8404,6 +9680,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Pals"
@@ -8423,11 +9713,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10832.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8484,6 +9774,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Cassà de la Selva"
@@ -8503,11 +9807,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8489.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8574,6 +9878,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palamós"
@@ -8593,11 +9911,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8118.5,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8664,6 +9982,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palamós"
@@ -8683,11 +10015,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9285.2,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8754,6 +10086,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Palafrugell"
@@ -8773,11 +10119,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 3065.6,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -8834,6 +10180,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "La Bisbal d'Empordà"
@@ -8853,19 +10213,18 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7064.0,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
-   "fire_arrival_at": null,
-   "fire_arrival_basis": null,
+   "burn_probability": 0.55,
+   "arrival_p10_at": "2026-07-03T17:56:01.981000+00:00",
+   "arrival_p50_at": "2026-07-03T18:16:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T17:56:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
    "evacuation_min": 90.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
-    "forecast_unavailable"
+    "occupancy_unknown"
    ],
    "sources": [
     {
@@ -8914,6 +10273,22 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
@@ -8933,11 +10308,11 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 2974.7,
    "intersects_fire": false,
-   "burn_probability": null,
+   "burn_probability": 0.0,
    "arrival_p10_at": null,
    "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
    "fire_arrival_at": null,
    "fire_arrival_basis": null,
    "evacuation_min": 90.0,
@@ -9004,6 +10379,20 @@
      "available_at": "2026-07-03T13:20:01+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
    "municipality": "Forallac"

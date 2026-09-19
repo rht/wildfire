@@ -24,8 +24,11 @@ fireline/
   grid.py spread.py exposure.py decide.py routing.py fire_state.py scenario.py
 fixtures/
   assets.json               12 synthetic assets_in rows (v0 shape, still the synthetic scenario input)
-  snapshots/                Committed v4 snapshots: synthetic_gavarres_0001.json, _0002.json (+ real-area ones)
+  snapshots/                Committed v4 snapshots: synthetic_gavarres_0001.json, _0002.json (+ gavarres_real_0001..0004)
   fire/                     Recorded provider responses used by fire_input.load_recorded()
+  forecast/                 Labelled synthetic forecast-input-1 files for the synthetic scenarios (section 2.5)
+  wind/                     Real recorded Open-Meteo previous-runs wind (ecmwf_ifs025, _previous_day1 slice) per
+                            gavarres_real snapshot hour; drives the labelled CA enrichment of section 2.2
   teams.json                Fixture roster (section 5)
   evidence.json             Cached facility pages / register rows for lookup_facility (section 6)
   real_area/                Cached Equipaments/schools extract for the fixed Gavarres area (section 2.4)
@@ -107,9 +110,13 @@ not by default). School occupancy is the Gencat enrolment register joined on `co
 `estimated_occupancy`, and the `sources` entry for the occupancy fields names that register
 (`occupancy_register` / `occupancy_period` / `occupancy_fetched_at` on the input row) rather than the
 register the identity fields came from. Forecast fields are filled by `forecast_input.attach_forecast` when `build_snapshot` is
-given a `forecast=` (section 2.5), or by the CA raster when `config.FEATURES["forecast_enrichment"]` is on
-(`forecast_source` then names the method, e.g. `"ca_ensemble (labelled enrichment, not validated)"`);
-otherwise they are null.
+given a `forecast=` (section 2.5), or by the CA raster (`snapshot._enrich_forecast`, `arrival=`) when
+`config.FEATURES["forecast_enrichment"]` is on in the `cfg` passed to `build_snapshot`
+(`forecast_source` then names the method, `"ca_ensemble (labelled enrichment, not validated)"`, and
+`fire_arrival_basis` is `"p10 (ca_ensemble, labelled enrichment, not validated)"`); otherwise they are
+null. The global flag stays False; `scripts/make_snapshots.py` passes a cfg shim with it on only for
+`gavarres_real_0001..0003` (below). A CA arrival is a provided per-location estimate with source
+semantics, so the timing rules of this section apply to it unchanged.
 Point fallback for distance is recorded in `sources` with `fields: ["distance_to_fire_m", "intersects_fire"]` and a note
 `"point fallback: facility footprint missing"`.
 
@@ -145,9 +152,18 @@ Fixtures: `fixtures/snapshots/synthetic_gavarres_0001.json` (sequence 1, fire at
 exhausted; one asset with `location_unknown`, two with `occupancy_unknown`, one with `class_ambiguous`,
 one located asset without a forecast). Both `input_mode: "synthetic"` with the synthetic forecasts of
 `fixtures/forecast/`. `gavarres_real_0001..0003.json` are the real facilities with real recorded July
-perimeters and no forecast (every asset `forecast_unavailable`); `gavarres_real_0004.json` is the real
-facilities with a real recorded Deepfire fire-spread run of 2026-09-19 seeded at the July incident
-centroid (`fire_geometry_kind: "simulated"`), which covers no facility within its 12 h horizon.
+perimeters; no provider forecast covers that incident, so their arrivals are a labelled model enrichment:
+the v0 CA ensemble (`spread.run_ca`, `config.CA`, uncalibrated, no fuel or slope, 100 m cells) seeded
+from each real perimeter with the real recorded wind of `fixtures/wind/` (one sample per snapshot, the
+Open-Meteo previous-runs value for the hour containing `as_of`), n_runs 20, horizon 720 min, seed 0.
+Assets reached within 12 h (18, 65, 94 of 99 located) carry
+`fire_arrival_at = arrival_p10_at`, the labelled basis and source strings above, `forecast_horizon_at`,
+`burn_probability` and a `sources` entry; the rest are `forecast_unavailable`. The CA spreads much
+faster than the real fire did (p50 burned area about 10,000 ha at 12 h against the real 1,263 -> 3,867 ha
+over about 17 h), so these arrivals are a pipeline demonstration, not validated predictions.
+`gavarres_real_0004.json` is the real facilities with a real recorded Deepfire fire-spread run of
+2026-09-19 seeded at the July incident centroid (`fire_geometry_kind: "simulated"`), which covers no
+facility within its 12 h horizon (every asset `forecast_unavailable`).
 
 ### 2.5 Forecast input — `fireline/forecast_input.py`
 
@@ -348,8 +364,9 @@ controls (create, assign with roster check, progress, block, release); change lo
 
 `{"spread_ca": False, "routing": False, "decisions": False, "forecast_enrichment": False}`. The v0
 scenario pipeline (`scripts/precompute.py`, `scenario.Scenario`) remains runnable when the flags are on;
-the v4 path never imports the raster stack unless `forecast_enrichment` is set. Forecast-driven
-tiers are optional context only.
+the v4 path never imports the raster stack unless `forecast_enrichment` is set. The globals stay False;
+`scripts/make_snapshots.py` enables `forecast_enrichment` through a per-call cfg shim only when building
+`gavarres_real_0001..0003` (section 2.3 fixtures). Forecast-driven tiers are optional context only.
 
 ---
 

@@ -37,10 +37,21 @@ Municipalities with located rows (24): Begur, Bordils, Calonge i Sant Antoni, Ca
   recorded Deepfire satellite perimeters** (`fixtures/fire/deepfire/real/`, `input_mode: recorded`);
   the register extract (2026-09-19) postdates the fire (July 2026), so this is a recorded-input demo,
   not historical as-of replay (readme section 4).
-- **No forecast covers the July snapshots** (`gavarres_real_0001..0003`): Deepfire fire-spread runs are seeded
-  from hotspots observed within a lookback of NOW (no as-of parameter; the July incident returns 422 and the
-  account archive starts 2026-07-10), so every asset has `fire_arrival_at` null with `forecast_unavailable`
-  (schema 1.1); arrival is never derived from distance, and the consumer shows an unranked review queue.
+- **No provider forecast covers the July snapshots** (`gavarres_real_0001..0003`): Deepfire fire-spread runs
+  are seeded from hotspots observed within a lookback of NOW (no as-of parameter; the July incident returns 422
+  and the account archive starts 2026-07-10). Their `fire_arrival_at` therefore comes from the **v0
+  cellular-automaton ensemble** (`fireline.spread.run_ca`, `config.CA`, not calibrated on Gavarres) seeded on
+  each recorded perimeter (20 runs, 720 min horizon, seed 0, no fuel, no slope,
+  100 m grid), attached through the `forecast_enrichment` hook as **labelled enrichment**:
+  `forecast_source = "ca_ensemble (labelled enrichment, not validated)"`, `fire_arrival_basis = p10`. Wind is the
+  Open-Meteo Previous Runs slice committed in `fixtures/wind/` (model `ecmwf_ifs025`, `previous_day1`, real
+  model output, not an observation; nearest 0.1 deg grid point to the perimeter centroid, hour containing
+  `as_of`; see `fixtures/wind/README.md`). Assets the ensemble does not reach within the horizon in at least
+  10 % of runs keep `fire_arrival_at` null with `forecast_unavailable` (schema 1.1); arrival is never derived
+  from distance. Per snapshot (wind speed / from, hour used; located assets with an arrival):
+  - `gavarres_real-0001`: CA ensemble 20 runs, 720 min horizon, seed 0, 100 m grid, no fuel/slope; wind 5.80 m/s from 15 deg at 2026-07-03T13:00Z (fixtures/wind/41.90_3.05.json, grid point 41.90N 3.05E); 18 of 99 located assets get a `fire_arrival_at`.
+  - `gavarres_real-0002`: CA ensemble 20 runs, 720 min horizon, seed 0, 100 m grid, no fuel/slope; wind 2.64 m/s from 65 deg at 2026-07-03T15:00Z (fixtures/wind/41.90_3.05.json, grid point 41.90N 3.05E); 65 of 99 located assets get a `fire_arrival_at`.
+  - `gavarres_real-0003`: CA ensemble 20 runs, 720 min horizon, seed 0, 100 m grid, no fuel/slope; wind 1.58 m/s from 305 deg at 2026-07-04T06:00Z (fixtures/wind/41.90_3.05.json, grid point 41.90N 3.05E); 94 of 99 located assets get a `fire_arrival_at`.
 - `gavarres_real_0004.json` (sequence 4, `as_of` 2026-09-19T13:49:18Z) uses the REAL recorded fire-spread run
   `4bbd8e98` (elmfire, 1 member, 12 h, simulated point ignition at the July incident centroid, run on
   2026-09-19): `fire_geometry` is its hour-1 burned area labelled `fire_geometry_kind: simulated`, and the

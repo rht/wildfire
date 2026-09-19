@@ -55,8 +55,8 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 | Fire footprint | Closed | GeoJSON `fire_geometry` with `fire_observed_at`, `fire_source`, `fire_geometry_kind`; a cluster is always a hotspot centre |
 | Stale-data status | Closed | `fire_input.data_status`, `config.FRESHNESS`; shown recorded and recomputed in the UI |
 | Latency measurement | Closed | `fire_input.measure_update`; source age and processing time reported separately (VALIDATION.md) |
-| Deepfire fire-spread | Partial | `forecast_input.deepfire_spread_to_forecast` verified on two real recorded runs (2026-09-19). Runs are seeded from current hotspots only: the July incident cannot be re-run (422), so the recorded July snapshots carry no forecast. `gavarres_real_0004` uses a real run seeded at the July centroid; it reaches no facility in 12 h. |
-| CA spread ensemble | Deferred | `FEATURES["spread_ca"]`, `["forecast_enrichment"]` off |
+| Deepfire fire-spread | Partial | `forecast_input.deepfire_spread_to_forecast` verified on two real recorded runs (2026-09-19). Runs are seeded from current hotspots only: the July incident cannot be re-run (422), so no provider forecast covers the recorded July snapshots (they use the labelled CA enrichment, next row). `gavarres_real_0004` uses a real run seeded at the July centroid; it reaches no facility in 12 h. |
+| CA spread ensemble | Partial (labelled enrichment) | Global `FEATURES["spread_ca"]`, `["forecast_enrichment"]` stay off. `scripts/make_snapshots.py` runs the v0 `spread.run_ca` ensemble (uncalibrated `config.CA`, no fuel/slope, 100 m cells, 20 runs, 12 h, seed 0) seeded from each real July perimeter with the real recorded Open-Meteo previous-runs wind in `fixtures/wind/` (one sample per snapshot) and attaches it through `snapshot._enrich_forecast` with a cfg shim for `gavarres_real_0001..0003` only. Reached assets (18 / 65 / 94 of 99 located) get `fire_arrival_at = arrival_p10_at` with `forecast_source = "ca_ensemble (labelled enrichment, not validated)"`; the rest stay `forecast_unavailable`. Known bias: the CA spreads much faster than the real fire (p50 ~10,000 ha at 12 h vs real 1,263 -> 3,867 ha over ~17 h). Not a provider forecast, not validated. |
 | Routing, cut roads, destinations | Deferred | `FEATURES["routing"]` off |
 | Confine / evacuate rule | Deferred | `FEATURES["decisions"]` off |
 | Wind what-if | Deferred | only in the v0 `scripts/precompute.py` demo |
@@ -96,7 +96,8 @@ checks the window arithmetic; `VALIDATION.md` is regenerated.
 2. Real-area occupancy: no located register row carries a capacity or headcount, so occupancy stays
    an investigation item even where a forecast exists. Disclosed in `VALIDATION.md`.
 3. Install Superpowers for the next session.
-4. Real-area ranking also needs a forecast: a live Deepfire fire-spread run on a current cluster in
-   the bbox (or Deepfire's own `auto` runs, listed every few hours) fed through
-   `forecast_input.deepfire_spread_to_forecast` would rank real facilities; only recorded runs seeded
-   at the July centroid exist, and they reach no facility.
+4. Real-area ranking currently comes from the labelled, uncalibrated CA enrichment on
+   `gavarres_real_0001..0003` (section 4), which over-predicts spread. The preferred closure is still a
+   Deepfire fire-spread run: a live run on a current cluster in the bbox (or Deepfire's own `auto` runs,
+   listed every few hours) fed through `forecast_input.deepfire_spread_to_forecast`, or a recorded run
+   that actually reaches facilities; the only recorded runs seeded at the July centroid reach none.
