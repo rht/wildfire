@@ -575,3 +575,39 @@ The contact ranking of this prototype is now the snapshot pipeline's ranking too
 `forecast-evacuation-window-v2` replaces the earlier weighted proximity/people/value contact score. Static locations now include nullable `fire_arrival_min`, `evacuation_min`, `forecast_source` and `evacuation_source`. Older collections still load; missing timing evidence places their contacts in review. Times must share the scenario epoch. For a nonzero elapsed time or extra contact buffer, call `rank_contacts(locations, ContactPolicy(now_min=..., buffer_min=...))`. The response-action planner's feasibility buffer remains a separate scenario input.
 
 The example's contact order happens to remain A → B → C, but its justification is now the remaining window, not A's value. Live spread prediction remains the upstream engine's responsibility; this module consumes per-location predictions.
+
+## Quality Clouds review — 2026-09-19
+
+Quality Clouds MCP was connected and authenticated. Livecheck ran against all 51 tracked Python files at `5141a8b2d23f872e13c6c5831da9979b30815baf`: 49 non-empty files checked, two empty package files not checkable, 31 files clean under the evaluated rules, and 18 files with 42 findings (3 high, 39 low). No result reported reduced coverage or capped findings. The server evaluated its Python, FastAPI and SQLAlchemy rulesets by file extension.
+
+[Full per-file results](reports/qualityclouds-audit-2026-09-19.json) include rule descriptions, locations and suggested actions. This was a series of file Livechecks, not a portal full-repository scan. Repository linking returned `auto_import_not_available` because the repository is not imported into the Norma organization; historical repository issues were unavailable. Non-Python files, dependencies, and other task branches were not scanned. These are rule matches, not a claim that each is an exploitable bug.
+
+### Accept: explicit UTF-8 for snapshot files
+
+**Rule:** `py-mng-open-no-encoding-1.0` (low). **Locations:** `fireline/snapshot.py:649,654`.
+
+The writer uses `ensure_ascii=False`, preserving non-ASCII place names in JSON. Without an explicit encoding, file I/O depends on the runtime's default text encoding. A snapshot written on one system can fail or be misread on a system with a different default. Use UTF-8 for both writing and reading:
+
+```diff
+-    path.write_text(json.dumps(snap, indent=1, ensure_ascii=False, allow_nan=False) + "\n")
++    path.write_text(json.dumps(snap, indent=1, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
+...
+-    return json.loads(Path(path).read_text())
++    return json.loads(Path(path).read_text(encoding="utf-8"))
+```
+
+**Verification:** the proposed complete file was submitted to Livecheck in memory; its result changed from two findings to `clean`, with no reduced coverage. This is a proposal only: the source file was not edited and application tests were not run. Before applying, verify a non-ASCII snapshot round trip under a non-UTF-8 default and run the existing snapshot tests. Files previously written using other encodings may need conversion.
+
+### Defend: fixed identifiers in the schema migration
+
+**Rule:** `py-sec-dbapi-execute-fstring-1.0` (high). **Location:** `fireline/tasks.py:189`, in `TaskStore._migrate`.
+
+```python
+for column, kind in (("fire_arrival_at", "TEXT"), ("priority_status", "TEXT"), ("slack_min", "REAL")):
+    if column not in have:
+        self.conn.execute(f"ALTER TABLE asset_exposure ADD COLUMN {column} {kind}")
+```
+
+**Defense:** every interpolated identifier/type comes from the literal tuple above. No user input, snapshot field, configuration value or database value supplies `column` or `kind`; the database-derived `have` set only controls whether a migration runs. The table name is also a fixed literal. The scanner detects an f-string passed to `execute`, but this specific call has no untrusted SQL input.
+
+SQL value placeholders do not substitute SQL identifiers or type syntax, so replacing these tokens with `?` parameters is not the appropriate fix. Keep this migration as written and document a narrow finding-level exception if needed. Revisit that decision if identifier selection ever becomes externally controlled. This defense applies only to line 189, not a blanket suppression of SQL interpolation elsewhere; the separate finding at line 201 requires its own assessment. No exception was submitted to Norma and no compliance assertion was registered.

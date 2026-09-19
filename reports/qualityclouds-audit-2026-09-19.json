@@ -1,0 +1,1429 @@
+{
+  "repository": "https://github.com/rht/wildfire",
+  "commit": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+  "date": "2026-09-19",
+  "method": "Quality Clouds MCP live_check, one call per tracked Python file; max_issues=200; no severity filter",
+  "repository_link": {
+    "outcome": "failed",
+    "reason": "auto_import_not_available"
+  },
+  "summary": {
+    "attempted": 51,
+    "checked": 49,
+    "empty": 2,
+    "clean_files": 31,
+    "files_with_findings": 18,
+    "total_findings": 42,
+    "HIGH": 3,
+    "LOW": 39
+  },
+  "results": [
+    {
+      "file_name": "fireline/__init__.py",
+      "result": {
+        "outcome": "not_checkable",
+        "reason": "File is empty or whitespace-only; there is nothing to check."
+      }
+    },
+    {
+      "file_name": "fireline/agent.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/agent.py",
+            "line": 232,
+            "column": 24,
+            "snippet": "        d = json.loads(FIXTURE_REGISTERS.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/agent.py",
+            "line": 240,
+            "column": 36,
+            "snippet": "                items = json.loads(p.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/agent.py",
+            "line": 255,
+            "column": 30,
+            "snippet": "        entries = json.loads(FIXTURE_EVIDENCE.read_text())"
+          }
+        ],
+        "issues_returned": 3,
+        "total_issues": 3,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/app.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/config.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/contact_priority.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/decide.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/env.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/exposure.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/feeds.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-perf-double-lookup": {
+            "rule_name": "Double dict lookup",
+            "severity": "LOW",
+            "impact_area": "performance",
+            "description": "Looks up the same key in a dictionary twice in a row when one lookup is enough.",
+            "remediation_action": "Use d.get(k).",
+            "good_code": "try:\n    v = d[k]\nexcept KeyError:\n    # Manage case of not existing",
+            "bad_code": "if k in d:\n    v = d[k]",
+            "estimated_time_to_fix": 2
+          },
+          "py-arch-global-keyword": {
+            "rule_name": "global keyword used inside a function",
+            "severity": "LOW",
+            "impact_area": "architecture",
+            "description": "Uses the \"global\" keyword to mutate module-level state from inside a function. This creates hidden dependencies between code that is supposed to be independent, breaks encapsulation, and makes testing in isolation very difficult.",
+            "remediation_action": "Refactor: pass state explicitly via parameters (dependency injection) or wrap state inside a class.",
+            "good_code": "class Cache:\n    def __init__(self):\n        self._data = {}\n\n    def set(self, k, v):\n        self._data[k] = v",
+            "bad_code": "_cache = {}\n\ndef set_value(k, v):\n    global _cache\n    _cache[k] = v",
+            "estimated_time_to_fix": 30
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-perf-double-lookup",
+            "file": "fireline/feeds.py",
+            "line": 117,
+            "column": 5,
+            "snippet": "    if ts_key in record:\n        return record[ts_key]"
+          },
+          {
+            "rule_id": "py-arch-global-keyword",
+            "file": "fireline/feeds.py",
+            "line": 145,
+            "column": 5,
+            "snippet": "    global _session"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/fire_input.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/fire_state.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/fire_state.py",
+            "line": 76,
+            "column": 9,
+            "snippet": "        Path(path).write_text(json.dumps(self.to_dict(), indent=2) + \"\\n\")"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/fire_state.py",
+            "line": 80,
+            "column": 41,
+            "snippet": "        return cls.from_dict(json.loads(Path(path).read_text()))"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/forecast_input.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/forecast_input.py",
+            "line": 138,
+            "column": 31,
+            "snippet": "        forecast = json.loads(path.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/forecast_input.py",
+            "line": 324,
+            "column": 22,
+            "snippet": "    rec = json.loads(path.read_text())"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/grid.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/llm.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/priority_examples.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/priority_examples.py",
+            "line": 13,
+            "column": 42,
+            "snippet": "    return scenario_from_dict(json.loads(Path(path).read_text()))"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/priority_models.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/priority.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-perf-double-lookup": {
+            "rule_name": "Double dict lookup",
+            "severity": "LOW",
+            "impact_area": "performance",
+            "description": "Looks up the same key in a dictionary twice in a row when one lookup is enough.",
+            "remediation_action": "Use d.get(k).",
+            "good_code": "try:\n    v = d[k]\nexcept KeyError:\n    # Manage case of not existing",
+            "bad_code": "if k in d:\n    v = d[k]",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-perf-double-lookup",
+            "file": "fireline/priority.py",
+            "line": 160,
+            "column": 9,
+            "snippet": "        if value in policy:\n            asset[\"value_score\"] = policy[value]\n            asset[\"value_basis\"] = cfg.VALUE_POLICY[\"version\"]\n            reasons = [r for r in reasons if r not in (\"class_ambiguous\", \"value_unknown\")]\n        else:\n            asset[\"value_score\"] = None\n            if \"value_unknown\" not in reasons:\n                reasons.append(\"value_unknown\")"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/response_priority.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-arch-global-keyword": {
+            "rule_name": "global keyword used inside a function",
+            "severity": "LOW",
+            "impact_area": "architecture",
+            "description": "Uses the \"global\" keyword to mutate module-level state from inside a function. This creates hidden dependencies between code that is supposed to be independent, breaks encapsulation, and makes testing in isolation very difficult.",
+            "remediation_action": "Refactor: pass state explicitly via parameters (dependency injection) or wrap state inside a class.",
+            "good_code": "class Cache:\n    def __init__(self):\n        self._data = {}\n\n    def set(self, k, v):\n        self._data[k] = v",
+            "bad_code": "_cache = {}\n\ndef set_value(k, v):\n    global _cache\n    _cache[k] = v",
+            "estimated_time_to_fix": 30
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-arch-global-keyword",
+            "file": "fireline/response_priority.py",
+            "line": 212,
+            "column": 9,
+            "snippet": "        nonlocal best, visited"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/routing.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/routing.py",
+            "line": 43,
+            "column": 14,
+            "snippet": "        with open(path) as f:"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/scenario.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/scenario.py",
+            "line": 253,
+            "column": 9,
+            "snippet": "        path.write_text(json.dumps(payload, indent=1, default=_json_default))"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/scenario.py",
+            "line": 259,
+            "column": 24,
+            "snippet": "        d = json.loads(path.read_text())"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/snapshot.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/snapshot.py",
+            "line": 649,
+            "column": 5,
+            "snippet": "    path.write_text(json.dumps(snap, indent=1, ensure_ascii=False, allow_nan=False) + \"\\n\")"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/snapshot.py",
+            "line": 654,
+            "column": 23,
+            "snippet": "    return json.loads(Path(path).read_text())"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/spread.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-scal-range-len": {
+            "rule_name": "for i in range(len(x))",
+            "severity": "LOW",
+            "impact_area": "scalability",
+            "description": "Iterates over a list in an older style. Modern Python has a more direct way (enumerate).",
+            "remediation_action": "Use enumerate(xs).",
+            "good_code": "for i, x in enumerate(xs):\n    use(x)",
+            "bad_code": "for i in range(len(xs)):\n    use(xs[i])",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-scal-range-len",
+            "file": "fireline/spread.py",
+            "line": 221,
+            "column": 5,
+            "snippet": "    for k in range(len(_OFFSETS)):\n        b = cfg[\"p0\"] * slope_f[k]\n        if fuel is not None:\n            b = b * fuel\n        base.append(b.astype(np.float32) if isinstance(b, np.ndarray) else float(b))"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/tasks.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-sec-dbapi-execute-fstring": {
+            "rule_name": "DB-API execute() with f-string",
+            "severity": "HIGH",
+            "impact_area": "security",
+            "description": "cursor/connection execute with an f-string interpolates values into SQL — classic SQL injection for sqlite3, psycopg2, MySQLdb and similar DB-API drivers.",
+            "remediation_action": "Pass bound parameters as the second argument to execute().",
+            "good_code": "cursor.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))",
+            "bad_code": "cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\")",
+            "estimated_time_to_fix": 15
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-sec-dbapi-execute-fstring",
+            "file": "fireline/tasks.py",
+            "line": 189,
+            "column": 17,
+            "snippet": "                self.conn.execute(f\"ALTER TABLE asset_exposure ADD COLUMN {column} {kind}\")"
+          },
+          {
+            "rule_id": "py-sec-dbapi-execute-fstring",
+            "file": "fireline/tasks.py",
+            "line": 201,
+            "column": 13,
+            "snippet": "        n = self.conn.execute(f\"SELECT COALESCE(MAX(id), 0) + 1 FROM {table}\").fetchone()[0]"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "fireline/ui_state.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "scripts/build_priority_report.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-sec-xml-xxe": {
+            "rule_name": "Stdlib XML (XXE risk)",
+            "severity": "HIGH",
+            "impact_area": "security",
+            "description": "Reads XML in a way that can be tricked into reading other files on the machine or causing crashes.",
+            "remediation_action": "Use defusedxml.",
+            "good_code": "from defusedxml.ElementTree import fromstring\ntree = fromstring(user_xml)",
+            "bad_code": "tree = ET.fromstring(user_xml)",
+            "estimated_time_to_fix": 15
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-sec-xml-xxe",
+            "file": "scripts/build_priority_report.py",
+            "line": 436,
+            "column": 16,
+            "snippet": "        root = ET.parse(test_results).getroot()"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "scripts/fetch_data.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "scripts/investigate.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/investigate.py",
+            "line": 58,
+            "column": 24,
+            "snippet": "        a = json.loads(asset_json.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/investigate.py",
+            "line": 62,
+            "column": 27,
+            "snippet": "        snap = json.loads(snapshot_path.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/investigate.py",
+            "line": 153,
+            "column": 33,
+            "snippet": "            record = json.loads(PRERECORDED.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/investigate.py",
+            "line": 184,
+            "column": 9,
+            "snippet": "        PRERECORDED.write_text(json.dumps(record, ensure_ascii=False, indent=1) + \"\\n\")"
+          }
+        ],
+        "issues_returned": 4,
+        "total_issues": 4,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "scripts/make_snapshots.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/make_snapshots.py",
+            "line": 244,
+            "column": 9,
+            "snippet": "        path.write_text(json.dumps(synthetic_forecast(seq, t), indent=1, ensure_ascii=False) + \"\\n\")"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/make_snapshots.py",
+            "line": 276,
+            "column": 38,
+            "snippet": "    located = [r for r in json.loads(a_path.read_text()) if in_bbox(r)]"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/make_snapshots.py",
+            "line": 278,
+            "column": 40,
+            "snippet": "    unlocated = [r for r in json.loads(u_path.read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/make_snapshots.py",
+            "line": 310,
+            "column": 5,
+            "snippet": "    (REAL_DIR / \"assets_gavarres.json\").write_text(json.dumps(payload, indent=1, ensure_ascii=False) + \"\\n\")"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/make_snapshots.py",
+            "line": 392,
+            "column": 5,
+            "snippet": "    (REAL_DIR / \"README.md\").write_text(\"\\n\".join(lines))"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/make_snapshots.py",
+            "line": 398,
+            "column": 23,
+            "snippet": "    rows = json.loads((FIX / \"assets.json\").read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/make_snapshots.py",
+            "line": 454,
+            "column": 84,
+            "snippet": "        print(f\"{p.relative_to(ROOT)}: synthetic forecast-input-1, {len(json.loads(p.read_text())['estimates'])} estimates\")"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/make_snapshots.py",
+            "line": 507,
+            "column": 22,
+            "snippet": "    rec = json.loads(files[-1].read_text())"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/make_snapshots.py",
+            "line": 571,
+            "column": 25,
+            "snippet": "    series = json.loads(path.read_text())"
+          }
+        ],
+        "issues_returned": 9,
+        "total_issues": 9,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "scripts/precompute.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/precompute.py",
+            "line": 160,
+            "column": 24,
+            "snippet": "    assets = json.load(open(fixtures / \"assets.json\"))"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/precompute.py",
+            "line": 161,
+            "column": 23,
+            "snippet": "    dests = json.load(open(fixtures / \"destinations.json\"))"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/precompute.py",
+            "line": 178,
+            "column": 5,
+            "snippet": "    (out / \"layers.json\").write_text(json.dumps(layers))"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/precompute.py",
+            "line": 219,
+            "column": 5,
+            "snippet": "    (out_dir / \"index.json\").write_text(json.dumps(index, indent=1, ensure_ascii=False))"
+          }
+        ],
+        "issues_returned": 4,
+        "total_issues": 4,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "scripts/static_priorities.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/static_priorities.py",
+            "line": 36,
+            "column": 13,
+            "snippet": "            args.output.write_text(encoded)"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "scripts/validate.py",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-maint-lambda-assignment": {
+            "rule_name": "Lambda assigned to a variable",
+            "severity": "LOW",
+            "impact_area": "maintainability",
+            "description": "Defines an anonymous function and gives it a name. A normal function would be clearer and easier to debug.",
+            "remediation_action": "Use a regular def.",
+            "good_code": "def square(x):\n    return x * x",
+            "bad_code": "square = lambda x: x * x",
+            "estimated_time_to_fix": 5
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-maint-lambda-assignment",
+            "file": "scripts/validate.py",
+            "line": 401,
+            "column": 5,
+            "snippet": "    non_fire = lambda a: [s for s in a[\"sources\"] if not fire_dependent & set(s[\"fields\"])]  # noqa: E731"
+          },
+          {
+            "rule_id": "py-maint-lambda-assignment",
+            "file": "scripts/validate.py",
+            "line": 402,
+            "column": 5,
+            "snippet": "    fire_src = lambda a: next(s for s in a[\"sources\"] if \"distance_to_fire_m\" in s[\"fields\"])  # noqa: E731"
+          },
+          {
+            "rule_id": "py-maint-lambda-assignment",
+            "file": "scripts/validate.py",
+            "line": 542,
+            "column": 5,
+            "snippet": "    actionable = lambda a: [r for r in a.get(\"review_reasons\") or [] if r not in timing_reasons]  # noqa: E731"
+          }
+        ],
+        "issues_returned": 3,
+        "total_issues": 3,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/__init__.py",
+      "result": {
+        "outcome": "not_checkable",
+        "reason": "File is empty or whitespace-only; there is nothing to check."
+      }
+    },
+    {
+      "file_name": "tests/helpers.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_agent.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_app.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_decide.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_exposure.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_feeds.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_fire_input.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_fire_state.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_forecast_input.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_precompute.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_priority.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_routing.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_scenario.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_snapshot.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_spread.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_static_priorities.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_tasks.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_ui_state.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file_name": "tests/test_validate.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    }
+  ],
+  "proposal": {
+    "file": "fireline/snapshot.py",
+    "applied": false,
+    "live_check": {
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    }
+  }
+}
