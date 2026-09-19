@@ -1,4 +1,4 @@
-# FireLine contracts (v1.0, readme.md v4 MVP)
+# FireLine contracts (v1.1, readme.md v4 MVP)
 
 Binding module interfaces for the v4 MVP in `readme.md`. Section 5 of the readme defines the shared
 location-assessment snapshot; this file restates it as code contracts and adds the module APIs on
@@ -10,14 +10,15 @@ old contract is preserved at the end for reference.
 
 ```
 fireline/
-  config.py      Policies and flags: VALUE_POLICY, PRIORITY_POLICY, FRESHNESS, FEATURES (+ v0 params)
+  config.py      Policies and flags: VALUE_POLICY, EVACUATION_POLICY, CONTACT_POLICY, FRESHNESS, FEATURES (+ v0 params)
+  forecast_input.py  Per-location fire arrival estimates: Deepfire fire-spread or a labelled recorded/synthetic file
   snapshot.py    Producer: build_snapshot(), asset_exposure(), validate_snapshot(), read/write
   fire_input.py  Fire updates: Deepfire poll or recorded responses -> FireUpdate; dedupe; data_status; latency
-  priority.py    Consumer: SnapshotSequence guard, apply_overrides(), score_snapshot(), queues
+  priority.py    Consumer: SnapshotSequence guard, apply_overrides(), rank_snapshot(), queues (evacuation window)
   tasks.py       SQLite TaskStore: tasks, roster, confirmed overrides, snapshot bookkeeping, events
   agent.py       Four tools (get_asset, lookup_facility, propose_update, escalate) + investigate loop
   llm.py         AnthropicLLM and FakeLLM (same .create interface)
-  app.py         Streamlit: map, ranked table, review queue, details + score breakdown, tasks, change log
+  app.py         Streamlit: map, ranked table, review queue, details + timing breakdown, tasks, change log
   feeds.py       HTTP/cache layer, Gencat registers, Open-Meteo, DeepfireClient (unchanged API)
   --- v0 modules, gated by config.FEATURES, not used by the v4 path by default ---
   grid.py spread.py exposure.py decide.py routing.py fire_state.py scenario.py
@@ -83,8 +84,11 @@ tests/                      pytest, no network, no LLM
   "burn_probability": float | None,
   "arrival_p10_at": str | None, "arrival_p50_at": str | None,
   "forecast_horizon_at": str | None, "forecast_source": str | None,
+  "fire_arrival_at": str | None, "fire_arrival_basis": str | None,   # v1.1: selected arrival estimate + its semantics
+  "evacuation_min": float | None, "evacuation_source": str | None,   # v1.1: total evacuation duration (minutes) + basis
   "needs_review": bool, "review_reasons": [str],   # location_unknown, occupancy_unknown, occupancy_seasonal,
-                                                   # class_ambiguous, value_unknown, exposure_unknown
+                                                   # class_ambiguous, value_unknown, exposure_unknown,
+                                                   # forecast_unavailable, evacuation_unknown (v1.1)
   "sources": [ {"fields": [str], "source": str, "observed_at": str | None, "available_at": str | None,
                 "fetched_at": str | None, "notes": str | None} ],
   "municipality": str | None,             # convenience, not in readme; may be null
@@ -99,6 +103,17 @@ not by default). Forecast fields are null unless `config.FEATURES["forecast_enri
 case `forecast_source` names the method (e.g. `"ca_ensemble (labelled enrichment, not validated)"`).
 Point fallback for distance is recorded in `sources` with `fields: ["distance_to_fire_m", "intersects_fire"]` and a note
 `"point fallback: facility footprint missing"`.
+
+v1.1 timing fields (readme 5.2 and 6). `fire_arrival_at` is the producer's selected spread-predicted
+arrival for this location; `fire_arrival_basis` states its semantics (`"p10"` when the provider
+supplies quantiles, otherwise the provider's single estimate name). It is never inferred from distance:
+when no forecast covers the location it is null and `review_reasons` carries `forecast_unavailable`.
+`forecast_source` and `forecast_horizon_at` are required provenance whenever `fire_arrival_at` is set,
+and a `sources` entry lists the forecast fields. `evacuation_min` is the total estimated evacuation
+duration (mobilisation + preparation/loading + movement to a receiving location) with
+`evacuation_source` naming its basis: by default `config.EVACUATION_POLICY` by class (`"evacuation-proto-…"`,
+a labelled prototype assumption with its component minutes and assumptions in the `sources` note), or
+`"analyst override: …"` after confirmation. Unknown class -> null and `evacuation_unknown`.
 
 ### 2.3 API
 
@@ -162,30 +177,48 @@ responses live in `fixtures/fire/deepfire/*.json` as `{"collection", "received_a
 
 ## 4. Priority — consumer `fireline/priority.py`
 
+Contact priority is the remaining evacuation window (readme 6), policy `config.CONTACT_POLICY`
+(`forecast-evacuation-window-v2`). The weighted proximity/size/value score of v1.0 is removed.
+
 ```python
 priority.SnapshotSequence().accept(snap) -> bool   # False on duplicate snapshot_id or sequence <= last for scenario_id
 priority.apply_overrides(assets, overrides) -> list[dict]   # copies; overrides from tasks.TaskStore.overrides()
-priority.score_asset(asset, cfg=config) -> dict             # adds the six coordination keys below
-priority.score_snapshot(snap, cfg=config, overrides=None) -> {"ranked": [...], "needs_review": [...], "flagged": [...], "all": [...]}
-    # flagged = ranked assets that still carry review reasons (shown in both views); all = ranked + needs_review
+priority.rank_asset(asset, now_at, cfg=config) -> dict      # adds the coordination keys below (priority_rank stays None)
+priority.rank_snapshot(snap, cfg=config, overrides=None, now_at=None) -> {"ranked": [...], "needs_review": [...], "flagged": [...], "all": [...], "now_at": str, "policy": {...}}
+    # now_at defaults to snap["as_of"] (CONTACT_POLICY["now"]); flagged = ranked assets that still carry review reasons
 priority.input_age(asset, now=None) -> {"oldest_observed_at", "newest_fetched_at", ...ages when now given}
 ```
 
-Added keys per asset: `priority_score` (float | None), `priority_rank` (int | None, 1-based within
-ranked), `queue` (`"ranked"` | `"needs_review"`), `score_components` (dict: for each of
-`proximity`, `size`, `value`: `{"value": float|None, "weight": float, "input": ..., "proxy": str|None}`),
-`priority_policy_version` (str), `priority_reasons` ([str]).
+Added keys per asset:
 
-Policy `config.PRIORITY_POLICY`: weights sum to 1; `proximity = clip(1 - distance / proximity_scale_m, 0, 1)`
-(1.0 on intersection); `size = clip(people / size_scale_people, 0, 1)` with `people =
-estimated_occupancy` or `capacity` as labelled proxy; `value = value_score`. Any required component
-null -> `priority_score` null, `queue = "needs_review"`. Ranked sorted by score desc then `asset_id`;
-needs_review ordered: exposure unknown first, then ascending known distance, then `asset_id`.
-Assets with review reasons but a computable score stay in `ranked` and also carry their reasons
-(the UI shows them in both views). `apply_overrides` also clears `occupancy_unknown` /
-`occupancy_seasonal` when `estimated_occupancy` is overridden, re-derives `value_score` when
-`asset_type` is overridden, and adds `override_conflict` when a provider source for the same field
-is observed later than the override was confirmed (the override is kept and the conflict shown).
+| Key | Type | Meaning |
+|---|---|---|
+| `priority_rank` | int or null | 1-based position in `ranked`; null in `needs_review`. |
+| `queue` | `"ranked"` or `"needs_review"` | Ranked only when every timing input is known. |
+| `priority_status` | `"window_open"`, `"window_exhausted"` or `"needs_review"` | Exhausted = `slack_min <= 0`: immediate analyst review, not an evacuation instruction. |
+| `time_to_impact_min` | float or null | `fire_arrival_at - now_at` in minutes. |
+| `latest_start_min` | float or null | `fire_arrival_at - evacuation_min - buffer_min - now_at` in minutes. |
+| `slack_min` | float or null | Remaining window `latest_start_min - 0` (i.e. relative to `now_at`); negative allowed. |
+| `window_components` | dict | `{"fire_arrival_at", "fire_arrival_basis", "forecast_source", "forecast_horizon_at", "now_at", "evacuation_min", "evacuation_source", "buffer_min", "distance_to_fire_m"}` as used. |
+| `priority_policy_version` | str | `CONTACT_POLICY["version"]`. |
+| `priority_reasons` | [str] | Human-readable explanation lines: each timing component, the window arithmetic, `"needs review: …"` when unranked, and `"review flag: <reason>"` for each producer review reason. |
+
+Ranked order: `slack_min` ascending, then `fire_arrival_at` ascending, then `distance_to_fire_m`
+ascending (null last), then `asset_id`. Missing `fire_arrival_at`, `evacuation_min`,
+`forecast_source` or `evacuation_source` -> `queue = "needs_review"`, `priority_status =
+"needs_review"`, timing keys null, and `forecast_unavailable` / `evacuation_unknown` added to
+`priority_reasons` (and to `review_reasons` if the producer did not already set them). A missing
+distance does not prevent ranking. Needs-review order is unchanged from v1.0: exposure unknown first,
+then ascending known distance, then `asset_id`. Assets with review reasons but complete timing stay
+in `ranked` and also carry their reasons (the UI shows them in both views).
+
+The ordering and window arithmetic are the same as `contact_priority.rank_contacts` (section 16 of
+the readme) with timestamps converted to minutes from `now_at`; a test asserts agreement.
+
+`apply_overrides` behaviour from v1.0 is kept (occupancy/capacity, `asset_type` re-derives
+`value_score`, `override_conflict`). v1.1 adds field `evacuation_min`: sets `evacuation_source =
+"analyst override: <source>"` and clears `evacuation_unknown`. Overrides on `fire_arrival_at` are not
+accepted (forecasts come from the producer).
 
 ## 5. Tasks and roster — `fireline/tasks.py` (SQLite)
 
@@ -258,8 +291,8 @@ Reads `fixtures/snapshots/` (and `data/snapshots/` when present) ordered by `seq
 control advances the sequence through `SnapshotSequence` + `TaskStore.apply_snapshot`. Persists to
 `data/fireline.sqlite` (path from `FIRELINE_DB`). Shows: input mode, `as_of`, `computed_at`,
 `data_status`, source age and processing time; map with fire geometry (perimeter vs hotspot centre
-styled differently) and assets coloured by queue/score; ranked table; needs-review queue; selected
-asset details with score components, input age and sources; proposals awaiting confirmation; task
+styled differently) and assets coloured by queue/remaining window; ranked table; needs-review queue; selected
+asset details with the timing breakdown (arrival, evacuation duration, buffer, window), input age and sources; proposals awaiting confirmation; task
 controls (create, assign with roster check, progress, block, release); change log from `events()`.
 
 ## 8. Feature flags — `config.FEATURES`
