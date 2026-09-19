@@ -89,13 +89,20 @@
     text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
   }
-  #map {
+  /* mapFrame is the fixed rectangular card — border, radius and shadow never move.
+     #map (Leaflet's own container) sits inside it and is what tilts, clipped cleanly
+     by mapFrame's overflow:hidden, the way a real map product's camera pitch works. */
+  #mapFrame {
     position: absolute; top: 14px; left: 14px; right: 14px; bottom: 74px;
     border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.25), 0 0 0 1px var(--line);
+    perspective: 1000px;
+  }
+  #map {
+    position: absolute; inset: 0;
     transition: transform 0.35s ease;
     transform-origin: 50% 100%;
   }
-  #map.tilt3d { transform: perspective(900px) rotateX(28deg) scale(1.08); }
+  #map.tilt3d { transform: rotateX(38deg) scale(1.55); }
   .mapButtonBar {
     position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 12;
     display: flex; gap: 6px; flex-wrap: wrap;
@@ -285,7 +292,9 @@
       <div class="mapCardHead">Response map — live exposure radius</div>
       <button id="changeLogBtn">Change log (<span id="logCount">0</span>)</button>
       <div id="changeLog"></div>
-      <div id="map"></div>
+      <div id="mapFrame">
+        <div id="map"></div>
+      </div>
       <div class="mapButtonBar">
         <button id="notifyFireDeptBtn" class="primary">🚒 Notify fire dept</button>
         <button id="notifyRadioBtn">📻 Radio</button>
