@@ -4,8 +4,10 @@
 <meta charset="UTF-8" />
 <title>Respons'Ara — UI/UX mockup</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
 <style>
   :root {
     --ink: #16191c;
@@ -174,13 +176,13 @@
       <div>as_of <b id="asOf">—</b></div>
       <div>computed_at <b id="computedAt">—</b></div>
     </div>
-    <button id="nextUpdateBtn" onclick="nextUpdate()">Next update →</button>
+    <button id="nextUpdateBtn">Next update →</button>
   </div>
 
   <div id="main">
     <div id="mapCol">
       <div id="map"></div>
-      <button id="changeLogBtn" onclick="toggleLog()">Change log (<span id="logCount">0</span>)</button>
+      <button id="changeLogBtn">Change log (<span id="logCount">0</span>)</button>
       <div id="changeLog"></div>
     </div>
 
@@ -306,6 +308,59 @@ function fmtTime(iso) {
   return d.toISOString().slice(11, 16) + "Z " + d.toISOString().slice(0, 10);
 }
 
+function textElement(tagName, text, className = "") {
+  const element = document.createElement(tagName);
+  if (className) element.className = className;
+  element.textContent = String(text);
+  return element;
+}
+
+function renderEmptyDetail(panel) {
+  const prompt = textElement("p", "Select a location from the list, or a pin on the map.");
+  prompt.style.color = "var(--muted)";
+  prompt.style.fontSize = "13px";
+  prompt.style.padding = "0 14px";
+  panel.replaceChildren(prompt);
+}
+
+function strongLogText(text) {
+  return { strong: String(text) };
+}
+
+function renderChangeLog() {
+  const log = document.getElementById("changeLog");
+  log.replaceChildren();
+  const entries = changeLog.length ? [...changeLog].reverse() : [["No changes yet."]];
+  for (const parts of entries) {
+    const entry = document.createElement("div");
+    entry.className = "cl-entry";
+    for (const part of parts) {
+      if (typeof part === "string") {
+        entry.append(document.createTextNode(part));
+      } else {
+        entry.append(textElement("b", part.strong));
+      }
+    }
+    log.append(entry);
+  }
+}
+
+function handleAssetSelection(event) {
+  selectAsset(event.currentTarget.dataset.assetId);
+}
+
+function handleMarkerSelection(event) {
+  selectAsset(event.target.assetId);
+}
+
+function handleTaskAction(event) {
+  pickAction(event.currentTarget.dataset.assetId, event.currentTarget.dataset.action);
+}
+
+function handleTeamAssignment(event) {
+  assignTeam(event.currentTarget.dataset.assetId, event.currentTarget.value);
+}
+
 function render() {
   document.getElementById("modeBadge").textContent = "Mode: " + current.input_mode;
   document.getElementById("asOf").textContent = fmtTime(current.as_of);
@@ -315,11 +370,11 @@ function render() {
   sb.className = "badge " + current.data_status;
 
   const scored = [], review = [];
-  current.assets.forEach(a => {
+  for (const a of current.assets) {
     const s = scoreAsset(a);
     if (a.needs_review || s === null) review.push(a);
     if (s !== null) scored.push({ a, s });
-  });
+  }
   scored.sort((x, y) => y.s.total - x.s.total || x.a.asset_id.localeCompare(y.a.asset_id));
 
   document.getElementById("mAct").textContent = scored.filter(x => x.s.total > 0.7).length;
@@ -327,41 +382,65 @@ function render() {
   document.getElementById("mReview").textContent = review.length;
 
   const list = document.getElementById("rankedList");
-  list.innerHTML = "";
-  scored.forEach((x, i) => {
+  list.replaceChildren();
+  for (const [i, x] of scored.entries()) {
     const row = document.createElement("div");
     row.className = "row" + (x.a.asset_id === selectedId ? " selected" : "");
-    row.onclick = () => selectAsset(x.a.asset_id);
+    row.dataset.assetId = x.a.asset_id;
+    row.addEventListener("click", handleAssetSelection);
     const task = taskState[x.a.asset_id];
-    row.innerHTML = `
-      <div class="rank">${i + 1}</div>
-      <div class="bar">
-        <span class="b-prox" style="width:${x.s.proximity * 100}%"></span>
-        <span class="b-size" style="width:${x.s.size * 100}%"></span>
-        <span class="b-val" style="width:${x.s.value * 100}%"></span>
-      </div>
-      <div class="info">
-        <div class="name">${x.a.name} ${task ? `<span class="task-flag">${task.status}</span>` : ""}</div>
-        <div class="sub">${x.a.asset_type} · ${Math.round(x.a.distance_to_fire_m)} m to fire</div>
-      </div>
-      <div class="score">${x.s.total.toFixed(2)}</div>`;
+
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    const proximityBar = document.createElement("span");
+    proximityBar.className = "b-prox";
+    proximityBar.style.width = `${x.s.proximity * 100}%`;
+    const sizeBar = document.createElement("span");
+    sizeBar.className = "b-size";
+    sizeBar.style.width = `${x.s.size * 100}%`;
+    const valueBar = document.createElement("span");
+    valueBar.className = "b-val";
+    valueBar.style.width = `${x.s.value * 100}%`;
+    bar.append(proximityBar, sizeBar, valueBar);
+
+    const info = document.createElement("div");
+    info.className = "info";
+    const name = textElement("div", x.a.name, "name");
+    if (task) {
+      name.append(document.createTextNode(" "), textElement("span", task.status, "task-flag"));
+    }
+    info.append(name, textElement("div", `${x.a.asset_type} · ${Math.round(x.a.distance_to_fire_m)} m to fire`, "sub"));
+
+    row.append(textElement("div", i + 1, "rank"), bar, info, textElement("div", x.s.total.toFixed(2), "score"));
     list.appendChild(row);
-  });
+  }
 
   const q = document.getElementById("reviewQueue");
-  q.innerHTML = review.length
-    ? `<div class="panelHead" style="border-top:none">Needs-review queue (${review.length})</div>` +
-      review.map(a => `<div class="qrow" onclick="selectAsset('${a.asset_id}')" style="cursor:pointer">
-        <span>${a.name}</span><span class="qreason">${(a.review_reasons || ["exposure_unknown"]).join(", ")}</span></div>`).join("")
-    : "";
+  q.replaceChildren();
+  if (review.length) {
+    const heading = textElement("div", `Needs-review queue (${review.length})`, "panelHead");
+    heading.style.borderTop = "none";
+    q.append(heading);
+    for (const a of review) {
+      const queueRow = document.createElement("div");
+      queueRow.className = "qrow";
+      queueRow.style.cursor = "pointer";
+      queueRow.dataset.assetId = a.asset_id;
+      queueRow.addEventListener("click", handleAssetSelection);
+      queueRow.append(
+        textElement("span", a.name),
+        textElement("span", (a.review_reasons || ["exposure_unknown"]).join(", "), "qreason"),
+      );
+      q.append(queueRow);
+    }
+  }
 
   renderMap(scored, review);
-  if (selectedId) renderDetail(selectedId, scored); else document.getElementById("detailPanel").innerHTML =
-    '<p style="color:var(--muted);font-size:13px;padding:0 14px">Select a location from the list, or a pin on the map.</p>';
+  const detailPanel = document.getElementById("detailPanel");
+  if (selectedId) renderDetail(selectedId, scored); else renderEmptyDetail(detailPanel);
 
   document.getElementById("logCount").textContent = changeLog.length;
-  document.getElementById("changeLog").innerHTML = changeLog.slice().reverse()
-    .map(l => `<div class="cl-entry">${l}</div>`).join("") || '<div class="cl-entry">No changes yet.</div>';
+  renderChangeLog();
 }
 
 function tierColor(total) {
@@ -390,14 +469,21 @@ function renderMap(scored, review) {
     .addTo(fireLayer);
 
   const all = [...scored.map(x => ({ a: x.a, total: x.s.total })), ...review.map(a => ({ a, total: null }))];
-  all.forEach(({ a, total }) => {
+  for (const { a, total } of all) {
     const color = total === null ? "#a8471f" : tierColor(total);
     const marker = L.circleMarker([a.latitude, a.longitude], {
       radius: total === null ? 8 : 6 + total * 6, color: "#fff", weight: 1.5, fillColor: color, fillOpacity: 0.95,
     }).addTo(markerLayer);
-    marker.bindTooltip(`<b>${a.name}</b><br/>${total === null ? "needs review" : "priority " + total.toFixed(2)}`, { className: "fire-tip" });
-    marker.on("click", () => selectAsset(a.asset_id));
-  });
+    const tooltip = document.createElement("span");
+    tooltip.append(
+      textElement("b", a.name),
+      document.createElement("br"),
+      document.createTextNode(total === null ? "needs review" : "priority " + total.toFixed(2)),
+    );
+    marker.assetId = a.asset_id;
+    marker.bindTooltip(tooltip, { className: "fire-tip" });
+    marker.on("click", handleMarkerSelection);
+  }
 }
 
 function selectAsset(id) {
@@ -410,66 +496,143 @@ function renderDetail(id, scored) {
   const panel = document.getElementById("detailPanel");
   const s = scoreAsset(a);
   const task = taskState[id];
+  panel.replaceChildren();
 
-  let scoreHtml = "";
+  panel.append(textElement("h3", a.name));
+  const kind = textElement("div", `${a.asset_type} · asset_id `, "kind");
+  kind.append(textElement("code", a.asset_id));
+  panel.append(kind);
+
   if (s) {
-    scoreHtml = `<div class="scoreBreak">
-      <div class="sb-row"><span class="sb-label">proximity</span><div class="sb-bar"><span style="width:${s.proximity*100}%;background:#c73a2f"></span></div><span class="sb-val">${s.proximity.toFixed(2)}</span></div>
-      <div class="sb-row"><span class="sb-label">size</span><div class="sb-bar"><span style="width:${s.size*100}%;background:#d98a1f"></span></div><span class="sb-val">${s.size.toFixed(2)}</span></div>
-      <div class="sb-row"><span class="sb-label">value</span><div class="sb-bar"><span style="width:${s.value*100}%;background:#1f5c4d"></span></div><span class="sb-val">${s.value.toFixed(2)}</span></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">total ${s.total.toFixed(2)} · weights prox ${WEIGHTS.proximity} / size ${WEIGHTS.size} / value ${WEIGHTS.value} · ${POLICY_VERSION}</div>
-    </div>`;
+    const scoreBreak = document.createElement("div");
+    scoreBreak.className = "scoreBreak";
+    const components = [
+      ["proximity", s.proximity, "#c73a2f"],
+      ["size", s.size, "#d98a1f"],
+      ["value", s.value, "#1f5c4d"],
+    ];
+    for (const [label, value, color] of components) {
+      const scoreRow = document.createElement("div");
+      scoreRow.className = "sb-row";
+      const bar = document.createElement("div");
+      bar.className = "sb-bar";
+      const fill = document.createElement("span");
+      fill.style.width = `${value * 100}%`;
+      fill.style.background = color;
+      bar.append(fill);
+      scoreRow.append(
+        textElement("span", label, "sb-label"),
+        bar,
+        textElement("span", value.toFixed(2), "sb-val"),
+      );
+      scoreBreak.append(scoreRow);
+    }
+    const total = textElement("div", `total ${s.total.toFixed(2)} · weights prox ${WEIGHTS.proximity} / size ${WEIGHTS.size} / value ${WEIGHTS.value} · ${POLICY_VERSION}`);
+    total.style.fontSize = "11px";
+    total.style.color = "var(--muted)";
+    total.style.marginTop = "2px";
+    scoreBreak.append(total);
+    panel.append(scoreBreak);
   }
 
-  const reviewHtml = (a.needs_review || s === null)
-    ? `<div class="reviewBox"><b>Needs review:</b> ${(a.review_reasons || ["exposure_unknown"]).join(", ")}.
-       This asset is in the investigation queue, not asserted as highest physical risk.</div>` : "";
+  if (a.needs_review || s === null) {
+    const reviewBox = document.createElement("div");
+    reviewBox.className = "reviewBox";
+    reviewBox.append(
+      textElement("b", "Needs review:"),
+      document.createTextNode(` ${(a.review_reasons || ["exposure_unknown"]).join(", ")}. This asset is in the investigation queue, not asserted as highest physical risk.`),
+    );
+    panel.append(reviewBox);
+  }
 
-  const sourcesHtml = (a.sources || []).map(src => `<div class="sourceItem">
-      <b>${src.fields.join(", ")}</b> — ${src.source}${src.observed_at ? " (" + src.observed_at + ")" : ""}
-      ${src.notes ? "<br/>" + src.notes : ""}</div>`).join("") || '<div class="sourceItem">No recorded sources yet.</div>';
+  const values = document.createElement("div");
+  values.className = "kv";
+  const valueRows = [
+    ["capacity", a.capacity ?? "null (unknown)", a.capacity == null],
+    ["estimated occupancy", a.estimated_occupancy ?? "null (unknown)", a.estimated_occupancy == null],
+    ["occupancy basis", a.occupancy_basis ?? "—", false],
+    ["distance to fire", `${a.distance_to_fire_m != null ? Math.round(a.distance_to_fire_m) + " m" : "unknown"}${a.intersects_fire ? " (intersects)" : ""}`, false],
+    ["value basis", a.value_basis ?? "—", false],
+  ];
+  for (const [label, value, isNull] of valueRows) {
+    values.append(
+      textElement("div", label, "k"),
+      textElement("div", value, "v" + (isNull ? " null" : "")),
+    );
+  }
+  panel.append(values);
 
+  const evidenceHeading = textElement("div", "Evidence & provenance", "panelHead");
+  evidenceHeading.style.paddingLeft = "0";
+  panel.append(evidenceHeading);
+  if (a.sources?.length) {
+    for (const source of a.sources) {
+      const sourceItem = document.createElement("div");
+      sourceItem.className = "sourceItem";
+      sourceItem.append(
+        textElement("b", source.fields.join(", ")),
+        document.createTextNode(` — ${source.source}${source.observed_at ? " (" + source.observed_at + ")" : ""}`),
+      );
+      if (source.notes) {
+        sourceItem.append(document.createElement("br"), document.createTextNode(source.notes));
+      }
+      panel.append(sourceItem);
+    }
+  } else {
+    panel.append(textElement("div", "No recorded sources yet.", "sourceItem"));
+  }
+
+  const taskHeading = textElement("div", "Follow-up task", "panelHead");
+  taskHeading.style.paddingLeft = "0";
+  panel.append(taskHeading);
+  const taskActions = document.createElement("div");
+  taskActions.className = "taskActions";
   const actions = ["confirm occupancy", "contact facility", "check access", "request resources"];
-  const actionsHtml = actions.map(act =>
-    `<button class="${task && task.action === act ? "active" : ""}" onclick="pickAction('${id}','${act}')">${act}</button>`).join("");
-
-  let assignHtml = "";
-  if (task) {
-    const teamOptions = TEAMS.map(t => `<option value="${t.id}" ${task.teamId === t.id ? "selected" : ""} ${!t.available ? "disabled" : ""}>
-        ${t.name}${!t.available ? " (unavailable)" : ""}</option>`).join("");
-    assignHtml = `<div class="assignRow">
-        <select onchange="assignTeam('${id}', this.value)">
-          <option value="">— assign team —</option>${teamOptions}
-        </select>
-        <span class="task-flag">${task.status}</span>
-      </div>
-      ${task.blocked ? '<div class="teamUnavailable" style="font-size:11.5px;margin-top:4px">Selected team unavailable — reassign or leave blocked.</div>' : ""}`;
+  for (const action of actions) {
+    const button = textElement("button", action);
+    if (task?.action === action) button.className = "active";
+    button.dataset.assetId = id;
+    button.dataset.action = action;
+    button.addEventListener("click", handleTaskAction);
+    taskActions.append(button);
   }
+  panel.append(taskActions);
 
-  panel.innerHTML = `
-    <h3>${a.name}</h3>
-    <div class="kind">${a.asset_type} · asset_id <code>${a.asset_id}</code></div>
-    ${scoreHtml}
-    ${reviewHtml}
-    <div class="kv">
-      <div class="k">capacity</div><div class="v ${a.capacity == null ? "null" : ""}">${a.capacity ?? "null (unknown)"}</div>
-      <div class="k">estimated occupancy</div><div class="v ${a.estimated_occupancy == null ? "null" : ""}">${a.estimated_occupancy ?? "null (unknown)"}</div>
-      <div class="k">occupancy basis</div><div class="v">${a.occupancy_basis ?? "—"}</div>
-      <div class="k">distance to fire</div><div class="v">${a.distance_to_fire_m != null ? Math.round(a.distance_to_fire_m) + " m" : "unknown"}${a.intersects_fire ? " (intersects)" : ""}</div>
-      <div class="k">value basis</div><div class="v">${a.value_basis ?? "—"}</div>
-    </div>
-    <div class="panelHead" style="padding-left:0">Evidence &amp; provenance</div>
-    ${sourcesHtml}
-    <div class="panelHead" style="padding-left:0">Follow-up task</div>
-    <div class="taskActions">${actionsHtml}</div>
-    ${assignHtml}
-  `;
+  if (task) {
+    const assignRow = document.createElement("div");
+    assignRow.className = "assignRow";
+    const teamSelect = document.createElement("select");
+    const prompt = textElement("option", "— assign team —");
+    prompt.value = "";
+    teamSelect.append(prompt);
+    for (const team of TEAMS) {
+      const option = textElement("option", team.name + (!team.available ? " (unavailable)" : ""));
+      option.value = team.id;
+      option.selected = task.teamId === team.id;
+      option.disabled = !team.available;
+      teamSelect.append(option);
+    }
+    teamSelect.dataset.assetId = id;
+    teamSelect.addEventListener("change", handleTeamAssignment);
+    assignRow.append(teamSelect, textElement("span", task.status, "task-flag"));
+    panel.append(assignRow);
+    if (task.blocked) {
+      const unavailable = textElement("div", "Selected team unavailable — reassign or leave blocked.", "teamUnavailable");
+      unavailable.style.fontSize = "11.5px";
+      unavailable.style.marginTop = "4px";
+      panel.append(unavailable);
+    }
+  }
 }
 
 function pickAction(id, action) {
   const existing = taskState[id];
   taskState[id] = { action, teamId: existing ? existing.teamId : null, status: "open", blocked: false };
-  changeLog.push(`${fmtTime(current.as_of)} — task <b>${action}</b> opened for ${assetName(id)}`);
+  changeLog.push([
+    `${fmtTime(current.as_of)} — task `,
+    strongLogText(action),
+    ` opened for ${assetName(id)}`,
+  ]);
   render();
 }
 
@@ -479,10 +642,19 @@ function assignTeam(id, teamId) {
   if (!team) { t.teamId = null; t.status = "open"; t.blocked = false; render(); return; }
   if (!team.available) {
     t.blocked = true; t.status = "blocked"; t.teamId = teamId;
-    changeLog.push(`${fmtTime(current.as_of)} — assignment to <b>${team.name}</b> for ${assetName(id)} rejected: team unavailable`);
+    changeLog.push([
+      `${fmtTime(current.as_of)} — assignment to `,
+      strongLogText(team.name),
+      ` for ${assetName(id)} rejected: team unavailable`,
+    ]);
   } else {
     t.teamId = teamId; t.status = "assigned"; t.blocked = false;
-    changeLog.push(`${fmtTime(current.as_of)} — ${assetName(id)} <b>${t.action}</b> assigned to <b>${team.name}</b>`);
+    changeLog.push([
+      `${fmtTime(current.as_of)} — ${assetName(id)} `,
+      strongLogText(t.action),
+      " assigned to ",
+      strongLogText(team.name),
+    ]);
   }
   render();
 }
@@ -491,10 +663,12 @@ function assetName(id) { return current.assets.find(a => a.asset_id === id)?.nam
 
 function nextUpdate() {
   if (current.sequence >= 2) return;
-  const prevTasks = JSON.stringify(taskState);
   current = SNAPSHOT_2;
-  changeLog.push(`${fmtTime(current.as_of)} — <b>snapshot ${current.snapshot_id}</b> received (sequence ${current.sequence}). ` +
-    `Urbanització Sant Pol moved up the ranking as the fire front advanced; Vall Repòs task assignment preserved.`);
+  changeLog.push([
+    `${fmtTime(current.as_of)} — `,
+    strongLogText(`snapshot ${current.snapshot_id}`),
+    ` received (sequence ${current.sequence}). Urbanització Sant Pol moved up the ranking as the fire front advanced; Vall Repòs task assignment preserved.`,
+  ]);
   document.getElementById("nextUpdateBtn").disabled = true;
   document.getElementById("nextUpdateBtn").textContent = "No further updates (demo)";
   render();
@@ -502,6 +676,8 @@ function nextUpdate() {
 
 function toggleLog() { document.getElementById("changeLog").classList.toggle("open"); }
 
+document.getElementById("nextUpdateBtn").addEventListener("click", nextUpdate);
+document.getElementById("changeLogBtn").addEventListener("click", toggleLog);
 initMap();
 render();
 </script>
