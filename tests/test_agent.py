@@ -103,7 +103,8 @@ class StubTasks:
 # tool schemas and dispatch
 # ---------------------------------------------------------------------------
 def test_tools_schema_names():
-    assert [t["name"] for t in TOOLS] == ["get_asset", "lookup_facility", "propose_update", "escalate"]
+    assert [t["name"] for t in TOOLS] == ["get_asset", "lookup_facility", "lookup_notability",
+                                          "propose_update", "escalate"]
     for t in TOOLS:
         assert t["input_schema"]["type"] == "object" and "required" in t["input_schema"]
     assert set(agent.TOOL_FUNCTIONS) == {t["name"] for t in TOOLS}
@@ -211,8 +212,9 @@ def test_propose_update_evacuation_min_needs_nonnegative_number_and_source(wb):
     assert out["status"] == "pending" and out["value"] == 120.0 and out["previous"] == 90.0
     assert dispatch("propose_update", {**base, "value": "37.5"}, workbench=wb)["value"] == 37.5
     assert wb.asset(aid)["evacuation_min"] == 90.0                                   # nothing applied
-    assert "evacuation_min" in TOOLS[2]["input_schema"]["properties"]["field"]["enum"]
-    assert "fire_arrival_at" not in TOOLS[2]["input_schema"]["properties"]["field"]["enum"]
+    propose = next(t for t in TOOLS if t["name"] == "propose_update")
+    assert "evacuation_min" in propose["input_schema"]["properties"]["field"]["enum"]
+    assert "fire_arrival_at" not in propose["input_schema"]["properties"]["field"]["enum"]
 
 
 def test_dispatch_escalate_applies_nothing(wb):
