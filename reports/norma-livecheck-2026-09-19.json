@@ -341,7 +341,7 @@
           "sqlalchemy-norma-ruleset"
         ]
       },
-      "source_sha256": "99dec75ec26409364000564bef5e0cb1431a64cbbdb9bed6549affe038c3abb0"
+      "source_sha256": "01ed289b1857ffe2e8b79a0a049a9afc3bcc1c97894ed0e4cc748bdfbb4cae31"
     },
     {
       "file": "tests/test_priority.py",

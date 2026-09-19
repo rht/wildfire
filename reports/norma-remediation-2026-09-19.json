@@ -448,7 +448,7 @@
       "passed": 309,
       "failed": 0,
       "skipped": 0,
-      "command": ".venv/bin/python -m pytest -q --junitxml=data/norma-full-tests.xml"
+      "command": ".venv/bin/python -m pytest -q --junitxml=data/norma-final-tests.xml"
     },
     "offline_validation": {
       "pass": 8,
@@ -468,7 +468,19 @@
       "assessment": "approved; no blocking or important findings",
       "pytest_passed": 309,
       "targeted_passed": 140,
-      "follow_up": "Direct defusedxml.parse import reviewed; corrected two ledger line references identified during follow-up review."
+      "follow_up": "No blocking or important issues; corrected two ledger references and clarified DTD versus XML declaration coverage."
+    },
+    "final_rebase": {
+      "base": "c5d74f20c1bb762f53a93ac6418c29bfc6c51e9b",
+      "outcome": "already_up_to_date",
+      "conflicts": false
+    },
+    "dependency_check": "uv pip check: all 57 installed packages compatible",
+    "github": {
+      "pr": "https://github.com/rht/wildfire/pull/3",
+      "branch_protected": false,
+      "checks_reported": 0,
+      "merge_state": "CLEAN"
     }
   },
   "xml_probe": {
@@ -485,6 +497,12 @@
   "limitations": [
     "No full portal repository scan: repository is not imported/linked in Norma.",
     "No live model call was made.",
-    "Other feature branches were not scanned."
-  ]
+    "Other feature branches were not scanned.",
+    "Applied-actions registration refused because the repository is unlinked; the local resolution ledger records all fixes."
+  ],
+  "applied_actions_registration": {
+    "status": "failed",
+    "reason": "unlinked",
+    "message": "Link a repository first with link_repository before reporting applied actions."
+  }
 }
