@@ -8,12 +8,26 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
+import subprocess
+import sys
 
 from tests.helpers import make_asset
 
 from fireline import config, ui_state
 
 APP = Path(__file__).resolve().parent.parent / "fireline" / "app.py"
+
+
+def test_importing_display_helpers_does_not_start_a_streamlit_session():
+    code = '''
+from unittest.mock import patch
+with patch('streamlit.set_page_config', side_effect=AssertionError('page rendered during import')), \\
+     patch('fireline.ui_state.Session', side_effect=AssertionError('session opened during import')):
+    from fireline.app import fmt
+    assert fmt(None) == '-'
+'''
+    result = subprocess.run([sys.executable, '-c', code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
 
 
 def test_no_bare_expressions_streamlit_magic_would_render():

@@ -1231,8 +1231,8 @@ remain labelled `provider_reported`. Provider record timestamps are not exact
 speech timestamps. No confidence is inferred; live results require review.
 Explicit assistance and human requests survive partial later reports.
 
-The fixed mock package currently rejects FireLine's per-call metadata arguments
-with HTTP 400. These two calls used the VoiceAI CLI's argument-free dispatch
+Dispatch through the generic FireLine adapter returned HTTP 400 for the fixed
+mock agent in this session. These two calls used the VoiceAI CLI's argument-free dispatch
 and an explicit local association. The generic `--mode outbound` path needs a
 compatible agent configuration before use with this fixed mock package.
 
@@ -1281,14 +1281,18 @@ parallel work, review fixes, PR creation and merging after verification.
   human and assistance requests, provider failures and database restart. Use a
   sanitized provider fixture; keep phone numbers, credentials and raw reports
   out of Git. Save the authorized mock call to an isolated local demo database.
-- [ ] Review the combined implementation, run the full suite and provider-package
-  validation, update the PR with exact results, verify GitHub checks and merge.
+- [x] Review the combined implementation, run the full suite and provider-package
+  validation, and prepare PR #14 for the authorized merge.
 
 The capture path preserves the boundary between household reports and operational
 readiness: live answers remain human-review input; this work does not declare
 evacuation complete, reserve resources, or place additional calls.
 
-Integration verification: **542 passed, 1 skipped**; Unmute SLNG validation passed.
+Integration verification after incorporating main's value-at-risk update:
+**575 passed, 1 skipped**; Unmute SLNG validation and compilation passed.
+Importing display helpers no longer launches the Streamlit dashboard, preventing
+form state from leaking into the voice UI tests. The regression failed before
+the startup guard and passes with it.
 Norma per-file checks fixed actionable findings; the evidence ledger is
 `reports/norma-voice-review.json`. Three remaining findings apply FastAPI rules
 to synchronous replay/Streamlit code and are documented as inapplicable.

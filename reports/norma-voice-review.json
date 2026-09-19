@@ -818,5 +818,22 @@
         }
       }
     ]
+  },
+  "main_integration_recheck": {
+    "file": "fireline/app.py",
+    "sha256": "a114fe8ef325b1e2e54edf4f4c16b14787b43555ce8b47c59f8b43438fc7b314",
+    "result": {
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    }
   }
 }
