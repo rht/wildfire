@@ -108,5 +108,7 @@
       "SQL candidate comparison",
       "no source mutation or production reversion"
     ]
-  }
+  },
+  "selection_status": "secondary appendix; superseded as preferred candidate by original evacuation-readiness branch strict integer check",
+  "primary_candidate_evidence": "reports/norma-branch-defense-2026-09-19.json"
 }
