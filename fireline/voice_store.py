@@ -250,7 +250,7 @@ class VoiceStore:
                     human_followup_reasons=sorted(set(r.human_followup_reasons) | set(record['followup_reasons'])))
         return to_assessment(req, r, provider_call_id=record['provider_call_id'], epoch=self.epoch, now=self.clock())
 
-    def start(self, client, request_id, *, mode, approved_target=None):
+    def start(self, client, request_id, *, mode, approved_target=None, admission=None):
         if mode not in ('browser', 'outbound'):
             raise ValueError('invalid dispatch mode')
         # Validate configuration before claiming a dispatch attempt.
@@ -262,6 +262,10 @@ class VoiceStore:
             if mode == 'outbound' and (req.input_mode != 'live' or approved_target != req.contact_number
                                        or not client.config.outbound_connection_id):
                 raise ValueError('approved live target and outbound connection required')
+            if admission is not None:
+                # Queue admission and the dispatch claim share the same write lock.
+                # This callback must only access local state; never perform network I/O.
+                admission(request_id)
             if record['dispatch_state'] != 'not_started':
                 raise ValueError('dispatch attempt already recorded; reconcile manually')
             self.conn.execute("UPDATE voice_calls SET dispatch_state='attempting' WHERE request_id=?", (request_id,))
