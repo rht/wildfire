@@ -1800,3 +1800,56 @@ rules. The planner retains one deliberate exact-built-in-integer count check fla
 booleans and custom numeric objects are not accepted as transport/headcount inputs. The existing
 `remaining_places` predicate and exact one-crew planner were not edited. Full live-coordination
 fleet/readiness wiring remains an integration dependency; the current export is a pure proposal.
+
+## Evacuation plans — durable destination allocations (2026-09-20)
+
+**Goal:** give @mirrdj and analyst coordination an explicit, auditable destination
+selection and reservation boundary. This is decision support using supplied evidence;
+it performs no live directions, calls, notifications or automatic resource dispatch.
+
+**Design:** keep `coordinate_evacuation` and its existing validation unchanged. Add
+`fireline/evacuation_plans.py` for candidate/group/road/context records and suitability,
+`fireline/evacuation_allocations.py` for SQLite transactions and lifecycle, and an additive
+readiness wrapper plus offline CLI. An explicit facility adapter consumes records now;
+raw discovery candidates never become approved reception centres automatically.
+
+Candidates need scoped analyst approval, a current forecast, origin/destination threat
+windows, sufficient capacity, known group needs matched by reception capabilities, and
+verified open roads through the entire supplied route. Missing evidence stays in review.
+Capacity is the planning budget inclusive of this ledger's reserved/departed/arrived
+occupants; external occupancy must already be excluded. A single database owns one
+scenario/UTC epoch, shared by all allocation writers; new incidents use that same ledger.
+
+Reservations require separate group/destination approval. SQLite immediate transactions
+serialize capacity checks, idempotent command records, releases and explicit reassignment.
+Communication, departure and arrival are separate sourced confirmations. Arrivals keep
+occupying slots until an explicit release. Routine updates retain destinations; danger,
+closure, stale/unknown evidence or incident changes retain occupied slots and produce
+human review/new-instruction tasks. Invalidated allocations require explicit reapproval
+through reassignment, even if later data looks safe. Assisted groups track transport and
+reception plans and confirmations separately; a crew action cannot fulfill those plans.
+Public exports omit free-text private confirmation/approval payloads.
+
+### Implementation plan
+
+Use Superpowers executing-plans inline in the existing worktree, with test-driven
+implementation and scoped review. The prior authorization covers routine design choices.
+No new Markdown documents or implementation agents are needed.
+
+- [ ] Candidate boundary: add `CandidateFacility`, `EvacuationGroup`, `RoadEvidence`,
+  `PlanningContext`, `candidate_from_record`, and `evaluate_candidates`. Write failing
+  tests for hospital non-approval, missing/blocked roads, stale forecast, needs/access,
+  origin/destination threat deadlines and deterministic selection; then implement.
+- [ ] Durable ledger: add `AllocationStore.update_inputs`, `reserve`, `reassign`,
+  `confirm`, `release`, `public_plan` and `briefing`. Write failing tests for competing
+  buildings, retries/conflicting command IDs, restart occupancy, rollback on failed
+  reassignment, distinct confirmations, closure/new incidents and assisted plans;
+  implement with SQLite immediate transactions and persisted evidence.
+- [ ] Integration: add `coordinate_approved_evacuation` wrapper and
+  `scripts/evacuation_plans.py` JSON CLI; exercise them with real local databases and
+  synthetic fixtures. Preserve crew/contacts output and gate proposed destinations.
+- [ ] Verify relevant and full tests, inspect sibling exports, scan only changed files
+  with Norma, obtain scoped review, fix actual findings, commit/push and open a PR.
+
+Verification command from this worktree:
+`PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m pytest -q`.
