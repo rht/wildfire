@@ -290,7 +290,7 @@ The [challenge brief](https://github.com/rht/wildfire/blob/main/challenge.md) em
 | Exposure | Distance, overlap and per-location spread-predicted arrival, with source and age visible. A forecast is required for the contact order. |
 | Ranking | Predicted time to impact minus total evacuation duration and buffer; missing inputs remain in review. |
 | Coordination | Follow-up tasks, manual team assignment, capability/availability checks, status and blocking questions. |
-| Agent | Investigate unknown occupancy or ambiguous class against cached evidence; propose a sourced update or escalate. |
+| Agent | Investigate unknown occupancy, ambiguous class or unassessed criticality against cached evidence; propose a sourced update or escalate. |
 | Interface | Map, ranked location table, selected-location details, task queue and change log. |
 | Validation | Matching, geometry, scoring, missing-data behaviour, update latency and task persistence. |
 
@@ -341,6 +341,8 @@ Use a sorted asset table for ranking. A graph is deferred until route connectivi
 | Facility location/class | One Gencat Equipaments extract for the selected area. Cache it, record extraction time and preserve source IDs. |
 | Size | Estimated people present where sourced. Capacity may be a clearly labelled proxy; it is not a confirmed headcount. Missing values remain null. |
 | Value | Analyst-configured operational importance by facility class: a prototype policy, not monetary valuation or an established emergency-service rule. |
+| Criticality | Per-asset, for the classes a class average cannot describe (`CRITICALITY_POLICY["assess_classes"]`): a tier and its named factors, proposed by the investigation agent from quoted evidence and confirmed by the analyst. A separate strategic view; it never enters contact urgency. Behind `FEATURES["asset_criticality"]`, off by default. |
+| Notability evidence | Committed Wikipedia/Wikidata extract (`fixtures/notability.json`) for the criticality question only: title, url, intro summary, instance-of, operator, inception, with fetch times. Read offline; most facilities have no record, which is the answer for an ordinary school. |
 | Investigation evidence | Small cache of registry records or facility pages with URLs, snippets and dates. Label manual enrichment; avoid several ingestion pipelines. |
 | Teams | Manually entered or fixture roster with team IDs, capabilities, availability and source labels. |
 | Spread forecast | Provided per-location fire arrival estimates, with source and estimate semantics. Without a usable forecast, show an unranked review queue; do not substitute distance for arrival time. |
@@ -387,13 +389,14 @@ All keys are present. Unknown measurements are `null`, not zero. Times are ISO 8
 | `capacity`, `estimated_occupancy` | Nonnegative integers or null | Maximum people versus estimated people present. |
 | `occupancy_basis` | String or null | Evidence or estimation method; capacity used as a proxy is explicit. |
 | `value_score`, `value_basis` | Number or null; string or null | Class-based operational importance and versioned analyst policy. |
+| `criticality_tier`, `criticality_factors`, `criticality_basis` | String or null; array of strings or null; string or null | Per-asset criticality above the class average, and the closed-enum factors that justify it (`config.CRITICALITY_POLICY`). The producer never asserts a tier: it arrives only through an analyst-confirmed override of an agent proposal, and all three are null together. Optional keys, like the v1.1 timing keys: a snapshot written before this layer stays valid. |
 | `distance_to_fire_m`, `intersects_fire` | Nonnegative number or null; boolean or null | Geometric exposure; record point/footprint approximation in provenance. |
 | `burn_probability` | Number or null | Optional provider estimate over its documented horizon; null when unsupported. |
 | `arrival_p10_at`, `arrival_p50_at` | Timestamps or null | Optional arrival quantiles only when supported by the provider. Null does not establish safety. |
 | `forecast_horizon_at`, `forecast_source` | Timestamp or null; string or null | Forecast horizon and source/method; required provenance for forecast-based contact ranking. |
 | `fire_arrival_at`, `fire_arrival_basis` | Timestamp or null; string or null | Selected spread-predicted arrival estimate and meaning, e.g. p10 when supported. Never infer it from distance alone. |
 | `evacuation_min`, `evacuation_source` | Nonnegative number or null; string or null | Total estimated evacuation duration in minutes, including mobilisation, preparation/loading and onward movement, with its basis. |
-| `needs_review`, `review_reasons` | Boolean; array of strings | Such as `location_unknown`, `occupancy_unknown`, `occupancy_seasonal`, `class_ambiguous`, `value_unknown`, `exposure_unknown`. |
+| `needs_review`, `review_reasons` | Boolean; array of strings | Such as `location_unknown`, `occupancy_unknown`, `occupancy_seasonal`, `class_ambiguous`, `value_unknown`, `exposure_unknown`, `criticality_unassessed`. |
 | `sources` | Array of objects | Field-level provenance: `fields`, `source`, `observed_at`, `available_at`, `fetched_at`, `notes`. Unknown source times remain null. |
 
 For historical replay, evidence must have been available by `as_of`; missing availability information cannot establish that. Document any forecast-to-asset aggregation method. Missing forecasts do not block ingestion or manual tasks, but they do block automatic contact ranking.
@@ -410,7 +413,7 @@ remaining_window = latest_start - current_time
 
 Rank by **smallest remaining window first**, then earlier predicted arrival, nearer geographic distance, and stable asset ID. A farther asset may be more urgent because the fire is spreading toward it or its evacuation takes longer. Geographic distance does not replace a forecast or receive an arbitrary weight.
 
-The evacuation estimate includes mobilisation, preparation/loading and onward movement to the receiving location. Assistance needs, transport availability and occupancy inform this duration rather than acting as separate ranking weights. Property value does not override contact urgency. Estimates must have a source; the static prototype uses explicitly synthetic forecast and duration inputs.
+The evacuation estimate includes mobilisation, preparation/loading and onward movement to the receiving location. Assistance needs, transport availability and occupancy inform this duration rather than acting as separate ranking weights. Property value does not override contact urgency. Neither does per-asset criticality: `criticality_tier` is absent from the sort key and from every filter, and the strategic view it drives is read alongside the contact queue, never instead of it. Estimates must have a source; the static prototype uses explicitly synthetic forecast and duration inputs.
 
 A zero or negative window stays at the top with `window_exhausted`: immediate analyst review is needed, not an automatic evacuation instruction. Missing forecast, evacuation duration or provenance produces an unranked review item. No probability, arrival time or duration is fabricated from distance or headcount. A missing distance does not prevent ranking when the forecast and evacuation estimate are known.
 
@@ -446,7 +449,9 @@ Implement one bounded loop for unknown occupancy or ambiguous class:
 3. Propose a sourced field update or produce a concrete question for the analyst.
 4. On analyst confirmation, persist the override, recalculate the remaining evacuation window and update the existing task.
 
-Four tools suffice: `get_asset`, `lookup_facility`, `propose_update`, and `escalate`. Keep evidence and tool calls visible, cap investigation steps, and leave unsupported questions unresolved. All field updates require analyst confirmation in this MVP. The agent does not directly assign teams or change scoring policy; calculation stays in code.
+Five tools suffice: `get_asset`, `lookup_facility`, `lookup_notability`, `propose_update`, and `escalate`. Keep evidence and tool calls visible, cap investigation steps, and leave unsupported questions unresolved. All field updates require analyst confirmation in this MVP. The agent does not directly assign teams or change scoring policy; calculation stays in code.
+
+`lookup_notability` answers the criticality question and only that one: whether this particular building is worth more than the class average - a research institute, the fire brigade's own station - reading the committed `fixtures/notability.json` extract, never the network. The model proposes a tier from `CRITICALITY_POLICY` plus the closed-enum factors that justify it; the tier is refused unless it carries the minimum number of factors, so the top tier cannot rest on prose. Calculation still stays in code: the policy owns what a tier means, and the tier reaches an asset only through the same analyst confirmation every other field uses. Criticality never reorders the contact queue (section 6).
 
 No general chat, live web research, alert drafting or wind what-if tools are needed. An LLM failure leaves the question answerable manually. Demonstrate one actual investigation call; label any prerecorded fallback output.
 

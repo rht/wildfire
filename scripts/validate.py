@@ -26,6 +26,7 @@ import tempfile
 import traceback
 from collections import Counter
 from pathlib import Path
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -698,8 +699,42 @@ def check_agent_live(live: bool = False) -> dict:
     per_asset = {r["asset_id"].split(":")[-1]: (r["review_reasons"], len(r["proposals_added"]),
                                                 len(r["questions_added"]), r["steps"]) for r in records}
 
+    # Criticality on real strategic assets: the question the class tables cannot answer. Separate from
+    # the loop above because it needs the real-area snapshot, not the synthetic fixture.
+    crit_snap = _snap("gavarres_real_0002")
+    for a in crit_snap["assets"]:
+        if a["asset_type"] in config.CRITICALITY_POLICY["assess_classes"] and a["criticality_tier"] is None:
+            a["review_reasons"] = sorted(set(a["review_reasons"]) | {"criticality_unassessed"})
+            a["needs_review"] = True
+    crit_scored = priority.rank_snapshot(crit_snap, config)
+    crit_wb = agent.Workbench.from_scored(crit_scored, snapshot=crit_snap)
+    crit_ids, seen = [], set()
+    for a in crit_scored["all"]:                       # one per assessed class, nearest first
+        if "criticality_unassessed" in a["review_reasons"] and a["asset_type"] not in seen:
+            seen.add(a["asset_type"])
+            crit_ids.append(a["asset_id"])
+    crit_records, crit_failures = [], []
+    for aid in crit_ids:
+        try:
+            crit_records.append(agent.investigate(crit_wb, aid, llm=backend, max_steps=8))
+        except Exception as exc:
+            crit_failures.append(f"{aid}: {type(exc).__name__}: {exc}")
+    crit_props = [(r, p) for r in crit_records for p in r["proposals_added"] if p["field"] == "criticality_tier"]
+    crit_unsupported = [p["proposal_id"] for r, p in crit_props if not _supported(p, r)]
+    crit_invalid = []
+    for _, p in crit_props:
+        try:
+            priority.criticality_value(p["value"], config)
+        except ValueError as exc:
+            crit_invalid.append(f"{p['proposal_id']}: {exc}")
+    crit_tiers = {crit_wb.asset(r["asset_id"])["name"]:
+                  next((p["value"] for p in r["proposals_added"] if p["field"] == "criticality_tier"), None)
+                  for r in crit_records}
+    crit_postcheck = [r["asset_id"] for r in crit_records if not r["postcheck_ok"]]
+
     ok = (not failures and not unsupported and not occupancy_from_capacity and not postcheck_failed
-          and not silent and not capped and not missing_escalation and len(records) == len(ids))
+          and not silent and not capped and not missing_escalation and len(records) == len(ids)
+          and not crit_failures and not crit_unsupported and not crit_invalid and not crit_postcheck)
     details = [
         f"model: {provider} `{backend.model}` at temperature 0 (fireline.llm.NebiusLLM translates the four tools "
         f"to the OpenAI-compatible schema; the loop, guards and post-check are the same code the FakeLLM runs)",
@@ -716,14 +751,111 @@ def check_agent_live(live: bool = False) -> dict:
         f"stopped at the step cap: {capped or 'none'}",
         f"must-escalate cases {list(LIVE_MUST_ESCALATE)} escalated: {not missing_escalation} "
         f"({'missing: ' + str(missing_escalation) if missing_escalation else 'all'})",
+        f"criticality: {len(crit_records)}/{len(crit_ids)} investigations over one real asset per assessed class "
+        f"of gavarres_real_0002" + (f"; failures: {crit_failures}" if crit_failures else "")
+        + f"; tiers proposed {crit_tiers}",
+        f"criticality proposals valid against config.CRITICALITY_POLICY (tier in the enum, factors in the closed "
+        f"list, minimum factor count met): {len(crit_props) - len(crit_invalid)}/{len(crit_props)}"
+        + (f"; invalid: {crit_invalid}" if crit_invalid else "")
+        + f"; supported by a verbatim snippet from their own tool results: "
+          f"{len(crit_props) - len(crit_unsupported)}/{len(crit_props)}"
+        + f"; post-check failed on: {crit_postcheck or 'none'}",
         "held-out examples: the fixture assets were used while writing the system prompt, so these are not held-out "
         "examples; this run measures whether the model obeys the evidence and escalation rules, not its accuracy on "
-        "unseen facilities",
+        "unseen facilities. The criticality tiers above are the model's judgement on real facilities and are "
+        "proposals awaiting an analyst, not measured accuracy: no ground truth for them exists in this repo",
     ]
     return _result("Agent (live model)", ok, details, {
         "provider": provider, "model": backend.model, "investigations": len(records),
         "proposals": len(proposals), "by_field": by_field, "escalations": len(questions),
-        "unsupported_proposals": len(unsupported), "occupancy_from_capacity": len(occupancy_from_capacity)})
+        "unsupported_proposals": len(unsupported), "occupancy_from_capacity": len(occupancy_from_capacity),
+        "criticality_investigations": len(crit_records), "criticality_proposals": len(crit_props),
+        "criticality_invalid": len(crit_invalid), "criticality_unsupported": len(crit_unsupported)})
+
+
+def check_criticality() -> dict:
+    """Per-asset criticality: the policy guards, the flag gating, and that no ranking path reads a tier."""
+    details, ok = [], True
+    pol = config.CRITICALITY_POLICY
+    details.append(f"policy {pol['version']}: tiers "
+                   + ", ".join(f"{t} (rank {v['rank']}, x{v['loss_multiplier']}, "
+                               f"min {pol['min_factors'][t]} factor(s))" for t, v in pol["tiers"].items()))
+    details.append(f"factors (closed enum): {', '.join(pol['factors'])}")
+    details.append(f"assessed classes: {', '.join(pol['assess_classes'])}; "
+                   f"FEATURES['asset_criticality'] = {config.FEATURES['asset_criticality']}")
+
+    # The inflation guard: the top tier cannot be claimed on one factor, nor "high" on none.
+    guard = []
+    for tier, factors, want_ok in (("exceptional", ["irreplaceable_holdings"], False),
+                                   ("exceptional", ["irreplaceable_holdings", "hazardous_materials"], True),
+                                   ("high", [], False),
+                                   ("routine", [], True),
+                                   ("high", ["it_is_famous"], False)):
+        try:
+            priority.criticality_value({"tier": tier, "factors": factors})
+            got = True
+        except ValueError:
+            got = False
+        guard.append(f"{tier}+{len(factors)} -> {'accepted' if got else 'refused'}")
+        ok = ok and (got is want_ok)
+    details.append("inflation guard: " + "; ".join(guard))
+
+    # The producer never asserts a tier, and is inert while the flag is off.
+    row = {"asset_id": "equipaments:probe", "name": "Probe", "asset_class": "research_facility",
+           "lat": 41.98, "lon": 2.99, "occupancy": None, "occupancy_source": "unknown",
+           "municipality": "Monells", "register": "gencat:equipaments (8gmd-gz7i)", "category": None,
+           "seasonal": False, "class_ambiguous": False, "address": None}
+    off = snapshot.asset_record(row, config)
+    on_cfg = SimpleNamespace(**{k: getattr(config, k) for k in dir(config) if k.isupper()})
+    on_cfg.FEATURES = dict(config.FEATURES, asset_criticality=True)
+    on = snapshot.asset_record(row, on_cfg)
+    producer_ok = (off["criticality_tier"] is None and on["criticality_tier"] is None
+                   and "criticality_unassessed" not in off["review_reasons"]
+                   and "criticality_unassessed" in on["review_reasons"])
+    ok = ok and producer_ok
+    details.append(f"producer: tier is null with the flag off and on ({producer_ok}); the reason appears only "
+                   f"with the flag on (off {off['review_reasons']}, on {on['review_reasons']})")
+
+    # Criticality must not touch the contact order. Tier every asset and re-rank.
+    snap = json.loads((SNAP_DIR / "gavarres_real_0002.json").read_text(encoding="utf-8"))
+    before = [a["asset_id"] for a in priority.rank_snapshot(snap, config)["ranked"]]
+    tiered = copy.deepcopy(snap)
+    for a in tiered["assets"]:
+        a["criticality_tier"] = "exceptional"
+        a["criticality_factors"] = ["irreplaceable_holdings", "national_research_infrastructure"]
+        a["criticality_basis"] = "validate probe"
+    after_scored = priority.rank_snapshot(tiered, config)
+    same = [a["asset_id"] for a in after_scored["ranked"]] == before
+    ok = ok and same
+    details.append(f"contact order with every asset at the top tier is identical to the untiered order: {same} "
+                   f"({len(before)} ranked); strategic view holds {len(after_scored['strategic'])}, "
+                   f"untiered snapshot holds {len(priority.strategic_queue(snap['assets'], config))}")
+
+    # No ranking path reads a euro or a tier: grep the sort key and the filters.
+    src = (ROOT / "fireline" / "priority.py").read_text(encoding="utf-8")
+    sort_src = src[src.index("def ranked_sort_key"):src.index("def rank_snapshot")]
+    clean = "criticality" not in sort_src and "loss_multiplier" not in src
+    ok = ok and clean
+    details.append(f"ranked_sort_key mentions no criticality field, and no code reads loss_multiplier "
+                   f"(the euro ledger is not implemented): {clean}")
+
+    # The strategic classes the ingestion now admits, in the committed extract.
+    payload = json.loads(REAL_ASSETS.read_text(encoding="utf-8"))
+    strat = [a for a in payload["assets"] if a["asset_type"] in pol["assess_classes"]]
+    by_class = {}
+    for a in strat:
+        by_class[a["asset_type"]] = by_class.get(a["asset_type"], 0) + 1
+    details.append(f"strategic assets in the committed extract: {len(strat)} " + str(dict(sorted(by_class.items())))
+                   + "; nearest to the fire in gavarres_real_0002: "
+                   + "; ".join(f"{a['name']} {a['distance_to_fire_m']:.0f} m" for a in sorted(
+                       (x for x in snap["assets"]
+                        if x["asset_type"] in pol["assess_classes"] and x["distance_to_fire_m"] is not None),
+                       key=lambda x: x["distance_to_fire_m"])[:3]))
+
+    return _result("Criticality", ok, details, {
+        "tiers": list(pol["tiers"]), "factors": list(pol["factors"]),
+        "assess_classes": list(pol["assess_classes"]), "flag": config.FEATURES["asset_criticality"],
+        "contact_order_unchanged": same, "strategic_assets": len(strat)})
 
 
 def check_latency(repeats: int = 3) -> dict:
@@ -812,7 +944,7 @@ def check_stale() -> dict:
 
 
 CHECKS = [check_coverage, check_geometry, check_priority, check_updates, check_tasks, check_agent, check_agent_live,
-          check_latency, check_stale]
+          check_criticality, check_latency, check_stale]
 
 LIVE_LLM_NOT_VERIFIED = (
     "Live LLM investigation: the live agent check did not run (no key, or --live not passed), so the agent check "

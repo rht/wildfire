@@ -6,31 +6,32 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 
 | check | outcome | measured |
 |---|---|---|
-| Coverage/matching | pass | 168 facilities (99 located, 69 unlocated), {'campsite': 42, 'care_home': 28, 'hospital': 1, 'school': 97} |
+| Coverage/matching | pass | 180 facilities (111 located, 69 unlocated), {'aerodrome': 5, 'campsite': 42, 'care_home': 28, 'fire_station': 6, 'hospital': 1, 'research_facility': 1, 'school': 97} |
 | Geometry | pass | overlap 0.0 m; separated 2000.0 m (error 0.00 m) |
 | Priority | pass | window 60.0 = expected 60.0 min; order ['far_downwind', 'near', 'slow_evac', 'quick_evac']; exhausted first ['negative', 'zero', 'open']; fixture 11 ranked / 2 review |
 | Updates | pass | 12 assets changed on seq 2; missing ['fixture:pou_del_glac'], 2 tasks kept |
 | Tasks | pass | suggestions 7 then 0; 8 tasks survive reload |
 | Agent (FakeLLM) | pass | 7 runs: 3 proposals {'capacity': 2, 'asset_type': 1}, 6 escalations, 0 occupancy-from-capacity |
 | Agent (live model) | pass | deepseek-ai/DeepSeek-V4.1-Flash: 7 runs, 3 proposals {'capacity': 2, 'asset_type': 1}, 8 escalations, 0 unsupported, 0 occupancy-from-capacity |
-| Latency | pass | median 0.157 s for 168 assets (target < 60 s); source age 300 s |
+| Criticality | pass |  |
+| Latency | pass | median 0.171 s for 180 assets (target < 60 s); source age 300 s |
 | Stale data | pass | None->unavailable, 0->current, 3599->current, 3600->stale, 21599->stale, 21600->unavailable, -60->current |
 
-9 pass, 0 fail, 0 not verified.
+10 pass, 0 fail, 0 not verified.
 
 ## Recorded outcomes
 
 ### Coverage/matching: pass
 
 - file fixtures/real_area/assets_gavarres.json: area Gavarres, bbox [2.85, 41.8, 3.2, 42.05], extracted 2026-09-19
-- facilities per asset_type: {'campsite': 42, 'care_home': 28, 'hospital': 1, 'school': 97}
-- by register: {'gencat:campsites (t2h3-cgys)': 42, 'gencat:care_homes (ivft-vegh)': 27, 'gencat:equipaments (8gmd-gz7i)': 2, 'gencat:schools (kvmv-ahh4)': 97}
-- located 99, unlocated (null coordinates, location_unknown) 69, total 168; envelope counts consistent: True
+- facilities per asset_type: {'aerodrome': 5, 'campsite': 42, 'care_home': 28, 'fire_station': 6, 'hospital': 1, 'research_facility': 1, 'school': 97}
+- by register: {'gencat:campsites (t2h3-cgys)': 42, 'gencat:care_homes (ivft-vegh)': 27, 'gencat:equipaments (8gmd-gz7i)': 14, 'gencat:schools (kvmv-ahh4)': 97}
+- located 111, unlocated (null coordinates, location_unknown) 69, total 180; envelope counts consistent: True
 - class_ambiguous: 1; unresolved class (asset_type unknown / value_unknown): 0
-- records with a register capacity: 69 (unlocated care homes / campsites); records with a headcount (estimated_occupancy): 87 (schools, enrolled pupils from gencat:schools_enrolment); located rows with occupancy_unknown: 12
+- records with a register capacity: 69 (unlocated care homes / campsites); records with a headcount (estimated_occupancy): 87 (schools, enrolled pupils from gencat:schools_enrolment); located rows with occupancy_unknown: 24
 - footprint geometries: 0 (every distance is a labelled point fallback)
-- municipalities: 26
-- sample of 5 located names: Hospital de Palamós (hospital, PALAMÓS); Escola Torres Jonama (school, Palafrugell); CEE Els Àngels (school, Palamós); CFA Torroella de Montgrí (school, Torroella de Montgrí); Escola Bressol El Petit Montgrí (school, Torroella de Montgrí)
+- municipalities: 30
+- sample of 5 located names: Parc de Bombers de la Vall d'Aro (fire_station, Castell d'Aro, Platja d'Aro i s'Agaró); Escola Vall d'Aro (school, Castell d'Aro, Platja d'Aro i s'Agaró); Escola La Pedra Dreta - ZER Empordanet-Gavarres (school, Cruïlles, Monells i Sant Sadurní de l'He); Escola Carrilet (school, Palafrugell); Escola Bressol El Petit Montgrí (school, Torroella de Montgrí)
 - unmatched / ambiguous records: equipaments:3620472 'Palamós Gent Gran. Serveis de Salut Integrats Baix Empordà AIE': register category: Salut|Centres sanitaris|4. Centres sociosanitaris|
 - register limitation: the care-home (ivft-vegh) and campsite (t2h3-cgys) registers carry no coordinates, so those rows are matched by municipality name, not geometry; located rows are almost all schools and carry no capacity (fixtures/real_area/README.md)
 
@@ -65,7 +66,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 - top-3 before (seq 1): ['sant_pol 5 min', 'pou_del_glac 60 min', 'escola_cruilles 120 min']
 - top-3 after (seq 2): ['sant_pol -135 min', 'pou_del_glac -120 min', 'can_xic -45 min']; ranked order changed: True
 - source age preserved (synthetic, escola_cruilles unchanged at 1228.7 m): non-fire, non-forecast sources identical True; fire source observed_at 2026-07-03T08:00:00+00:00 -> 2026-07-03T10:00:00+00:00
-- source age preserved (real-area equipaments:3620470): newest_fetched_at 2026-09-19T11:46:36+00:00 and the register provenance identical in both snapshots while as_of advances 2026-07-03T13:20:01.981000+00:00 -> 2026-07-03T15:32:24.822000+00:00: True (the register extract of 2026-09-19 postdates the recorded real fire of 2026-07-03/04, so these fixtures are not an as-of replay)
+- source age preserved (real-area equipaments:10213412): newest_fetched_at 2026-09-19T11:46:36+00:00 and the register provenance identical in both snapshots while as_of advances 2026-07-03T13:20:01.981000+00:00 -> 2026-07-03T15:32:24.822000+00:00: True (the register extract of 2026-09-19 postdates the recorded real fire of 2026-07-03/04, so these fixtures are not an as-of replay)
 - missing asset (seq 3 = seq 2 without fixture:pou_del_glac): missing_asset_ids ['fixture:pou_del_glac']; tasks {'task-0001': ('open', None), 'task-0002': ('open', None)} -> {'task-0001': ('open', None), 'task-0002': ('open', None)}; flagged ['task-0001', 'task-0002']; exposure present False; asset_missing events 1
 - 7 tasks suggested from seq 1 review reasons
 
@@ -83,7 +84,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ### Agent (FakeLLM): pass
 
 - LLM: FakeLLM (offline, scripted; llm_mode ['fake']). A live-model run is pending an ANTHROPIC_API_KEY; scripts/investigate.py replays fixtures/agent/prerecorded_investigation.json until then
-- 7 investigations over 6 flagged fixture assets of synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou; evidence cache fixtures/evidence.json (8 entries); 0 assets flagged only for ('forecast_unavailable', 'evacuation_unknown') left to the review queue (no FakeLLM script; forecast is the producer's, evacuation duration is the analyst's evacuation control)
+- 7 investigations over 6 flagged fixture assets of synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou; evidence cache fixtures/evidence.json (8 entries, plus data/registers/*.json present locally); 0 assets flagged only for ('forecast_unavailable', 'evacuation_unknown') left to the review queue (no FakeLLM script; forecast is the producer's, evacuation duration is the analyst's evacuation control)
 - proposals 3 by field {'capacity': 2, 'asset_type': 1}; escalations 6; per asset {id: (reasons, proposals, questions)}: {'residencia_sense_coordenades': (['location_unknown', 'exposure_unknown', 'forecast_unavailable'], 0, 1), 'mas_nou': (['occupancy_unknown'], 0, 1), 'pou_del_glac': (['occupancy_unknown', 'occupancy_seasonal'], 1, 1), 'escola_cruilles': (['occupancy_seasonal'], 0, 1), 'mas_pla': (['occupancy_seasonal'], 0, 1), 'camping_gavarres': (['class_ambiguous'], 1, 0), 'residencia_la_bisbal': (['occupancy_unknown'], 1, 1)}
 - estimated_occupancy proposals: 0 (evidence carries a headcount field: False); every occupancy proposal is field 'capacity': True
 - post-check ok for all: True; steps <= 6 for all: True; max steps 5
@@ -97,20 +98,33 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 
 - model: nebius `deepseek-ai/DeepSeek-V4.1-Flash` at temperature 0 (fireline.llm.NebiusLLM translates the four tools to the OpenAI-compatible schema; the loop, guards and post-check are the same code the FakeLLM runs)
 - 7/7 investigations completed over the flagged fixture assets of synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou
-- proposals 3 by field {'capacity': 2, 'asset_type': 1}; escalations 8; per asset {id: (reasons, proposals, questions, steps)}: {'residencia_sense_coordenades': (['location_unknown', 'exposure_unknown', 'forecast_unavailable'], 0, 3, 4), 'mas_nou': (['occupancy_unknown'], 0, 1, 5), 'pou_del_glac': (['occupancy_unknown', 'occupancy_seasonal'], 1, 1, 4), 'escola_cruilles': (['occupancy_seasonal'], 0, 1, 4), 'mas_pla': (['occupancy_seasonal'], 0, 1, 5), 'camping_gavarres': (['class_ambiguous'], 1, 0, 4), 'residencia_la_bisbal': (['occupancy_unknown'], 1, 1, 4)}
+- proposals 3 by field {'capacity': 2, 'asset_type': 1}; escalations 8; per asset {id: (reasons, proposals, questions, steps)}: {'residencia_sense_coordenades': (['location_unknown', 'exposure_unknown', 'forecast_unavailable'], 0, 3, 4), 'mas_nou': (['occupancy_unknown'], 0, 1, 5), 'pou_del_glac': (['occupancy_unknown', 'occupancy_seasonal'], 1, 1, 4), 'escola_cruilles': (['occupancy_seasonal'], 0, 1, 4), 'mas_pla': (['occupancy_seasonal'], 0, 1, 4), 'camping_gavarres': (['class_ambiguous'], 1, 0, 4), 'residencia_la_bisbal': (['occupancy_unknown'], 1, 1, 4)}
 - supported proposals (quoted snippet found verbatim in a tool result of the same loop): 3/3; unsupported: none
 - estimated_occupancy proposed from capacity evidence: 0 (none); the CapacityAsOccupancyError guard refuses these regardless
 - number post-check failed on: none; empty final message on: none; stopped at the step cap: none
 - must-escalate cases ['fixture:mas_nou'] escalated: True (all)
-- held-out examples: the fixture assets were used while writing the system prompt, so these are not held-out examples; this run measures whether the model obeys the evidence and escalation rules, not its accuracy on unseen facilities
+- criticality: 4/4 investigations over one real asset per assessed class of gavarres_real_0002; tiers proposed {'Parc de Bombers de Calonge i Sant Antoni': {'tier': 'high', 'factors': ['emergency_response_capability']}, 'IRTA Monells (IRTA-Monells)': {'tier': 'elevated', 'factors': ['national_research_infrastructure']}, 'Heliport de Costa Brava Centre': {'tier': 'routine', 'factors': []}, 'Hospital de Palamós': None}
+- criticality proposals valid against config.CRITICALITY_POLICY (tier in the enum, factors in the closed list, minimum factor count met): 3/3; supported by a verbatim snippet from their own tool results: 3/3; post-check failed on: none
+- held-out examples: the fixture assets were used while writing the system prompt, so these are not held-out examples; this run measures whether the model obeys the evidence and escalation rules, not its accuracy on unseen facilities. The criticality tiers above are the model's judgement on real facilities and are proposals awaiting an analyst, not measured accuracy: no ground truth for them exists in this repo
+
+### Criticality: pass
+
+- policy criticality-proto-2026-09-19: tiers routine (rank 0, x1.0, min 0 factor(s)), elevated (rank 1, x3.0, min 1 factor(s)), high (rank 2, x10.0, min 1 factor(s)), exceptional (rank 3, x30.0, min 2 factor(s))
+- factors (closed enum): irreplaceable_holdings, national_research_infrastructure, sole_regional_service, emergency_response_capability, hazardous_materials, network_single_point_of_failure
+- assessed classes: hospital, research_facility, university, fire_station, aerodrome; FEATURES['asset_criticality'] = False
+- inflation guard: exceptional+1 -> refused; exceptional+2 -> accepted; high+0 -> refused; routine+0 -> accepted; high+1 -> refused
+- producer: tier is null with the flag off and on (True); the reason appears only with the flag on (off ['occupancy_unknown'], on ['occupancy_unknown', 'criticality_unassessed'])
+- contact order with every asset at the top tier is identical to the untiered order: True (72 ranked); strategic view holds 180, untiered snapshot holds 0
+- ranked_sort_key mentions no criticality field, and no code reads loss_multiplier (the euro ledger is not implemented): True
+- strategic assets in the committed extract: 13 {'aerodrome': 5, 'fire_station': 6, 'hospital': 1, 'research_facility': 1}; nearest to the fire in gavarres_real_0002: Parc de Bombers de Calonge i Sant Antoni 450 m; Parc de Bombers de la Vall d'Aro 4998 m; IRTA Monells (IRTA-Monells) 5004 m
 
 ### Latency: pass
 
-- input: 168 real-area assets (fixtures/real_area/assets_gavarres.json) + recorded update 20260703T100500Z_satellite-perimeters.json (deepfire:satellite-perimeters, SYNTHETIC content, observed 2026-07-03T10:00:00+00:00, received 2026-07-03T10:05:00+00:00) through fire_input.load_recorded
-- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.156, 0.157, 0.158] s; median 0.157 s
-- stages of run 1: build 0.081 s, score 0.030 s, apply+suggest 0.045 s; validate errors 0
-- result: 0 ranked, 168 needs_review; 91 assets changed vs seq 1, 0 new suggestions on the update (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry no per-location forecast arrival and every asset is a review item until a forecast covers it)
-- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.15698123502079397} (separate numbers, never combined)
+- input: 180 real-area assets (fixtures/real_area/assets_gavarres.json) + recorded update 20260703T100500Z_satellite-perimeters.json (deepfire:satellite-perimeters, SYNTHETIC content, observed 2026-07-03T10:00:00+00:00, received 2026-07-03T10:05:00+00:00) through fire_input.load_recorded
+- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.171, 0.173, 0.169] s; median 0.171 s
+- stages of run 1: build 0.094 s, score 0.028 s, apply+suggest 0.049 s; validate errors 0
+- result: 0 ranked, 180 needs_review; 103 assets changed vs seq 1, 0 new suggestions on the update (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry no per-location forecast arrival and every asset is a review item until a forecast covers it)
+- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.17136605002451688} (separate numbers, never combined)
 - target < 60 s processing for the selected area: met on x86_64, Python 3.14.7
 
 ### Stale data: pass
