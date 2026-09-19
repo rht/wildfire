@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "status": "current_selected_design_retained_finding",
+  "decision": {
+    "authorized_by": "@mirrdj via explicit user instruction",
+    "instruction": "Keep and defend the strict capacity check; fix everything else.",
+    "merge_authorized": false,
+    "scope": "Only fireline/evacuation_readiness.py py-arch-type-eq on remaining_places"
+  },
+  "branch": "codex/evacuation-readiness",
+  "commit": "923d49476ecca0276b5d3b88b5ce9bc065479fd0",
+  "previous_revision": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+  "original_revision": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
+  "pr": "https://github.com/rht/wildfire/pull/8",
+  "finding": {
+    "file": "fireline/evacuation_readiness.py",
+    "line": 103,
+    "column": 12,
+    "rule_id": "py-arch-type-eq",
+    "severity": "HIGH",
+    "status": "retained_with_documented_defense_not_fixed",
+    "snippet": "if type(centre.remaining_places) is not int or centre.remaining_places < 0:"
+  },
+  "contract": "Only plain nonnegative built-in Python ints; reject bool, floats, strings, negatives, null and int subclasses including IntEnum. No coercion.",
+  "defense": {
+    "rationale": "Primitive capacity validation deliberately does not accept subtypes. Python bool is an int subtype but is not a place count; the general subtype-acceptance rule conflicts with the selected boundary contract.",
+    "tradeoff": "Rejects legitimate integer subclasses and enum counts; callers requiring them must normalize explicitly. The previous bool-guarded isinstance policy was a valid broader alternative, now superseded by explicit selection.",
+    "invalidation_conditions": [
+      "API must support int subclasses, IntEnum or numerical-library counts",
+      "capacity changes to fractional units",
+      "input normalization moves to another authoritative boundary"
+    ],
+    "bounds": "Retain explicit bool rejection in any alternative. This defense applies only to the listed finding; it does not disable the rule or defend unrelated findings."
+  },
+  "verification": {
+    "full_suite": {
+      "command": ".venv/bin/python -m pytest -q",
+      "passed": 356,
+      "failed": 0,
+      "skipped": 0
+    },
+    "readiness_suite": {
+      "command": ".venv/bin/python -m pytest -q tests/test_evacuation_readiness.py",
+      "passed": 47,
+      "failed": 0,
+      "skipped": 0
+    },
+    "red_green": "The two subtype/IntEnum rejection tests failed against the previous implementation and passed after restoring exact type validation.",
+    "code_review": "Approved, no blockers; reviewer independently reran 47 readiness tests.",
+    "whitespace": "pass",
+    "other_remediation_preserved": true
+  },
+  "livechecks": [
+    {
+      "file": "tests/test_evacuation_readiness.py",
+      "sha256": "2246fb23e0815d7da40683e5a0bd218622104710611de059cda4b4cbe3fe1a11",
+      "started_at": "2026-09-19T19:32:07.324Z",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/evacuation_readiness.py",
+      "sha256": "e69a2aed4396affbc6b9c31488cf0bd32464ae9e4b6571b9c3ed88fa3a2b23cf",
+      "started_at": "2026-09-19T19:32:07.322Z",
+      "method": "live_check",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-arch-type-eq": {
+            "rule_name": "type(x) == X",
+            "severity": "HIGH",
+            "impact_area": "architecture",
+            "description": "Checks an object's type too strictly; rejects valid subtypes that should also be accepted.",
+            "remediation_action": "Use isinstance.",
+            "good_code": "if isinstance(x, int): ...",
+            "bad_code": "if type(x) == int: ...",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-arch-type-eq",
+            "file": "fireline/evacuation_readiness.py",
+            "line": 103,
+            "column": 12,
+            "snippet": "        if type(centre.remaining_places) is not int or centre.remaining_places < 0:"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    }
+  ],
+  "registration": {
+    "status": "documented_only_not_formally_registered",
+    "defense_submission_authorized": true,
+    "available_tool_names": [
+      "mcp__qualityclouds__get_open_issues",
+      "mcp__qualityclouds__get_rules_for_ruleset",
+      "mcp__qualityclouds__get_rulesets",
+      "mcp__qualityclouds__link_repository",
+      "mcp__qualityclouds__live_check",
+      "mcp__qualityclouds__register_applied_actions"
+    ],
+    "defense_or_exception_endpoint_exposed": false,
+    "repository_context": {
+      "status": "unresolved",
+      "detail": "No repository matching this remote is linked to your organization, so results are not scoped. This is your organization's generic catalog; link it with link_repository or import it from the portal."
+    },
+    "applied_actions_endpoint_used": false,
+    "reason": "No finding-scoped defense/exception endpoint is exposed and repository context is unresolved. register_applied_actions only accepts verified-compliant/fixed/prevented outcomes; none represents this retained finding."
+  },
+  "history": {
+    "prior_zero_finding_report": "reports/norma-feature-livechecks-2026-09-19.json on codex/norma-feature-rollup, as of d75d4b769940e0ca6b0a01949f5c7bf84daec44e; unchanged historical evidence",
+    "prior_candidate_comparison": "reports/norma-branch-defense-2026-09-19.json on codex/norma-defense-demo; as-of original and d75 revisions",
+    "original_audit": "Frozen at 92ae882545ae6b45fb6e2356e1f8aa17da599312; unchanged"
+  }
+}

@@ -202,7 +202,7 @@
     }
   ],
   "schema_version": 1,
-  "verified_at": "2026-09-19T18:51:56.550321+00:00",
+  "verified_at": "2026-09-19T19:35:56.014876+00:00",
   "remediation_pr": "https://github.com/rht/wildfire/pull/3",
   "remediation_merge_sha": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
   "results": [
@@ -611,8 +611,8 @@
       "original_head": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
       "backup_ref": "refs/norma-backups/2026-09-19/codex/evacuation-readiness",
       "base_main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
-      "final_head": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
-      "verified_remote_head": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+      "final_head": "923d49476ecca0276b5d3b88b5ce9bc065479fd0",
+      "verified_remote_head": "923d49476ecca0276b5d3b88b5ce9bc065479fd0",
       "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/evacuation-readiness",
       "worktree_clean": true,
       "push": {
@@ -633,9 +633,8 @@
       "coverage": [
         {
           "file": "fireline/evacuation_readiness.py",
-          "sha256": "d05131a74ca895f89ce5ca5dddf5a26938c7b6eb7bee48a306a212b24b272876",
-          "status": "zero_findings",
-          "evidence_attempt_index": 18,
+          "sha256": "e69a2aed4396affbc6b9c31488cf0bd32464ae9e4b6571b9c3ed88fa3a2b23cf",
+          "status": "retained_finding_documented_defense",
           "rulesets_evaluated": [
             "fastapi-norma-ruleset",
             "python-norma-ruleset",
@@ -647,9 +646,11 @@
           },
           "method": "live_check",
           "result_reuse": {
-            "scope": "same branch and path, exact final content bytes, same session ruleset context",
-            "cross_branch_reuse": false
-          }
+            "reused": false,
+            "scope": "fresh exact final file Livecheck"
+          },
+          "evidence_file": "reports/norma-selected-capacity-defense-2026-09-19.json",
+          "evidence_livecheck_index": 1
         },
         {
           "file": "fixtures/evacuation_readiness.json",
@@ -666,12 +667,14 @@
           "method": "live_check",
           "result_reuse": {
             "scope": "same branch and path, exact final content bytes, same session ruleset context",
-            "cross_branch_reuse": false
-          }
+            "cross_branch_reuse": false,
+            "followup": "File unchanged from d75d4b7; hash verified at selected revision, same path/language/ruleset context."
+          },
+          "evidence_file": "reports/norma-feature-livechecks-2026-09-19.json"
         },
         {
           "file": "readme.md",
-          "sha256": "38c896f38321267c232bd277b829cfe678aa8d0da06ec055e91f4a0808691608",
+          "sha256": "4a017ff7e091f827899875ed13a4d038a82d65c32abcf49fa99dbf9a12271819",
           "status": "not_scanned",
           "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
         },
@@ -692,14 +695,15 @@
           "method": "live_check",
           "result_reuse": {
             "scope": "same branch and path, exact final content bytes, same session ruleset context",
-            "cross_branch_reuse": false
-          }
+            "cross_branch_reuse": false,
+            "followup": "File unchanged from d75d4b7; hash verified at selected revision, same path/language/ruleset context."
+          },
+          "evidence_file": "reports/norma-feature-livechecks-2026-09-19.json"
         },
         {
           "file": "tests/test_evacuation_readiness.py",
-          "sha256": "7ce52f31493fc9c9de571d140e6f8c3a77daaa354a45675e704796acd75613ea",
+          "sha256": "2246fb23e0815d7da40683e5a0bd218622104710611de059cda4b4cbe3fe1a11",
           "status": "zero_findings",
-          "evidence_attempt_index": 20,
           "rulesets_evaluated": [
             "fastapi-norma-ruleset",
             "python-norma-ruleset",
@@ -711,9 +715,11 @@
           },
           "method": "live_check",
           "result_reuse": {
-            "scope": "same branch and path, exact final content bytes, same session ruleset context",
-            "cross_branch_reuse": false
-          }
+            "reused": false,
+            "scope": "fresh exact final file Livecheck"
+          },
+          "evidence_file": "reports/norma-selected-capacity-defense-2026-09-19.json",
+          "evidence_livecheck_index": 0
         }
       ],
       "findings": [
@@ -731,20 +737,40 @@
           "file": "fireline/evacuation_readiness.py",
           "rule_id": "py-arch-type-eq",
           "original_line": 103,
-          "resolution": "Use isinstance for integer capacities and explicitly reject booleans, floats and negative values; integer subclasses are accepted.",
-          "status": "fixed_and_rechecked",
-          "final_evidence_attempt_index": 18
+          "resolution": "Only plain nonnegative built-in Python ints; reject bool, floats, strings, negatives, null and int subclasses including IntEnum. No coercion.",
+          "status": "retained_with_documented_defense_not_fixed",
+          "final_evidence_file": "reports/norma-selected-capacity-defense-2026-09-19.json",
+          "final_evidence_livecheck_index": 1,
+          "formal_registration": "unavailable; documented only"
         }
       ],
       "verification": {
-        "pytest_passed": 350,
+        "pytest_passed": 356,
         "pytest_skipped": 0,
         "dom_tests_passed": 0,
         "whitespace": "pass",
-        "review": "Independent remediation review approved; README conflict retains both sections. Includes 41 readiness tests and ASCII-locale CLI regression."
+        "review": "Independent code review approved the selected strict capacity implementation; 47 readiness tests independently rerun. Full suite 356 passed.",
+        "readiness_tests_passed": 47
       },
       "limitations": [
-        "Markdown prose is unscanned."
+        "Markdown prose is unscanned.",
+        "One intentionally retained py-arch-type-eq finding; defense documented, not formally registered. No defense endpoint and repository unresolved."
+      ],
+      "latest_push": {
+        "method": "fast-forward",
+        "previous_remote_head": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+        "result": "success"
+      },
+      "retained_findings": [
+        {
+          "file": "fireline/evacuation_readiness.py",
+          "line": 103,
+          "column": 12,
+          "rule_id": "py-arch-type-eq",
+          "severity": "HIGH",
+          "status": "retained_with_documented_defense_not_fixed",
+          "snippet": "if type(centre.remaining_places) is not int or centre.remaining_places < 0:"
+        }
       ]
     },
     {
@@ -1019,10 +1045,16 @@
   "deferred": [
     {
       "branch": "codex/slng-voice-agent",
-      "local_head": "02e091443a13991e5832dc01c0528e57ea271d1f",
-      "remote_head": "02e091443a13991e5832dc01c0528e57ea271d1f",
+      "local_head": "25b231240178933fee21321f6c52a20186e96c27",
+      "remote_head": "25b231240178933fee21321f6c52a20186e96c27",
       "status": "?? uv.lock",
-      "reason": "Active voice/demo sessions and untracked uv.lock; user explicitly instructed deferral. No rebase, scan, fix, push or removal performed."
+      "reason": "Active voice/demo sessions and untracked uv.lock; user explicitly instructed deferral. No rebase, scan, fix, push or removal performed.",
+      "initial_observation": {
+        "local_head": "02e091443a13991e5832dc01c0528e57ea271d1f",
+        "remote_head": "02e091443a13991e5832dc01c0528e57ea271d1f",
+        "status": "?? uv.lock"
+      },
+      "latest_observation_note": "Active session advanced its branch independently during selected-capacity follow-up; this task made no SLNG changes."
     }
   ],
   "historical_branches": {
@@ -1047,7 +1079,9 @@
     "phase2_calls": 30,
     "maximum_calls_in_any_60_seconds": 10,
     "daily_org_limit": 5000,
-    "org_usage_and_remaining_unknown": true
+    "org_usage_and_remaining_unknown": true,
+    "selected_capacity_followup_calls": 2,
+    "phase2_calls_note": "30 original phase-two calls preserved; two current follow-up calls are recorded separately in selected_capacity_evidence. Historical defense-demonstration calls are separate."
   },
   "account_tier": null,
   "remaining_quota": null,
@@ -1056,5 +1090,162 @@
     "Repository registration remains unlinked; original phase1 applied-actions registration failed. No defenses/exceptions submitted.",
     "No whole-repository or historical merged-branch scans performed.",
     "No feature branches merged."
-  ]
+  ],
+  "historical_results": [
+    {
+      "as_of_head": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+      "superseded_by": "923d49476ecca0276b5d3b88b5ce9bc065479fd0",
+      "reason": "Explicit user selection to restore and defend strict primitive capacity validation",
+      "result": {
+        "branch": "codex/evacuation-readiness",
+        "original_head": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
+        "backup_ref": "refs/norma-backups/2026-09-19/codex/evacuation-readiness",
+        "base_main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+        "final_head": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+        "verified_remote_head": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/evacuation-readiness",
+        "worktree_clean": true,
+        "push": {
+          "method": "explicit force-with-lease",
+          "expected_remote_head": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
+          "result": "success"
+        },
+        "pr": "https://github.com/rht/wildfire/pull/8",
+        "pr_state": "OPEN",
+        "merge_authorized": false,
+        "changed_files": [
+          "fireline/evacuation_readiness.py",
+          "fixtures/evacuation_readiness.json",
+          "readme.md",
+          "scripts/static_priorities.py",
+          "tests/test_evacuation_readiness.py"
+        ],
+        "coverage": [
+          {
+            "file": "fireline/evacuation_readiness.py",
+            "sha256": "d05131a74ca895f89ce5ca5dddf5a26938c7b6eb7bee48a306a212b24b272876",
+            "status": "zero_findings",
+            "evidence_attempt_index": 18,
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ],
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "method": "live_check",
+            "result_reuse": {
+              "scope": "same branch and path, exact final content bytes, same session ruleset context",
+              "cross_branch_reuse": false
+            }
+          },
+          {
+            "file": "fixtures/evacuation_readiness.json",
+            "sha256": "35acf1e19c0956d0ab22a31105c4bf63573322d792f1561c73419120ab97f5d7",
+            "status": "zero_findings",
+            "evidence_attempt_index": 10,
+            "rulesets_evaluated": [
+              "nodejs-norma-ruleset"
+            ],
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "method": "live_check",
+            "result_reuse": {
+              "scope": "same branch and path, exact final content bytes, same session ruleset context",
+              "cross_branch_reuse": false
+            }
+          },
+          {
+            "file": "readme.md",
+            "sha256": "38c896f38321267c232bd277b829cfe678aa8d0da06ec055e91f4a0808691608",
+            "status": "not_scanned",
+            "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+          },
+          {
+            "file": "scripts/static_priorities.py",
+            "sha256": "b40d87eee71a07b1c0ccf3db824ced2107c7c68a389c405b38f988f409ad9f28",
+            "status": "zero_findings",
+            "evidence_attempt_index": 19,
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ],
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "method": "live_check",
+            "result_reuse": {
+              "scope": "same branch and path, exact final content bytes, same session ruleset context",
+              "cross_branch_reuse": false
+            }
+          },
+          {
+            "file": "tests/test_evacuation_readiness.py",
+            "sha256": "7ce52f31493fc9c9de571d140e6f8c3a77daaa354a45675e704796acd75613ea",
+            "status": "zero_findings",
+            "evidence_attempt_index": 20,
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ],
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "method": "live_check",
+            "result_reuse": {
+              "scope": "same branch and path, exact final content bytes, same session ruleset context",
+              "cross_branch_reuse": false
+            }
+          }
+        ],
+        "findings": [
+          {
+            "attempt_index": 12,
+            "file": "scripts/static_priorities.py",
+            "rule_id": "py-mng-open-no-encoding",
+            "original_line": 39,
+            "resolution": "Text I/O explicitly uses UTF-8.",
+            "status": "fixed_and_rechecked",
+            "final_evidence_attempt_index": 19
+          },
+          {
+            "attempt_index": 13,
+            "file": "fireline/evacuation_readiness.py",
+            "rule_id": "py-arch-type-eq",
+            "original_line": 103,
+            "resolution": "Use isinstance for integer capacities and explicitly reject booleans, floats and negative values; integer subclasses are accepted.",
+            "status": "fixed_and_rechecked",
+            "final_evidence_attempt_index": 18
+          }
+        ],
+        "verification": {
+          "pytest_passed": 350,
+          "pytest_skipped": 0,
+          "dom_tests_passed": 0,
+          "whitespace": "pass",
+          "review": "Independent remediation review approved; README conflict retains both sections. Includes 41 readiness tests and ASCII-locale CLI regression."
+        },
+        "limitations": [
+          "Markdown prose is unscanned."
+        ]
+      }
+    }
+  ],
+  "current_summary": {
+    "fixed_finding_records": 18,
+    "retained_finding_records": 1,
+    "retained_rule_id": "py-arch-type-eq",
+    "retained_branch": "codex/evacuation-readiness",
+    "selected_commit": "923d49476ecca0276b5d3b88b5ce9bc065479fd0",
+    "formal_registration": "documented_only"
+  },
+  "selected_capacity_evidence": "reports/norma-selected-capacity-defense-2026-09-19.json"
 }
