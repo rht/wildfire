@@ -1,4 +1,4 @@
-# FocTriage — 3-minute demo script
+# Respons'Ara — 3-minute demo script
 
 Rehearse this against `design/ui-mockup.html`. Timings sum to 3:00, matching readme.md
 section 12's structure but filled in with this project's actual name, scenario and screens.
@@ -18,7 +18,7 @@ school, etc.)."
 > said publicly that resources were lacking. A Generalitat official called it 'a learning
 > experience' for coordinating between municipalities and the region.
 >
-> Deepfire already tells you where a fire is. FocTriage tells the analyst which hospital,
+> Deepfire already tells you where a fire is. Respons'Ara tells the analyst which hospital,
 > which school, which care home needs a call **first** — and shows exactly why."
 
 *(No screen yet, or the title screen with the tagline visible.)*
@@ -64,7 +64,7 @@ school, etc.)."
 
 ## 6. Honest close (20s)
 
-> "FocTriage doesn't issue evacuation orders and it doesn't calculate routes — that's a
+> "Respons'Ara doesn't issue evacuation orders and it doesn't calculate routes — that's a
 > human decision, and we say so on screen. What it does do: rank every facility in the
 > path of a fire by an explainable score, surface exactly what's missing before someone
 > assumes it's safe, and keep an analyst's work intact as the fire moves. Which

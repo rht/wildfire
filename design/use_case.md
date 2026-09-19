@@ -1,6 +1,6 @@
 # Use case: an INFOCAT analyst at la Bisbal d'Empordà, 3 July 2026
 
-A narrative walkthrough of FocTriage against the Les Gavarres scenario built into
+A narrative walkthrough of Respons'Ara against the Les Gavarres scenario built into
 `design/ui-mockup.html`. Written for judges/mentors as a leave-behind, or to lift directly
 into a deck slide. This is a **concept walkthrough against a recorded/synthetic scenario**,
 not a claim that this system ran during the actual 2026 incident — the real event is used
@@ -11,7 +11,7 @@ happened.
 
 ## 10:00 — the queue
 
-An analyst at the coordination desk opens FocTriage. A fire has been burning near la Bisbal
+An analyst at the coordination desk opens Respons'Ara. A fire has been burning near la Bisbal
 d'Empordà since shortly after 09:45. The screen shows:
 
 - **Vall Repòs**, a care home, ranked #1 — proximity 0.68, size 0.28, value 1.00 (care homes
@@ -25,7 +25,7 @@ d'Empordà since shortly after 09:45. The screen shows:
 - **Pou del Glaç**, a children's summer camp, *also* flagged needs review: the facility
   register lists it as a "casa de colònies" with no occupancy field, and July is exactly
   the season those run programmes. Historically, this was the site with ~150 children —
-  a fact FocTriage does not yet know, and does not pretend to know.
+  a fact Respons'Ara does not yet know, and does not pretend to know.
 
 The analyst opens Vall Repòs, sees "contact facility" needs doing, and assigns it. The
 system offers five teams; one — Bombers unit 7 — is greyed out, already committed
@@ -49,12 +49,12 @@ where confirmed information (the actual seven-municipality confinement list) bui
 hours, and where a resource once committed needed to stay tracked rather than be
 recalculated from scratch on every new piece of information.
 
-## What the analyst does *not* get from FocTriage
+## What the analyst does *not* get from Respons'Ara
 
 - No auto-generated evacuation order. The screen's own labelling makes this explicit:
   distance-to-fire is not burn probability, and a ranked list is not an instruction.
 - No computed evacuation route. "Check access" is a task an analyst assigns to a team,
-  not a route FocTriage calculates itself.
+  not a route Respons'Ara calculates itself.
 - No claim of superiority over what Bombers, CECAT or Protecció Civil actually did that
   day — the goal is a better-informed analyst, not a replacement decision-maker.
 

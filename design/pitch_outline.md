@@ -1,4 +1,4 @@
-# FocTriage — pitch deck outline
+# Respons'Ara — pitch deck outline
 
 For the Norrsken x Deepfire "AI for Wildfire" track, sub-track 4 (Values at risk), Hackbarna
 AI Summit 26. Built to be delivered alongside `demo_script.md`'s 3-minute live walkthrough —
@@ -13,7 +13,7 @@ whole pitch (deck + demo) fits comfortably inside a 5-minute slot.
 
 ## Slide 1 — Title
 
-**FocTriage**
+**Respons'Ara**
 *Which infrastructure, people and assets are in danger — and which hospital, which school,
 needs a call first.*
 
@@ -51,7 +51,7 @@ One line: *"The fire wasn't the only failure. Trust and coordination were too."*
 
 ## Slide 4 — Solution, one line + one diagram
 
-*"FocTriage turns a live fire feed into a ranked, explainable, continuously-updating queue
+*"Respons'Ara turns a live fire feed into a ranked, explainable, continuously-updating queue
 of who needs help first — and a task board that survives the fire moving."*
 
 Diagram (reuse/simplify the one in `readme.md` section 3):
@@ -85,7 +85,7 @@ Show the score-breakdown panel from the mockup (Vall Repòs example: proximity 0
 
 *(No content slide — this is where you hand off to the live demo. See `demo_script.md`.)*
 
-Suggested single line on screen during the demo: **"Live: FocTriage on the Les Gavarres
+Suggested single line on screen during the demo: **"Live: Respons'Ara on the Les Gavarres
 incident."**
 
 ## Slide 7 — What makes this different from "Deepfire already does this" (pre-empt the
@@ -93,7 +93,7 @@ obvious judge question)
 
 - Deepfire's own docs list "values at risk: coming soon" — even when it ships, an API
   returns numbers, not a workflow.
-- FocTriage's actual contribution is the **decision layer**: task assignment with team
+- Respons'Ara's actual contribution is the **decision layer**: task assignment with team
   availability checks, an update loop that **preserves an analyst's work** when the fire
   moves, and an agent that investigates gaps instead of guessing.
 - Show the "Next update" moment again as a still: ranking reordered, Vall Repòs still

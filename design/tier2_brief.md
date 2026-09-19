@@ -1,11 +1,9 @@
-# SponsAra Tier 2 — escalation engineering brief
+# Respons'Ara Tier 2 — escalation engineering brief
 
 Self-contained: paste this into a fresh Claude Code session, or a TASKS.md entry, without
 needing the rest of this conversation. It supersedes `araspons-tier2-brief.md` and
 `tier2_architecture.md` in this same `design/` folder — those are kept for history, this is
-the current version. Product name shown as **SponsAra** per the latest diagram; if that
-changes, it's a find-and-replace across `design/*.md` and `design/ui-mockup.html`, nothing
-structural.
+the current version. Product name: **Respons'Ara** (confirmed 2026-09-19).
 
 ## Context for a cold start
 
@@ -26,7 +24,7 @@ the other.
 ```text
 TIER 1 — OPS (current build, unchanged)
 Deepfire (fire signal)
-   -> SponsAra risk engine (fireline/snapshot.py + fireline/contact_priority.py:
+   -> Respons'Ara risk engine (fireline/snapshot.py + fireline/contact_priority.py:
       exposure, forecast-vs-evacuation-window ranking — README section 6)
    -> Fire analyst (Streamlit dashboard, fireline/app.py)
    -> Dashboard logs
@@ -35,14 +33,14 @@ TIER 2 — ESCALATION (proposal), triggered when the analyst escalates a locatio
                               |
               +---------------+---------------+
               |                               |
-   SPONSARA — PUBLIC RISK LAYER      OFFICIAL / GOVERNMENT CHANNEL
+   RESPONS'ARA — PUBLIC RISK LAYER      OFFICIAL / GOVERNMENT CHANNEL
               |                               |
    Analyst gives preliminary OK    Escalate: firefighters / police /
    (go-ahead to start public        Generalitat (physical response chain)
     check-in — independent of                 |
     whether ES-Alert has fired yet)  ES-Alert cell broadcast (govt-owned,
               |                       triggered by Generalitat — we do not
-   SponsAra voice agent calls         build or control this; log that it
+   Respons'Ara voice agent calls         build or control this; log that it
    affected households (check-in /   fired, do not simulate its payload)
    confirm safety, persona de risc            |
    — reuse the existing              +--------+--------+
@@ -51,7 +49,7 @@ TIER 2 — ESCALATION (proposal), triggered when the analyst escalates a locatio
               |                                |
               +----------------+---------------+
                                 v
-        SponsAra relocation/confinement engine
+        Respons'Ara relocation/confinement engine
         Runs once BOTH are true: ES-Alert has fired AND check-in
         calls are underway. Gated: proceeds only with Generalitat
         confirmation, not the fire analyst alone.
@@ -96,7 +94,7 @@ Everything below already exists and should be extended, not duplicated:
   delivery plan" section (owned by `@mirrdj`, active on `codex/slng-voice-agent` and related
   branches) defines the `CallRequest`/`CallResult` schema and a 5-question interview
   (confirm location/household → self-evacuate ability → transport → wants-human →
-  read-back/acknowledge). **Use that contract for the "SponsAra voice agent" box above.**
+  read-back/acknowledge). **Use that contract for the "Respons'Ara voice agent" box above.**
   Do not write a second, different call script — check in with `@mirrdj` before touching
   those files, since this is her active workstream.
 - **Relocation-to-a-specific-building extends `fireline/response_priority.py`.** Its
@@ -143,8 +141,7 @@ Everything below already exists and should be extended, not duplicated:
 
 ## Open before this goes further
 
-1. Final product name (this brief uses SponsAra; earlier docs used Araspons, Respons'Ara,
-   ReponsAra — pick one).
+1. ~~Final product name~~ — resolved 2026-09-19: **Respons'Ara**.
 2. Whether this brief itself gets folded into the shared `readme.md`/`AGENTS.md`, or stays
    a `design/` proposal until `@rht` and `@mirrdj` have seen it — it hasn't been agreed with
    either of them yet, and `readme.md`'s "Voice-agent delivery plan" section is already

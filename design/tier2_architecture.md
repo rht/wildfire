@@ -3,10 +3,8 @@
 Supersedes the flow description in `araspons-tier2-brief.md` with the more specific version
 dictated 2026-09-19. Keeps that brief's two genuinely new contributions — the ES-Alert/GDPR
 positioning and INFOCAT phase alignment — but changes *when* the voice-agent channel runs
-(see "What changed from the original brief" below). Product name shown as **ReponsAra**
-pending final spelling confirmation (four variants have been used so far: Araspons,
-Respons'Ara, ReponsAra, Spons'Ara — pick one and I'll do a single global rename across
-`design/`).
+(see "What changed from the original brief" below). Product name: **Respons'Ara** (confirmed
+2026-09-19; earlier drafts of this document used ReponsAra before the spelling was locked in).
 
 ## Diagram
 
@@ -18,7 +16,7 @@ Respons'Ara, ReponsAra, Spons'Ara — pick one and I'll do a single global renam
                     (ranked locations, review queue, tasks — existing MVP)
                                         |
                                         v
-                        Fire Analyst dashboard (ReponsAra logs)
+                        Fire Analyst dashboard (Respons'Ara logs)
                                         |
                          Fire Analyst reviews and decides severity
                                         |
@@ -34,7 +32,7 @@ Respons'Ara, ReponsAra, Spons'Ara — pick one and I'll do a single global renam
                                           +---------------------------+---------------------------+
                                           |                                                       |
                               OFFICIAL CHANNEL                                     OUR PARALLEL CHANNEL
-                              (government-owned)                                   (ReponsAra, public tier)
+                              (government-owned)                                   (Respons'Ara, public tier)
                                           |                                                       |
                               ES-Alert cell broadcast                     Analyst approves preliminary
                               (reaches every phone in                     check-in -> AI voice agent calls
@@ -57,7 +55,7 @@ Respons'Ara, ReponsAra, Spons'Ara — pick one and I'll do a single global renam
                                             -> logged to the Fire Analyst dashboard
                                                                     |
                                                                     v
-                                    SYNC LAYER (ReponsAra's actual differentiator)
+                                    SYNC LAYER (Respons'Ara's actual differentiator)
                      Generalitat <-> Fire Analyst <-> Firefighters <-> public entities
                             (schools, hospitals, police, Creu Roja)
                      — one shared, continuously-updated status, not five separate ones —
@@ -74,7 +72,7 @@ that could be protecting a hospital or a school full of children is instead pull
 home. Les Gavarres showed this exact failure mode — residents self-evacuated against orders
 because they had no trusted channel telling them what to do or where to go.
 
-ReponsAra's Tier 2 doesn't replace ES-Alert or firefighter dispatch. It buys **lead time**:
+Respons'Ara's Tier 2 doesn't replace ES-Alert or firefighter dispatch. It buys **lead time**:
 a preliminary, analyst-approved check-in reaches people before or alongside the official
 broadcast, and once evacuation is advised, they're told a *specific* building with room and a
 reachable route — not just "leave." People who can self-evacuate do so earlier and with a
@@ -106,12 +104,12 @@ different design, not a refinement — worth flagging plainly:
 
 ## Still open
 
-1. **Name.** Pick one of the four variants seen so far and I'll do a single find-and-replace
-   across `design/ui-mockup.html`, `demo_script.md`, `pitch_outline.md`, `use_case.md`, and
-   this file.
-2. **Pre- vs. post-ES-Alert timing for the voice agent** — this doc assumes the newer
-   (pre/parallel) framing per the latest description; say if that's not final.
-3. **Contact-source research** — whether a real, lawful public directory exists for this at
-   all, or whether the honest pitch line is "fixture-only for the demo, sourcing is
-   unresolved" (which is a fine thing to say on stage, per the project's own honesty
+1. ~~Name~~ — resolved 2026-09-19: **Respons'Ara**, applied across all `design/` files.
+2. ~~Pre- vs. post-ES-Alert timing for the voice agent~~ — resolved by the corrected diagram
+   in `tier2_brief.md`: the preliminary check-in is gated only by analyst OK, independent of
+   ES-Alert; the relocation/confinement engine separately waits for both to be underway.
+   See `tier2_brief.md`, which supersedes this document.
+3. **Contact-source research** — still open: whether a real, lawful public directory exists
+   for this at all, or whether the honest pitch line is "fixture-only for the demo, sourcing
+   is unresolved" (which is a fine thing to say on stage, per the project's own honesty
    principle already used in `demo_script.md`'s closing beat).
