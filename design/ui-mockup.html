@@ -38,8 +38,11 @@
     padding: 10px 18px; background: var(--ink); color: #fff;
     flex-shrink: 0; z-index: 20;
   }
-  #topbar .brand { font-weight: 700; font-size: 18px; letter-spacing: 0.2px; }
+  #topbar .brand { display: inline-flex; align-items: center; font-weight: 700; font-size: 18px; letter-spacing: 0.2px; }
   #topbar .brand small { font-weight: 400; opacity: 0.7; font-size: 12px; margin-left: 6px; }
+  #topbar .brand .logo-mark { flex-shrink: 0; margin-right: 8px; }
+  #topbar .brand .word-1 { color: #f5f3ef; }
+  #topbar .brand .word-2 { color: #b9bfc2; font-weight: 600; }
   .badge {
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
     padding: 3px 9px; border-radius: 999px; font-weight: 600;
@@ -151,7 +154,20 @@
 <body>
 <div id="app">
   <div id="topbar">
-    <div class="brand">🔥 Respons'Ara <small>Which infrastructure, people and assets are in danger — and which hospital, which school, needs a call first.</small></div>
+    <div class="brand">
+      <svg class="logo-mark" width="26" height="26" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="Respons'Ara logo">
+        <defs>
+          <linearGradient id="emberGrad" x1="0" y1="1" x2="0.15" y2="0">
+            <stop offset="0%" stop-color="#0b0b0c"/>
+            <stop offset="45%" stop-color="#4a4d4f"/>
+            <stop offset="100%" stop-color="#cfd4d6"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#emberGrad)" d="M31 61c-11.5 0-19-8.6-18.3-18.8.6-8.6 6.6-14.6 9.4-22 2-5.3 2.2-11.8 6.6-16.9 2.1-2.4 4.6-2.6 5.3.6 1 4.8-1.6 9.8.6 15 1.8 4.3 6.7 6.2 8.3 11.6 2.9 9.6 3.9 22-4 27.9-2.4 1.8-5 2.6-7.9 2.6z"/>
+      </svg>
+      <span class="word-1">Respons</span><span class="word-2">'Ara</span>
+      <small>Which infrastructure, people and assets are in danger — and which hospital, which school, needs a call first.</small>
+    </div>
     <span class="badge mode" id="modeBadge">Mode: synthetic</span>
     <span class="badge current" id="statusBadge">current</span>
     <div class="timestamps">
