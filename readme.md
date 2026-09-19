@@ -154,28 +154,31 @@ model availability and quality require explicit provider selection and a later s
 
 ### Workstream B: calling from macOS, Raspberry Pi fallback
 
+**Status:** B1–B4 research and local verification complete; hardware/live validation remains
+unverified. Findings, prerequisites and reproducible commands are in section 17.
+
 **Priority:** reuse the available Mac and a regular mobile phone/SIM if feasible. A Pi is useful
 only if Linux supplies a required bridge that macOS cannot provide. Existing modem: Huawei
 E3372-325 HiLink. Its documented data/SMS support does not establish voice/audio support.
 
-- [ ] **B1 — Verify macOS paths.** Research official Apple/CoreBluetooth/audio documentation and
+- [x] **B1 — Verify macOS paths.** Research official Apple/CoreBluetooth/audio documentation and
   maintained primary-source projects. Distinguish initiating a call (including iPhone Continuity)
   from programmatically capturing AND injecting call audio. Check Android/iPhone Bluetooth HFP,
   USB or wired audio alternatives and whether human handoff is possible. Mark each claim as
   documented, locally tested, hardware-dependent or unsupported; no claim that pairing alone is
   sufficient. Inventory relevant local software read-only without probing personal communications.
-- [ ] **B2 — Evaluate Linux/Pi fallback.** Check Asterisk `chan_mobile`/BlueZ requirements for the
+- [x] **B2 — Evaluate Linux/Pi fallback.** Check Asterisk `chan_mobile`/BlueZ requirements for the
   actual phone and current Linux setup. Separately assess a voice-capable modem with accessible
   audio. Do not assume E3372-325 compatibility from a different Huawei model, flash firmware, or
   modify the existing Vibecat dongle fleet. Read only narrowly relevant local model notes; never copy
   private fleet numbers, SIM identities, PINs or credentials into this repository.
-- [ ] **B3 — Produce a concrete recommendation.** Update this README's calling-feasibility findings
+- [x] **B3 — Produce a concrete recommendation.** Update this README's calling-feasibility findings
   with a comparison of hardware, software, call control, two-way audio, expected setup effort,
   concurrency limits and still-needed tests. Prefer a runnable local diagnostic script such as
   `scripts/check_calling_host.py` if it helps establish capability without calling anyone. Explain
   how audio would reach SLNG (managed telephony/SIP versus a custom STT/LLM/TTS bridge); those are
   different integrations. Include exact next steps for the strongest macOS path and the Pi fallback.
-- [ ] **B4 — Verify and publish.** Test any added script, attach direct primary-source links to the
+- [x] **B4 — Verify and publish.** Test any added script, attach direct primary-source links to the
   findings, record blockers requiring a phone/Pi/carrier detail, commit and push. Do not buy hardware,
   pair a personal phone, record conversations, place calls or change system services as part of this
   research task. Hardware-dependent validation is a subsequent explicitly targeted test.
@@ -601,3 +604,278 @@ Verification: the unchanged baseline passed 294 tests; the remediation passes 30
 XML behavior: the local stdlib parser (Expat 2.6.3) expanded a small internal entity but rejected an external entity reference with `ParseError`; external-file disclosure was not demonstrated. The report extra now includes `defusedxml>=0.7.1`, and JUnit parsing explicitly forbids DTDs as well as the library's default entity restrictions. Plain JUnit still renders and failed tests still prevent a success report. This does not replace parser updates or impose general input-size/resource limits. See [Python XML security](https://docs.python.org/3/library/xml.html#xml-security) and [defusedxml](https://github.com/tiran/defusedxml).
 
 UTF-8 is now explicit for the audited text formats. Legacy local files written in a different encoding require conversion; generated fixtures are UTF-8. The risk-assessment/location-snapshot/coordination boundary and snapshot schema remain unchanged.
+
+## 17. Workstream B — calling feasibility (19 September 2026)
+
+**Research and local preflight complete; phone calls and two-way call audio remain unverified.**
+The recommendation is to keep the Mac. If the available handset is an iPhone, the shortest
+supervised demonstration is Continuity/FaceTime with separate receive/send audio routes. This
+is **not yet an unattended dialler**. For unattended SIM calling on macOS, the strongest design
+candidate is an Android companion for call control plus a wired headset audio interface; it
+avoids depending on undocumented USB call-audio access. Native macOS HFP is worth a bounded
+compatibility test before adding hardware, but published methods do not establish usable audio
+on this Mac. Use Linux/Pi with Asterisk only if that test fails or a SIP gateway is required.
+Do not use the E3372-325 as the voice endpoint on the present evidence.
+
+Labels below mean **documented** (primary source describes a capability), **locally tested**
+(only the stated software check ran), **hardware-dependent/unverified** (the proposed combination
+needs a targeted test), and **unsupported by evidence** (no established path, not a claim of
+physical impossibility). No live call, pairing, microphone access, device inventory, system-service
+change, purchase, firmware change or SLNG API request was performed. Effort estimates are engineering
+judgment after prerequisites are supplied, not measured delivery times. Plan for one active
+conversation per handset/SIM path; dual SIM, call waiting and conference features do not establish
+independent concurrent audio channels.
+
+### Comparison: control and audio are separate gates
+
+| Path and required equipment | Actual call control | Receive AND send call audio | Effort / limit / verdict |
+|---|---|---|---|
+| Mac + iPhone + Continuity + isolated virtual audio routes | Apple apps initiate cellular calls; `tel:` launches the flow. No supported headless Continuity call-state/hangup interface established by the reviewed sources; UI automation would need Accessibility and version-specific validation. | FaceTime offers microphone/output selection; virtual devices can connect it to agent audio. Cellular relay behavior and both directions together need testing. | Shortest supervised experiment: hours to a day if already configured. One call. **Documented components, unverified integration; supervised only.** |
+| Mac as HFP hands-free endpoint + iPhone/Android as audio gateway | Native `IOBluetoothHandsFreeDevice` exposes dial, answer, hangup and call-list methods. | SCO plus transfer-to-computer APIs exist; actual Core Audio input/output availability and routing remain unknown. Pairing/A2DP playback alone is insufficient. | Bounded compatibility experiment first; a reliable controller is multi-day work. One call. **API declarations locally tested; runtime hardware-dependent.** |
+| Mac + Android over USB/ADB or companion app | Android `ACTION_CALL` / `TelecomManager.placeCall`, with required permission/account selection; default dialler `InCallService` supplies lifecycle and hangup. ADB intent dispatch is a development mechanism. | ADB/scrcpy alone is not a proven bidirectional cellular audio bridge. | Dial-control experiment is small; complete phone controller needs implementation and OEM testing. **USB-only audio path unsupported by evidence.** |
+| Mac + Android control + phone headset adapter + bidirectional headset interface + USB audio interface | Same Android control path, independent of audio wiring. iPhone with the same wiring still needs a separate dial controller or an operator. | Phone headphone output → interface input; interface output → phone headset microphone, with correct levels and caller audio excluded from the return mix. | Strongest macOS autonomous design candidate once hardware is known; days plus handset tests. One call. **Documented physical approach, unverified exact equipment.** |
+| Linux/Pi + BlueZ adapter + Asterisk `chan_mobile` + phone | HFP AT dial/answer/hangup over RFCOMM. | Asterisk reads/writes SCO audio and bridges it to SIP or a custom media bridge. | Days; adapter/phone compatibility can block it. One active phone per adapter. **Implemented upstream, locally untested.** |
+| E3372-325 HiLink on either host | Data/SMS documentation does not establish voice dial control. | No verified voice PCM/USB/analog audio interface for this exact model. | **Exclude from voice prototype.** It can provide an internet bearer; that does not originate calls on its SIM voice service. |
+
+### macOS and handset evidence
+
+**Continuity.** Apple's [cellular relay setup](https://support.apple.com/en-gb/102405) requires an
+activated iPhone voice plan, the same Apple Account in the relevant apps, enabled Calls on Other
+Devices/Calls from iPhone, and the same network with the iPhone nearby; away-from-phone use adds
+carrier Wi-Fi Calling requirements. The Phone app requires macOS 26; the checked host is macOS
+15.7.4, so use FaceTime. The [archived `tel:` specification](https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html)
+describes initiation and user confirmation on iOS, not unattended macOS control or a media API.
+Do not count opening a URL as a connected call or assume a successful UI click gives call evidence.
+
+Apple documents [FaceTime microphone and output selection](https://support.apple.com/guide/facetime/choose-a-camera-or-microphone-fctm26739220/mac).
+[BlackHole's source and routing instructions](https://github.com/ExistentialAudio/BlackHole) describe
+application-to-application audio, and its author demonstrates [audio injection into FaceTime](https://existential.audio/howto/StreamFromLogicProXtoFaceTime.php).
+These support a proposed two-bus connection, not a verified cellular relay. Send agent speech to
+one virtual device selected as FaceTime's microphone; send FaceTime output to a different virtual
+device read by the agent. Do not select the same loopback channels for both directions: that feeds
+received speech back to the caller and agent speech back into recognition. Only the 2-channel
+BlackHole bundle was found locally; a second independent route is still needed. Alternatively,
+[Core Audio process taps](https://developer.apple.com/documentation/coreaudio/capturing-system-audio-with-core-audio-taps)
+on macOS 14.2+ offer a receive-side capture candidate, with system-audio recording permission;
+they do not inject microphone audio or prove FaceTime capture works. None was opened here.
+
+**Native Bluetooth HFP.** The phone must be the **audio gateway**, with the Mac acting as the
+**hands-free** endpoint. Android documents [HFP Audio Gateway support](https://source.android.com/docs/core/connect/bluetooth/services);
+Apple's [accessory guidelines](https://www.bluetooth.com/wp-content/uploads/attachments/BluetoothDesignGuidelines.pdf)
+describe iOS hands-free call signaling and SCO/eSCO audio. These are role/protocol evidence, not
+certification for an unspecified phone/Mac pair. [Core Bluetooth](https://developer.apple.com/documentation/corebluetooth)
+also covers BR/EDR; that does not make its characteristic APIs an HFP/SCO media interface.
+Use the macOS [IOBluetooth hands-free device API](https://developer.apple.com/documentation/iobluetooth/iobluetoothhandsfreedevice):
+`dialNumber`, `acceptCall`, `endCall`, `currentCallList`, `transferAudioToComputer` and
+`transferAudioToPhone`. Its [base class](https://developer.apple.com/documentation/iobluetooth/iobluetoothhandsfree)
+provides `connectSCO` and connection state. These declarations compile with the installed SDK.
+That is **compile-only validation**, not evidence of pairing, callback correctness or duplex PCM.
+
+The legacy [IOBluetoothAddSCOAudioDevice](https://developer.apple.com/documentation/iobluetooth/iobluetoothaddscoaudiodevice)
+is deprecated at macOS 10.9; the installed SDK header explicitly says it does nothing and always
+returns success there. Do not build a compatibility verdict around this helper. A later HFP probe
+must establish the control connection, SCO connection, actual Core Audio receive/send endpoints,
+format, callback/state behavior and reconnection on this hardware. No maintained, turnkey
+macOS phone-to-agent bridge was established by the reviewed primary sources. Do not invert the
+roles by configuring the Mac as the gateway for a headset and assume it controls a phone.
+
+**Android control and USB limitations.** Google's [common intents](https://developer.android.com/guide/components/intents-common#Phone)
+distinguish `ACTION_DIAL` (user presses Call) from `ACTION_CALL` (requires `CALL_PHONE`).
+[`TelecomManager.placeCall`](https://developer.android.com/reference/android/telecom/TelecomManager)
+and a [default dialler/InCallService](https://developer.android.com/develop/connectivity/telecom/dialer-app)
+are the documented basis for account selection, call state and disconnect. A later companion
+could expose narrowly scoped control to the Mac over USB/ADB; authorized USB debugging, runtime
+permissions, default-dialler role if used, lock-screen behavior and the selected SIM account must
+be tested. A shell command returning successfully is not evidence that the remote party answered.
+
+[Scrcpy's audio documentation](https://github.com/Genymobile/scrcpy/blob/master/doc/audio.md) lists
+`voice-call`, uplink and downlink capture sources; do not incorrectly claim these options are absent.
+They are capture choices, not a documented host-microphone-to-cellular-uplink implementation.
+Android [restricts voice-call capture](https://developer.android.com/media/platform/sharing-audio-input)
+to privileged cases; scrcpy shell behavior depends on the phone build. Its [architecture](https://github.com/Genymobile/scrcpy/blob/master/doc/develop.md)
+forwards device media to the host. Neither source establishes a portable two-way call bridge.
+Google's [USB audio documentation](https://source.android.com/docs/core/audio/usb) says development
+mode does not support USB audio; host-mode audio connects an external sound device, while legacy
+accessory-mode audio is output-only toward the host and not recommended for new designs. Connecting
+a charging/debug cable to the Mac therefore does not expose a full-duplex cellular sound card.
+
+**Wired audio.** A headset interface can sidestep phone call-recording APIs. The manufacturer's
+[Daptor Two manual](https://www.jkaudio.com/downloads/user-guides/JK-Audio-Daptor-Two-User-Guide.pdf)
+documents simultaneous send/receive, separate audio connections and a mix-minus arrangement. It
+is an example of the needed interface class, not a purchase recommendation or tested model match.
+Phone downlink goes through its receive output to a Mac-compatible USB interface input; TTS goes
+from the Mac interface output through its send input to the phone headset mic. Follow the exact
+interface's mic/line levels, headset detection, pinout and isolation requirements; a passive Y cable
+or two line outputs joined together is not an established substitute. Keep the caller's received
+signal out of the send mix. A USB-C/Lightning adapter must support the headset microphone during
+cellular calls, not merely headphones; Android's [USB headset specification](https://source.android.com/docs/core/interaction/accessories/headset/usb-headset-spec)
+distinguishes headsets with microphone input. Exact phone/adapter compatibility remains a blocker.
+
+### Linux/Pi fallback and the existing dongle
+
+Asterisk's [requirements](https://docs.asterisk.org/Configuration/Channel-Drivers/Mobile-Channel/Mobile-Channel-Requirements/)
+call for Linux, BlueZ, a Bluetooth adapter and development libraries when building.
+Its [mobile-channel features](https://docs.asterisk.org/Configuration/Channel-Drivers/Mobile-Channel/Mobile-Channel-Features/)
+include `Dial(Mobile/device/number)`. The [Asterisk 22 implementation](https://github.com/asterisk/asterisk/blob/22/addons/chan_mobile.c)
+contains RFCOMM `ATD`/`ATA`/`AT+CHUP` control and SCO read/write paths. It is disabled by default
+and has **extended** support, not removed/deprecated status; [extended support](https://docs.asterisk.org/Asterisk-Community/Asterisk-Module-Support-States/)
+means community maintenance rather than a vendor fix commitment. Use a version-matched
+[`chan_mobile.conf` sample](https://github.com/asterisk/asterisk/blob/22/configs/samples/chan_mobile.conf.sample)
+(the older prose says `mobile.conf`). [Channel concepts](https://docs.asterisk.org/Configuration/Channel-Drivers/Mobile-Channel/Mobile-Channel-Concepts/)
+require an adapter per simultaneously connected device. Treat 8 kHz signed-linear/narrowband audio
+as the baseline for this implementation. An [upstream SCO packet-size issue](https://github.com/asterisk/asterisk/issues/1664)
+reports adapter-dependent audio failures; it is an issue report, not proof that all adapters fail.
+Successful HFP dialing must be tested separately from both audio directions.
+
+**E3372-325 exact-model finding:** the [manufacturer page](https://brovi-tech.com/productshow.php?cid=2&id=248)
+describes a data card; the vendor-authored [product description, hosted by a distributor](https://www.a2t.ro/source/Fisa_tehnica_pentru_E3372-325-Brovi.pdf)
+documents packet data/SMS/WebUI. Neither establishes voice dial commands or an accessible call-audio
+interface. The narrowly read local model note confirmed E3372-325 replacement; no fleet data was
+needed or copied. [Chan_dongle's supported-model discussion](https://github.com/wdoekes/asterisk-chan-dongle/blob/master/README.md)
+about other Huawei UMTS models does not prove compatibility. A separate voice-capable modem would
+need exact module/board/firmware documentation, voice provisioning and carrier-compatible VoLTE
+or available legacy service, plus **both** dial control and accessible USB PCM/analog audio.
+The [SIM7600 board voice example](https://www.waveshare.com/wiki/SIM7600X_Raspberry_Pi_Raspbian_Voice_Call)
+is board-specific evidence, not a recommendation to buy or a guarantee of current carrier support.
+There is no justified firmware-flashing step for the existing HiLink dongle.
+
+### How the audio would reach SLNG
+
+These are different integrations; none was executed here. Current documentation was checked
+through [SLNG's documentation index](https://docs.slng.ai/llms.txt); some older links in the plan
+return 404, so the direct references below are used for these findings.
+
+1. **Managed agent via SIP.** SLNG's [telephony overview](https://docs.slng.ai/guides/agents/telephony/overview.md)
+   and [outbound setup](https://docs.slng.ai/guides/agents/telephony/outbound.md) require a carrier/SIP
+   connection; SLNG does not supply phone numbers. An outbound termination host, SIP authentication,
+   caller-ID pool, active connection and same-region agent/trunk attachment are required. Connection
+   setup needs dashboard admin access; [dispatch](https://docs.slng.ai/guides/agents/telephony/dispatch-calls.md)
+   is a separate operation. **Proposed, unverified:** SLNG SIP/RTP ↔ reachable Asterisk SIP endpoint
+   ↔ `chan_mobile`/SCO ↔ phone/SIM. Validate authentication/transport, codecs, RTP/NAT reachability,
+   answer/hangup causes and the actual SIM caller ID. SLNG documents generic Manual SIP, not this
+   specific Asterisk/phone combination. A configured caller-ID number cannot by itself route calls
+   through a physical SIM. An ordinary carrier SIP trunk may meet the interview goal while not
+   meeting the requirement to originate through this handset/SIM.
+2. **Managed agent via browser audio.** SLNG documents [LiveKit web sessions](https://docs.slng.ai/guides/agents/production/embed-in-website.md):
+   a backend creates a session, and a client publishes microphone audio and receives agent audio.
+   A proposed Mac bridge feeds the call-receive bus to that client and sends its playback to the
+   phone-transmit bus. This preserves managed conversation behavior but does not give SLNG control
+   of the SIM call. Input/output selection, interruptions, call lifecycle linkage and human takeover
+   remain local integration work. Browser output must target the correct independent bus; default
+   system output is not an adequate routing guarantee.
+3. **Custom speech bridge.** Phone audio → local PCM capture → streaming STT → interview/LLM logic
+   → TTS → phone microphone. On Pi, use Asterisk [AudioSocket](https://docs.asterisk.org/Configuration/Channel-Drivers/AudioSocket/)
+   or [media WebSocket](https://docs.asterisk.org/Configuration/Channel-Drivers/WebSocket/).
+   AudioSocket uses framed TCP PCM; WebSocket media is available from Asterisk 20.16/21.11/22.6/23.0
+   and provides pacing. SLNG documents [STT WebSocket audio](https://docs.slng.ai/api-reference/speech-to-text/slng/deepgram-nova-3/nova-3-english-websocket.md)
+   and [TTS WebSocket output](https://docs.slng.ai/api-reference/text-to-speech/slng/deepgram-aura-2/aura-2-english-websocket.md).
+   These are speech-service protocols, not an interchangeable managed-agent PCM socket. The bridge
+   owns framing, sample-rate conversion, timing, turn detection, echo control, barge-in/playback
+   cancellation, bounded buffers, error recovery and call termination. This is a larger project,
+   not a configuration flag in Workstream A. No SLNG implementation files were changed here.
+
+**Human handoff:** for a Mac demonstration, mute/cancel agent playback first and route the existing
+call to an operator's headset or back to the handset; HFP exposes `transferAudioToPhone`. A wired
+phone may disable its built-in mic, so use the operator's mixer/headset or explicitly change the
+phone route. Confirm the person can hear and speak before declaring connection. A remote-person
+transfer needs a second reachable leg and a successful bridge: an Asterisk SIP operator extension
+can provide that without assuming a second simultaneous mobile call. Carrier conference/transfer
+and SLNG telephony transfer cannot be presumed to work on a browser-bridged SIM call. Retain a
+callback task when connection is unavailable; issuing a transfer command is not successful handoff.
+
+### Exact next steps and remaining prerequisites
+
+**Mac first, subsequent targeted test:**
+
+1. Supply only model/capability facts: iPhone or Android model, OS build, connector/headset adapter,
+   carrier/country, voice/VoLTE provisioning, intended SIM slot, and whether the demo may be
+   supervised. No phone number, SIM identifier, PIN, PUK or credential belongs in this README.
+2. For iPhone, have the owner check Continuity settings using Apple's steps above. On this Mac use
+   FaceTime. Identify two independent audio routes, verify synthetic playback/capture in isolation,
+   and then explicitly authorize microphone/system-audio permissions and one consenting test call.
+   Select FaceTime receive output → bus RX → agent input; agent output → bus TX → FaceTime mic.
+   A second virtual route/driver installation, if needed, is a separate user action. A process tap
+   plus the existing BlackHole is an alternative needing validation. Do not proceed unattended on
+   the strength of a `tel:` launch; UI confirmation and answer/hangup evidence remain blockers.
+3. For a native HFP attempt, separately authorize Bluetooth access and pairing of the chosen test
+   phone. Check hands-free/audio-gateway roles, call-control responses, SCO and actual Core Audio
+   duplex endpoints. Stop this route if PCM cannot be read and written independently; compiling an
+   API or seeing a paired device is not a pass. Use a bounded compatibility experiment before
+   investing in a full controller.
+4. If unattended dialing is required and Android is available, implement the permissioned companion
+   controller and test call-state/disconnect over an authorized USB connection. Use a proven
+   microphone-capable headset adapter plus bidirectional phone interface and Mac USB audio I/O.
+   Determine how control, audio accessories and charging coexist on this phone's ports. Android
+   documents that [USB ADB is unavailable in USB host mode](https://source.android.com/docs/core/audio/usb#debug-while-in-host-mode):
+   a USB-C digital headset adapter and USB ADB cannot simply share that port through an ordinary
+   hub. Use a separate analog headset jack with USB control, or separately authorized wireless
+   companion/ADB control with USB audio. Verify charging support independently. Without these
+   hardware facts, do not substitute scrcpy capture for full-duplex audio.
+5. First test audio with synthetic speech, then separately authorize the consenting live test.
+   Verify remote speech reaches the agent, TTS reaches the remote party, neither side hears a
+   feedback loop, interruptions cancel queued speech, and both ends can hang up. Exercise rejection,
+   busy/no-answer, lock/sleep/reconnect and operator takeover; measure delay and transcription quality
+   in the selected language. Do not publish personal audio or identifiers. Add SLNG only after local
+   duplex routing works, with the missing API key, configured agent/model/region and chosen transport.
+
+**Pi/Linux fallback, subsequent targeted setup:** identify Pi/host model, distro/kernel, BlueZ and
+Asterisk versions, Bluetooth adapter chipset/firmware and SCO support, and exact handset/OS/carrier.
+Choose a supported Asterisk release/build including `chan_mobile` (for example the inspected 22
+branch); check the module before configuring it. Install the distro's BlueZ development dependencies
+and enable the module if building from source. Pair only the authorized test handset, discover its
+HFP RFCOMM service port, and fill the version-matched configuration privately. Validate control and
+SCO in both directions against a local test SIP endpoint before attempting SLNG. Do not let another
+HFP audio service claim the same phone connection. If managed SLNG is chosen, obtain agreement on
+SIP termination, credentials, codec/transport, NAT/RTP reachability and caller ID; otherwise build the
+custom AudioSocket/WebSocket speech bridge. No Pi/adapter/handset combination was available for
+validation in this task. OS packages, pairing and service changes were not performed.
+
+### Reproducible local verification
+
+The [read-only diagnostic](scripts/check_calling_host.py) uses Python's standard library and prints
+only OS/architecture, Python version, executable-presence booleans and known macOS app/driver-file
+presence. It never runs ADB, queries paired devices, opens audio, reads `.env`, lists hardware
+identifiers or prints installation paths. Driver-file presence does not prove a driver is loaded.
+Exit zero means the inventory ran; both call capabilities remain `unverified` in its JSON.
+
+```sh
+uv --cache-dir data/uv-cache venv
+uv --cache-dir data/uv-cache pip install -e '.[dev]'
+.venv/bin/python scripts/check_calling_host.py
+.venv/bin/python -m pytest -q tests/test_calling_host.py
+.venv/bin/python -m pytest -q
+git diff --check
+```
+
+**Locally tested:** macOS 15.7.4 / arm64 / Python 3.13.7; FaceTime and BlackHole 2ch bundle present,
+Phone app and BlackHole 16ch bundle absent; `swift`, `clang`, `adb`, `scrcpy`, `ffmpeg` on PATH;
+`asterisk`, `bluetoothctl`, `pactl`, `wpctl` absent from PATH. No executable versions or runtime
+capabilities are inferred from those flags. Baseline: **217 tests passed**. With the diagnostic:
+**3 focused tests and 220 total tests passed**. Tests use synthetic environment/path values and
+check that tool discovery does not execute programs, leak paths/secrets or claim a working call.
+Independent review found no blocking issues; its USB host/debugging clarification is incorporated.
+
+A compile-only check of the six HFP methods below passed with `-Werror` against the installed
+Xcode 26.3.0 macOS SDK. It has no `main`, device lookup or execution step and does not request
+Bluetooth permission. This reproduces the declaration check, not a hardware test:
+
+```sh
+mkdir -p data/agent-session
+cat > data/agent-session/hfp-api-check.m <<'OBJC'
+#import <Foundation/Foundation.h>
+#import <IOBluetooth/IOBluetooth.h>
+void check_hfp_declarations(IOBluetoothHandsFreeDevice *device, NSString *number) {
+    [device dialNumber:number];
+    [device connectSCO];
+    [device transferAudioToComputer];
+    [device transferAudioToPhone];
+    [device currentCallList];
+    [device endCall];
+}
+OBJC
+xcrun clang -fsyntax-only -Werror -x objective-c data/agent-session/hfp-api-check.m
+```
+
+All B1–B4 research/local-verification deliverables are complete. Runtime handset compatibility,
+carrier behavior, every physical/virtual audio path and SLNG integration remain explicitly
+unverified and require the prerequisites above. Workstream A and its status are unchanged.
