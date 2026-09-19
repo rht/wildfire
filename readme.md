@@ -578,3 +578,18 @@ The contact ranking of this prototype is now the snapshot pipeline's ranking too
 `forecast-evacuation-window-v2` replaces the earlier weighted proximity/people/value contact score. Static locations now include nullable `fire_arrival_min`, `evacuation_min`, `forecast_source` and `evacuation_source`. Older collections still load; missing timing evidence places their contacts in review. Times must share the scenario epoch. For a nonzero elapsed time or extra contact buffer, call `rank_contacts(locations, ContactPolicy(now_min=..., buffer_min=...))`. The response-action planner's feasibility buffer remains a separate scenario input.
 
 The example's contact order happens to remain A → B → C, but its justification is now the remaining window, not A's value. Live spread prediction remains the upstream engine's responsibility; this module consumes per-location predictions.
+
+## Norma audit remediation — 2026-09-19
+
+Scope: resolve the 42 findings recorded at audit commit `92ae882`, using that branch's report as read-only input. The fix branch starts at freshly fetched main (`c5d74f2`); the audit commit is not included. All original snippets are still present at this baseline. No defenses, exceptions, suppressions, feature-branch scans, or risk/coordination contract changes are part of this work.
+
+Implementation and verification plan:
+
+- [ ] Add explicit UTF-8 to the 31 flagged text I/O calls; verify non-ASCII snapshot I/O under an ASCII-default Python process and retain existing fixture/CLI coverage. Close the two precompute input files with context managers while touching those calls.
+- [ ] Replace two SQL f-strings with fixed migration and ID queries, preserving migration idempotence and task/override numbering; cover old databases and reject unsupported internal table selections.
+- [ ] Preserve timestamp key precedence and policy values with single lookups, cache the HTTP session without global rebinding, return search results/counts from recursion without `nonlocal`, iterate slope factors directly, and replace the three assigned lambdas with named local functions. Verify cache reuse, explicit null/zero values, deterministic planning and existing spread/validation behavior.
+- [ ] Harden JUnit XML parsing with `defusedxml` in the optional report dependencies; reject DTD/entity declarations and retain valid JUnit and failed-test behavior. Confirm ordinary ElementTree's internal-entity behavior rather than assuming the scanner's XXE label demonstrates external file access.
+- [ ] Record each original finding and its resolution in `reports/norma-remediation-2026-09-19.json`, separate from the original audit. Re-run Norma on every changed Python file, run the full applicable test suite, obtain independent code review, and push checkpoints.
+- [ ] Create the PR, fetch/rebase onto the latest main, resolve any conflicts, repeat final verification and required checks, and merge only after they pass. Keep the fix and audit worktrees available.
+
+The connected MCP currently exposes rules and Livechecks, but no account-tier or remaining-quota tool. Its ruleset response supplies availability flags, not the account's plan or quota; these values must not be inferred from those flags.
