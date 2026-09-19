@@ -36,7 +36,7 @@ def main():
             result = {"cases": [evaluate_case(c) for c in edge_cases(scenario)]}
             result["passed"] = all(case["passed"] for case in result["cases"])
         elif args.readiness_input:
-            readiness = json.loads(args.readiness_input.read_text())
+            readiness = json.loads(args.readiness_input.read_text(encoding="utf-8"))
             if (
                 not isinstance(readiness, dict)
                 or readiness.get("schema_version") != "household-readiness-1"

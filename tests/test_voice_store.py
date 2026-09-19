@@ -85,6 +85,33 @@ def test_result_does_not_manufacture_completed_provider_state():
     assert s.assessment('req-B').confidence == .95
 
 
+def test_live_assistance_report_and_tasks_survive_restart(tmp_path):
+    from fireline.evacuation_readiness import coordinate_evacuation
+    from fireline.priority_examples import load_scenario
+    path = tmp_path / 'reported-assistance.sqlite'
+    s = store(path)
+    s.register(request(input_mode='live'))
+    s.bind('req-B', 'call-B')
+    event(s)
+    evidence = dict(result().evidence, can_self_evacuate='I cannot leave without help.')
+    s.record_result(result(can_self_evacuate=False, confidence=None,
+                           confidence_basis=None, evidence=evidence))
+    plan = coordinate_evacuation(load_scenario('fixtures/static_priority.json'),
+                                [s.assessment('req-B')], [], [])
+    s.record_plan(plan, snapshot_id='snapshot-demo')
+    s.close()
+    reopened = store(path)
+    try:
+        saved = reopened.get('req-B')['result']
+        assert saved['can_self_evacuate'] is False
+        assert saved['evidence']['can_self_evacuate'] == 'I cannot leave without help.'
+        reasons = {t['reason'] for t in reopened.tasks.tasks('B')}
+        assert {'voice:human_callback', 'voice:arrange_assistance'} <= reasons
+        assert reopened.assessment('req-B').confidence is None
+    finally:
+        reopened.close()
+
+
 def test_bad_later_answers_and_old_human_request_cannot_be_erased():
     s = store(now=EPOCH + timedelta(minutes=2))
     bound(s)

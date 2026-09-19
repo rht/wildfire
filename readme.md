@@ -1105,3 +1105,72 @@ adverse cases, both algorithm update examples, cross-reader refresh/restart, dup
 crash rollback, existing-database protection, CLI output and Streamlit interaction tests.
 Independent review findings about partial commits and incomplete invalidation IDs were fixed and
 covered by regression tests. These checks do not validate real fire predictions or live voice quality.
+
+### Unmute / SLNG / Vonage mock-call test plan
+
+**Goal:** exercise an explicitly simulated readiness conversation with Unmute's
+SLNG-hosted target, then verify a Vonage phone connection when the account has
+an active SIP trunk and the tester has supplied an authorized destination.
+This follows the agreed conversation and Vonage architecture in this session.
+
+The package in `voice-agent/` is a connectivity smoke test. It uses fictional
+incident details and is configured to record conversation variables on SLNG; it does not yet
+submit answers to FireLine's database, dispatch assistance, or transfer to a
+real responder. The existing offline voice demo remains the separate test of
+FireLine's validation and persistent follow-up. A working greeting alone does
+not prove recognition, reasoning, answer persistence, or two-way phone audio.
+
+- [x] Install checksum-verified Unmute 0.5.5 and VoiceAI CLI 0.1.19 locally
+  under ignored `data/tools/`.
+- [x] Author `voice-agent/agent.yaml`, `targets.yaml`, `instructions.md` and
+  `tools/end_call.yaml`; keep generated builds and credentials ignored.
+- [x] Run `unmute validate voice-agent --target slng` and
+  `unmute compile voice-agent --target slng`; inspect the generated prompt,
+  greeting and conversation variables for the simulated call.
+- [x] Verify the SLNG key with read-only requests and preview deployment with
+  `unmute deploy voice-agent --target slng --dry-run`. The account returned
+  zero agents; no agent ID or outbound connection ID is configured locally.
+  This does not establish whether an account-level SIP connection exists.
+- [x] Run the regression suite: **492 tests passed**, including persistence
+  of live-shaped assistance reports and follow-up tasks after database restart.
+- [ ] When account/model prerequisites are met, deploy the dedicated mock
+  agent and verify a browser conversation. A Vonage test additionally requires
+  an active Manual outbound SIP connection and an explicitly authorized test
+  number. Report every unavailable prerequisite without claiming live success.
+
+`fixtures/voice/unmute_smoke.json` contains eight manual scripts for browser
+testing: complete answers, assistance, human requests, interruptions, unknown
+answers, wrong location, assistance-question polarity and corrections. These
+are expected results, not recorded calls. The agent classifies each field as
+`yes`, `no` or `inconclusive`, with exact tester quotes. Those values correspond
+to FireLine's `true`, `false` and `null`. Initial message receipt and final
+readback acknowledgement are separate. Hosted memory capture, model runtime
+availability and actual audio interruptions still need a browser test.
+
+Durable hosted answer capture still needs a verified provider result/tool
+payload connected to FireLine's existing result ingestion endpoint. Polling
+call lifecycle alone does not prove answers were saved. This smoke package has
+no FireLine submission tool and no real human-transfer tool; requests for a
+person are recorded and the tester is told that no transfer occurs.
+
+Readiness now exposes `reported_can_self_evacuate`,
+`reported_transport_available` and `reported_needs_assistance` separately from
+operational `mode`. An evidenced assistance need for a confirmed household
+creates an `arrange_assistance` proposal alongside human review. It does not
+dispatch resources or reserve capacity. Non-synthetic results still require
+review because provider confidence is unverified; even complete answers do
+not automatically make operational readiness determined. Route, capacity and
+timing checks remain separate. The capacity validation and UTF-8 fixes from
+readiness PR #8 are included while retaining this branch's road warnings.
+
+The read-only deployment preview proposes creating
+`fireline-mock-interview-slng`. Deployment remains pending explicit approval;
+no browser session, Vonage call or real human handoff has been verified.
+
+The carrier route is configured in SLNG's Telephony dashboard using Vonage's
+termination host and SIP credentials, not a `carrier: vonage` Unmute setting.
+Local `VONAGE_API_KEY` alone does not establish a SIP connection. Use a dedicated
+mock agent and recheck its outbound connection after deployment. References:
+[Unmute hosted target](https://github.com/slng-ai/unmute/blob/main/docs-site/targets/slng.mdx),
+[SLNG outbound setup](https://docs.slng.ai/guides/agents/telephony/outbound),
+[Vonage SIP setup](https://developer.vonage.com/en/sip/sip-dashboard).

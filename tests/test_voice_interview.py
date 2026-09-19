@@ -60,6 +60,42 @@ def test_assistance_needed():
     assert 'arrange_assistance' in row['tasks']
 
 
+@pytest.mark.parametrize('field', ['can_self_evacuate', 'transport_available'])
+def test_reported_assistance_survives_live_review_gate(field):
+    normalized, row = proposal(result(**{field: False}, confidence=None,
+                                      confidence_basis=None), request(input_mode='live'))
+    assert normalized.human_followup_required
+    assert row['reported_needs_assistance'] is True
+    assert row['mode'] == 'undetermined'
+    assert row['destination_id'] is None
+    assert {'human_callback', 'arrange_assistance'} <= set(row['tasks'])
+
+
+@pytest.mark.parametrize('value', [True, False, None])
+def test_household_report_keeps_three_way_answer_independent_of_readiness(value):
+    _, row = proposal(result(can_self_evacuate=value, confidence=None,
+                             confidence_basis=None), request(input_mode='live'))
+    assert row['reported_can_self_evacuate'] is value
+    assert row['reported_transport_available'] is True
+    assert row['mode'] == 'undetermined'
+    assert row['evacuation_status'] == 'not_confirmed'
+
+
+def test_unevidenced_assistance_does_not_create_resource_task():
+    evidence = dict(result().evidence)
+    evidence.pop('can_self_evacuate')
+    _, row = proposal(result(can_self_evacuate=False, evidence=evidence), request(input_mode='live'))
+    assert row['reported_can_self_evacuate'] is None
+    assert row['reported_needs_assistance'] is None
+    assert 'arrange_assistance' not in row['tasks']
+
+
+def test_wrong_location_does_not_create_assistance_task_for_selected_building():
+    _, row = proposal(result(identity_confirmed=False, can_self_evacuate=False), request(input_mode='live'))
+    assert 'human_callback' in row['tasks']
+    assert 'arrange_assistance' not in row['tasks']
+
+
 @pytest.mark.parametrize('changes,reason', [
     ({'wants_human': True}, 'human_requested'),
     ({'confidence': .2}, 'low_confidence'),

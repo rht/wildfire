@@ -105,7 +105,11 @@ def _validate(scenario, assessments, centres, routes, policy):
         if call.acknowledged_road_warning_version is not None:
             _text(call.acknowledged_road_warning_version, "acknowledged_road_warning_version")
     for centre in centres:
-        if type(centre.remaining_places) is not int or centre.remaining_places < 0:
+        if (
+            isinstance(centre.remaining_places, bool)
+            or not isinstance(centre.remaining_places, int)
+            or centre.remaining_places < 0
+        ):
             raise ValueError("remaining_places must be a nonnegative integer")
         _boolean(centre.approved, "approved")
         number(centre.available_until_min, "available_until_min")
@@ -243,12 +247,24 @@ def coordinate_evacuation(
         warning_ack = bool(call and warning_version and call.acknowledged_road_warning_version == warning_version)
         if road_warnings and not warning_ack:
             reasons.append("road_warning_update_unconfirmed")
+        # Household statements and operational readiness are different facts.
+        # Keep evidenced negative answers visible even when review blocks a plan.
+        has_report = bool(call and call.source.strip() and call.evidence.strip())
+        reported_ability = call.can_self_evacuate if has_report else None
+        reported_transport = call.transport_available if has_report else None
+        reported_assistance = (
+            True if reported_ability is False or reported_transport is False else
+            False if reported_ability is True and reported_transport is True else None
+        )
         row = {
             "asset_id": aid,
             "name": asset.name,
             "contact_rank": contact["rank"],
             "mode": "undetermined",
             "self_evacuation_ability": "unknown",
+            "reported_can_self_evacuate": reported_ability,
+            "reported_transport_available": reported_transport,
+            "reported_needs_assistance": reported_assistance,
             "destination_id": None,
             "destination_name": None,
             "evacuation_status": "not_confirmed",
@@ -271,6 +287,9 @@ def coordinate_evacuation(
         }
         if reasons:
             row["tasks"] = ["contact_household" if call is None else "human_callback"]
+            if reported_assistance is True and call.identity_confirmed is True:
+                # A proposal for the analyst, never automatic resource dispatch.
+                row["tasks"].append("arrange_assistance")
         elif call.can_self_evacuate is False or call.transport_available is False:
             row["mode"] = "assisted_evacuation"
             row["self_evacuation_ability"] = "assistance_required"

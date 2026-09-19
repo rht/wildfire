@@ -1,6 +1,11 @@
 """Readiness is distinct from a call connection, crew coverage and completed evacuation."""
 
+import json
+import os
+import subprocess
+import sys
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 
@@ -165,6 +170,21 @@ def test_capacity_is_reserved_in_contact_order_and_never_overbooked():
     assert result["remaining_capacity"]["centre"] == 2
 
 
+def test_capacity_accepts_integer_subclasses():
+    class ReportedPlaces(int):
+        pass
+
+    result, house = run(centre_changes={"remaining_places": ReportedPlaces(10)})
+    assert house["mode"] == "self_evacuate"
+    assert result["remaining_capacity"]["centre"] == 2
+
+
+@pytest.mark.parametrize("remaining_places", [True, 10.0, -1])
+def test_capacity_rejects_booleans_floats_and_negative_integers(remaining_places):
+    with pytest.raises(ValueError, match="nonnegative integer"):
+        run(centre_changes={"remaining_places": remaining_places})
+
+
 def test_missing_contact_not_ignored_even_if_crew_selected():
     result, _ = run()
     a = next(r for r in result["locations"] if r["asset_id"] == "A")
@@ -222,10 +242,6 @@ def test_unknown_household_size_does_not_reserve_zero_places():
 
 
 def test_cli_includes_household_readiness():
-    import json
-    import subprocess
-    import sys
-
     proc = subprocess.run(
         [
             sys.executable,
@@ -244,3 +260,41 @@ def test_cli_includes_household_readiness():
         "C": "undetermined",
     }
     assert result["dispatch"] is False
+
+
+def test_cli_reads_non_ascii_readiness_input_with_ascii_process_locale(tmp_path):
+    readiness = json.loads(
+        Path("fixtures/evacuation_readiness.json").read_text(encoding="utf-8")
+    )
+    readiness["assessments"][0]["evidence"] = "Família preparada per sortir"
+    readiness_path = tmp_path / "readiness.json"
+    readiness_path.write_text(
+        json.dumps(readiness, ensure_ascii=False), encoding="utf-8"
+    )
+    output_path = tmp_path / "result.json"
+    env = os.environ.copy()
+    env.update(
+        LC_ALL="C",
+        LANG="C",
+        PYTHONUTF8="0",
+        PYTHONCOERCECLOCALE="0",
+    )
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "scripts/static_priorities.py",
+            "--readiness-input",
+            str(readiness_path),
+            "--output",
+            str(output_path),
+        ],
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+    assert proc.returncode == 0, proc.stderr
+    result = json.loads(output_path.read_text(encoding="utf-8"))
+    a = next(row for row in result["locations"] if row["asset_id"] == "A")
+    assert a["call_evidence"] == "Família preparada per sortir"
