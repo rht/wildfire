@@ -366,3 +366,14 @@ def test_apply_overrides_asset_type_rederives_policy_evacuation():
     c = apply_overrides([asset], [override("fixture:x", "asset_type", "warehouse")])[0]
     assert c["evacuation_min"] is None and c["evacuation_source"] is None and "evacuation_unknown" in c["review_reasons"]
     assert rank_asset(c, AS_OF)["queue"] == "needs_review"
+
+
+@pytest.mark.parametrize("score", [None, 0])
+def test_asset_type_override_retains_explicit_policy_values(monkeypatch, score):
+    monkeypatch.setitem(config.VALUE_POLICY["by_type"], "care_home", score)
+    asset = timed("fixture:x", asset_type="unknown", review_reasons=["class_ambiguous", "value_unknown"])
+    updated = apply_overrides([asset], [override("fixture:x", "asset_type", "care_home")])[0]
+    assert updated["value_score"] == score
+    assert updated["value_basis"] == config.VALUE_POLICY["version"]
+    assert "value_unknown" not in updated["review_reasons"]
+    assert "class_ambiguous" not in updated["review_reasons"]

@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import argparse
-import xml.etree.ElementTree as ET
 from pathlib import Path
 from xml.sax.saxutils import escape
 
+from defusedxml.ElementTree import parse
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
@@ -433,7 +433,7 @@ def build(path, fixture, test_results):
     )
     y = report.section("Verification evidence", y)
     if test_results.exists():
-        root = ET.parse(test_results).getroot()
+        root = parse(test_results, forbid_dtd=True).getroot()
         tests = root.findall(".//testcase")
         failures = root.findall(".//failure") + root.findall(".//error")
         y = (

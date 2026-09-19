@@ -157,8 +157,10 @@ def build_scenario(name: str, fire_state: FireState, closures: list[str] | None 
     out.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
     arrival = spread.run_ca(fire_state, grid, n_runs=n_runs, horizon_min=horizon_min, seed=seed)
-    assets = json.load(open(fixtures / "assets.json"))
-    dests = json.load(open(fixtures / "destinations.json"))
+    with open(fixtures / "assets.json", encoding="utf-8") as stream:
+        assets = json.load(stream)
+    with open(fixtures / "destinations.json", encoding="utf-8") as stream:
+        dests = json.load(stream)
     rg = RoadGraph.from_fixture(fixtures / "roads.json")
     sc = Scenario.run(fire_state, arrival, assets, dests, rg, config, closures=list(closures or []))
     note = run_triage(sc) if triage else "triage skipped"
@@ -175,7 +177,7 @@ def build_scenario(name: str, fire_state: FireState, closures: list[str] | None 
         "roads": roads_layer(rg), "closures": sc.closures,
         "burned_ha_p50_at_horizon": round(float((arrival.burn_prob >= 0.5).sum()) * grid.cell ** 2 / 1e4, 0),
     }
-    (out / "layers.json").write_text(json.dumps(layers))
+    (out / "layers.json").write_text(json.dumps(layers), encoding="utf-8")
     s = summarize(sc)
     print(f"[{name}] id={sc.id} t={sc.t:%Y-%m-%d %H:%M}Z wind {fire_state.wind_dir_deg:.0f}deg/{fire_state.wind_speed_mps:.0f}m/s "
           f"closures={sc.closures or '-'} | tiers {s['tiers']} | decisions {s['decisions']} | "
@@ -216,7 +218,7 @@ def build_all(out_dir: Path = OUT, n_runs: int = 50, horizon_min: int = 720, gri
         "diff_0800_1000": sc0.diff(sc1),
         "diff_1000_whatif_east": sc1.diff(sc2),
     }
-    (out_dir / "index.json").write_text(json.dumps(index, indent=1, ensure_ascii=False))
+    (out_dir / "index.json").write_text(json.dumps(index, indent=1, ensure_ascii=False), encoding="utf-8")
     print(f"index -> {out_dir / 'index.json'}")
     print("diff 08:00 -> 10:00: " + ("; ".join(index["diff_0800_1000"]) or "no tier/decision changes"))
     print("diff 10:00 -> what-if east: " + ("; ".join(index["diff_1000_whatif_east"]) or "no tier/decision changes"))

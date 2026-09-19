@@ -218,8 +218,8 @@ def run_ca(fire_state, grid, fuel=None, slope=None, n_runs=50, horizon_min=720, 
 
     slope_f = _slope_factors(slope, grid.cell, cfg)
     base = []
-    for k in range(len(_OFFSETS)):
-        b = cfg["p0"] * slope_f[k]
+    for factor in slope_f:
+        b = cfg["p0"] * factor
         if fuel is not None:
             b = b * fuel
         base.append(b.astype(np.float32) if isinstance(b, np.ndarray) else float(b))

@@ -25,6 +25,7 @@ import os
 import time
 import unicodedata
 from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -114,8 +115,10 @@ def _iso(dt: datetime) -> str:
 
 def _record_ts(record: dict, ts_key: str) -> Any:
     """Timestamp of a record: top-level key, or GeoJSON ``properties[key]``."""
-    if ts_key in record:
+    try:
         return record[ts_key]
+    except KeyError:
+        pass
     props = record.get("properties")
     if isinstance(props, dict):
         return props.get(ts_key)
@@ -138,15 +141,11 @@ def _guard(records: list[dict], ts_key: str, as_of: datetime) -> list[dict]:
 # --------------------------------------------------------------------------- cache
 
 
-_session: requests.Session | None = None
-
-
+@lru_cache(maxsize=1)
 def get_session() -> requests.Session:
-    global _session
-    if _session is None:
-        _session = requests.Session()
-        _session.headers["User-Agent"] = USER_AGENT
-    return _session
+    session = requests.Session()
+    session.headers["User-Agent"] = USER_AGENT
+    return session
 
 
 def offline() -> bool:

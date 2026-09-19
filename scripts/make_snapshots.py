@@ -241,7 +241,7 @@ def write_synthetic_forecasts() -> list[Path]:
     paths = []
     for seq, t in ((1, T1), (2, T2)):
         path = FORECAST_DIR / f"synthetic_gavarres_{seq:04d}.json"
-        path.write_text(json.dumps(synthetic_forecast(seq, t), indent=1, ensure_ascii=False) + "\n")
+        path.write_text(json.dumps(synthetic_forecast(seq, t), indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
         paths.append(path)
     return paths
 
@@ -273,9 +273,9 @@ def real_area_rows() -> tuple[list[dict], list[dict], set[str]] | None:
     a_path, u_path = DATA / "assets_in.json", DATA / "unlocated.json"
     if not (a_path.exists() and u_path.exists()):
         return None
-    located = [r for r in json.loads(a_path.read_text()) if in_bbox(r)]
+    located = [r for r in json.loads(a_path.read_text(encoding="utf-8")) if in_bbox(r)]
     munis = {_fold(r.get("municipality")) for r in located} - {""}
-    unlocated = [r for r in json.loads(u_path.read_text())
+    unlocated = [r for r in json.loads(u_path.read_text(encoding="utf-8"))
                  if r.get("lon") is None and _fold(r.get("municipality")) in munis]
     located.sort(key=lambda r: r["asset_id"])
     unlocated.sort(key=lambda r: r["asset_id"])
@@ -307,7 +307,7 @@ def write_real_area(located, unlocated, ca_lines: list[str] | None = None) -> li
         "counts": {"located": len(located), "unlocated": len(unlocated), "total": len(records)},
         "assets": records,
     }
-    (REAL_DIR / "assets_gavarres.json").write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n")
+    (REAL_DIR / "assets_gavarres.json").write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
     def count(rows, key):
         out = {}
@@ -389,13 +389,13 @@ def write_real_area(located, unlocated, ca_lines: list[str] | None = None) -> li
         "  classes hospital, care_home, school and campsite; no row has an unknown class.",
         "",
     ]
-    (REAL_DIR / "README.md").write_text("\n".join(lines))
+    (REAL_DIR / "README.md").write_text("\n".join(lines), encoding="utf-8")
     return records
 
 
 # ------------------------------------------------------------------------------------ pipeline
 def synthetic_assets() -> list[dict]:
-    rows = json.loads((FIX / "assets.json").read_text())
+    rows = json.loads((FIX / "assets.json").read_text(encoding="utf-8"))
     for r in rows:
         r.setdefault("register", "fixture")
     return rows + [dict(UNLOCATED_FIXTURE, register="fixture")]
@@ -451,7 +451,7 @@ def main() -> int:
     ]
     forecast_paths = write_synthetic_forecasts()
     for p in forecast_paths:
-        print(f"{p.relative_to(ROOT)}: synthetic forecast-input-1, {len(json.loads(p.read_text())['estimates'])} estimates")
+        print(f"{p.relative_to(ROOT)}: synthetic forecast-input-1, {len(json.loads(p.read_text(encoding="utf-8"))['estimates'])} estimates")
     build_pair(synthetic_assets(), fires, "synthetic_gavarres", fs.cluster_id,
                forecasts=[load_forecast(p) for p in forecast_paths])
 
@@ -504,7 +504,7 @@ def recorded_real_fires() -> list[tuple[dict, datetime]] | None:
     files = sorted(REAL_FIRE_DIR.glob("*satellite-perimeters.json"))
     if not files:
         return None
-    rec = json.loads(files[-1].read_text())
+    rec = json.loads(files[-1].read_text(encoding="utf-8"))
     feats = rec["body"]["features"]
     updates = []
     for feat in feats:
@@ -568,7 +568,7 @@ def real_fire_state(fire: dict, as_of: datetime, wind_dir: Path = WIND_DIR) -> t
         geom = unary_union([g for g in geom.geoms if g.geom_type in ("Polygon", "MultiPolygon")])
     c = geom.centroid
     path = nearest_wind_file(c.x, c.y, wind_dir)
-    series = json.loads(path.read_text())
+    series = json.loads(path.read_text(encoding="utf-8"))
     wind = dict(wind_at(series, as_of), file=str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path),
                 lat=float(series["lat"]), lon=float(series["lon"]),
                 source=f"{series.get('model', '?')} {series.get('slice', '?')}")

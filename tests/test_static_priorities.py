@@ -568,3 +568,14 @@ def test_static_cli_writes_valid_json_and_bad_inputs_fail_cleanly(tmp_path):
     )
     assert result.returncode == 2
     assert "schema_version" in result.stderr and "Traceback" not in result.stderr
+
+
+def test_search_counts_every_feasible_prefix_and_retains_first_action_alternatives():
+    scenario = scene([loc("A"), loc("B"), loc("C")], [act("A", "A"), act("B", "B"), act("C", "C")])
+    result = plan_response(scenario)
+    assert result["states_evaluated"] == 16  # empty + 3 singles + 6 pairs + 6 triples
+    assert ids(result) == ["A", "B", "C"]
+    assert [(x["first_action"], x["sequence"]) for x in result["first_action_alternatives"]] == [
+        ("A", ["A", "B", "C"]), ("B", ["B", "A", "C"]), ("C", ["C", "A", "B"]),
+    ]
+    assert plan_response(scenario) == result

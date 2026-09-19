@@ -414,3 +414,14 @@ def test_one_malformed_asset_does_not_blank_the_other_windows(store):
     store.apply_snapshot(make_snapshot([a, bad], scenario_id="sc", sequence=1))
     exp = store.exposure("sc")
     assert exp["fixture:a"]["priority_status"] == "window_open" and exp["fixture:bad"]["priority_status"] is None
+
+
+def test_id_queries_are_limited_to_task_and_override_tables(store):
+    assert store._next_id("tasks", "task") == "task-0001"
+    assert store._next_id("overrides", "ovr") == "ovr-0001"
+    with pytest.raises(ValueError, match="Unsupported ID table"):
+        store._next_id("events", "event")
+    with pytest.raises(ValueError, match="Unsupported ID table"):
+        store._next_id("tasks; DROP TABLE tasks", "task")
+    assert store.create_task("fixture:a", "confirm_occupancy", "r", snapshot_id=None)["task_id"] == "task-0001"
+    assert store.create_task("fixture:b", "confirm_occupancy", "r", snapshot_id=None)["task_id"] == "task-0002"

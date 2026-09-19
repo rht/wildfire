@@ -73,11 +73,11 @@ class FireState:
         )
 
     def to_json(self, path) -> None:
-        Path(path).write_text(json.dumps(self.to_dict(), indent=2) + "\n")
+        Path(path).write_text(json.dumps(self.to_dict(), indent=2) + "\n", encoding="utf-8")
 
     @classmethod
     def from_json(cls, path) -> "FireState":
-        return cls.from_dict(json.loads(Path(path).read_text()))
+        return cls.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
 
 
 # ----- time helpers ---------------------------------------------------------------------------

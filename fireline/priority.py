@@ -157,14 +157,16 @@ def _apply_one(asset: dict, override: dict, cfg) -> None:
             reasons = [r for r in reasons if r not in ("occupancy_unknown", "occupancy_seasonal")]
     elif field == "asset_type":
         policy = cfg.VALUE_POLICY["by_type"]
-        if value in policy:
-            asset["value_score"] = policy[value]
-            asset["value_basis"] = cfg.VALUE_POLICY["version"]
-            reasons = [r for r in reasons if r not in ("class_ambiguous", "value_unknown")]
-        else:
+        try:
+            score = policy[value]
+        except KeyError:
             asset["value_score"] = None
             if "value_unknown" not in reasons:
                 reasons.append("value_unknown")
+        else:
+            asset["value_score"] = score
+            asset["value_basis"] = cfg.VALUE_POLICY["version"]
+            reasons = [r for r in reasons if r not in ("class_ambiguous", "value_unknown")]
         # The class also selects the policy evacuation duration; an analyst-confirmed duration is kept.
         if not str(asset.get("evacuation_source") or "").startswith("analyst override"):
             total, version, note = _policy_evacuation(value, cfg)

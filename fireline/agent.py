@@ -229,7 +229,7 @@ def _load_registers() -> list[dict]:
             })
 
     if FIXTURE_REGISTERS.exists():
-        d = json.loads(FIXTURE_REGISTERS.read_text())
+        d = json.loads(FIXTURE_REGISTERS.read_text(encoding="utf-8"))
         for reg, items in d.items():
             if reg.startswith("_") or not isinstance(items, list):
                 continue
@@ -237,7 +237,7 @@ def _load_registers() -> list[dict]:
     if DATA_REGISTERS_DIR.is_dir():
         for p in sorted(DATA_REGISTERS_DIR.glob("*.json")):
             try:
-                items = json.loads(p.read_text())
+                items = json.loads(p.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError):
                 continue
             if isinstance(items, dict):
@@ -252,7 +252,7 @@ def _load_evidence() -> list[dict]:
     if not FIXTURE_EVIDENCE.exists():
         return []
     try:
-        entries = json.loads(FIXTURE_EVIDENCE.read_text())
+        entries = json.loads(FIXTURE_EVIDENCE.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return []
     if isinstance(entries, dict):

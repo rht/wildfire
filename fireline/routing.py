@@ -40,7 +40,7 @@ class RoadGraph:
     # ---------- construction ----------
     @classmethod
     def from_fixture(cls, path) -> "RoadGraph":
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
         rg = cls()
         for nid, (lon, lat) in data["nodes"].items():

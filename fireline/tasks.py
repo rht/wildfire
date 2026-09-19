@@ -184,9 +184,14 @@ class TaskStore:
     def _migrate(self) -> None:
         """Add the v1.1 window columns to an asset_exposure table created by an earlier version."""
         have = {row["name"] for row in self.conn.execute("PRAGMA table_info(asset_exposure)")}
-        for column, kind in (("fire_arrival_at", "TEXT"), ("priority_status", "TEXT"), ("slack_min", "REAL")):
+        migrations = (
+            ("fire_arrival_at", "ALTER TABLE asset_exposure ADD COLUMN fire_arrival_at TEXT"),
+            ("priority_status", "ALTER TABLE asset_exposure ADD COLUMN priority_status TEXT"),
+            ("slack_min", "ALTER TABLE asset_exposure ADD COLUMN slack_min REAL"),
+        )
+        for column, statement in migrations:
             if column not in have:
-                self.conn.execute(f"ALTER TABLE asset_exposure ADD COLUMN {column} {kind}")
+                self.conn.execute(statement)
 
     # -- internals ---------------------------------------------------------------------------
 
@@ -198,7 +203,15 @@ class TaskStore:
                           (self._now(), kind, asset_id, task_id, message))
 
     def _next_id(self, table: str, prefix: str) -> str:
-        n = self.conn.execute(f"SELECT COALESCE(MAX(id), 0) + 1 FROM {table}").fetchone()[0]
+        queries = {
+            "tasks": "SELECT COALESCE(MAX(id), 0) + 1 FROM tasks",
+            "overrides": "SELECT COALESCE(MAX(id), 0) + 1 FROM overrides",
+        }
+        try:
+            query = queries[table]
+        except KeyError:
+            raise ValueError(f"Unsupported ID table: {table!r}") from None
+        n = self.conn.execute(query).fetchone()[0]
         return f"{prefix}-{n:04d}"
 
     def _update_task(self, task_id: str, **fields) -> dict:

@@ -398,8 +398,12 @@ def check_updates() -> dict:
     a2 = next(a for a in snap2["assets"] if a["asset_id"] == "fixture:escola_cruilles")
     # exposure and forecast provenance legitimately follow the fire update; everything else must be identical
     fire_dependent = {"distance_to_fire_m", "fire_arrival_at", "arrival_p10_at", "arrival_p50_at", "forecast_source"}
-    non_fire = lambda a: [s for s in a["sources"] if not fire_dependent & set(s["fields"])]  # noqa: E731
-    fire_src = lambda a: next(s for s in a["sources"] if "distance_to_fire_m" in s["fields"])  # noqa: E731
+    def non_fire(a):
+        return [s for s in a["sources"] if not fire_dependent & set(s["fields"])]
+
+    def fire_src(a):
+        return next(s for s in a["sources"] if "distance_to_fire_m" in s["fields"])
+
     same_synth = non_fire(a1) == non_fire(a2) and a1["distance_to_fire_m"] == a2["distance_to_fire_m"]
     real1, real2 = _snap("gavarres_real_0001"), _snap("gavarres_real_0002")
     ra1, ra2 = real1["assets"][0], real2["assets"][0]
@@ -539,7 +543,9 @@ def check_agent() -> dict:
     # producer gap and evacuation_unknown is the analyst's evacuation control or a contact_facility task, so assets
     # flagged only for those are left in the review queue rather than counted as unresolved investigations
     timing_reasons = ("forecast_unavailable", "evacuation_unknown")
-    actionable = lambda a: [r for r in a.get("review_reasons") or [] if r not in timing_reasons]  # noqa: E731
+    def actionable(a):
+        return [r for r in a.get("review_reasons") or [] if r not in timing_reasons]
+
     ids = [aid for aid in agent.flagged_asset_ids(wb) if actionable(wb.asset(aid))]
     skipped = [aid for aid in agent.flagged_asset_ids(wb) if not actionable(wb.asset(aid))]
     records = [agent.investigate(wb, aid) for aid in ids]   # llm=None -> FakeLLM
