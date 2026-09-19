@@ -10,6 +10,12 @@ CALL = '00000000-0000-4000-8000-000000000002'
 TRUNK = '00000000-0000-4000-8000-000000000003'
 
 
+def configured_agent():
+    return dict(id=AGENT, sip_outbound_trunk_id=TRUNK, template_variables={
+        key: {'required': True} for key in ('request_id', 'asset_id', 'snapshot_id',
+            'incident_brief', 'scenario_notice', 'language', 'road_warning_brief')})
+
+
 class Transport:
     def __init__(self, body=None, status=200, error=None):
         self.body, self.status, self.error = body, status, error
@@ -58,7 +64,7 @@ def test_browser_uses_documented_endpoint_and_no_phone_number():
 
 
 def test_dispatch_requires_live_request_and_explicit_authorized_target():
-    t = Transport([{'id': AGENT, 'sip_outbound_trunk_id': TRUNK}, dict(call_id=CALL, message='created')])
+    t = Transport([configured_agent(), dict(call_id=CALL, message='created')])
     c = client(t)
     for req, approved in [(request(), '+12025550123'), (request(input_mode='live'), None),
                            (request(input_mode='live'), '+12025550124')]:
