@@ -1531,7 +1531,7 @@ from forecast arrival. Unknown inputs and their provenance remain in the report.
 - [x] Implement `fireline/snapshot_contacts.py`, stable request IDs and optional briefing
   callback. Project supplied coordinates only; never create response actions or effects.
 - [x] Add an enqueue-only JSON CLI and privacy/error-path tests; document exact inputs.
-- [ ] Run scoped/full offline tests, obtain scoped review and Norma checks, fix findings,
+- [x] Run scoped/full offline tests, obtain scoped review and Norma checks, fix findings,
   commit/push the task branch and open a PR to main. Keep the worktree available.
 
 ### Public Python boundary
