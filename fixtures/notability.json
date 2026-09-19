@@ -1,0 +1,359 @@
+{
+ "version": "1.0",
+ "fetched_at": "2026-09-19T21:45:37Z",
+ "source": "wikipedia + wikidata",
+ "records": [
+  {
+   "query": "Aeroport de Girona-Costa Brava",
+   "title": "Aeroport de Girona - Costa Brava",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Aeroport_de_Girona_-_Costa_Brava",
+   "summary": "L'Aeroport de Girona – Costa Brava (codi IATA: GRO, codi OACI: LEGE) és un aeroport gestionat per Aena que hi ha al poble de Salitja, dins el municipi de Vilobí d'Onyar, a uns deu quilòmetres al sud de la ciutat de Girona, i disposa de bones vies de comunicació amb Girona, la Costa Brava, Barcelona i els Pirineus. Ryanair hi té la seva base principal de la franja mediterrània i la quarta d'Europa, per darrere de Stansted (Londres), Dublín i Hahn (Frankfurt).",
+   "wikidata_id": "Q1142410",
+   "instance_of": [
+    "aeroport"
+   ],
+   "operator": "Aena",
+   "inception": null,
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:44Z"
+  },
+  {
+   "query": "Barcelona Supercomputing Center",
+   "title": "Centre de Supercomputació de Barcelona",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Centre_de_Supercomputaci%C3%B3_de_Barcelona",
+   "summary": "El Centre de Supercomputació de Barcelona (oficialment en anglès i castellà: Barcelona Supercomputing Center-Centre Nacional de Supercomputació) (BSC-CNS) és una instal·lació científica i centre de recerca públic situada a la Torre Girona de Barcelona, al Campus Nord de la Universitat Politècnica de Catalunya.",
+   "wikidata_id": "Q1580126",
+   "instance_of": [
+    "instal·lació",
+    "centre de recerca",
+    "organització"
+   ],
+   "operator": null,
+   "inception": "2005",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:44Z"
+  },
+  {
+   "query": "Bell-lloc del Pla",
+   "title": "Bell-lloc del Pla",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Bell-lloc_del_Pla",
+   "summary": "Bell-lloc del Pla és un edifici de Girona que forma part de l'Inventari del Patrimoni Arquitectònic de Catalunya i que dona nom a una escola.",
+   "wikidata_id": "Q28041788",
+   "instance_of": [
+    "edifici"
+   ],
+   "operator": null,
+   "inception": null,
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:44Z"
+  },
+  {
+   "query": "Bombers de la Generalitat de Catalunya",
+   "title": "Bombers de la Generalitat de Catalunya",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Bombers_de_la_Generalitat_de_Catalunya",
+   "summary": "Els Bombers de la Generalitat de Catalunya són un cos de bombers que desenvolupa les funcions de prevenció i extinció d'incendis i de salvaments a Catalunya. Fins a l'any 1980 els serveis d'extinció d'incendis era una competència de les diputacions provincials i dels ajuntaments. Amb la restauració de la Generalitat de Catalunya i un cop constituït el seu primer govern, el Departament de Governació, encapçalat per Joan Vidal, va tirar endavant la creació d'un servei de bombers, recollint les competències que fins llavors duien a terme les diputacions provincials i els ajuntaments.",
+   "wikidata_id": "Q8250689",
+   "instance_of": [
+    "cos de bombers"
+   ],
+   "operator": "Departament d'Interior",
+   "inception": "1980",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:44Z"
+  },
+  {
+   "query": "Centre d'Estudis Avançats de Blanes",
+   "title": "Centre d'Estudis Avançats de Blanes",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Centre_d'Estudis_Avan%C3%A7ats_de_Blanes",
+   "summary": "El Centre d'Estudis Avançats de Blanes (CEAB) és un centre de recerca del Consell Superior d'Investigacions Científiques (CSIC), creat a Blanes el 1985. L'activitat d'investigació del CEAB està centrada en els àmbits de l'Ecologia i la Biologia d'organismes, tant dels sistemes marins com d'aigües continentals. És un centre amb reputació internacional, caracteritzat per la interdisciplinarietat dels seus grups de recerca, referent nacional en biologia marina, limnologia i ecologia, que contribueix al progrés del coneixement i a la seva aplicació per a una societat sostenible.",
+   "wikidata_id": "Q30284404",
+   "instance_of": [
+    "centre de recerca"
+   ],
+   "operator": "Consell Superior d'Investigacions Científiques",
+   "inception": "1985",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:44Z"
+  },
+  {
+   "query": "Clínica Girona",
+   "title": "Clínica Girona",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Cl%C3%ADnica_Girona",
+   "summary": "La Clínica Girona és un centre mèdic privat de Girona ubicat fins a l'abril de 2022 al centre de la ciutat, i que el 18/4/2022 va traslladar la seva activitat a un nou edifici de l'entrada sud de Girona. El fundador, juntament amb d'altres metges, fa en ser Francesc Coll i Turbau, que també va ser alcalde de la ciutat.",
+   "wikidata_id": "Q30266991",
+   "instance_of": [
+    "hospital"
+   ],
+   "operator": null,
+   "inception": "1934",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:47Z"
+  },
+  {
+   "query": "Facultat d'Economia i Empresa",
+   "title": "Facultat d'Economia i Empresa (UB)",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Facultat_d'Economia_i_Empresa_(UB)",
+   "summary": "La Facultat d'Economia i Empresa de la Universitat de Barcelona és un centre educatiu dedicat a l'ensenyament superior i la investigació dels àmbits de l'economia i l'empresa.",
+   "wikidata_id": "Q11921483",
+   "instance_of": [
+    "facultat universitària"
+   ],
+   "operator": null,
+   "inception": "2008",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:49Z"
+  },
+  {
+   "query": "Hospital Comarcal de Blanes",
+   "title": "Hospital Comarcal de la Selva",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Hospital_Comarcal_de_la_Selva",
+   "summary": "L'Hospital Comarcal de la Selva, també conegut com l'Hospital de Blanes pel fet que es troba al terme municipal de Blanes (i a prop del de Lloret de Mar). També se l'anomena Hospital Comarcal de Blanes, per distingir-lo de l'antic Hospital de Sant Jaume de Blanes. Forma part de la Xarxa d'Hospitals d'Utilització Pública (XHUP), proveïdor de serveis del Servei Català de la Salut. El seu àmbit d'actuació són les comarques de la Selva Marítima i l'Alt Maresme.",
+   "wikidata_id": "Q19974285",
+   "instance_of": [
+    "hospital"
+   ],
+   "operator": null,
+   "inception": null,
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:50Z"
+  },
+  {
+   "query": "Hospital de Palamós",
+   "title": "Hospital de Palamós",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Hospital_de_Palam%C3%B3s",
+   "summary": "L'Hospital de Palamós és un hospital general bàsic d'àmbit comarcal, que forma part de la Xarxa d'Hospitals d'Utilització Pública (XHUP), proveïdor de serveis del Servei Català de la Salut a la comarca del Baix Empordà. Es va inaugurar l'any 1986, i se li assignava una població de referència d'uns 60.000 habitants. Actualment, té 125.000 habitants censats els mesos d'hivern, i una població estacional que arriba a les 600.000 persones durant els mesos d'estiu. L'any 1988 es va construir un edifici nou, annex a l'hospital, estrenat l'any 2000.",
+   "wikidata_id": "Q17137118",
+   "instance_of": [
+    "hospital"
+   ],
+   "operator": "Serveis de Salut Integrats Baix Empordà",
+   "inception": "1986",
+   "employees": 850,
+   "fetched_at": "2026-09-19T21:32:50Z"
+  },
+  {
+   "query": "Hospital Universitari Doctor Josep Trueta de Girona",
+   "title": "Hospital Universitari de Girona Doctor Josep Trueta",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Hospital_Universitari_de_Girona_Doctor_Josep_Trueta",
+   "summary": "L'Hospital Universitari de Girona Doctor Josep Trueta o localment simplement com el Trueta o l'Hospital Trueta és un hospital de caràcter públic gestionat per l'Institut Català de la Salut. Està ubicat a la zona nord de Girona, a l'Avinguda de França. Aquest centre, que pertany al sistema sanitari integrat d'utilització pública de Catalunya (SISCAT), té la responsabilitat d'oferir assistència especialitzada a la comunitat. És el centre de referència per a set Àrees Bàsiques de Salut (Banyoles, Celrà, Girona 1, Girona 2, Girona 3, Girona 4 i Sarrià de Ter).",
+   "wikidata_id": "Q17137112",
+   "instance_of": [
+    "hospital",
+    "hospital universitari"
+   ],
+   "operator": "Institut Català de la Salut",
+   "inception": "1972",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:50Z"
+  },
+  {
+   "query": "ICRA",
+   "title": "Institut Català de Recerca de l'Aigua",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_Catal%C3%A0_de_Recerca_de_l'Aigua",
+   "summary": "L'Institut Català de Recerca de l'Aigua (ICRA) és una institució científica creada l'any 2006 pel Govern de la Generalitat de Catalunya en el programa de Centres de Recerca de Catalunya (CERCA).",
+   "wikidata_id": "Q19879039",
+   "instance_of": [
+    "centre de recerca"
+   ],
+   "operator": null,
+   "inception": "2006",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:52Z"
+  },
+  {
+   "query": "Institut Baix Empordà",
+   "title": "Institut Baix Empordà",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_Baix_Empord%C3%A0",
+   "summary": "L'INS Baix Empordà és una institució d'educació secundària ubicada a Palafrugell, a la comarca del Baix Empordà. El centre imparteix les titulacions d'Educació Secundària Obligatòria i postobligatòria, ja siguin d'orientació acadèmica (batxillerat) com de formació professional, de grau mitjà i superior. A més, el centre també ofereix altres modalitats formatives que s'adeqüen a la demanda de la comarca.",
+   "wikidata_id": "Q11926287",
+   "instance_of": [
+    "institut de Catalunya"
+   ],
+   "operator": null,
+   "inception": "1974",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:52Z"
+  },
+  {
+   "query": "Institut Català d'Oncologia",
+   "title": "Institut Català d'Oncologia",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_Catal%C3%A0_d'Oncologia",
+   "summary": "L'Institut Català d'Oncologia (ICO) és un centre i empresa pública d'atenció oncològica creat el 1995. L'ICO, depenent del Departament de Salut de la Generalitat de Catalunya, inicià el seu funcionament a l'any seguent de la seva creació a les instal·lacions de l'Hospital Duran i Reynals de l'Hospitalet de Llobregat, que és la seva seu central.",
+   "wikidata_id": "Q11926705",
+   "instance_of": [
+    "hospital"
+   ],
+   "operator": null,
+   "inception": "1995",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:44Z"
+  },
+  {
+   "query": "Institut Català de Recerca de l'Aigua",
+   "title": "Institut Català de Recerca de l'Aigua",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_Catal%C3%A0_de_Recerca_de_l'Aigua",
+   "summary": "L'Institut Català de Recerca de l'Aigua (ICRA) és una institució científica creada l'any 2006 pel Govern de la Generalitat de Catalunya en el programa de Centres de Recerca de Catalunya (CERCA).",
+   "wikidata_id": "Q19879039",
+   "instance_of": [
+    "centre de recerca"
+   ],
+   "operator": null,
+   "inception": "2006",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:44Z"
+  },
+  {
+   "query": "Institut Català de Recerca en Patrimoni Cultural",
+   "title": "Institut Català de Recerca en Patrimoni Cultural",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_Catal%C3%A0_de_Recerca_en_Patrimoni_Cultural",
+   "summary": "L'Institut Català de Recerca en Patrimoni Cultural (ICRPC) va ser creat oficialment l'any 2006 per la Generalitat de Catalunya i la Universitat de Girona. El centre està dirigit per la Dra. Gemma Domènech i Casadevall, doctora en Història de l'Art per la Universitat Autònoma de Barcelona (2000).",
+   "wikidata_id": "Q80107683",
+   "instance_of": [
+    "centre de recerca"
+   ],
+   "operator": null,
+   "inception": "2006",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:52Z"
+  },
+  {
+   "query": "Institut d'Investigació Biomèdica de Girona Dr. Josep Trueta",
+   "title": "Institut d'Investigació Biomèdica de Girona Dr. Josep Trueta",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_d'Investigaci%C3%B3_Biom%C3%A8dica_de_Girona_Dr._Josep_Trueta",
+   "summary": "L'Institut d'Investigació Biomèdica de Girona Dr. Josep Trueta (IDIBGI) és un centre de recerca que forma part del sistema CERCA (Centres de Recerca de Catalunya) de la Generalitat de Catalunya, que té com a missió promoure la recerca translacional d'excel·lència per preservar i millorar la salut i la cura de les persones.",
+   "wikidata_id": "Q30287735",
+   "instance_of": [
+    "centre de recerca"
+   ],
+   "operator": null,
+   "inception": "2005",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:52Z"
+  },
+  {
+   "query": "Institut de Llengua i Cultura Catalanes",
+   "title": "Institut de Llengua i Cultura Catalanes",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_de_Llengua_i_Cultura_Catalanes",
+   "summary": "L'Institut de Llengua i Cultura Catalanes (ILCC) és un institut de recerca universitari del Principat creat l'any 1986, que dedica la seva activitat a l'estudi i investigació de la història de la llengua i la literatura catalana des de l'edat mitjana fins a l'actualitat.",
+   "wikidata_id": "Q11926741",
+   "instance_of": [
+    "centre de recerca"
+   ],
+   "operator": null,
+   "inception": "1995",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:53Z"
+  },
+  {
+   "query": "Institut de Llengua i Cultura Catalanes (ILCC)",
+   "title": "Institut de Llengua i Cultura Catalanes",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_de_Llengua_i_Cultura_Catalanes",
+   "summary": "L'Institut de Llengua i Cultura Catalanes (ILCC) és un institut de recerca universitari del Principat creat l'any 1986, que dedica la seva activitat a l'estudi i investigació de la història de la llengua i la literatura catalana des de l'edat mitjana fins a l'actualitat.",
+   "wikidata_id": "Q11926741",
+   "instance_of": [
+    "centre de recerca"
+   ],
+   "operator": null,
+   "inception": "1995",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:53Z"
+  },
+  {
+   "query": "Institut de Sils",
+   "title": "Institut de Sils",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_de_Sils",
+   "summary": "L'institut de Sils és un institut d'educació secundària de Sils (la Selva) inaugurat el 2008, amb tres línies de 1r a 4t. És el primer institut de Sils, abans de la seva inauguració l'any 2008 els alumnes de secundària s'havien de desplaçar fins a l'Institut de Santa Coloma de Farners, on en l'actualitat només s'hi realitza l'etapa d'Educació Secundària Obligatòria.",
+   "wikidata_id": "Q17606834",
+   "instance_of": [
+    "institut de Catalunya"
+   ],
+   "operator": null,
+   "inception": null,
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:53Z"
+  },
+  {
+   "query": "Institut Jaume Vicens Vives",
+   "title": "Institut Jaume Vicens Vives",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_Jaume_Vicens_Vives",
+   "summary": "L'Institut Jaume Vicens Vives (INS Jaume Vicens Vives) és un Institut d'Educació Secundària de la ciutat de Girona fundat l'any 1846. Conegut amb el nom popular d' \"Institut de Girona\", \"Vicens Vives\", o simplement \"Vives\", té uns 900 alumnes i un equip docent de 87 professors que imparteix els cursos d'ESO, Batxillerat LOE (en les modalitats de diürn, nocturn i a distància), Batxillerat Internacional., i BatxiBac.",
+   "wikidata_id": "Q5970579",
+   "instance_of": [
+    "institut de Catalunya"
+   ],
+   "operator": null,
+   "inception": "1841",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:54Z"
+  },
+  {
+   "query": "IRTA",
+   "title": "Institut de Recerca i Tecnologia Agroalimentàries",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Institut_de_Recerca_i_Tecnologia_Agroaliment%C3%A0ries",
+   "summary": "L'Institut de Recerca i Tecnologia Agroalimentàries (IRTA) és una empresa pública adscrita al Departament d'Acció Climàtica, Alimentació i Agenda Rural de la Generalitat de Catalunya i subjecta al dret privat. Va ser creada el 1985 i el seu fundador fou Josep Tarragó i Colominas, director general fins al 2008. El va rellevar Josep Maria Monfort i Bolívar, que va ser director de 2008 a 2018. Des de juliol de 2018 ocupa el càrrec Josep Usall i Rodié.",
+   "wikidata_id": "Q9006472",
+   "instance_of": [
+    "centre de recerca",
+    "organització"
+   ],
+   "operator": "Generalitat de Catalunya",
+   "inception": "1985",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:32:44Z"
+  },
+  {
+   "query": "La Salle",
+   "title": "Germans de les Escoles Cristianes de La Salle",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Germans_de_les_Escoles_Cristianes_de_La_Salle",
+   "summary": "Els Germans de les Escoles Cristianes, popularment coneguts com a Germans de La Salle o, al Principat, com La Salle (en llatí Institutum Fratrum Scholarum Christianarum) formen un institut religiós masculí de dret pontifici, una congregació laica. Els seus membres posposen al seu nom les sigles F.S.C. La congregació va ésser fundada el 1682 a Reims per Joan Baptista de La Salle per donar educació primària i professional als nens.",
+   "wikidata_id": "Q138579",
+   "instance_of": [
+    "institut religiós",
+    "organització sense ànim de lucre",
+    "organització"
+   ],
+   "operator": null,
+   "inception": "1688",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:33:01Z"
+  },
+  {
+   "query": "UdG",
+   "title": "Universitat de Girona",
+   "lang": "ca",
+   "url": "https://ca.wikipedia.org/wiki/Universitat_de_Girona",
+   "summary": "La Universitat de Girona (també coneguda per les seves sigles UdG) és una universitat pública catalana amb seu principal a la ciutat de Girona. Va ser reconeguda com a universitat l'any 1991, fruit de la fusió de diversos centres d'estudis universitaris de Girona adscrits a altres universitats, tot i que els seus orígens es remunten a l'Estudi General, un ens creat el 1446 per Alfons el Magnànim.",
+   "wikidata_id": "Q1814503",
+   "instance_of": [
+    "universitat pública",
+    "editor en accés obert"
+   ],
+   "operator": null,
+   "inception": "1991",
+   "employees": null,
+   "fetched_at": "2026-09-19T21:33:04Z"
+  }
+ ]
+}

@@ -86,15 +86,16 @@ when relying on a parent record. Second run: the fire station came back
 
 ## Verification
 
-- 376 tests pass; `tests/test_criticality.py` covers the policy shape, the inflation guard, the flag
-  gating, validation, the override and the strategic queue.
+- 379 tests pass; `tests/test_criticality.py` covers the policy shape, the inflation guard, the flag
+  gating, validation, the override and the strategic queue; `tests/test_notability.py` covers the
+  corpus.
 - `make snapshots` byte-identical across two runs.
 - `scripts/validate.py`: 10 pass, 0 fail, 0 not verified, including a live Nebius run.
   `check_criticality` measures the guards rather than asserting them: tiering all 180 assets at the
   top tier leaves the 72-asset contact order identical, `ranked_sort_key` mentions no criticality
   field, and nothing reads `loss_multiplier`.
-- Live `deepseek-ai/DeepSeek-V4.1-Flash`: 4/4 investigations, 3/3 proposals valid against the
-  policy, 3/3 supported by a verbatim snippet.
+- Live `deepseek-ai/DeepSeek-V4.1-Flash`: 4/4 investigations, 4/4 proposals valid against the
+  policy, 4/4 supported by a verbatim snippet.
 
 ## Known limits
 
@@ -103,10 +104,23 @@ when relying on a parent record. Second run: the fire station came back
 - **The tiers are the model's judgement, not measured accuracy.** This repo holds no ground truth
   for "how critical is IRTA Monells", and `VALIDATION.md` says so. Every tier is a proposal awaiting
   an analyst.
-- **Notability lookup can match the wrong institution.** `lookup("Heliport de Costa Brava Centre")`
-  returns the `Aeroport de Girona - Costa Brava` record, two places ~30 km apart. The model handled
-  it correctly — it read the record, saw it described a different airport, and stayed `routine` —
-  but the corpus scoring is token overlap and will do this again.
+- **Borderline tiers vary between runs, at temperature 0.** Over three live runs the two ends were
+  stable — the fire station came back `high/emergency_response_capability` every time (it is derived
+  from the class line, not from a record) and the Heliport `routine` every time (its only near
+  record is a different airport). The judgement cases moved: IRTA Monells was `elevated` twice and
+  `routine` once, Hospital de Palamós escalated twice and came back `high/sole_regional_service`
+  once. The variation is within one tier and always downward-safe, but a demo should not promise a
+  specific tier for those two. This is an argument for the analyst-confirmation gate, not against
+  the layer.
+- **Notability lookup is containment-scored, which cuts both ways.** A match now requires one name
+  to contain the other, so `lookup("Heliport de Costa Brava Centre")` returns nothing rather than
+  the Girona airport record 30 km away. The same rule means `lookup("Parc de Bombers de la Pera")`
+  returns nothing too: the regional `Bombers de la Generalitat` record is legitimate parent evidence
+  for a local station, and it is no longer reachable. Fire stations are unaffected because their
+  factor comes from the class line, but the parent-evidence path only works when the parent's name
+  is a token of the site's ("IRTA Monells" finds "IRTA"), not when it is a common noun.
+  `lookup("ICO Girona")` likewise misses the ICO record; a per-record alias list would fix it, and
+  the corpus has no alias field today.
 - **A record about a parent body is weaker evidence than a record about the site**, and the corpus
   usually only has the parent. The prompt asks for one tier lower in that case, which is a
   convention, not a measurement.
@@ -120,6 +134,24 @@ when relying on a parent record. Second run: the fire station came back
 - **The class policy rows for the four new classes are assumptions**, like every other row in those
   tables. A fire station's 35-minute "evacuation" is a relocation time for a crew that is mobile by
   definition, not an evacuation of occupants; the `assumptions` string says so.
+
+## What the corpus build forced
+
+- **The fetch must batch.** An anonymous caller gets ~10 requests before Wikimedia returns
+  `429 x-envoy-ratelimited`; 283 queries x 3 languages would have taken hours one title at a time.
+  `prop=extracts` takes 20 titles per request and `wbgetentities` 50, bringing the corpus to ~45
+  requests. Consequence: a cache entry covers a whole batch, so `--cached-only` only replays a run
+  whose query list yields the same batches.
+- **`--cached-only` could silently write a worse corpus.** `_is_institution` keeps an untyped
+  record, so a run whose Wikidata pass never fired resolved *more* queries and wrote a larger,
+  unfiltered corpus with the junk back in ("Barrufets" the Smurfs, "ETG"). It did not error. Seen in
+  practice against a cold entity cache. `scripts/fetch_data.py notability` now refuses to write when
+  no record in the run carries a Wikidata entity.
+- **An acronym must spell itself out.** Requiring the article to contain the acronym verbatim is not
+  enough: `IRE` (Institut de Recerca Educativa) lands on the Institute of Radio Engineers, whose
+  article is *titled* `IRE`, so the acronym matched itself. The rule is now that an acronym query
+  must resolve to a title that is not the acronym. This costs the CERN/NASA shape, whose common name
+  is its initials; none appears in this corpus, and the full register name stays a query of its own.
 
 ## Follow-ups worth taking
 

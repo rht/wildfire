@@ -14,7 +14,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 | Agent (FakeLLM) | pass | 7 runs: 3 proposals {'capacity': 2, 'asset_type': 1}, 6 escalations, 0 occupancy-from-capacity |
 | Agent (live model) | pass | deepseek-ai/DeepSeek-V4.1-Flash: 7 runs, 3 proposals {'capacity': 2, 'asset_type': 1}, 8 escalations, 0 unsupported, 0 occupancy-from-capacity |
 | Criticality | pass |  |
-| Latency | pass | median 0.171 s for 180 assets (target < 60 s); source age 300 s |
+| Latency | pass | median 0.173 s for 180 assets (target < 60 s); source age 300 s |
 | Stale data | pass | None->unavailable, 0->current, 3599->current, 3600->stale, 21599->stale, 21600->unavailable, -60->current |
 
 10 pass, 0 fail, 0 not verified.
@@ -103,8 +103,8 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 - estimated_occupancy proposed from capacity evidence: 0 (none); the CapacityAsOccupancyError guard refuses these regardless
 - number post-check failed on: none; empty final message on: none; stopped at the step cap: none
 - must-escalate cases ['fixture:mas_nou'] escalated: True (all)
-- criticality: 4/4 investigations over one real asset per assessed class of gavarres_real_0002; tiers proposed {'Parc de Bombers de Calonge i Sant Antoni': {'tier': 'high', 'factors': ['emergency_response_capability']}, 'IRTA Monells (IRTA-Monells)': {'tier': 'elevated', 'factors': ['national_research_infrastructure']}, 'Heliport de Costa Brava Centre': {'tier': 'routine', 'factors': []}, 'Hospital de Palamós': None}
-- criticality proposals valid against config.CRITICALITY_POLICY (tier in the enum, factors in the closed list, minimum factor count met): 3/3; supported by a verbatim snippet from their own tool results: 3/3; post-check failed on: none
+- criticality: 4/4 investigations over one real asset per assessed class of gavarres_real_0002; tiers proposed {'Parc de Bombers de Calonge i Sant Antoni': {'tier': 'high', 'factors': ['emergency_response_capability']}, 'IRTA Monells (IRTA-Monells)': {'tier': 'routine', 'factors': []}, 'Heliport de Costa Brava Centre': {'tier': 'routine', 'factors': []}, 'Hospital de Palamós': {'tier': 'high', 'factors': ['sole_regional_service']}}
+- criticality proposals valid against config.CRITICALITY_POLICY (tier in the enum, factors in the closed list, minimum factor count met): 4/4; supported by a verbatim snippet from their own tool results: 4/4; post-check failed on: none
 - held-out examples: the fixture assets were used while writing the system prompt, so these are not held-out examples; this run measures whether the model obeys the evidence and escalation rules, not its accuracy on unseen facilities. The criticality tiers above are the model's judgement on real facilities and are proposals awaiting an analyst, not measured accuracy: no ground truth for them exists in this repo
 
 ### Criticality: pass
@@ -121,10 +121,10 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ### Latency: pass
 
 - input: 180 real-area assets (fixtures/real_area/assets_gavarres.json) + recorded update 20260703T100500Z_satellite-perimeters.json (deepfire:satellite-perimeters, SYNTHETIC content, observed 2026-07-03T10:00:00+00:00, received 2026-07-03T10:05:00+00:00) through fire_input.load_recorded
-- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.171, 0.173, 0.169] s; median 0.171 s
-- stages of run 1: build 0.094 s, score 0.028 s, apply+suggest 0.049 s; validate errors 0
+- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.173, 0.174, 0.172] s; median 0.173 s
+- stages of run 1: build 0.094 s, score 0.029 s, apply+suggest 0.050 s; validate errors 0
 - result: 0 ranked, 180 needs_review; 103 assets changed vs seq 1, 0 new suggestions on the update (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry no per-location forecast arrival and every asset is a review item until a forecast covers it)
-- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.17136605002451688} (separate numbers, never combined)
+- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.1730022740084678} (separate numbers, never combined)
 - target < 60 s processing for the selected area: met on x86_64, Python 3.14.7
 
 ### Stale data: pass
