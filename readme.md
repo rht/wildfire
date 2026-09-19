@@ -575,3 +575,120 @@ The contact ranking of this prototype is now the snapshot pipeline's ranking too
 `forecast-evacuation-window-v2` replaces the earlier weighted proximity/people/value contact score. Static locations now include nullable `fire_arrival_min`, `evacuation_min`, `forecast_source` and `evacuation_source`. Older collections still load; missing timing evidence places their contacts in review. Times must share the scenario epoch. For a nonzero elapsed time or extra contact buffer, call `rank_contacts(locations, ContactPolicy(now_min=..., buffer_min=...))`. The response-action planner's feasibility buffer remains a separate scenario input.
 
 The example's contact order happens to remain A → B → C, but its justification is now the remaining window, not A's value. Live spread prediction remains the upstream engine's responsibility; this module consumes per-location predictions.
+
+## 17. Household evacuation readiness and voice contact
+
+@mirrdj owns this coordination extension. Every location stays in the output even when the
+one-crew planner cannot visit it. A structured contact assessment distinguishes self-evacuation
+from assisted evacuation and from an unresolved contact. Ability is never inferred from property
+value, facility class, a successful call connection, or lack of an assistance record.
+
+Completed implementation (static inputs first):
+
+- [x] Add `fireline/evacuation_readiness.py` and tests for explicit, evidenced call answers,
+  low/unknown confidence, no answer, human requests, stale evidence and contradictory reports.
+- [x] Allocate whole households, in contact-priority order, to supplied approved reception centres
+  with sufficient remaining capacity and a confirmed usable route within the supplied time windows.
+  Return an unresolved record when no destination qualifies; never use geographic proximity alone.
+- [x] Add a combined CLI/fixture showing all locations, unchanged contact ranking and response
+  sequence, proposed evacuation modes, reception assignments and outstanding follow-up tasks.
+- [x] Verify the complete suite, document the provider choice and limitations here, and push the
+  task branch. Voice transport selection is separate from the deterministic assessment logic.
+
+The proposed contact interview introduces the automated assistant, relays only an analyst-supplied
+situation message, confirms the location and whether the respondent speaks for the whole household,
+asks whether everyone can leave without emergency assistance and has suitable transport, and asks
+whether they want a person. Record evidence for each answer. Missing or contradictory answers,
+uncertain transcription/extraction, a failed call, or a human request produce human follow-up.
+A confidence threshold is a configurable prototype review rule, not a probability of safety.
+
+Reception centres are explicit analyst-approved inputs (a hospital is not automatically a reception
+centre). Self-evacuation readiness requires confirmed household ability and transport plus a
+feasible assigned destination. Acknowledgement, departure and confirmed arrival are distinct from
+readiness. This extension produces proposals and tasks; it does not issue evacuation orders or
+place calls while evaluating the algorithm.
+
+### Static readiness API and example
+
+`coordinate_evacuation(scenario, assessments, centres, routes, contact_policy=...,
+readiness_policy=...)` in `fireline/evacuation_readiness.py` combines the existing contact queue and
+crew sequence with one readiness record per location. Inputs use the existing scenario epoch in
+minutes. Dataclasses define the exact fields:
+
+| Input | Required information |
+|---|---|
+| `CallAssessment` | Asset/call IDs, completed/no-answer/failed/declined status, observation time, source and supporting interview evidence; nullable booleans for confirmed identity, whole-household coverage, ability, transport and human request; nullable confidence and a contradiction flag |
+| `ReceptionCentre` | Stable centre ID, name, remaining places, analyst approval, availability deadline and source |
+| `EvacuationRoute` | Origin and centre IDs, travel time, total evacuation duration including preparation, confirmed usability, availability deadline and source |
+| `ReadinessPolicy` | Confidence threshold (prototype default 0.85), evidence maximum age (prototype default 15 minutes), policy version |
+
+Only the latest assessment per asset is accepted; duplicate assessments/IDs, unknown references,
+invalid booleans and non-finite/out-of-range numbers are rejected. Evidence time must not be in the
+future. Confidence is supplied by the caller/integration, not calculated or calibrated by this
+module. A single number should conservatively represent uncertainty in the critical answers; a
+high score cannot bypass missing evidence, incomplete answers or an explicit human request.
+
+A positive call that conflicts with a known assistance count requires human reconciliation.
+A trustworthy negative ability/transport answer produces `assisted_evacuation` and an
+`arrange_assistance` task. Missing or uncertain evidence produces `undetermined` and a contact or
+human-callback task. Assisted transport and its destination require an analyst/team plan; this
+prototype only allocates reception capacity for self-evacuating households.
+
+For confirmed self-evacuating households, select the eligible centre with the shortest supplied
+travel time (then centre ID for ties). Reserve the whole household's known headcount in contact
+priority order. This is a deterministic greedy allocation, not a global transport optimizer.
+Use the greater of the route-specific total evacuation duration and the upstream total estimate;
+never silently shorten the upstream estimate or count travel twice. A strictly positive window
+must remain before the fire-arrival, route and reception deadlines, including the contact buffer.
+An unapproved, full, unknown or expired destination never becomes the default just because it is
+nearby. If nothing qualifies, keep the location unresolved with a human follow-up task.
+
+Output modes are `self_evacuate`, `assisted_evacuation` and `undetermined`, with reasons, call
+provenance, destination provenance, remaining window, suggested tasks and capacity remaining.
+`self_evacuate` is a proposal, not an issued order. Every record starts with
+`evacuation_status: not_confirmed`; confirming instructions, departure and arrival are separate
+follow-up tasks. The crew's declared action coverage does not count as arrival confirmation.
+
+```sh
+.venv/bin/python scripts/static_priorities.py \
+  --readiness-input fixtures/evacuation_readiness.json
+.venv/bin/python -m pytest tests/test_evacuation_readiness.py -q
+```
+
+The synthetic example retains A, B and C: A needs assisted evacuation; B can self-evacuate to the
+approved community centre despite not being visited in the C → A crew sequence; C's unanswered
+call needs human follow-up. The closer hospital is rejected because it is not an approved reception
+site. No real call was placed and the interview confidence values are synthetic.
+
+Capacity reservations are local to one evaluation. Persist actual reservations, contact history,
+confirmed arrivals and assigned tasks before enabling repeated/live execution; this module does
+not update SQLite or the Streamlit UI. Existing crew inputs/objectives are unchanged; assistance
+reports create coordination tasks rather than automatically rewriting counts or actions. At a
+nonzero current time the result omits the old crew plan and sets `response_replanning_required`:
+a time-zero sequence must not be presented as a fresh dispatch plan. The existing PDF continues
+to describe the original 14 static priority scenarios; this extension is documented here.
+
+### Voice-provider research (19 September 2026)
+
+The event's **SLNG challenge** explicitly accepts speech-to-text, text-to-speech or a full voice
+agent, with bonus points for unmute. SLNG's managed-agent documentation supports browser sessions,
+outbound calls with telephony configured, and a transfer-call capability. This is the closest fit
+for the proposed household interview. [Event challenges](https://www.hackbcn.com/en/events/aisummit26),
+[SLNG managed agents](https://docs.slng.ai/voice-agents).
+
+Vonage also supports outbound voice calls and audio bridges, but its listed hackathon challenge
+specifically judges integration of the **Video API**; using Voice API alone does not establish
+eligibility for that prize. Mastra's challenge is a possible messaging alternative. Neither prize
+eligibility nor simultaneous entry should be inferred beyond the published event rules.
+[Vonage call flow](https://developer.vonage.com/en/voice/voice-api/concepts/call-flow).
+
+A Pi and SIM dongle can supply network connectivity for a cloud voice agent. Calling directly
+through that SIM additionally requires a voice-capable modem and accessible two-way audio. The
+Huawei E3372-325's documented data/SMS functionality does not establish voice/audio compatibility;
+do not assume it works with a Huawei voice driver for a different model. Direct SIM calling with
+that model has not been verified. [Manufacturer specifications](https://brovi-tech.com/productshow.php?cid=2&id=248).
+The provider transport, interview extraction, authenticated callbacks and human-transfer path are
+not implemented in this static extension; its input contract is ready to receive those outcomes.
+
+Verification: 253 tests pass, including 36 readiness cases; targeted lint and whitespace checks
+pass. Independent code review found no important issues within the static scope.
