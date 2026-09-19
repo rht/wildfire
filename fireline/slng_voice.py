@@ -152,7 +152,7 @@ def validate_agent_templates(configuration, arguments):
     if not isinstance(variables, dict) or not arguments.keys() <= variables.keys():
         raise ValueError('incompatible SLNG agent templates; deploy the dynamic package')
     for name, metadata in variables.items():
-        if not isinstance(metadata, dict) or type(metadata.get('required')) is not bool:
+        if not isinstance(metadata, dict) or not isinstance(metadata.get('required'), bool):
             raise ValueError('invalid SLNG agent template metadata')
         if metadata['required'] and name not in arguments:
             raise ValueError('required SLNG agent template argument is missing')
