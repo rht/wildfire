@@ -1,0 +1,20 @@
+{
+  "note": "Synthetic geography and facilities, not a provider forecast; no operational contacts.",
+  "fire_update": {
+    "incident_id": "synthetic-discovery", "provider": "fixture", "source": "fixture:discovery",
+    "observed_at": "2026-07-03T08:00:00+00:00", "received_at": "2026-07-03T08:00:00+00:00",
+    "geometry_kind": "perimeter",
+    "geometry": {"type": "Polygon", "coordinates": [[[2,42],[2.02,42],[2.02,42.02],[2,42.02],[2,42]]]}
+  },
+  "config": {"threat_buffer_m": 1000, "destination_buffer_m": 5000},
+  "horizon_minutes": 120,
+  "predicted_spread": {"type": "FeatureCollection", "features": [
+    {"type": "Feature", "properties": {"elapsed_seconds": 7200, "source": "synthetic, not a provider forecast"},
+     "geometry": {"type": "Polygon", "coordinates": [[[2,42],[2.04,42],[2.04,42.02],[2,42.02],[2,42]]]}}
+  ]},
+  "assets_in": [
+    {"asset_id":"synthetic:hospital","name":"Synthetic hospital","asset_class":"hospital","lon":2.01,"lat":42.01,"occupancy":null},
+    {"asset_id":"synthetic:destination","name":"Synthetic candidate","asset_class":"school","lon":2.08,"lat":42.01,"occupancy":null},
+    {"asset_id":"synthetic:unlocated","name":"Synthetic unlocated residence","asset_class":"care_home","lon":null,"lat":null,"occupancy":null}
+  ]
+}

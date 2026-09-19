@@ -1385,3 +1385,40 @@ to synchronous replay/Streamlit code and are documented as inapplicable.
 Repository-wide scan and audit registration were unavailable because repository
 linking returned `auto_import_not_available`; this is not a repository-wide
 compliance claim.
+
+## Fire-discovery task: design and implementation plan
+
+For @mirrdj, fire-driven discovery is an additive boundary before `snapshot.build_snapshot`.
+The discovery service accepts a normalized `FireUpdate`, optional WGS84 predicted spread
+GeoJSON, and an optional elapsed-minute horizon. It unions all selected polygon footprints
+with the current perimeter, then applies configurable metre buffers in a local projection.
+The threatened search area and wider destination-candidate search area remain distinct;
+being outside the threatened search area establishes neither safety nor containment.
+A point-only update requires an explicit fallback radius; missing geometry requires an
+explicit fallback bounding box. Both are labelled search assumptions, never forecasts.
+
+The injected facility source receives geographic bounds and returns normalized records.
+An offline register adapter reuses the existing feed classification rules while retaining
+unclassified and unlocated records for review. The bounded Equipaments adapter is available
+for an explicitly selected network caller; the CLI reads local files only. Discovery does
+not impose its own facility-type whitelist, preserving compatibility with rht's
+`claude/asset-criticality` (`70eb498`: research facilities, fire stations, aerodromes,
+universities). No changes from that branch are imported.
+
+The result contains snapshot-ready `assets_in`, per-ID search classifications, explicit
+review records for missing IDs, source/fire provenance, bounds and limitations. Queries
+are cached by source revision and bounds. Passing the previous result retains every
+previously collected asset across changed footprints; explicit tracked records can also
+be supplied. Deduplication uses stable IDs only, never coordinates. This artifact is an
+internal handoff, not a public dashboard envelope or evidence of contact permission.
+
+Implementation plan (execute locally using Superpowers test-first and verification):
+
+1. Add failing geometry/fallback/order/horizon tests in `tests/test_discovery.py`; implement
+   pure area derivation in `fireline/discovery.py` with no fixed Gavarres extent.
+2. Add failing record/cache/update/error tests; implement source adapters, deterministic
+   deduplication, review preservation and explicit previous-result retention.
+3. Add a synthetic non-contact fixture and failing CLI/snapshot contract tests; implement
+   `python -m fireline.discovery` with local input/output, cache and previous-result flags.
+4. Run focused and full offline pytest, scoped code review and changed-file Norma checks;
+   fix actual findings, commit/push `codex/fire-discovery`, and open a PR to main.
