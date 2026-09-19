@@ -425,10 +425,14 @@ def test_status_value_at_risk_totals_follow_a_confirmed_override(tmp_path, db):
 COMMITTED_TOTALS = {
     "synthetic_gavarres-0001": (438, 0, 0, 6_519_500, 2_711_000, 12_268_000, 6, 6, 12),
     "synthetic_gavarres-0002": (505.8, 89, 89, 7_623_000, 3_169_000, 14_367_000, 6, 6, 12),
-    "gavarres_real-0001": (1866.7, 0, 0, 13_280_000, 4_980_000, 26_560_000, 12, 0, 99),
-    "gavarres_real-0002": (6632.5, 0, 45, 43_390_000, 16_290_000, 86_780_000, 12, 0, 99),
-    "gavarres_real-0003": (18433.9, 1680, 3040, 137_420_000, 51_720_000, 274_840_000, 12, 0, 99),
-    "gavarres_real-0004": (0, 0, 0, 0, 0, 0, 12, 0, 99),
+    # The four strategic classes (fire_station, university, research_facility, aerodrome) add 12 located
+    # assets to the real extract: 99 -> 111. They carry no headcount and no assumed replacement value, so
+    # every people and euro total is unchanged and the 12 only raise the excluded counts (12 -> 24 people,
+    # 0 -> 12 euro), which is the "not valued" path config.VALUE_AT_RISK_POLICY documents for nucleus too.
+    "gavarres_real-0001": (1866.7, 0, 0, 13_280_000, 4_980_000, 26_560_000, 24, 12, 111),
+    "gavarres_real-0002": (6632.5, 0, 45, 43_390_000, 16_290_000, 86_780_000, 24, 12, 111),
+    "gavarres_real-0003": (18433.9, 1680, 3040, 137_420_000, 51_720_000, 274_840_000, 24, 12, 111),
+    "gavarres_real-0004": (0, 0, 0, 0, 0, 0, 24, 12, 111),
 }
 
 

@@ -938,7 +938,7 @@ def test_committed_real_snapshot_4_uses_the_recorded_fire_spread_run():
     s3 = _load("gavarres_real_0003.json")
     assert [a["asset_id"] for a in s4["assets"]] == [a["asset_id"] for a in s3["assets"]] and s4["as_of"] > s3["as_of"]
     located = [a for a in s4["assets"] if a["latitude"] is not None]
-    assert len(located) == 99 and all(a["distance_to_fire_m"] is not None for a in located)
+    assert len(located) == 111 and all(a["distance_to_fire_m"] is not None for a in located)
     # honest outcome: the 12 h simulated burned area (~20 ha) covers none of the real facilities
     assert all(a["fire_arrival_at"] is None and "forecast_unavailable" in a["review_reasons"] for a in s4["assets"])
     assert min(a["distance_to_fire_m"] for a in located) > 5000

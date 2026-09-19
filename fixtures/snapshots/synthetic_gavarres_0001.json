@@ -392,6 +392,9 @@
     }
    ],
    "municipality": "la Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for camp, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 405000,
@@ -516,6 +519,9 @@
     }
    ],
    "municipality": "la Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": null,
    "replacement_value_basis": null,
    "expected_loss_eur_low": null,
@@ -645,6 +651,9 @@
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 400000,
    "replacement_value_basis": "assumed per-class replacement cost for masia, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 96000,
@@ -773,6 +782,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 675000,
@@ -897,6 +909,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": null,
    "replacement_value_basis": null,
    "expected_loss_eur_low": null,
@@ -1006,6 +1021,9 @@
     }
    ],
    "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -1123,6 +1141,9 @@
     }
    ],
    "municipality": "la Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 175000,
@@ -1251,6 +1272,9 @@
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 360000,
@@ -1284,8 +1308,10 @@
    "fire_arrival_basis": "p10",
    "evacuation_min": 180.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": false,
-   "review_reasons": [],
+   "needs_review": true,
+   "review_reasons": [
+    "criticality_unassessed"
+   ],
    "sources": [
     {
      "fields": [
@@ -1377,6 +1403,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 25000000,
    "replacement_value_basis": "assumed per-class replacement cost for hospital, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 1000000,
@@ -1501,6 +1530,9 @@
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": null,
    "replacement_value_basis": null,
    "expected_loss_eur_low": null,
@@ -1625,6 +1657,9 @@
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": null,
    "replacement_value_basis": null,
    "expected_loss_eur_low": null,
@@ -1751,6 +1786,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": null,
    "replacement_value_basis": null,
    "expected_loss_eur_low": null,
@@ -1860,6 +1898,9 @@
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,

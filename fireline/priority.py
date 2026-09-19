@@ -31,7 +31,10 @@ CAPACITY_PROXY = "capacity as proxy"
 OCCUPANCY_FIELDS = ("estimated_occupancy", "capacity")
 FORECAST_UNAVAILABLE = "forecast_unavailable"
 EVACUATION_UNKNOWN = "evacuation_unknown"
-OVERRIDE_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min")
+CRITICALITY_UNASSESSED = "criticality_unassessed"
+# `criticality_tier` carries {"tier": str, "factors": [str]} rather than a bare string, so a tier can
+# never be confirmed without the factors that justify it (config.CRITICALITY_POLICY["min_factors"]).
+OVERRIDE_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min", "criticality_tier")
 STATUS_OPEN, STATUS_EXHAUSTED, STATUS_REVIEW = "window_open", "window_exhausted", "needs_review"
 ORDERING = "slack ascending; forecast arrival ascending; distance ascending; asset ID"
 
@@ -114,6 +117,34 @@ def _fmt_min(value) -> str:
 # Confirmed analyst overrides (from tasks.TaskStore.overrides())
 # ---------------------------------------------------------------------------------------------
 
+def criticality_value(value, cfg=config) -> tuple[str, list[str]]:
+    """Validate a `criticality_tier` override value; returns (tier, factors) or raises ValueError.
+
+    The factors are a closed enum and the tier carries a minimum count, so an "exceptional" claim
+    cannot rest on prose alone. Order is preserved and repeats are dropped.
+    """
+    policy = cfg.CRITICALITY_POLICY
+    if not isinstance(value, dict):
+        raise ValueError("a criticality_tier override needs {'tier': ..., 'factors': [...]}, "
+                         f"got {type(value).__name__}")
+    tier, factors = value.get("tier"), value.get("factors")
+    if tier not in policy["tiers"]:
+        raise ValueError(f"criticality tier must be one of {list(policy['tiers'])}, got {tier!r}")
+    if factors is None:
+        factors = []
+    if not isinstance(factors, list) or any(not isinstance(f, str) for f in factors):
+        raise ValueError("criticality factors must be a list of strings")
+    unknown = [f for f in factors if f not in policy["factors"]]
+    if unknown:
+        raise ValueError(f"unknown criticality factors {unknown}; allowed: {list(policy['factors'])}")
+    factors = list(dict.fromkeys(factors))
+    need = policy["min_factors"].get(tier, 0)
+    if len(factors) < need:
+        raise ValueError(f"criticality tier {tier!r} needs at least {need} named factor(s), "
+                         f"got {len(factors)}")
+    return tier, factors
+
+
 def _apply_one(asset: dict, override: dict, cfg, now_at=None) -> None:
     field = override["field"]
     value = override["value"]
@@ -122,6 +153,8 @@ def _apply_one(asset: dict, override: dict, cfg, now_at=None) -> None:
                          "producer snapshot; confirm evacuation_min, occupancy, capacity or asset_type instead")
     if field not in OVERRIDE_FIELDS:
         raise ValueError(f"override field must be one of {list(OVERRIDE_FIELDS)}, got {field!r}")
+    if field == "criticality_tier":
+        tier, factors = criticality_value(value, cfg)
     confirmed_at = _parse_time(override.get("confirmed_at"))
     # Conflict: a provider value for the same field observed after the analyst confirmed the override.
     conflict = False
@@ -178,6 +211,17 @@ def _apply_one(asset: dict, override: dict, cfg, now_at=None) -> None:
             reasons = [r for r in reasons if r != EVACUATION_UNKNOWN]
             if total is None:
                 reasons.append(EVACUATION_UNKNOWN)
+        # The criticality assessment is about the building, so an existing tier survives a
+        # reclassification; only an unassessed asset re-enters the queue under its new class.
+        if (cfg.FEATURES.get("asset_criticality") and asset.get("criticality_tier") is None
+                and value in tuple(cfg.CRITICALITY_POLICY["assess_classes"])
+                and CRITICALITY_UNASSESSED not in reasons):
+            reasons.append(CRITICALITY_UNASSESSED)
+    elif field == "criticality_tier":
+        asset["criticality_tier"] = tier
+        asset["criticality_factors"] = factors
+        asset["criticality_basis"] = f"{cfg.CRITICALITY_POLICY['version']}; {source_label}"
+        reasons = [r for r in reasons if r != CRITICALITY_UNASSESSED]
     elif field == "evacuation_min":
         if value is not None:
             asset["evacuation_min"] = float(value)
@@ -421,7 +465,29 @@ def rank_snapshot(snap: dict, cfg=config, overrides: list[dict] | None = None, n
     policy["ordering"] = ORDERING
     policy["evacuation_policy_version"] = cfg.EVACUATION_POLICY["version"]
     return {"ranked": ranked, "needs_review": needs_review, "flagged": flagged, "all": ranked + needs_review,
+            "strategic": strategic_queue(ranked + needs_review, cfg),
             "now_at": now.isoformat(), "policy": policy}
+
+
+def strategic_queue(assets, cfg=config) -> list[dict]:
+    """Assets confirmed above the default criticality tier, most critical first.
+
+    A separate view, never the contact queue. readme 6 keeps property value out of contact urgency,
+    so this never reorders `rank_snapshot`: the contact queue answers "who do I phone first to get
+    people out", and this answers "where would the loss outlast the incident". Ordered by tier, then
+    by the same remaining window the contact queue uses (nulls last), then `asset_id`, so the most
+    critical asset with the least time left is first.
+    """
+    policy = cfg.CRITICALITY_POLICY
+    default, tiers = policy["default_tier"], policy["tiers"]
+    picked = [a for a in assets if a.get("criticality_tier") not in (None, default)]
+
+    def key(a):
+        rank = tiers.get(a.get("criticality_tier"), {}).get("rank", 0)
+        slack = a.get("slack_min")
+        return (-rank, slack is None, slack if slack is not None else 0.0, a["asset_id"])
+
+    return sorted(picked, key=key)
 
 
 # ---------------------------------------------------------------------------------------------

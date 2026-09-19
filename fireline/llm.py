@@ -29,7 +29,14 @@ import requests
 DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5"
 DEFAULT_NEBIUS_MODEL = "deepseek-ai/DeepSeek-V4.1-Flash"
 NEBIUS_BASE_URL = "https://api.studio.nebius.com/v1"
-MAX_TOKENS = 2048
+# A reasoning model spends this budget on its own thinking before it writes anything, so the cap has
+# to clear the thinking, not the answer. Measured over 26 criticality investigations on
+# DeepSeek-V4.1-Flash (2026-09-20, the 13 assessed assets of gavarres_real_0002 twice): ordinary
+# steps use 9-20 reasoning tokens, the judgement cases 1600-2400, and the largest single turn was
+# 2899 completion tokens. At 2048 and again at 4096 the longest-thinking assets ran out mid-thought
+# and returned no text and no tool call, which the loop could only read as "the agent had nothing to
+# say". 8192 is ~3x the measured maximum; an overflow is now an error, see `finish_reason` below.
+MAX_TOKENS = 8192
 TIMEOUT_S = 180
 
 
@@ -104,10 +111,13 @@ def to_openai_messages(system: str, messages: list[dict]) -> list[dict]:
     return out
 
 
-def from_openai_message(message: dict) -> FakeResponse:
+def from_openai_message(message: dict, finish_reason: str | None = None) -> FakeResponse:
     """One OpenAI assistant message -> the block response `agent.investigate` reads. A tool call
     whose arguments are not valid JSON becomes an empty input, which the tool layer rejects as a
-    missing required argument rather than acting on a guess."""
+    missing required argument rather than acting on a guess.
+
+    `finish_reason == "length"` is kept as `stop_reason="max_tokens"`: a truncated turn must stay
+    distinguishable from a finished one, whether or not it carried any content."""
     blocks: list = []
     if message.get("content"):
         blocks.append(TextBlock(text=message["content"]))
@@ -119,7 +129,10 @@ def from_openai_message(message: dict) -> FakeResponse:
             args = {}
         blocks.append(ToolUseBlock(id=call.get("id") or "", name=fn.get("name") or "",
                                    input=args if isinstance(args, dict) else {}))
-    stop = "tool_use" if any(b.type == "tool_use" for b in blocks) else "end_turn"
+    if finish_reason == "length":
+        stop = "max_tokens"
+    else:
+        stop = "tool_use" if any(b.type == "tool_use" for b in blocks) else "end_turn"
     return FakeResponse(content=blocks, stop_reason=stop)
 
 
@@ -172,7 +185,17 @@ class NebiusLLM:
         choices = payload.get("choices") or []
         if not choices:
             raise RuntimeError(f"Nebius {self.model} returned no choices: {str(payload)[:400]}")
-        return from_openai_message(choices[0].get("message") or {})
+        choice = choices[0]
+        response = from_openai_message(choice.get("message") or {}, choice.get("finish_reason"))
+        if response.stop_reason == "max_tokens" and not response.content:
+            # All of max_tokens went on reasoning, so the turn carries neither text nor a tool call.
+            # Raising keeps a truncation from reaching the analyst as a silent "nothing to report".
+            usage = payload.get("usage") or {}
+            raise RuntimeError(
+                f"Nebius {self.model} hit max_tokens ({self.max_tokens}) before writing any text or tool "
+                f"call; usage {usage.get('completion_tokens')} completion tokens, "
+                f"{usage.get('reasoning_tokens')} of them reasoning. Raise fireline.llm.MAX_TOKENS.")
+        return response
 
 
 # ---------------------------------------------------------------------------
@@ -219,6 +242,30 @@ def _loads(text: str):
         return json.loads(text)
     except (json.JSONDecodeError, TypeError):
         return None
+
+
+# Words a notability record may contain and the criticality factor each one evidences. A scripted
+# stand-in for the judgement the real model makes; deliberately narrow, so the offline path proposes
+# a low tier rather than a flattering one.
+_CRIT_FACTOR_WORDS = (
+    ("supercomput", "national_research_infrastructure"),
+    ("centre de recerca", "national_research_infrastructure"),
+    ("centro de investigacion", "national_research_infrastructure"),
+    ("research cent", "national_research_infrastructure"),
+    ("research institute", "national_research_infrastructure"),
+    ("institut de recerca", "national_research_infrastructure"),
+    ("csic", "national_research_infrastructure"),
+    ("bomber", "emergency_response_capability"),
+    ("fire service", "emergency_response_capability"),
+    ("fire brigade", "emergency_response_capability"),
+    ("oncolog", "sole_regional_service"),
+    ("hospital universitari", "sole_regional_service"),
+    ("col·leccio", "irreplaceable_holdings"),
+    ("colleccio", "irreplaceable_holdings"),
+    ("biobanc", "irreplaceable_holdings"),
+    ("herbari", "irreplaceable_holdings"),
+    ("arxiu", "irreplaceable_holdings"),
+)
 
 
 class FakeLLM:
@@ -332,6 +379,39 @@ class FakeLLM:
             "quoted_snippet": c.get("snippet") or c.get("name", ""), "confidence": confidence,
             "url": c.get("url"), "observed_at": c.get("observed_at")})
 
+    def _propose_criticality(self, aid: str, rec: dict | None, atype: str) -> ToolUseBlock:
+        """A tier from the notability record, or `routine` when there is none.
+
+        Deterministic and evidence-bound like the rest of FakeLLM: the factors come from words that
+        are present in the record, and the snippet is a prefix of the record's own summary, so the
+        number post-check and the live `_supported` check both pass. It never proposes
+        `exceptional` - claiming national infrastructure is not something a scripted stand-in
+        should do.
+        """
+        if rec is None:
+            return ToolUseBlock(self._next_id(), "propose_update", {
+                "asset_id": aid, "field": "criticality_tier",
+                "value": {"tier": "routine", "factors": []},
+                "source": f"no notability record; class {atype}",
+                "quoted_snippet": f"asset_type {atype}", "confidence": "medium",
+                "url": None, "observed_at": None})
+        hay = _norm(" ".join([rec.get("summary") or "", rec.get("title") or "",
+                              " ".join(rec.get("instance_of") or [])]))
+        factors = []
+        for word, factor in _CRIT_FACTOR_WORDS:
+            if _norm(word) in hay and factor not in factors:
+                factors.append(factor)
+        tier = "routine" if not factors else ("elevated" if len(factors) == 1 else "high")
+        summary = rec.get("summary") or ""
+        cut = summary.find(". ")
+        snippet = summary[:cut + 1] if cut > 0 else summary[:240]
+        return ToolUseBlock(self._next_id(), "propose_update", {
+            "asset_id": aid, "field": "criticality_tier",
+            "value": {"tier": tier, "factors": factors},
+            "source": f"{rec.get('title')} ({rec.get('lang')}.wikipedia.org)",
+            "quoted_snippet": snippet, "confidence": "medium",
+            "url": rec.get("url"), "observed_at": rec.get("fetched_at")})
+
     def _escalate(self, aid: str, question: str, options: list[str], default: str) -> ToolUseBlock:
         return ToolUseBlock(self._next_id(), "escalate", {
             "asset_id": aid, "question": question, "options": options, "default": default})
@@ -412,6 +492,15 @@ class FakeLLM:
                 q = f"{name}: no address found in the evidence. Confirm address / coordinates with the municipality."
             return [self._escalate(aid, q, ["address confirmed, geocode it", "wrong facility", "still unknown"],
                                    "still unknown")]
+
+        # Step 6a: criticality_unassessed -> look the institution up, then propose the lowest tier the
+        # evidence supports. No record is the ordinary answer and means routine.
+        if "criticality_unassessed" in codes and "criticality_tier" not in proposed:
+            if "lookup_notability" not in done_names:
+                return [ToolUseBlock(self._next_id(), "lookup_notability", {"query": name})]
+            notes = _loads(next((d[2] for d in done if d[0] == "lookup_notability"), "null")) or []
+            rec = notes[0] if isinstance(notes, list) and notes else None
+            return [self._propose_criticality(aid, rec, atype)]
 
         # Step 6: exposure_unknown -> escalate (nothing the agent can supply).
         if "exposure_unknown" in codes and "location_unknown" not in codes and not asked_about("exposure"):

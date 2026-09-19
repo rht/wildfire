@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-"""Fetch real data into data/ (network). Subcommands: registers, wind, deepfire.
+"""Fetch real data into data/ (network). Subcommands: registers, wind, deepfire, notability.
 
     .venv/bin/python scripts/fetch_data.py registers
     .venv/bin/python scripts/fetch_data.py wind
     .venv/bin/python scripts/fetch_data.py deepfire
+    .venv/bin/python scripts/fetch_data.py notability
 
 Everything goes through fireline.feeds' file cache, so a second run is offline-safe.
 """
@@ -12,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import os
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -20,7 +22,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from fireline import env, feeds, fire_input  # noqa: E402
+from fireline import env, feeds, fire_input, notability  # noqa: E402
 
 COMARQUES = ["Baix Empordà", "Gironès", "Selva"]
 REPLAY_START = date(2026, 7, 3)
@@ -139,14 +141,87 @@ def cmd_deepfire(args) -> int:
     return 0
 
 
+# Named institutions the criticality layer needs in the corpus before their register classes land
+# (fireline/feeds.py ASSET_CLASS_RULES is gaining research/fire-station/aerodrome rows). Barcelona
+# Supercomputing Center sits outside the Gavarres box and is here as the worked example of a site
+# whose importance is nothing to do with its building.
+EXTRA_NOTABILITY_QUERIES = [
+    "IRTA", "IRTA Monells", "Institut Català d'Oncologia", "Centre d'Estudis Avançats de Blanes",
+    "Institut Català de Recerca de l'Aigua", "IDIBGI", "VICOROB", "Barcelona Supercomputing Center",
+    "Aeroport de Girona-Costa Brava", "Bombers de la Generalitat de Catalunya",
+    "Parc de Bombers", "Heliport de Costa Brava Centre",
+]
+
+
+def _load_assets() -> list[dict]:
+    rows: list[dict] = []
+    for name in ("assets_in.json", "unlocated.json"):
+        path = feeds.DATA_DIR / name
+        if not path.exists():
+            print(f"note: {path} missing, skipped")
+            continue
+        with open(path, encoding="utf-8") as f:
+            rows.extend(json.load(f))
+    return rows
+
+
+def cmd_notability(args) -> int:
+    """Wikipedia + Wikidata evidence for named institutions -> fixtures/notability.json."""
+    assets = _load_assets()
+    extra = [q.strip() for q in (args.queries or "").split(",") if q.strip()] or list(EXTRA_NOTABILITY_QUERIES)
+    # Explicit names first, so --limit exercises them rather than the top of the register alphabet.
+    queries, seen = [], set()
+    for query in extra + notability.asset_queries(assets):
+        if notability.fold(query) not in seen:
+            seen.add(notability.fold(query))
+            queries.append(query)
+    skipped = sum(1 for a in assets if notability.is_generic_name(a.get("name") or ""))
+    print(f"assets: {len(assets)} rows, {skipped} skipped by the generic-name cost filter, "
+          f"{len(queries)} queries to try ({len(extra)} named explicitly)")
+    if args.limit:
+        queries = queries[:args.limit]
+        print(f"--limit {args.limit}: trying {len(queries)}")
+    try:
+        records = notability.fetch_notability(queries, cached_only=args.cached_only)
+    except feeds.FeedError as exc:
+        # Wikimedia throttles anonymous callers per IP. Writing the corpus now would record
+        # "no article" for everything the rate limiter refused, so stop and keep the old file.
+        print(f"notability: aborted, {exc}")
+        print("  fixtures/notability.json left untouched; re-run to resume from the cache")
+        return 1
+    with_wikidata = sum(1 for r in records if r["wikidata_id"])
+    if records and not with_wikidata:
+        # The institution filter keeps an untyped record, so a run whose entity pass failed does
+        # not error: it quietly resolves MORE queries and writes a larger, unfiltered corpus with
+        # the junk back in. Overwriting a good corpus with that is worse than doing nothing. Seen
+        # with --cached-only when the cache holds the article batches but not the entity batches.
+        print(f"notability: aborted, {len(records)} records and not one Wikidata entity between "
+              f"them; the entity pass failed, so the institution filter never ran")
+        print("  fixtures/notability.json left untouched; re-run without --cached-only")
+        return 1
+    path = notability.write_corpus(records)
+    print(f"notability: {len(records)}/{len(queries)} queries resolved to an article, "
+          f"{with_wikidata} with a Wikidata entity -> {path}")
+    for rec in sorted(records, key=lambda r: r["query"])[:10]:
+        print(f"  {rec['query']!r} -> {rec['title']} [{rec['lang']}] {rec['wikidata_id']} "
+              f"{rec['instance_of']}: {rec['summary'][:90]}...")
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("registers", help="Gencat registers for Baix Empordà, Gironès, Selva -> data/registers, assets_in.json")
     sub.add_parser("wind", help="Open-Meteo previous runs 2026-07-03..05 on a 0.1 deg grid -> data/wind")
     sub.add_parser("deepfire", help="Deepfire clusters/hotspots/perimeters for the Gavarres, 2026-07-03..05")
+    nota = sub.add_parser("notability", help="Wikipedia/Wikidata notability corpus -> fixtures/notability.json")
+    nota.add_argument("--cached-only", action="store_true", help="no network: use only what is already cached")
+    nota.add_argument("--limit", type=int, default=0, help="try at most N queries (0 = all)")
+    nota.add_argument("--queries", default="", help="comma-separated names to query instead of the built-in extras")
     args = ap.parse_args(argv)
-    return {"registers": cmd_registers, "wind": cmd_wind, "deepfire": cmd_deepfire}[args.cmd](args)
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+    return {"registers": cmd_registers, "wind": cmd_wind, "deepfire": cmd_deepfire,
+            "notability": cmd_notability}[args.cmd](args)
 
 
 if __name__ == "__main__":

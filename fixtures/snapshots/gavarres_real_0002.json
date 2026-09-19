@@ -194,6 +194,753 @@
  },
  "assets": [
   {
+   "asset_id": "equipaments:10213412",
+   "name": "Parc de Bombers de la Vall d'Aro",
+   "asset_type": "fire_station",
+   "latitude": 41.80871,
+   "longitude": 3.031821,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 4997.8,
+   "intersects_fire": false,
+   "burn_probability": 0.95,
+   "arrival_p10_at": "2026-07-03T18:55:36.821817+00:00",
+   "arrival_p50_at": "2026-07-03T19:00:24.822000+00:00",
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:55:36.821817+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:10213421",
+   "name": "Parc de Bombers de la Pera",
+   "asset_type": "fire_station",
+   "latitude": 42.029748819,
+   "longitude": 2.975134402,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 10958.6,
+   "intersects_fire": false,
+   "burn_probability": 0.1,
+   "arrival_p10_at": "2026-07-03T23:40:48.821634+00:00",
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T23:40:48.821634+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Pera, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:25599403",
+   "name": "Parc de Bombers de Calonge i Sant Antoni",
+   "asset_type": "fire_station",
+   "latitude": 41.852481,
+   "longitude": 3.074588,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 450.0,
+   "intersects_fire": false,
+   "burn_probability": 0.4,
+   "arrival_p10_at": "2026-07-03T16:02:00.822023+00:00",
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T16:02:00.822023+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:3041423",
+   "name": "Parc de Bombers de Cassà de la Selva",
+   "asset_type": "fire_station",
+   "latitude": 41.879694,
+   "longitude": 2.883842,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 9015.5,
+   "intersects_fire": false,
+   "burn_probability": 1.0,
+   "arrival_p10_at": "2026-07-03T21:12:24.822000+00:00",
+   "arrival_p50_at": "2026-07-03T21:18:24.822000+00:00",
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T21:12:24.822000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:3041468",
+   "name": "Parc de Bombers de Palafrugell",
+   "asset_type": "fire_station",
+   "latitude": 41.925839,
+   "longitude": 3.155936,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 8768.2,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:3041486",
+   "name": "Parc de Bombers de Torroella de Montgrí",
+   "asset_type": "fire_station",
+   "latitude": 42.048098947,
+   "longitude": 3.167385943,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 16591.9,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:34473418",
+   "name": "IRTA Monells (IRTA-Monells)",
+   "asset_type": "research_facility",
+   "latitude": 41.9789,
+   "longitude": 2.99802,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 5003.7,
+   "intersects_fire": false,
+   "burn_probability": 0.25,
+   "arrival_p10_at": "2026-07-03T19:06:48.821634+00:00",
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T19:06:48.821634+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Recerca|Centres de recerca|Centres CERCA (només subseus)|"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class research_facility: mobilisation 20 min, preparation 40 min, movement 30 min = 90 min; assumptions: ambulatory staff; preparation includes securing samples, animals and hazardous stores, which can dominate; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
    "asset_id": "equipaments:3620470",
    "name": "Hospital de Palamós",
    "asset_type": "hospital",
@@ -219,7 +966,8 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "criticality_unassessed"
    ],
    "sources": [
     {
@@ -301,6 +1049,9 @@
     }
    ],
    "municipality": "PALAMÓS",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 25000000,
    "replacement_value_basis": "assumed per-class replacement cost for hospital, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 250000,
@@ -419,11 +1170,546 @@
     }
    ],
    "municipality": "PALAMÓS",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 50000,
    "expected_loss_eur_mid": 125000,
    "expected_loss_eur_high": 250000,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:55419",
+   "name": "Heliport de Costa Brava Centre",
+   "asset_type": "aerodrome",
+   "latitude": 41.8064222222222,
+   "longitude": 3.03745277777778,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 5246.1,
+   "intersects_fire": false,
+   "burn_probability": 0.95,
+   "arrival_p10_at": "2026-07-03T18:56:24.822000+00:00",
+   "arrival_p50_at": "2026-07-03T19:04:24.822000+00:00",
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:56:24.822000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": null,
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:759234",
+   "name": "Camp d'aviació de les Serres de Foixà",
+   "asset_type": "aerodrome",
+   "latitude": 42.0295638888889,
+   "longitude": 2.99027222222222,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 10583.8,
+   "intersects_fire": false,
+   "burn_probability": 0.1,
+   "arrival_p10_at": "2026-07-03T23:47:12.821268+00:00",
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T23:47:12.821268+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Foixà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:759245",
+   "name": "Camp d'aviació de Llabià",
+   "asset_type": "aerodrome",
+   "latitude": 42.0116111111111,
+   "longitude": 3.08925,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 9432.9,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Fontanilles",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:759250",
+   "name": "Camp d'aviació de l'Estartit",
+   "asset_type": "aerodrome",
+   "latitude": 42.0310166666667,
+   "longitude": 3.17927222222222,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 15999.5,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
+  },
+  {
+   "asset_id": "equipaments:759260",
+   "name": "Camp d'aviació de l'Empordà",
+   "asset_type": "aerodrome",
+   "latitude": 42.00675,
+   "longitude": 3.15287222222222,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 12612.3,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "criticality_unassessed",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 2.64 m/s from 65 deg valid 2026-07-03T15:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
    "people_exposed": null,
    "people_at_risk_p50": null,
    "people_at_risk_p10": null
@@ -548,6 +1834,9 @@
     }
    ],
    "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -677,6 +1966,9 @@
     }
    ],
    "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -806,6 +2098,9 @@
     }
    ],
    "municipality": "Bordils",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -935,6 +2230,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -1064,6 +2362,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -1193,6 +2494,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -1322,6 +2626,9 @@
     }
    ],
    "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 540000,
@@ -1451,6 +2758,9 @@
     }
    ],
    "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 570000,
@@ -1580,6 +2890,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 540000,
@@ -1709,6 +3022,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 510000,
@@ -1838,6 +3154,9 @@
     }
    ],
    "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -1967,6 +3286,9 @@
     }
    ],
    "municipality": "Corçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -2096,6 +3418,9 @@
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 150000,
@@ -2225,6 +3550,9 @@
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 150000,
@@ -2354,6 +3682,9 @@
     }
    ],
    "municipality": "Flaçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 90000,
@@ -2483,6 +3814,9 @@
     }
    ],
    "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 570000,
@@ -2612,6 +3946,9 @@
     }
    ],
    "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -2741,6 +4078,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -2870,6 +4210,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -2999,6 +4342,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -3128,6 +4474,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -3257,6 +4606,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -3386,6 +4738,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -3515,6 +4870,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -3644,6 +5002,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -3773,6 +5134,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -3902,6 +5266,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -4031,6 +5398,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -4160,6 +5530,9 @@
     }
    ],
    "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -4289,6 +5662,9 @@
     }
    ],
    "municipality": "La Pera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -4418,6 +5794,9 @@
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 330000,
@@ -4547,6 +5926,9 @@
     }
    ],
    "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 570000,
@@ -4676,6 +6058,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -4805,6 +6190,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -4934,6 +6322,9 @@
     }
    ],
    "municipality": "Ullà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -5063,6 +6454,9 @@
     }
    ],
    "municipality": "Ullastret",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -5192,6 +6586,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -5321,6 +6718,9 @@
     }
    ],
    "municipality": "Begur",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -5450,6 +6850,9 @@
     }
    ],
    "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -5566,6 +6969,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -5695,6 +7101,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -5824,6 +7233,9 @@
     }
    ],
    "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 90000,
@@ -5953,6 +7365,9 @@
     }
    ],
    "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 570000,
@@ -6082,6 +7497,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -6211,6 +7629,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 540000,
@@ -6340,6 +7761,9 @@
     }
    ],
    "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 570000,
@@ -6469,6 +7893,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -6598,6 +8025,9 @@
     }
    ],
    "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 570000,
@@ -6727,6 +8157,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -6856,6 +8289,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 540000,
@@ -6985,6 +8421,9 @@
     }
    ],
    "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 150000,
@@ -7114,6 +8553,9 @@
     }
    ],
    "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 600000,
@@ -7243,6 +8685,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -7372,6 +8817,9 @@
     }
    ],
    "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 600000,
@@ -7489,6 +8937,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 360000,
@@ -7618,6 +9069,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -7747,6 +9201,9 @@
     }
    ],
    "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -7876,6 +9333,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -8005,6 +9465,9 @@
     }
    ],
    "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 180000,
@@ -8134,6 +9597,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 210000,
@@ -8250,6 +9716,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -8367,6 +9836,9 @@
     }
    ],
    "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -8496,6 +9968,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -8625,6 +10100,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -8741,6 +10219,9 @@
     }
    ],
    "municipality": "Vall-llobrega",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 30000,
@@ -8870,6 +10351,9 @@
     }
    ],
    "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -8986,6 +10470,9 @@
     }
    ],
    "municipality": "Ullastret",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -9115,6 +10602,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -9244,6 +10734,9 @@
     }
    ],
    "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 150000,
@@ -9373,6 +10866,9 @@
     }
    ],
    "municipality": "Vall-llobrega",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 30000,
@@ -9502,6 +10998,9 @@
     }
    ],
    "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 540000,
@@ -9631,6 +11130,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -9760,6 +11262,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -9889,6 +11394,9 @@
     }
    ],
    "municipality": "Forallac",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -10018,6 +11526,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -10147,6 +11658,9 @@
     }
    ],
    "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 570000,
@@ -10276,6 +11790,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 510000,
@@ -10405,6 +11922,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -10534,6 +12054,9 @@
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 150000,
@@ -10663,6 +12186,9 @@
     }
    ],
    "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 540000,
@@ -10792,6 +12318,9 @@
     }
    ],
    "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 150000,
@@ -10921,6 +12450,9 @@
     }
    ],
    "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -11050,6 +12582,9 @@
     }
    ],
    "municipality": "Parlavà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -11167,6 +12702,9 @@
     }
    ],
    "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 510000,
@@ -11296,6 +12834,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -11425,6 +12966,9 @@
     }
    ],
    "municipality": "Sant Martí Vell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -11554,6 +13098,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -11683,6 +13230,9 @@
     }
    ],
    "municipality": "Flaçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 90000,
@@ -11812,6 +13362,9 @@
     }
    ],
    "municipality": "Corçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -11941,6 +13494,9 @@
     }
    ],
    "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -12058,6 +13614,9 @@
     }
    ],
    "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 540000,
@@ -12187,6 +13746,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -12316,6 +13878,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 60000,
@@ -12445,6 +14010,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 0,
@@ -12562,6 +14130,9 @@
     }
    ],
    "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 120000,
@@ -12679,6 +14250,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 510000,
@@ -12808,6 +14382,9 @@
     }
    ],
    "municipality": "Forallac",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 4000000,
    "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": 90000,
@@ -12918,6 +14495,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -13028,6 +14608,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -13138,6 +14721,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -13248,6 +14834,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -13358,6 +14947,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -13468,6 +15060,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -13578,6 +15173,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -13688,6 +15286,9 @@
     }
    ],
    "municipality": "Begur",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -13798,6 +15399,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -13908,6 +15512,9 @@
     }
    ],
    "municipality": "Begur",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -14018,6 +15625,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -14128,6 +15738,9 @@
     }
    ],
    "municipality": "Vall-llobrega",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -14238,6 +15851,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -14348,6 +15964,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -14458,6 +16077,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -14568,6 +16190,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -14678,6 +16303,9 @@
     }
    ],
    "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -14788,6 +16416,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -14898,6 +16529,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15008,6 +16642,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15118,6 +16755,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15228,6 +16868,9 @@
     }
    ],
    "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15338,6 +16981,9 @@
     }
    ],
    "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15448,6 +17094,9 @@
     }
    ],
    "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15558,6 +17207,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15668,6 +17320,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15778,6 +17433,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15888,6 +17546,9 @@
     }
    ],
    "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -15998,6 +17659,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -16108,6 +17772,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -16218,6 +17885,9 @@
     }
    ],
    "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -16328,6 +17998,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -16438,6 +18111,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -16548,6 +18224,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -16658,6 +18337,9 @@
     }
    ],
    "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -16768,6 +18450,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -16878,6 +18563,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -16988,6 +18676,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -17098,6 +18789,9 @@
     }
    ],
    "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -17208,6 +18902,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -17318,6 +19015,9 @@
     }
    ],
    "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -17428,6 +19128,9 @@
     }
    ],
    "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 3000000,
    "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -17537,6 +19240,9 @@
     }
    ],
    "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -17646,6 +19352,9 @@
     }
    ],
    "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -17755,6 +19464,9 @@
     }
    ],
    "municipality": "Bisbal d'Empordà, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -17864,6 +19576,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -17973,6 +19688,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -18082,6 +19800,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -18191,6 +19912,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -18300,6 +20024,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -18409,6 +20136,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -18518,6 +20248,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -18627,6 +20360,9 @@
     }
    ],
    "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -18736,6 +20472,9 @@
     }
    ],
    "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -18845,6 +20584,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -18954,6 +20696,9 @@
     }
    ],
    "municipality": "Bisbal d'Empordà, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -19063,6 +20808,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -19172,6 +20920,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -19281,6 +21032,9 @@
     }
    ],
    "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -19390,6 +21144,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -19499,6 +21256,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -19608,6 +21368,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -19717,6 +21480,9 @@
     }
    ],
    "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -19826,6 +21592,9 @@
     }
    ],
    "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -19935,6 +21704,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -20044,6 +21816,9 @@
     }
    ],
    "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -20153,6 +21928,9 @@
     }
    ],
    "municipality": "Bisbal d'Empordà, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -20262,6 +22040,9 @@
     }
    ],
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,
@@ -20371,6 +22152,9 @@
     }
    ],
    "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null,
    "replacement_value_eur": 5000000,
    "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
    "expected_loss_eur_low": null,

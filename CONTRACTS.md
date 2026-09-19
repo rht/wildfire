@@ -20,6 +20,8 @@ fireline/
   llm.py         NebiusLLM, AnthropicLLM and FakeLLM (same .create interface); live_llm() picks by key
   app.py         Streamlit: map, ranked table, review queue, details + timing breakdown, tasks, change log
   feeds.py       HTTP/cache layer, Gencat registers, Open-Meteo, DeepfireClient (unchanged API)
+  notability.py  Wikipedia/Wikidata notability corpus: fetch_notability() (network, via the feeds cache)
+                 and lookup() (offline search of fixtures/notability.json)
   --- v0 modules, gated by config.FEATURES, not used by the v4 path by default ---
   grid.py spread.py exposure.py decide.py routing.py fire_state.py scenario.py
 fixtures/
@@ -31,6 +33,8 @@ fixtures/
                             gavarres_real snapshot hour; drives the labelled CA enrichment of section 2.2
   teams.json                Fixture roster (section 5)
   evidence.json             Cached facility pages / register rows for lookup_facility (section 6)
+  notability.json           Wikipedia/Wikidata intro extracts for named institutions, quotable offline
+                            evidence for the per-asset criticality layer (fireline/notability.py)
   real_area/                Cached Equipaments/schools extract for the fixed Gavarres area (section 2.4)
 scripts/
   make_snapshots.py         Build fixture + real-area snapshots (no network)
