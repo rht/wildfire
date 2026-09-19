@@ -1666,3 +1666,37 @@ unknown assets remained in review. No contact records were discovered and no cal
 were placed. These branches still require separate integration into main; the base
 adapter works without them. Dispatch/deployment, current provider limits, coordinator
 supersession policy and real approved private inputs remain separate dependencies.
+
+## Multi-crew response planning — task design and implementation plan
+
+For @mirrdj: this additive component leaves `plan_response` and its exact one-crew,
+eight-action contract intact. `fireline.multi_response.plan_multi_response(data, *, graph=None)`
+will accept `multi-response-input-1` and return `multi-response-plan-1`. It is an offline,
+deterministic greedy proposal, never an automatic dispatch or an optimality claim.
+
+Design: stable asset IDs join declared needs/effects to actions. Teams supply starting road
+nodes, availability windows, capabilities and cumulative transport places. Actions supply work
+nodes through assets, durations, deadlines, capabilities, prerequisites and evidenced effects.
+Directed routes explicitly declare travel time, confirmation, safety, expiry and provenance;
+an optional supplied `RoadGraph` instead uses existing time-dependent routing. Geometry is emitted
+only from supplied edge geometry. Unknown needs/readiness stay review. Benefits use maximum
+coverage per asset, with assisted people before total people before property; no inferred spread
+or protection relationships. A prerequisite may be proposed once and shared across teams.
+
+Committed assignments (informed, en-route, in-progress or explicitly completed) are supplied
+separately from replaceable proposals. Retain these records on replanning; reserve their team and
+action. Stale, changed, unsafe or lost-team commitments require review and block further proposals
+for that team. A new incident can use other available teams. This is a bounded scheduling heuristic:
+no backtracking, fleet optimisation, simultaneous staffing, unloading, reception allocation or
+implicit transport capacity reset. All elapsed times share one caller-owned scenario epoch.
+
+Implementation sequence (execute locally; no additional implementation agents):
+
+- [ ] Add failing behavioral tests for two trucks, deadlines, capability/capacity constraints,
+  shared prerequisites, unknown readiness, route safety, geometry and no double assignment.
+- [ ] Implement pure planner and input validation in `fireline/multi_response.py`; preserve
+  declared effects and public provenance, with explicit unassigned/review reasons.
+- [ ] Test and implement preservation of committed work during team loss, stale assignments
+  and new incidents; add CLI and a clearly synthetic offline JSON demonstration.
+- [ ] Run scoped/full offline tests, request scoped review and scan only changed files with
+  Norma when available; fix actual findings. Publish commits and a PR, retain this worktree.
