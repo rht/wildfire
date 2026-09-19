@@ -1931,3 +1931,57 @@ changed Python files clean after fixing one timeout naming finding. Compliance a
 registration was unavailable because the repository is not linked in Norma; no repository
 configuration was changed. The existing readiness core and its capacity predicate are
 unchanged.
+
+
+## Household call briefings (call-briefings task)
+
+For @mirrdj: build household-specific call content from explicit analyst approval,
+without borrowing the Willow House demonstration. The module is pure and does not
+place calls, change provider configuration, infer safe routes, or rewrite call facts.
+
+Public boundary: `fireline.call_briefing.build_call_request(asset, recommendation,
+contact, *, snapshot_id, request_id, input_mode='synthetic') -> CallRequest`.
+`asset` is a snapshot asset mapping with stable `asset_id`, optional `name`, and
+optional current `road_warnings`. `contact` is a private mapping containing
+`contact_number`, optional `language` (default `en`), `human_callback_number`, and
+optional matching `asset_id`. This payload must not enter the public live-state envelope.
+
+An approved recommendation has `asset_id`, `snapshot_id`, `approved: true`,
+`plan_id`, `revision` (nonnegative integer), `source`, `destination: {name}`,
+`route: {instructions, road_ids, road_names, feasible: true}`, optional
+`road_warnings`, and optional `conflicts` (a list). Only actual supplied instructions
+are relayed. Unknown/unapproved/missing destination, infeasible route, mismatched
+identity, or road conflicts withhold destination/route guidance and request human
+help. Road warnings use the existing `{road_id, road_name, reason, source}` contract.
+Current asset warnings supersede recommendation warnings with the same road ID;
+additional recommendation restrictions are retained conservatively. Known route IDs,
+road names and named warnings appearing in instructions are checked for conflicts.
+
+SLNG template arguments stay exactly those from `slng_voice.call_arguments`:
+`request_id`, `asset_id`, `snapshot_id`, `incident_brief`, `scenario_notice`,
+`language`, `road_warning_brief`. Version and fresh acknowledgement requirements
+travel inside `incident_brief`; named road restrictions travel in `road_warning_brief`.
+The existing interview prompt asks self-evacuation ability, suitable transport,
+preparation, a human request and evidenced message/instruction acknowledgement.
+No new template variables or deployment mutations are required by this library.
+Provider deployment and verification of the dynamic template remain separate work.
+
+Implementation plan (executed inline in the existing task worktree):
+
+- [x] Add failing content tests in `tests/test_call_briefing.py`: two households and
+  destinations, missing/unauthorized/stale plans, infeasible/unsafe routes, explicit
+  road names/reasons, wrong contact identity, unknown values, and input immutability.
+  Run `PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m pytest tests/test_call_briefing.py`.
+- [x] Implement `fireline/call_briefing.py`, returning existing `CallRequest` objects
+  and `build_call_briefing(asset, recommendation, *, snapshot_id) -> CallBriefing`
+  with deterministic instruction and warning versions, guidance status and reasons.
+  Reject oversized content rather than silently truncating route instructions.
+- [x] Add failing version/evidence tests, then implement
+  `briefing_acknowledgement(briefing, request, result=None) -> dict` to keep receipt
+  separate from departure/arrival, require fresh acknowledgements after change,
+  and prevent model confidence from substituting for transcript verification.
+  Test immobility, missing transport and human requests through existing consumers.
+- [ ] Read sibling export status and add an explicit adapter if a verified plan
+  export exists; otherwise name that dependency. Run relevant and full offline tests,
+  inspect changed-file Norma results, obtain scoped review, fix actual findings,
+  commit/push `codex/call-briefings`, and create a reviewable PR to main.
