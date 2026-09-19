@@ -6,11 +6,13 @@ import numpy as np
 import pytest
 from shapely.geometry import Point, box
 
-from fireline import spread
+from fireline import config, spread
 from fireline.fire_state import FireState
 from fireline.grid import Grid, xy_to_lonlat
 
 T0 = datetime(2026, 7, 3, 8, 0, tzinfo=timezone.utc)
+# Wind-driven parameters: calm stays below the percolation threshold, so a wind change shows.
+_WIND_CFG = dict(config.CA, p0=0.15, wind_c1=0.25)
 
 
 def _small_grid(n=60, cell=100.0):
@@ -105,6 +107,92 @@ def test_run_ca_is_deterministic_for_seed():
     b = spread.run_ca(fs, grid, n_runs=5, horizon_min=60, seed=7)
     assert np.array_equal(a.burn_prob, b.burn_prob)
     assert np.array_equal(a.arrival_p50, b.arrival_p50)
+
+
+@pytest.fixture(scope="module")
+def ca_wind_switch():
+    """Strong north wind that drops to calm after 1 h, against the same wind held for 4 h."""
+    grid = _small_grid(90)
+    fs = _centre_state(grid, wind_dir_deg=0.0, wind_speed_mps=8.0)
+    kw = dict(n_runs=12, horizon_min=240, seed=2, cfg=_WIND_CFG)
+    steady = spread.run_ca(fs, grid, **kw)
+    switched = spread.run_ca(fs, grid, wind_series=[(0.0, 0.0, 8.0), (60.0, 0.0, 0.4)], **kw)
+    return grid, fs, steady, switched
+
+
+def test_wind_series_matching_fire_state_reproduces_constant_wind(ca_north_wind):
+    grid, fs, ar = ca_north_wind
+    same = spread.run_ca(fs, grid, n_runs=20, horizon_min=120, seed=1,
+                         wind_series=[(0.0, fs.wind_dir_deg, fs.wind_speed_mps)])
+    assert np.array_equal(same.burn_prob, ar.burn_prob)
+    assert np.array_equal(same.arrival_p50, ar.arrival_p50)
+
+
+def test_empty_wind_series_is_the_same_as_none(ca_north_wind):
+    grid, fs, ar = ca_north_wind
+    empty = spread.run_ca(fs, grid, n_runs=20, horizon_min=120, seed=1, wind_series=[])
+    assert np.array_equal(empty.burn_prob, ar.burn_prob)
+    assert np.array_equal(empty.arrival_p50, ar.arrival_p50)
+
+
+def test_drop_to_calm_stops_growth_but_keeps_the_early_spread(ca_wind_switch):
+    grid, fs, steady, switched = ca_wind_switch
+    r, c = grid.to_rowcol(*fs.perimeter.centroid.coords[0])
+    # The fire runs south under the north wind, then all but stops when the wind drops.
+    assert switched.burn_prob.sum() < 0.5 * steady.burn_prob.sum()
+    south_steady = int(np.nonzero((steady.burn_prob >= 0.5).any(axis=1))[0].max()) - r
+    south_switched = int(np.nonzero((switched.burn_prob >= 0.5).any(axis=1))[0].max()) - r
+    assert 0 < south_switched < 0.5 * south_steady
+    # Before the switch the two are the same fire; one member makes that exact (no percentile
+    # interpolation over an ensemble whose members diverge later).
+    kw = dict(n_runs=1, horizon_min=240, seed=2, cfg=_WIND_CFG)
+    one_steady = spread.run_ca(fs, grid, **kw)
+    one_switched = spread.run_ca(fs, grid, wind_series=[(0.0, 0.0, 8.0), (60.0, 0.0, 0.4)], **kw)
+    early = one_steady.arrival_p50 <= 60           # arrivals up to the switch; inf is excluded
+    assert early.sum() > 20
+    assert np.array_equal(one_switched.arrival_p50[early], one_steady.arrival_p50[early])
+    assert (one_switched.arrival_p50 <= 60).sum() == early.sum()
+
+
+def test_wind_reversal_burns_both_sides_of_the_seed(ca_wind_switch):
+    grid, fs, steady, _ = ca_wind_switch
+    r, c = grid.to_rowcol(*fs.perimeter.centroid.coords[0])
+    reversed_ = spread.run_ca(fs, grid, n_runs=12, horizon_min=240, seed=2, cfg=_WIND_CFG,
+                              wind_series=[(0.0, 0.0, 8.0), (120.0, 180.0, 8.0)])
+    north_steady, south_steady = steady.burn_prob[:r].sum(), steady.burn_prob[r + 1:].sum()
+    north_rev, south_rev = reversed_.burn_prob[:r].sum(), reversed_.burn_prob[r + 1:].sum()
+    assert north_steady < 0.05 * south_steady          # constant north wind: one side only
+    assert north_rev > 50 and south_rev > 50           # reversal: both sides
+    assert north_rev > 10 * north_steady
+
+
+def test_first_sample_applies_before_its_own_time(ca_wind_switch):
+    grid, fs, _, switched = ca_wind_switch
+    late_first = spread.run_ca(fs, grid, n_runs=12, horizon_min=240, seed=2, cfg=_WIND_CFG,
+                               wind_series=[(45.0, 0.0, 8.0), (60.0, 0.0, 0.4)])
+    assert np.array_equal(late_first.burn_prob, switched.burn_prob)
+    assert np.array_equal(late_first.arrival_p50, switched.arrival_p50)
+
+
+def test_wind_series_with_a_series_is_deterministic_for_seed():
+    grid = _small_grid(30)
+    fs = _centre_state(grid, 90.0, 4.0)
+    series = [(0.0, 90.0, 4.0), (20.0, 200.0, 7.0), (40.0, 340.0, 1.5)]
+    a = spread.run_ca(fs, grid, n_runs=5, horizon_min=60, seed=7, wind_series=series)
+    b = spread.run_ca(fs, grid, n_runs=5, horizon_min=60, seed=7, wind_series=series)
+    assert np.array_equal(a.burn_prob, b.burn_prob)
+    assert np.array_equal(a.arrival_p50, b.arrival_p50)
+
+
+@pytest.mark.parametrize("series", [
+    [(0.0, 0.0, 8.0), (0.0, 90.0, 4.0)],          # equal times
+    [(60.0, 0.0, 8.0), (30.0, 90.0, 4.0)],        # descending
+])
+def test_non_ascending_wind_series_raises(series):
+    grid = _small_grid(20)
+    fs = _centre_state(grid, 0.0, 5.0)
+    with pytest.raises(ValueError):
+        spread.run_ca(fs, grid, n_runs=2, horizon_min=60, wind_series=series)
 
 
 def test_perimeter_outside_grid_gives_empty_raster():
