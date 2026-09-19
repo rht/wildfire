@@ -105,11 +105,7 @@ def _validate(scenario, assessments, centres, routes, policy):
         if call.acknowledged_road_warning_version is not None:
             _text(call.acknowledged_road_warning_version, "acknowledged_road_warning_version")
     for centre in centres:
-        if (
-            isinstance(centre.remaining_places, bool)
-            or not isinstance(centre.remaining_places, int)
-            or centre.remaining_places < 0
-        ):
+        if type(centre.remaining_places) is not int or centre.remaining_places < 0:
             raise ValueError("remaining_places must be a nonnegative integer")
         _boolean(centre.approved, "approved")
         number(centre.available_until_min, "available_until_min")

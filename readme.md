@@ -2078,3 +2078,59 @@ Markdown has no applicable rules. The catalog was generic because repository
 linking was unresolved; this is not a repository-wide compliance claim. Only
 this task's new revision validator was adjusted; the separate `remaining_places`
 contract was not touched.
+
+## Live coordination projection (live-coordination)
+
+Design for @mirrdj: `fireline.coordination.CoordinationStore` shares the existing
+VoiceStore/TaskStore SQLite database and scenario epoch. An explicit service tick
+reads durable assessments, the supplied current location snapshot, StaticScenario,
+ReceptionCentre and EvacuationRoute inputs. Snapshot timing, distance and occupancy
+are authoritative; scenario actions, assistance and explicit effects stay supplied.
+Stable asset IDs join records. Calls from previously accepted snapshots may carry
+forward with their original observation times; foreign snapshots and input modes
+cannot supply readiness. Negative assistance/human requests survive newer calls.
+No UI imports, calls, provider configuration writes or numeric live confidence.
+
+The projection and ordered revision events commit atomically with suggested task
+links under SQLite's write lock. Repeating a refresh at the same scenario minute
+with unchanged facts is a no-op, including after restart. Time advances on explicit
+ticks in whole elapsed minutes; no background process runs implicitly. Snapshot
+identity is immutable, sequence/time cannot regress, and a database binds to one
+scenario and input mode. Human ownership and status always remain analyst-controlled.
+The public envelope excludes private call text/numbers and task notes/evidence.
+Unknown values, evidence availability, verification and provenance references remain.
+
+Public API (dashboard contract):
+
+```python
+CoordinationStore(path, *, epoch, clock=None)  # UTC datetime epoch and clock
+store.refresh(snapshot, scenario, centres, routes, *, road_warnings=())  # dict
+store.state()  # latest coordination-state-1 dict; None before first refresh
+store.updates(after_revision=0)  # ordered list of coordination-update-1 dicts
+store.close()
+```
+
+State fields: `schema_version`, `scenario_id`, `snapshot_id`, integer `revision`,
+UTC `as_of`, `input_mode`, snapshot `assets`, `contacts: {ranked, review}`,
+public `calls`, `plan: {locations, remaining_capacity, response, ...}`, `teams`,
+`tasks`, `events`, `errors`. Events identify `event_id`, `revision`, `scenario_id`,
+`snapshot_id`, UTC `as_of`, `kind`, `changed_asset_ids`, and `refresh: full_state`.
+Consumers fetch `state()` after an update; a later state may already be available.
+`voice` and `tasks` expose the existing stores for explicit local ingestion and
+analyst assignment/status operations, followed by a refresh to publish changes.
+
+Implementation plan (Python/SQLite; all documentation stays here):
+
+- [ ] Restore commit 923d494's exact built-in integer capacity regression tests,
+  observe failure, restore only the capacity predicate, and verify road warnings.
+- [ ] Write failing persistence, live-assistance, privacy, restart, sequence,
+  concurrent refresh and atomic rollback tests; implement the projection boundary.
+- [ ] Add an offline `python -m fireline.coordination tick` CLI with explicit
+  database, epoch, snapshot, scenario and readiness JSON files, and test it.
+- [ ] Consume verified sibling interfaces when available, review changed files,
+  run Norma on changed files only, run relevant/full tests, commit, push and PR.
+
+Destination capacity remains a proposal within one refresh. A durable allocation
+ledger from evacuation-plans requires an explicit adapter before reservation or
+arrival claims; multi-crew response proposals likewise require a verified export.
+Actual telephone transfer and real evacuation completion remain unverified.
