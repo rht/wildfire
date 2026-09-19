@@ -352,8 +352,12 @@ no key was available when recorded) that `scripts/investigate.py` replays when n
 
 ## 7. UI — `fireline/app.py`
 
-Reads `fixtures/snapshots/` (and `data/snapshots/` when present) ordered by `sequence`; a "next update"
-control advances the sequence through `SnapshotSequence` + `TaskStore.apply_snapshot`. Persists to
+Reads `fixtures/snapshots/` (and `data/snapshots/` when present) ordered by `sequence`; "Next update"
+advances the sequence through `SnapshotSequence` + `TaskStore.apply_snapshot`, and "Previous" plus an
+`as_of`-labelled slider move to any snapshot (`ui_state.Session.go_to`). A snapshot at or below the
+store's accepted sequence is displayed without applying it (`view_only` in the result, `status()`
+carries `applied_sequence` and `reviewing_earlier`): re-ranked with the confirmed overrides, with
+tasks, events and the accepted sequence unchanged and no task suggestions from that earlier moment. Persists to
 `data/fireline.sqlite` (path from `FIRELINE_DB`). Shows: input mode, `as_of`, `computed_at`,
 `data_status`, source age and processing time; map with fire geometry (perimeter vs hotspot centre
 styled differently) and assets coloured by queue/remaining window; ranked table; needs-review queue; selected

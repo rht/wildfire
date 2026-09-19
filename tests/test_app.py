@@ -35,3 +35,34 @@ def test_default_scenario_is_the_real_area_one_and_is_discoverable():
     scenarios, _ = ui_state.discover_snapshots()
     assert default == "gavarres_real" and default in scenarios
     assert "synthetic_gavarres" in scenarios
+
+
+def test_sequence_controls_step_back_to_an_earlier_snapshot_without_rewinding_the_store(tmp_path, monkeypatch):
+    """The page's own widgets: Next update advances, Previous steps back to the earlier moment as a
+    labelled view, and the slider scrubs to any snapshot. Streamlit keeps widget state by key, so this
+    also guards the sequence slider against overriding a Previous/Next click on the next rerun."""
+    from streamlit.testing.v1 import AppTest
+
+    monkeypatch.setenv("FIRELINE_DB", str(tmp_path / "app.sqlite"))
+    at = AppTest.from_file(str(APP), default_timeout=180).run()
+    assert not at.exception
+    previous, next_update = at.sidebar.button[0], at.sidebar.button[1]
+    assert (previous.label, next_update.label) == ("Previous", "Next update")
+    assert previous.disabled and not next_update.disabled            # first snapshot: nowhere to go back to
+    first, second = at.sidebar.select_slider[0].options[:2]
+    assert first.startswith("1 - ") and second.startswith("2 - ")    # sequence and as_of label each step
+    opening_title = at.title[0].value
+    assert not at.warning
+
+    at = at.sidebar.button[1].click().run()                          # Next update: applied, no review banner
+    assert not at.exception and at.sidebar.select_slider[0].value == second and not at.warning
+
+    at = at.sidebar.button[0].click().run()                          # Previous: an earlier moment, view only
+    assert not at.exception and at.title[0].value == opening_title
+    assert at.sidebar.select_slider[0].value == first
+    assert any("store stays at 2" in w.value for w in at.warning)
+    assert any("Earlier moment under review" in w.value for w in at.warning)
+
+    at = at.sidebar.select_slider[0].set_value(second).run()         # the slider scrubs back to the update
+    assert not at.exception and at.sidebar.select_slider[0].value == second
+    assert not at.warning

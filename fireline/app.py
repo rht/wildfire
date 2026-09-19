@@ -1,6 +1,7 @@
 """FireLine analyst screen (readme 9, CONTRACTS 7): map, ranked table (remaining evacuation window),
 review queue, selected asset with the timing breakdown and agent proposals, task controls, change log.
-One screen; "Next update" walks the snapshot sequence through the store.
+One screen; the sequence control walks the snapshot sequence in both directions: forward through the
+store ("Next update"), back to an earlier moment as a re-ranked view that leaves the store untouched.
 
     FIRELINE_DB=data/fireline.sqlite .venv/bin/streamlit run fireline/app.py
 
@@ -210,6 +211,41 @@ def tasks_frame(rows: list[dict], teams: dict[str, str]) -> pd.DataFrame:
     } for t in rows])
 
 
+# ----------------------------------------------------------------------------- sequence (time) controls
+def snapshot_label(entry: dict) -> str:
+    """`3 - 2026-07-04 06:31Z`: the sequence number and the moment the snapshot describes."""
+    as_of = (entry.get("as_of") or "")[:16].replace("T", " ")
+    return f"{entry['sequence']} - {as_of}Z" if as_of else str(entry["sequence"])
+
+
+def sequence_controls(sess: Session, s: dict) -> None:
+    """Step and scrub through the scenario's snapshots. Forward past the store's high-water sequence
+    applies the update; anywhere at or below it is a view (`Session.go_to`)."""
+    entries = sess.sequence_entries
+    st.sidebar.caption(f"snapshot `{s['snapshot_id']}` - sequence {s['sequence']} of {s['n_sequences']}"
+                       + (f" - store at {s['applied_sequence']}" if s["reviewing_earlier"] else ""))
+    back, forward = st.sidebar.columns(2)
+    if back.button("Previous", disabled=not sess.has_previous, width="stretch", icon=":material/undo:"):
+        sess.previous_update()
+        st.rerun()
+    if forward.button("Next update", disabled=not sess.has_next, width="stretch", type="primary"):
+        sess.next_update()
+        st.rerun()
+    if len(entries) > 1:
+        labels = [snapshot_label(e) for e in entries]
+        here = labels[sess.index]
+        # the key carries the position: a fresh widget each time the session moves, so a click on
+        # Previous/Next is not overwritten by the slider's remembered value on the next rerun
+        chosen = st.sidebar.select_slider("Snapshot time (as_of)", options=labels, value=here,
+                                          key=f"seq-{sess.scenario_id}-{sess.index}")
+        if chosen != here:
+            sess.go_to(labels.index(chosen))
+            st.rerun()
+    if s["reviewing_earlier"]:
+        st.sidebar.warning(f"Reviewing sequence {s['sequence']} of {s['n_sequences']}; the store stays at "
+                           f"{s['applied_sequence']}. View only.")
+
+
 # ----------------------------------------------------------------------------- sidebar
 def sidebar(sess: Session) -> None:
     st.sidebar.title("FireLine")
@@ -223,13 +259,12 @@ def sidebar(sess: Session) -> None:
         sess.select_scenario(chosen)
         st.rerun()
     s = sess.status()
-    st.sidebar.caption(f"snapshot `{s['snapshot_id']}` - sequence {s['sequence']} of {s['n_sequences']}")
-    if st.sidebar.button("Next update", disabled=not sess.has_next, width="stretch", type="primary"):
-        sess.next_update()
-        st.rerun()
+    sequence_controls(sess, s)
     result = sess.last_update
     if result:
-        if not result.get("advanced"):
+        if result.get("view_only"):
+            st.sidebar.info(result.get("reason"))
+        elif not result.get("advanced"):
             st.sidebar.warning(result.get("reason"))
         elif result.get("accepted"):
             st.sidebar.success(f"{result['snapshot_id']} applied: {len(result['changed'])} assets changed, "
@@ -421,6 +456,12 @@ def main() -> None:
     s = sess.status()
     c = s["counts"]
     st.title(f"FireLine - {s['scenario_id']} - {s['as_of']}")
+    if s["reviewing_earlier"]:
+        st.warning(f"Earlier moment under review: snapshot `{s['snapshot_id']}`, sequence {s['sequence']} of "
+                   f"{s['n_sequences']}, as_of {s['as_of']}. The map, ranking and review queue are recomputed for "
+                   f"that moment with your confirmed overrides; tasks, the change log and the store's accepted "
+                   f"sequence stay at {s['applied_sequence']}, and no tasks are suggested from it. Work you create "
+                   f"here is still recorded, stamped with this snapshot.")
     st.caption(f"Contact priority is the remaining evacuation window: forecast arrival - total evacuation duration "
                f"- buffer ({s['buffer_min']} min), relative to the snapshot time {s['now_at']}. A zero or negative "
                "window means immediate analyst review, not an evacuation instruction. Forecast and evacuation "
