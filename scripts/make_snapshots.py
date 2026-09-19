@@ -85,6 +85,7 @@ from fireline.fire_state import FireState  # noqa: E402
 from fireline.forecast_input import SYNTHETIC_LABEL, forecast_from_recorded_spread, load_forecast, read_recorded_spread  # noqa: E402
 from fireline.grid import Grid, lonlat_to_xy, xy_to_lonlat  # noqa: E402
 from fireline.snapshot import asset_record, build_snapshot, validate_snapshot, write_snapshot  # noqa: E402
+from fireline.ui_state import value_at_risk_totals  # noqa: E402
 
 FIX = ROOT / "fixtures"
 DATA = ROOT / "data"
@@ -486,18 +487,11 @@ def build_pair(assets, fires, scenario_id: str, incident_id: str, input_mode: st
 def value_totals(snap: dict) -> dict:
     """Scenario totals of the value-at-risk layer for one snapshot (handoff 002).
 
-    Located assets only, since an unlocated asset can never be reached by a forecast. A null field is left
-    out of its sum and counted instead, so a total is never read as complete: `excluded_people` and
-    `excluded_eur` are the located assets whose headcount, burn probability or class value is missing.
+    One definition, shared with the analyst header: `ui_state.value_at_risk_totals`. Located assets only,
+    since an unlocated asset can never be reached by a forecast; a null field is left out of its sum and
+    counted instead, so a total is never read as complete.
     """
-    located = [a for a in snap["assets"] if a["latitude"] is not None]
-    keys = ("people_exposed", "people_at_risk_p50", "people_at_risk_p10",
-            "expected_loss_eur_low", "expected_loss_eur_mid", "expected_loss_eur_high")
-    out = {k: round(sum(a[k] for a in located if a.get(k) is not None), 1) for k in keys}
-    out["located"] = len(located)
-    out["excluded_people"] = sum(1 for a in located if a.get("people_exposed") is None)
-    out["excluded_eur"] = sum(1 for a in located if a.get("expected_loss_eur_mid") is None)
-    return out
+    return value_at_risk_totals(snap["assets"])
 
 
 def value_lines(snaps: list[dict]) -> list[str]:

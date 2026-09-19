@@ -443,6 +443,38 @@ styled differently) and assets coloured by queue/remaining window; ranked table;
 asset details with the timing breakdown (arrival, evacuation duration, buffer, window), input age and sources; proposals awaiting confirmation; task
 controls (create, assign with roster check, progress, block, release); change log from `events()`.
 
+Value at risk (section 2.2, handoff 002), when the snapshot carries the layer.
+`ui_state.value_at_risk_totals(assets)` is the scenario aggregate, and `Session.status()["value_at_risk"]`
+holds it for the assets on screen with the confirmed overrides applied, so a confirmed headcount or class
+moves the totals. Its keys: `layer` (False when the snapshot has none of the eight keys, so the header
+says the layer is off instead of reporting zeros), the sums `people_exposed`, `people_at_risk_p50`,
+`people_at_risk_p10`, `expected_loss_eur_low` / `_mid` / `_high` over **located** assets with non-null
+values, `located`, `excluded_people` and `excluded_eur` (located assets left out of each total for a null
+input, counted separately because they differ), `covered` and `reached` (located assets with a
+`forecast_source`, and of those the ones with a positive `burn_probability`), `horizon_at`, `enrichment`
+(a `forecast_source` labelled unvalidated enrichment) and `policy_version`. It is the single
+definition of the aggregate: `scripts/make_snapshots.py value_totals` calls it for the totals it writes
+into the real-area README, so the header and that file cannot disagree.
+
+A second header metrics row shows people exposed, people at risk at p50 (p10 in the tooltip), expected
+loss mid with its band, and the excluded-asset count, each `help` naming what it excludes. The caption
+under it states the totals and the known limits: assumed per-class values with no per-asset basis, the
+damage-ratio band only, total economic loss rather than an insurer's figure, no partial clearance, and
+the uncalibrated CA bias when the scenario's forecast is labelled enrichment. `covered` without `reached`
+is reported as a zero, not a gap ("0 exposed within the N h horizon", the horizon derived from
+`forecast_horizon_at` and `as_of`): the run covers those locations and puts no burned area there. The
+assets still carry `forecast_unavailable`, which in that case means no arrival time; `REVIEW_REASONS` and
+the review queue are unchanged.
+
+The ranked and needs-review tables gain `people exposed`, `people at risk p50 / p10` and one expected-loss
+column whose label names it an estimate from an assumed replacement cost with its damage-ratio band. That
+column is a formatted **display string**, never a number, so a header click cannot order the table by it;
+no euro field reaches a sort key, a filter or any ranking path, and the ranked order stays smallest
+remaining window first. The selected asset adds `app.value_frame`: headcount x burn probability, the
+replacement value and its basis, the three damage ratios, the three expected losses, and which arrival
+quantile made each `people_at_risk` flag fire; the policy note itself stays in the asset's `sources`
+entry rather than being repeated. Every one of these renders "-" when the layer is absent.
+
 ## 8. Feature flags — `config.FEATURES`
 
 `{"spread_ca": False, "routing": False, "decisions": False, "forecast_enrichment": False,
