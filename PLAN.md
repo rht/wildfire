@@ -1,72 +1,81 @@
-# Values-at-Risk Project Plan (v2)
+# Values-at-Risk Project Plan (v3)
 
 Track 4, "Values at risk": Norrsken x Deepfire "AI for Wildfire" challenge, Hackbarna 2026.
 
 Working name: **FireLine** (rename freely).
 
-v2 changes versus v1: built on the challenge's provided resources (Deepfire API, MTG FRP Pixel feed, ELMFIRE, Gencat datasets) instead of generic substitutes; adds a live mode to satisfy "results in or near real time"; makes the agent an edge-case handler rather than a chat wrapper (section 3 and 6.6, per the Deepfire cofounder's guidance); adds receiving facilities (which hospital, which shelter), the INFOCAT confine-versus-evacuate rule, and a verified replay fire with a real evacuation timeline to validate against. WeatherNext is deliberately left out: its access approval takes 5 to 7 business days and the event has started. Facts below come from reading the docs on 2026-09-19; anything marked *unverified* must be checked in phase 0.
+v3 changes versus v2, from a four-way review on 2026-09-19: the confine-versus-evacuate rule is rewritten to match INFOCAT practice (evacuate early while a road is open, confine when the window has closed, care homes moved last); receiving facilities split into reception centres and medical destinations; deterministic edge cases moved out of the agent into the engine, and the agent given asymmetric autonomy (pessimistic moves alone, optimistic moves only via escalation); the timeline turned from a 24-hour serial chain into four parallel lanes with phase 0 budgeted; ELMFIRE, Cell2Fire, cadastre and INE dropped from day one; validation made leak-free (as-of-t replay, honest baselines, impact-relative lead time as the headline); Gavarres facts and data-source details corrected after checking the sources. Anything still marked *unverified* needs a human with an account.
 
 ## 1. One-line pitch
 
-When a fire starts anywhere in Catalonia, an agent pulls the live satellite perimeter and spread forecast, ranks every care home, school, campsite, hospital and urbanisation in its path with a time-to-impact, recommends confine or evacuate per the official INFOCAT criteria, names the receiving facility and the route, and refreshes every ten minutes as the fire moves. Every number is traceable to a tool call.
+When a fire starts anywhere in Catalonia, an agent pulls the live satellite perimeter and spread forecast, ranks every care home, school, campsite, hospital and urbanisation in its path with a time-to-impact, recommends confine or evacuate per INFOCAT practice with the exit window shown, names the reception centre and the route, escalates what it cannot resolve as one-line questions for the coordinator, and refreshes as the fire moves. Every number is traceable to a tool call.
 
 ## 2. How the plan maps to the judging criteria
 
 | Criterion | What we show |
 |---|---|
-| AI that helps first responders | The output is the exact decision the INFOCAT director and CECAT must make: which nuclei to confine, which to evacuate, to where, by which road, by when. Section 6.5. |
-| Technical implementation and accuracy on real data | Replay of the Les Gavarres fire (3 July 2026, 2,198 ha, 7 municipalities confined) with our recommendations compared against the real ES-Alert timeline. Section 9. |
-| Creative use of the provided datasets and APIs | Deepfire perimeters + fire-spread simulations + MCP server; MTG FRP Pixel 10-minute feed turned into a live front; Gencat Equipaments, INFOCAT vulnerability, Pla Alfa, Bombers live incident feed, Trànsit road closures; ELMFIRE-class spread. Section 5. |
-| Demo quality | Two modes in one UI: live Catalonia (whatever is burning that day, or a synthetic ignition) and Gavarres replay with a time slider. Backup video. Section 12. |
+| AI that helps first responders | The output is the coordinator queue the INFOCAT director and CECAT work from: which nuclei to confine, which to evacuate, to where, by which road, by when, and which open questions block a decision. Sections 6.4 to 6.6. |
+| Technical implementation and accuracy on real data | Replay of the Les Gavarres fire (3 July 2026, 2,198 ha, 7 municipalities confined) using only data available at each replay time, scored against the real ES-Alert sequence and the observed impact times. Section 10. |
+| Creative use of the provided datasets and APIs | Deepfire perimeters, fire-spread simulations and MCP server; MTG FRP Pixel feed as trigger and layer; Gencat Equipaments, INFOCAT vulnerability, Pla Alfa, Bombers live incident feed, Trànsit road closures. Section 5. |
+| Demo quality | Two modes in one UI: live Catalonia (whatever is burning that day, or a synthetic ignition) and Gavarres replay with a time slider. One live triage answered by the presenter with a click. Backup video. Section 12. |
 
-The three "strong submission" points (real data, near real time, clear operator use) are sections 5, 4 and 6.5 respectively.
+The three "strong submission" points (real data, near real time, clear operator use) are sections 5, 4 and 6.4 to 6.6 respectively.
 
 ## 3. Design principle
 
-**Deterministic engine for the common case, agent for the edge cases, human decides.** Spread, exposure, timing and routing are reproducible code. The Deepfire cofounder's guidance is that values-at-risk calculation hits edge cases constantly, and that is what the agent is for: when the pipeline's output is ambiguous, contradictory or low-confidence for a specific asset, the agent investigates with tools, resolves what it can with evidence, and escalates the rest as a named question for the coordinator. It also explains results, answers what-if questions by re-running the engine, and drafts alerts. It never invents a number and never issues an order. Say this on stage, because Deepfire's own app already lists values at risk; our contribution is the decision layer on top (confine vs evacuate, receiving facility, route, latest departure, edge-case resolution, refresh on change).
+**Deterministic engine for the common case, agent for the edge cases, human decides.** Spread, exposure, timing, routing and the decision rule are reproducible code. The Deepfire cofounder's guidance is that values-at-risk calculation hits edge cases constantly, and that is what the agent is for: when the pipeline cannot trust its own answer for a specific asset because it needs outside evidence or a human, the agent investigates with tools, resolves what it can with cited evidence, and escalates the rest as a named question the coordinator can answer in one click. Edge cases that have a deterministic answer (take the pessimistic one) are handled in code, not by the agent.
+
+**Autonomy is asymmetric.** The agent may move an asset's tier or occupancy in the pessimistic direction on its own. Any optimistic move (lower occupancy, "camp not in session", "track is passable") must go through `escalate` and wait for a human. It never invents a number and never issues an order.
+
+Say this on stage, because Deepfire's own app already lists values at risk; our contribution is the decision layer on top (confine versus evacuate with the exit window, reception centre, route, latest departure, edge-case resolution with evidence, refresh on change) and it is validated against a real ES-Alert timeline.
 
 ## 4. Scope
 
-In scope:
-- **Live mode:** poll Deepfire clusters/perimeters and the MTG FRP Pixel feed for Catalonia; for any active cluster, run the full pipeline and show it on the map. If nothing is burning during the demo, inject a synthetic ignition at a chosen point (the pipeline is identical from that point on).
-- **Replay mode:** Les Gavarres, 3 to 5 July 2026, replayed from the first detections with a time slider, with the real confinement and evacuation timeline overlaid.
-- Spread forecast as arrival-time rasters with uncertainty (from Deepfire's fire-spread simulation and from our own model for what-if runs).
-- Exposure: buildings, population, and the specific facility classes named in the challenge (hospitals, schools, care homes, campsites) plus urbanisations and roads.
-- Confine-versus-evacuate recommendation per nucleus using the INFOCAT criteria, with the justification shown.
-- Receiving facilities and routes: which hospital or reception centre takes each evacuated group, which road, latest safe departure.
-- Agent: edge-case triage on every asset the pipeline is unsure about (section 6.6), what-if reruns, alert drafting in CA/ES/EN, and a change log ("since the last update, these two nuclei changed tier").
+In scope, day one:
+- **Replay mode:** Les Gavarres, 3 to 5 July 2026, replayed from the first detections with a time slider, using only information available at time t, with the real confinement and evacuation timeline overlaid.
+- **Live mode:** poll Deepfire clusters and perimeters for Catalonia; for any active cluster, run the full pipeline and show it on the map. If nothing is burning during the demo, inject a synthetic ignition at a pre-warmed point. Kept thin (Deepfire poll plus synthetic ignition) because "near real time" is a named strong-submission point.
+- Spread forecast as arrival-time rasters from Deepfire's fire-spread simulation (primary) and from our own fast model for what-if runs.
+- Exposure: buildings, population and the facility classes named in the challenge (hospitals, schools, care homes, campsites) plus urbanisations and roads.
+- Confine-versus-evacuate recommendation per nucleus using a window-based rule aligned with INFOCAT practice, with the three checks and their evidence shown.
+- Reception centres and medical destinations, routes, latest safe departure, first road to be cut.
+- Agent: edge-case triage on the assets the pipeline flags as needing outside evidence, what-if reruns, alert drafting in CA/ES/EN, change log, coordinator queue.
 - Validation against what actually happened at Gavarres.
 
 Out of scope (say so if asked):
 - Fire detection from cameras (track 1; we consume Deepfire and MTG detections).
-- A research-grade spread model (we use Deepfire's ELMFIRE run and a calibrated fast model of our own; the engine is swappable).
+- A research-grade spread model. ELMFIRE and Cell2Fire are not started; Deepfire's ELMFIRE run is our physics-based source and our own model is a calibrated cellular automaton for what-if only. The engine is swappable.
 - Traffic simulation, suppression tactics, live operational use.
+
+Deferred to stretch (section 14): MTG alpha-shape perimeter derivation, cadastre building footprints, INE census population, free-text ingestion, staggered departures, INFOCAT choropleth.
 
 ## 5. Data sources (provided resources first)
 
+Everything below was checked against the live endpoint on 2026-09-19 unless marked *unverified*.
+
 | Need | Primary (provided) | Fallback | Notes |
 |---|---|---|---|
-| Live fire clusters and perimeters | **Deepfire OGC API**: `deepfire:clusters`, `deepfire:hotspots`, `deepfire:satellite-perimeters` (MultiPolygon, `n_hotspots`, `area_m2`, `active`), bbox + CQL2 filters, GeoJSON. History: hotspots since Jan 2025, perimeters since June 2026 | NASA FIRMS area API (needs MAP_KEY) | Bearer token from app.deepfire.co API clients. Responses cached 60 s, so poll once a minute. No webhooks. Perimeters are "circle-union" hulls of hotspots, not surveyed boundaries. |
-| 10-minute fire activity over Spain | **LSA SAF MTG FRP Pixel** (LSA-509, MTG-I1 FCI, 10 min, ~1 to 2 km over Iberia, ~20 min latency). Per slot a `.csv.gz` ListProduct with lat/lon/time/FRP. Archive since Jan 2025, so July 2026 is there | Deepfire hotspots with `source = 'MTG_I1'` | Free registration required; downloads return 401 without it. Demonstration status: outages possible. Perimeter recipe from the UPC Fire Event Tracker: DBSCAN eps 2 km, alpha shape, match to previous slot, forward rate of spread from successive shapes. |
-| Spread forecast | **Deepfire fire-spread** `POST /v1/fire-spread/simulations` with `clusterId` or lat/lon, `durationHours` 1 to 24, `model` elmfire or forefire, `ensembleMembers` 1 to 50. Returns one MultiPolygon per hour plus wind summary. Poll `GET .../{id}` every 10 s; 2 runs in flight per client | Our own model (section 6.2): ELMFIRE or Cell2Fire if it runs, numpy CA otherwise | Cannot pass custom wind or fuel, so what-if scenarios need our model. "Cluster outside modelled regions" is a possible failure: **test on a Spanish cluster in phase 0**. |
-| Wind and weather | **Open-Meteo** forecast API (hourly 10 m wind speed, direction and gusts, 2 m temperature, RH; no key; ECMWF IFS 9 km or AROME 1 to 2.5 km over Spain) and Previous Runs API (as-issued forecasts archived since 2024, so the July 2026 replay uses the forecast a coordinator would actually have had) | Meteocat XEMA stations via the Socrata mirror (`nzvn-apee`) for observed wind at validation time | Point API: sample a 0.1 deg grid over the bbox. WeatherNext dropped (allow-list approval takes 5 to 7 business days). |
-| Fuel | ZAFM-DW 2026 Scott and Burgan FBFM40, 10 m, Spain file 455 MB (Zenodo 10.5281/zenodo.21978709) | ICGC land cover 2024 (GPKG/GeoTIFF) mapped to a burnability table | FBFM40 is what ELMFIRE and Cell2Fire expect natively. |
+| Live fire clusters and perimeters | **Deepfire OGC API** `/ogc/features/v1/collections/<id>/items`: `deepfire:clusters` (**Point** geometry: `id`, `first_observed`, `last_observed`, `active`), `deepfire:hotspots`, `deepfire:satellite-perimeters` (MultiPolygon, `n_hotspots`, `area_m2`, `active`, algorithm `circle-union-v2`), `deepfire:static-heat-sources`; bbox + CQL2 filters, GeoJSON. Hotspots since Jan 2025, perimeters since June 2026 | NASA FIRMS area API (needs MAP_KEY) | Bearer token from app.deepfire.co Settings, API clients. `Cache-Control: max-age=60`, so poll once a minute. Shared concurrency cap returns 503 `{"code":"ogc-busy"}` with Retry-After; 30 s per-query limit; `limit` clamped at 10,000. Perimeters are hotspot hulls, not surveyed boundaries. Hotspot `source` codes include `MTG_I1`. |
+| 10-minute fire activity over Spain | **LSA SAF MTG FRP Pixel** (LSA-509, MTG-I1 FCI, 10 min). Per slot `NATIVE/YYYY/MM/DD/LSA-509_MTG_MTFRPPIXEL-ListProduct_MTG-FD_YYYYMMDDhhmm.csv.gz` (about 144 per day, plus NetCDF). Archive since Jan 2025 confirmed (2026-07-03 directory listed) | Deepfire hotspots with `source = 'MTG_I1'` | Directory listings are public; file GET returns 401 without a free account. Columns *unverified* until one file is downloaded. Latency about 20 min, demonstration status: outages possible. |
+| Spread forecast | **Deepfire fire-spread** `POST /v1/fire-spread/simulations` with `clusterId` or `latitude`/`longitude`, `durationHours` 1 to 24, `model` elmfire or forefire, `ensembleMembers` 1 to 50, optional `sources` and `lookbackHours`. Returns one feature per hour (MultiPolygon, `hour`, `elapsed_seconds`) plus wind summary. Status QUEUED, COMPLETED, NO_SPREAD, FAILED; auto-FAILED after 60 min queued. 2 runs in flight per client | Own CA model (section 6.2) | Poll `GET .../{id}` honouring the `Retry-After` header. Handle NO_SPREAD and FAILED. Error "the cluster is outside the modelled regions" exists and regions are not enumerated: **test on a Spanish cluster in phase 0**. Per-member ensemble output *unverified*. Cannot pass custom wind or fuel, so what-if needs our model. |
+| Wind and weather | **Open-Meteo** forecast API (hourly 10 m wind speed, direction, gusts, 2 m temperature, RH; no key) and Previous Runs API (`<var>_previous_dayN`, N 0 to 7, archived since Jan 2024) | Meteocat XEMA stations via Socrata (`nzvn-apee`) for observed wind at validation time | For the July 2026 replay use `ecmwf_ifs025` or `best_match`: **AROME returns all nulls** for that period. Previous Runs gives fixed lead-time slices (previous_day1 is the run about 24 h before valid time), not a full as-issued run; say so on the validation slide. Sample a 0.1 deg grid over the bbox. WeatherNext dropped (allow-list approval takes 5 to 7 business days). |
+| Fuel (CA only) | ZAFM-DW 2026 Scott and Burgan FBFM40, 10 m, `ESP_3035_ZAFM_DYNAMIC_WORLD_2026.tif` 455 MB, **EPSG:3035** (Zenodo 10.5281/zenodo.21978709), with `burgan_models_table.csv` | ICGC land cover 2024 mapped to a burnability table | Window-crop to the bbox before warping to 25831, or the reprojection eats an hour. |
 | Elevation | Copernicus DEM GLO-30 | ICGC 5 m DEM | Slope and aspect once with gdaldem, cached. |
-| Facilities | **Gencat Equipaments** (Socrata `8gmd-gz7i`, weekly, lat/lon: 65 hospitals, 636 CAPs, 122 sociosanitaris, 146 fire stations, schools, town halls, albergs) | OSM POIs | One dataset covers most of the challenge's facility classes. |
-| Care homes with capacity | Registre d'entitats i serveis socials (`ivft-vegh`, `capacitat` field, address only) | OSM `social_facility` | Geocode with the ICGC geocoder or join to Equipaments by name. |
-| Campsites with places | Registre de Turisme càmpings (`t2h3-cgys`, 352 sites, `total_places`, cadastral reference) | OSM `tourism=camp_site` | Geocode via cadastral reference. |
-| Schools | Directori de centres docents (`kvmv-ahh4`, coords) | Equipaments | |
-| Buildings | Cadastre INSPIRE BU ATOM feed, per municipality GML (province 17 for Girona) | OSM buildings via osmnx | |
-| Population | INE census sections 2025 (polygons) + Idescat padró per section | WorldPop / GHSL | Idescat CSV endpoint *unverified*. |
-| Municipal risk context | **INFOCAT map WMS** (`infocat_perill`, `infocat_vulnerabilitat`, `zones_risc_greu_incendis`); **Pla Alfa** daily danger level per municipality (public ArcGIS FeatureServer, no key); municipal INFOCAT plan status (`eqag-gzjs`) | none | Shown as context in the asset table; Pla Alfa level is an agent trigger for pre-alert. |
-| Live ignitions | **Bombers actuacions urgents** ArcGIS FeatureServer (`ACTUACIONS_URGENTS_online_PRO_VW`, point, incident type, municipality, vehicles) | Deepfire clusters alone | The "a fire has started" trigger for live mode; cross-match with Deepfire clusters. |
-| Road graph and closures | osmnx drive network; **Servei Català de Trànsit** live incidents (RSS and GML, no key) | none | SCT closures become hard edge removals in routing, and are validation ground truth for replay (GI-660, GIV-6612, C-66 at Gavarres). |
-| Historical perimeters | Bombers "cercador d'incendis" KML; Agricultura per-year SHP (1986 to 2024); Agents Rurals 2026 perimeter for Gavarres (request SHP) | Copernicus EMSR888 delineation | Ground truth for section 9. |
-| Fire event ground truth | Copernicus EMS **EMSR888** (Les Gavarres, activated 3 July 2026: first estimate, delineation, grading) | EFFIS burnt area | Activation page is JS-rendered: open in a browser and download the vector packages in phase 0. |
+| Facilities | **Gencat Equipaments** (Socrata `8gmd-gz7i`, weekly: `nom`, `categoria` pipe-separated hierarchy, `codi_municipi`, `comarca`, `longitud`/`latitud`) | OSM POIs | One dataset covers most facility classes. Class counts (65 hospitals etc.) *unverified*. |
+| Care homes with capacity | Registre d'entitats i serveis socials (`ivft-vegh`: `capacitat`, `tipologia`, `adreca`, `municipi`, `cp`; no coordinates) | OSM `social_facility` | Join to Equipaments by name and municipality; geocode the rest with the ICGC geocoder. Failed joins are edge cases (section 6.3). |
+| Campsites with places | Registre de Turisme (`t2h3-cgys`): **whole accommodation register**, filter `tipus_establiment` for càmpings; `total_places`, `nom_de_la_via`, `numero`, `municipi`. **No cadastral reference field** | OSM `tourism=camp_site` | Geocode by address, or join to OSM campsites by name. |
+| Schools | Directori de centres docents (`kvmv-ahh4`): use `coordenades_geo_x/y`; the `geo_1` Point field is corrupt | Equipaments | |
+| Buildings and nuclei | OSM buildings via osmnx, DBSCAN on centroids into nuclei; OSM place polygons where present | Cadastre INSPIRE BU ATOM (stretch) | Cadastre GML per municipality is deferred to stretch. |
+| Population | Nucleus population from Idescat municipal totals allocated by building count | INE census sections 2025 + Idescat padró (stretch) | Coarse, and shown as such. Idescat CSV endpoint *unverified*. |
+| Municipal risk context | **INFOCAT map WMS** (`infocat_perill`, `infocat_vulnerabilitat`, `zones_risc_greu_incendis`); **Pla Alfa** daily level per municipality (ArcGIS FeatureServer, no key, polygon layer, field `PERIL_M` 0 to 4, native WKID 25831 so request `outSR=4326`); plan activations `wj9c-j6vf` (`plaacronim`, `plafase`, `fasedatahora`; **empty array when nothing is active**) | none | Context columns in the asset table; Pla Alfa level is a pre-alert trigger. Municipal plan register `eqag-gzjs` is all-risks; filter `risc`. |
+| Live ignitions | **Bombers actuacions urgents** ArcGIS FeatureServer (point: `TAL_DESC_ALARMA1/2`, `MUNICIPI_SIG`, `ACT_DAT_INICI`, `ACT_NUM_VEH`, `ACT_X_UTM`/`ACT_Y_UTM`, `ACT_SITUACIO`; no key) | Deepfire clusters alone | The "a fire has started" trigger for live mode; cross-match with Deepfire clusters. |
+| Road graph and closures | osmnx drive network, **GraphML cached in phase 0**; **Servei Català de Trànsit** live incidents (RSS 2.0 with geo/gml namespaces, no key) | none | SCT closures remove edges in live mode. In replay only closures issued before t are applied; later closures are validation ground truth (GI-660, GIV-6612, C-66). |
+| Protection strips | none for Girona (DIBA franges cover Barcelona province only) | buildings within N m of the burn-probability envelope | State this limitation in the UI. |
+| Historical perimeters | Bombers "cercador d'incendis" KML (23.7 MB); Agricultura per-year SHP (1986 to 2024); Agents Rurals 2026 perimeter for Gavarres (request SHP) | Copernicus EMSR888 delineation | Scorer only, never an input to the pipeline. |
+| Fire event ground truth | Copernicus EMS **EMSR888** (Les Gavarres, activated 3 July 2026: first estimate, delineation, grading; StoryMap exists) | EFFIS burnt area | Activation page is JS-rendered: download vectors in a browser in phase 0. |
 
-Everything static is downloaded into `data/` in phase 0. Live feeds are wrapped in one `feeds.py` with a cache so the demo works offline on the last snapshot.
+Everything static is downloaded into `data/` in phase 0. Live feeds are wrapped in one `feeds.py` with a cache so the demo works offline on the last snapshot. `feeds.py` takes an `as_of` timestamp and asserts nothing newer is returned; this is the replay's leak guard. Set a browser User-Agent for ICGC and Catastro downloads (406 otherwise).
 
-Deepfire also exposes an unauthenticated **MCP server** at `https://api.deepfire.co/mcp` with `deepfire_search_fires` and `deepfire_get_fire`. Register it with the agent so judges see the agent querying Deepfire directly.
+Deepfire also exposes an unauthenticated **MCP server** at `https://api.deepfire.co/mcp` (POST only) with `deepfire_search_fires` and `deepfire_get_fire`. Register it with the agent so judges see the agent querying Deepfire directly. Deepfire's docs list "Values at risk: coming soon"; ask the mentors what it will return so we can show a column-level diff.
 
 ## 6. Architecture
 
@@ -74,246 +83,279 @@ Deepfire also exposes an unauthenticated **MCP server** at `https://api.deepfire
 TRIGGERS                       ENGINE (deterministic, no LLM)                     AGENT (LLM + tools)
 Bombers actuacions feed ─┐
 Deepfire clusters (1 min)┼─> fire_state.py ──> perimeter(t), FROS vector ─┐
-MTG FRP pixels (10 min) ─┘   (cluster, alpha shape, match to previous)     │
+MTG FRP pixels (10 min) ─┘   (Deepfire perimeter + hotspots; MTG as layer) │
                                                                            v
 Deepfire fire-spread sim ──> spread.py ──> arrival-time rasters ───────────┤
-own model (ELMFIRE / CA)     (p10/p50/p90, burn probability)               │
+own CA (what-if only)        (p10/p50/p90, burn probability)               │
 Open-Meteo wind ─────────────┘                                             v
                                                           exposure.py ──> asset table
-Equipaments, care homes,  ───────────────────────────────>  (class, occupancy, t_impact, tier)
-campsites, schools, cadastre                                               │
-buildings, INE population,                                                 v
-INFOCAT vulnerability                                     decide.py ──> confine | evacuate | monitor
-                                                            (INFOCAT criteria, explicit rules)
+Equipaments, care homes,  ───────────────────────────────>  (class, occupancy, t_impact, tier,
+campsites, schools, OSM                                      deterministic edge cases resolved
+buildings, INFOCAT vuln.                                     pessimistically, needs_review flags)
+                                                                           v
+                                                          decide.py ──> evacuate | confine |
+                                                            (window-based rule)  confine+protect | monitor
                                                                            │
-osmnx graph + SCT closures ─────────────────────────────> routing.py ──> receiving facility, route,
-Equipaments (hospitals, pavellons, albergs)                  road cut times, latest departure
-                                                                           │
+osmnx graph + SCT closures ─────────────────────────────> routing.py ──> reception centre, medical
+Equipaments (pavellons, albergs, residències, hospitals)      destination, route, cut times,
+                                                              latest departure
                                                                            v
                                               agent.py: tools over all of the above + Deepfire MCP
-                                              - on new/changed fire: run pipeline, summarise diff
-                                              - triage every asset flagged `needs_review`:
-                                                investigate, resolve with evidence, or escalate
-                                              - what-if: rerun own model with new wind, diff
+                                              - watch loop: on new/changed fire, run, summarise diff
+                                              - triage needs_review assets: investigate, resolve
+                                                pessimistically with evidence, or escalate
+                                              - what-if: rerun CA with new wind, diff, re-triage
                                               - alerts in CA/ES/EN per audience
-                                              - free-text overrides
-                                                                           │
                                                                            v
-                                              Streamlit: map, time slider, asset table, agent panel
+                                              Streamlit: map, slider, asset table, coordinator queue
 ```
 
-Everything left of the agent runs and is testable without an LLM.
+Everything left of the agent runs and is testable without an LLM. Every replay slot is precomputed to disk; Streamlit only reads.
 
-### 6.1 Fire state (live front from detections)
+### 6.1 Fire state
 
-- Inputs per tick: active Deepfire hotspots and the latest satellite perimeter for the cluster; the newest MTG FRP Pixel slots for the bbox.
-- Build our own perimeter from FRP pixels the way the UPC Fire Event Tracker does: DBSCAN (eps 2 km), alpha shape (alpha about the mean nearest-neighbour distance), match to the previous tick, union with Deepfire's perimeter. Keep both on the map with their source labelled.
-- Spread direction and forward rate of spread from the displacement of successive alpha shapes and of FRP-weighted centroids. Quantised to 1 pixel per 10 min, so smooth over 3 slots.
+- Inputs per tick: active Deepfire hotspots and the latest satellite perimeter for the cluster; the newest MTG FRP Pixel slots for the bbox, applied with their real latency (a slot timestamped t is available at t + 20 min).
+- Perimeter(t) is the Deepfire satellite perimeter, unioned with a buffered hull of hotspots detected at or before t. MTG pixels are shown as a layer and used as a trigger. The alpha-shape perimeter derivation from the Fire Event Tracker paper (DBSCAN 2 km, concave hull with alpha = mean nearest-neighbour distance) is stretch: at 30 ha the fire is one or two MTG pixels and the hull is degenerate.
+- Forward rate of spread and direction from the displacement of FRP-weighted hotspot centroids over the last three slots. Used for the smoke-direction check, the persistence baseline, and the fire-front arrow.
 - Static false-positive mask from `deepfire:static-heat-sources`.
-- Replay: the same code fed from archived MTG slots and historical Deepfire hotspots for 3 to 5 July 2026, advanced by the time slider.
+- Replay: the same code fed from archived hotspots with detection time at or before t and MTG slots at or before t minus 20 min, advanced by the time slider. Deepfire archived perimeters may have been recomputed with later hotspots, so replay rebuilds the hull from hotspots rather than trusting the stored perimeter's timestamp.
 
 ### 6.2 Spread forecast
 
 Two sources, both normalised to an arrival-time raster on the common grid:
 
-1. **Deepfire simulation** (ELMFIRE by default) for the cluster, 12 to 24 h, up to 50 ensemble members. Hourly MultiPolygons become arrival time by taking, per cell, the first hour whose polygon covers it; ensemble members give p10/p50/p90 if the API returns per-member results (*semantics unverified*; if not, treat it as the p50 only).
-2. **Own model**, needed for what-if runs and as fallback if the API does not cover Spain:
-   - Preferred: ELMFIRE from the repo Dockerfile (10 to 20 min build) with ZAFM FBFM40 fuels, GLO-30 slope/aspect, zero canopy, hourly Open-Meteo wind stacked as multi-band `ws`/`wd` rasters, ignition = observed perimeter. Tutorial 03's run script is the template. Or Cell2Fire (C2F-W), which takes FBFM40 ASCII grids and has built-in stochastic burn probability with no MPI.
-   - Guaranteed fallback: numpy cellular automaton in the style of Alexandridis et al. (2008), `p = p0 * fuel * wind * slope`, 50 to 100 m cells, 100 to 200 runs perturbing wind speed ±30 %, direction ±20 °, p0 and seed. Minutes-per-step calibrated on the first two hours of observed MTG progression, holding the rest out.
-   - Build the CA first (about two hours, guaranteed). Try ELMFIRE in parallel and use its time-of-arrival raster if it runs.
+1. **Deepfire simulation** (ELMFIRE, primary) for the cluster, 12 to 24 h, up to 50 ensemble members. Hourly MultiPolygons become arrival time by taking, per cell, the first hour whose polygon covers it. If the API returns per-member results, ensemble members give p10/p50/p90; if not, treat it as p50 and derive the spread from the CA. A 50-member run may take longer than the refresh tick; measure in phase 0 and pick the member count accordingly.
+2. **Own model**, for what-if runs and as fallback if the API does not cover Spain: numpy cellular automaton in the style of Alexandridis et al. (2008), `p = p0 * fuel * wind * slope`, 50 to 100 m cells, 100 to 200 runs perturbing wind speed ±30 %, direction ±20 °, p0 and seed. ELMFIRE and Cell2Fire are not attempted.
+- Calibration, leak-free: `p0` and minutes-per-step are fixed from the literature or calibrated on one 2025 Catalan fire from the Deepfire and MTG archives, never on Gavarres. Gavarres checkpoints are used only for scoring.
 - Output contract for everything downstream: `arrival_p10`, `arrival_p50`, `arrival_p90`, `burn_prob` arrays on `grid.py`'s grid, plus a `source` string.
-- Calibration data for Gavarres (Ràdio Capital live blog): 30 ha at 13:20, 250 ha at 14:56, 750 ha at 16:04, 1,280 ha at 18:13, 1,800 ha at 20:45, 2,300 ha at 08:00 next day; rate of spread quoted at 2.2 km/h.
+- Gavarres observed progression (Bombers figures relayed by Ràdio Capital and 3cat, whose posting times run 10 to 40 min later): 250 ha at 14:56, 750 ha at 16:04, 1,280 ha at 18:13, 1,800 ha at 20:45, over 2,000 ha by about 22:20. "30 ha at 13:20" *unverified*; "2,300 ha at 08:00 next day" is a stale provisional figure and is dropped. Rate of spread quoted at 2.2 km/h is the afternoon head-fire rate under tramuntana, not a constant from ignition.
 
 ### 6.3 Exposure
 
-- Sample arrival rasters at every building, facility and road segment; aggregate buildings into nuclei (cadastre or OSM place polygons, else DBSCAN on building centroids).
-- Per asset: class, occupancy (care-home `capacitat`, campsite `total_places`, school enrolment if available, census population for nuclei), burn probability, p10 and p50 arrival, INFOCAT municipal vulnerability level, Pla Alfa level today.
+- Sample arrival rasters at every building, facility and road segment; aggregate buildings into nuclei (OSM place polygons, else DBSCAN on building centroids).
+- Per asset: class, occupancy (care-home `capacitat`, campsite `total_places`, school enrolment if available, allocated population for nuclei), burn probability, p10 and p50 arrival, INFOCAT municipal vulnerability level, Pla Alfa level today.
 - Ranking: p10 arrival minus a class-specific lead time (care home and hospital longest, campsite and school next, residential nuclei shortest). The lead-time table is a config file shown in the UI.
 - Tiers: **act now**, **prepare**, **monitor**, from thresholds on lead-adjusted p10 and burn probability. Config values, shown in the UI.
-- **`needs_review` flag.** The exposure engine marks any asset where the deterministic answer is not trustworthy, with a reason code. This is the hand-off point to the agent (section 6.6). Reason codes, from the edge cases we expect to hit often:
-  - `occupancy_unknown`: no capacity, places or population field matched (geocode failed, dataset join failed).
-  - `occupancy_seasonal`: school in July, campsite or children's camp, second-home urbanisation; the register says one thing, the calendar another.
+- **Deterministic edge cases, resolved in code with the pessimistic answer and a note on the asset:**
+  - straddling nucleus: sample per building, cluster buildings by tier, report the nucleus as sub-nuclei.
+  - location conflict between Gencat coordinates and OSM: use the location with the earlier arrival.
+  - spread disagreement between Deepfire simulation and CA: use the earlier arrival, flag the disagreement.
+  - perimeter conflict (Deepfire hotspot inside a nucleus, hull says outside): check `static-heat-sources` and hotspot count; single low-confidence hotspot keeps the deterministic tier with a note.
+- **`needs_review` flag**, for cases that need outside evidence or a human. This is the hand-off to the agent (section 6.6). Day-one reason codes:
+  - `occupancy_unknown`: no capacity, places or population field matched (geocode or join failed).
+  - `occupancy_seasonal`: school in July, campsite or children's camp, second-home urbanisation; register and calendar disagree.
   - `class_ambiguous`: Equipaments category does not say whether a "centre" has beds, whether a hospital is a day clinic, whether a "residència" is elderly care or student housing.
-  - `location_conflict`: Gencat coordinates, cadastre footprint and OSM disagree by more than N m, or a point falls on the wrong side of the arrival isochrone depending on which is used.
-  - `perimeter_conflict`: Deepfire perimeter and MTG-derived perimeter disagree about whether the asset is already inside the fire.
-  - `spread_disagreement`: Deepfire simulation and our model put the asset in different tiers.
   - `no_exit`: routing found no road, or only a track OSM classifies inconsistently.
-  - `straddles_envelope`: a nucleus partly inside p50, partly outside; a single tier is wrong for it.
-  - `not_in_any_dataset`: buildings from cadastre with no matching facility, but a name or footprint suggests a facility (large building beside a sports field, a masia used as a casa de colònies).
+  - Later: `not_in_any_dataset` (large building beside a sports field, a masia used as a casa de colònies).
+- Unmatched geocodes and joins are edge cases, not blockers; the ingestion owner writes each one down as it happens (section 10, edge-case set).
 
 ### 6.4 Decision rule: confine or evacuate
 
-The INFOCAT plan (2023 revision) makes confinement the default and allows evacuation only when danger is imminent, confinement is unsafe, and evacuation is viable. Encode it as explicit rules per nucleus or facility:
+INFOCAT practice, as applied at Gavarres: evacuate early while there is time and an open road; confine when the exit window has closed or when moving people is worse than sheltering them; care homes and hospitals are the last to be moved and are confined with Bombers protection unless clearly threatened. The rule is window-based, per nucleus or facility:
 
-- **Imminent:** lead-adjusted p10 arrival under the config threshold and burn probability above it.
-- **Confinement unsafe:** any of: no protection strip (from DIBA franges data where available, else buildings within N m of the burn-probability envelope), high-vulnerability occupancy (care home, hospital, camp with tents), or the nucleus is inside the p90 envelope with high intensity (from ELMFIRE flame length if available).
-- **Evacuation viable:** at least one exit route whose cut time exceeds departure plus travel time plus buffer, road not in SCT closures, capacity sanity check (vehicles needed versus one lane), smoke direction not over the route (from FROS vector).
-- Output: `confine`, `evacuate`, or `monitor` with the three checks and their evidence listed. The agent phrases this as a recommendation for the INFOCAT director; the UI labels it as such.
+- **Exposed:** inside the burn-probability envelope above the config threshold, or lead-adjusted p10 arrival under the config horizon.
+- **Exit window:** for the best exit route, `cut_time - now - load_time(class, occupancy) - travel_time - buffer`. Load time is a config table (campsite and school short, residential medium, care home long). Route must not be in SCT closures, the smoke direction from the FROS vector must not lie over it, and vehicles needed must fit one lane in the window.
+- **Outputs:**
+  - `evacuate`: exposed and window open. Shown with the latest departure time and the destination.
+  - `confine`: exposed and window closed, or not yet exposed but inside the p90 envelope; shelter is viable (built nucleus, not tents).
+  - `confine, request protection`: exposed, window closed, and shelter not viable (tents, isolated masia, only a track). This is the headline case when it exists.
+  - `monitor`: otherwise.
+- Care homes and hospitals: default is `confine` even with the window open, unless burn probability at the building exceeds the high threshold; then `evacuate` with the medical-destination escalation from 6.5. This matches practice and avoids the demo recommending an evacuation the real director would not order.
+- The rule can also output a staged sequence: `confine now, evacuate when bus and route confirmed`, which is what actually happened at Pou del Glaç (ES-Alert confinement at 10:30, bus later). The demo shows this sequence, not a bare "evacuate".
+- Factors a coordinator will raise and the UI states as not modelled: smoke and visibility inside the nucleus, night-time evacuation, and ES-Alert drafting lag. Who issues is shown on every output: the director del pla or alcalde orders, CECAT sends the ES-Alert, we recommend.
+- Output carries the three checks and their evidence. The UI labels every output "recommendation for the INFOCAT director".
 
-### 6.5 Receiving facilities and routing
+### 6.5 Reception centres, medical destinations and routing
 
-This is the "which hospital, which school" half of the track that v1 missed.
+This is the "which hospital, which school" half of the track.
 
-- Road graph from osmnx; each edge gets a cut time = earliest p10 arrival along it; SCT closures remove edges.
-- Candidate destinations from Equipaments: hospitals and sociosanitaris for care-home and medical evacuees; pavellons, schools and albergs outside the p90 envelope for general population; must be outside the ensemble envelope with a margin and reachable before cut time.
-- For each evacuated group: destination by class match and shortest safe travel time, route, latest safe departure, and the first road to be cut. Flag nuclei whose only exit is cut early; that is the headline if one exists (at Gavarres, GI-660 km 1 to 12 was closed while nuclei south of the C-66 were being confined).
-- Stretch: stagger departures for nuclei sharing an exit.
+- Road graph from osmnx (cached GraphML); each edge gets a cut time = earliest p10 arrival along it; SCT closures issued before t remove edges.
+- Destination type by class, shown as two UI columns, **reception centre** and **medical destination**:
+
+| Evacuee class | Reception centre | Medical destination |
+|---|---|---|
+| Residential nucleus, urbanisation | pavelló, alberg, school as centre d'acollida | none by default |
+| Campsite, children's camp, school | pavelló, alberg, school | none by default |
+| Care home (residència, sociosanitari) | none | another residència or sociosanitari with free beds, else pavelló with Creu Roja support; **escalate "beds confirmed?"** |
+| Hospital, CAP with inpatients | none | hospital; **escalate "beds confirmed with CatSalut?"**; no dataset has bed availability |
+| Isolated masia, no shelter | nearest pavelló | none |
+
+- Candidates from Equipaments, filtered to outside the ensemble envelope **at the departure time plus a margin**, not outside p90 for all time: Espai Ridaura, the real Vall Repòs destination, sits in Santa Cristina d'Aro, which was itself confined at 15:41; a strict filter rejects the true answer. Log this as a validation nuance.
+- For each evacuated group: destination by class match and shortest safe travel time, route, latest safe departure, first road to be cut. Nuclei whose only exit is cut early are flagged; at Gavarres GI-660 km 1 to 12 was closed while nuclei south of the C-66 were being confined.
+- Shared-exit capacity: vehicles needed for all nuclei on the same exit versus one lane in the window. Staggering departures is stretch.
 
 ### 6.6 Agent
 
-The agent exists because the values-at-risk calculation has edge cases on almost every fire, and a rule-based pipeline either silently gets them wrong or stalls. The agent's core job is **edge-case triage**: take each asset flagged `needs_review`, investigate with tools, and either resolve it with cited evidence or escalate it as a specific question the coordinator can answer in one sentence. Everything else (watch loop, what-if, alerts) hangs off the same tool layer.
+The agent exists because the values-at-risk calculation has edge cases on almost every fire, and a rule-based pipeline either silently gets them wrong or stalls. The agent's core job is **edge-case triage**: take each `needs_review` asset, investigate with tools, and either resolve it with cited evidence (pessimistic direction only) or escalate it as a specific question the coordinator can answer in one click. Everything else (watch loop, what-if, alerts) hangs off the same tool layer.
 
-Tools (every number the agent states comes from one of these):
-- Fire: `list_active_fires(bbox)`, `get_fire(cluster_id)` (Deepfire OGC and the Deepfire MCP tools), `get_mtg_pixels(bbox, t)`
-- Pipeline: `run_pipeline(cluster_id | ignition_point, t)` returns a scenario id; `run_whatif(scenario_id, wind_speed, wind_dir, wind_shift_time, closed_roads)`; `diff_scenarios(a, b)`
-- Results: `get_assets(scenario_id, tier?, needs_review?)`, `get_decision(scenario_id, nucleus)`, `get_route(scenario_id, nucleus)`
-- Investigation: `lookup_facility(name | id)` across Equipaments, care-home, campsite and school registers; `lookup_buildings(bbox)` from cadastre with use codes; `sample_raster(layer, point)` for arrival time and burn probability at any point; `web_search(query)` restricted to gencat, municipal sites and the facility's own site (opening dates, capacity, whether a camp is in session); `check_road(edge_id)` for OSM tags, SCT closure status and cut time
-- Mutation: `add_override(asset_id, field, value, evidence)`, `set_tier(asset_id, tier, reason)`, `escalate(asset_id, question, options)`
-- Output: `draft_alert(scenario_id, nucleus, audience, lang)`
+Day-one tools (seven, every number the agent states comes from one of these):
+- `get_assets(scenario_id, tier?, needs_review?)`, `get_decision(scenario_id, nucleus)`, `get_route(scenario_id, nucleus)`
+- `lookup_facility(name | id)` across Equipaments, care-home, campsite and school registers, returning all candidate matches with their fields
+- `sample_raster(layer, point)` for arrival time and burn probability at any point
+- `add_override(asset_id, field, value, evidence)` and `escalate(asset_id, question, options, default)`; `set_tier` is `add_override` on the tier field
+- `draft_alert(scenario_id, nucleus, audience, lang)`
+
+Later tools: `list_active_fires(bbox)`, `get_fire(cluster_id)` (Deepfire OGC and MCP), `run_pipeline`, `run_whatif(scenario_id, wind_speed, wind_dir, wind_shift_time)`, `diff_scenarios`, `check_road(edge_id)`, and `web_search` restricted to gencat, municipal sites and the facility's own site. In replay, `web_search` is disabled or date-capped at t; otherwise it finds July news and the triage recites the ground truth. For the demo's seeded edge cases, a fixture of pre-fetched pages dated before the fire stands in for live search.
+
+The override record stores `{value, source, quoted_snippet, fetched_at, confidence, direction}` and renders in the UI with a reject button. A post-check on every agent message verifies that each number in it appears in a tool result of that turn.
 
 Behaviour, in build order:
-1. **Watch loop:** every tick, if a new cluster appears in Catalonia, a Bombers actuació of type vegetation fire appears, or a tracked cluster's perimeter changed materially, run the pipeline and post a summary of what changed. Tier and decision changes only; no spam.
-2. **Edge-case triage:** for each `needs_review` asset, in tier order, run an investigate-resolve-or-escalate loop with a step cap. Examples of the loop on Gavarres:
-   - Pou del Glaç is in the school register as a casa de colònies with no occupancy on 3 July. The agent searches the operator's site, finds a summer programme, sets occupancy to "camp in session, about 150 children" with the source, and raises the tier because the lead time for children is longer.
-   - A "residència" in la Bisbal matched by name has no capacity in the register. The agent finds it in the social-services register under a slightly different name, takes its `capacitat`, and records the join.
-   - Vall Repòs straddles the p50 envelope. The agent splits it into two sub-nuclei by street, re-samples the rasters, and reports tiers for each.
-   - Deepfire's perimeter shows a hotspot inside the Calonge urbanisation while the MTG-derived front does not. The agent checks `static-heat-sources` and pixel FRP, finds a single low-confidence hotspot, and keeps the asset in "prepare" with a note.
-   - Routing finds no exit for a masia except a track. The agent checks OSM tags, cannot determine passability, and escalates: "Can Xic: only exit is an unpaved track (tracktype unknown). Is it passable by car? yes / no." The escalation sits in the coordinator queue with the tier assumed pessimistically until answered.
-   Every resolution writes an override with evidence; every escalation is one question with a default. Both appear in the UI, and the validation (section 10) counts how many edge cases the agent resolved correctly on the replay.
-3. **What-if chat:** "what if the wind swings east at 18:00?" becomes a tool call, a rerun and a diff. Assets that change tier are re-triaged.
-4. **Alert drafting:** per nucleus and audience (residents, care-home director, camp director, INFOCAT director) in Catalan, Spanish and English, using the ES-Alert style, citing the numbers and route.
-5. **Free-text ingestion:** paste a municipal notice or a radio message; the agent extracts an override with evidence and reruns. This is the same mutation path as triage, so it comes almost for free.
+1. **Edge-case triage:** for each `needs_review` asset, in tier order, an investigate-resolve-or-escalate loop with a step cap. The honest examples on Gavarres:
+   - Can Xic (masia): routing finds only a track. The agent checks OSM tags, cannot determine passability, and escalates: "Only exit is an unpaved track (tracktype unknown). Passable by car? yes / no. Default: no, tier act now, confine and request protection." The question sits in the coordinator queue with the pessimistic default applied until answered.
+   - A "residència" in la Bisbal matched by name has no capacity in Equipaments. The agent finds it in the social-services register under a slightly different name, takes its `capacitat`, records the join with both names as evidence. Occupancy goes up, so no escalation needed.
+   - Pou del Glaç is in the school register as a casa de colònies with no occupancy field. The register says casa de colònies; the operator's page (fixture) says July programmes. The agent sets occupancy pessimistically to the site's stated capacity, raises the tier (children have a longer lead time), and escalates: "Children on site today? yes / no. Default: yes, about N." It does not claim "150 children"; that number came from the press after the fact.
+   - A campsite whose `total_places` matched but whose class is ambiguous (bungalows or tents): the agent cannot tell from the registers, keeps the pessimistic "tents, shelter not viable" and escalates with the two options.
+   Every resolution writes an override with evidence; every escalation is one question with a default. Both appear in the coordinator queue, and the validation (section 10) counts how many the agent resolved correctly, escalated, or got wrong with confidence.
+2. **Watch loop:** every tick, if a new cluster appears in Catalonia, a Bombers actuació of type vegetation fire appears, or a tracked cluster's perimeter changed materially, run the pipeline and post a summary of what changed. Tier and decision changes only; no spam.
+3. **What-if chat:** "what if the wind swings east at 18:00?" becomes a tool call, a CA rerun and a diff. Assets that change tier are re-triaged. Wind only on day one.
+4. **Alert drafting:** per nucleus and audience (residents, care-home director, camp director, INFOCAT director) in Catalan, Spanish and English, ES-Alert style, citing the numbers, the route and the departure time from the tool results.
+5. **Free-text ingestion** (stretch): paste a municipal notice; the agent extracts an override with evidence and reruns.
 
-Guardrails: tool results only, temperature low, tool calls visible in the UI, a step cap per asset, every message prefixed "recommendation, not an order". The agent may change occupancy, class, location and tier only through `add_override` and `set_tier`, so every change is logged and reversible.
+Guardrails: tool results only, visible tool calls, step cap per asset, pessimistic-only autonomy, evidence-carrying reversible overrides, number post-check, every message prefixed "recommendation, not an order". Do not pitch "low temperature" as a guardrail.
 
 ### 6.7 UI
 
-Streamlit with pydeck or folium. Map layers: Deepfire perimeter, our MTG-derived perimeter with FROS arrow, arrival isochrones, burn-probability shading, assets coloured by tier with decision icon, routes, cut roads, SCT closures, INFOCAT vulnerability as a faint choropleth. Time slider (replay) or auto-refresh (live). Side panel: asset table. Bottom panel: agent chat with visible tool calls, the change log, and the **coordinator queue** (open escalations, one question each, answerable with a click). A mode switch between live and replay.
+Streamlit with pydeck or folium. Map layers: Deepfire perimeter, hotspot hull with fire-front arrow, MTG pixels, arrival isochrones, burn-probability shading, assets coloured by tier with decision icon, routes, cut roads, SCT closures. Time slider (replay) or auto-refresh (live). Side panel: asset table with the two destination columns. Bottom panel: the **coordinator queue** (open escalations, one question each, answerable with a click that re-tiers the asset on screen), the change log, and the agent chat with visible tool calls. A mode switch between live and replay. Every replay slot and the scripted what-if are precomputed and keyed by scenario hash; `st.cache_data` on everything; rasters as pre-rendered tiles or downsampled images, not live pydeck rasters.
 
 ## 7. Tech stack
 
-Python, numpy, rasterio, geopandas, shapely, scikit-learn (DBSCAN), alphashape, osmnx, networkx, requests, Streamlit, an LLM API with tool calling. Optional Docker for ELMFIRE. One repo, `make demo`, `data/` pre-populated.
+Python, numpy, rasterio, geopandas, shapely, scikit-learn (DBSCAN), osmnx, networkx, requests, Streamlit, an LLM API with tool calling. No Docker. One repo, `make demo`, `data/` pre-populated.
 
-## 8. Phase 0: first hours (in this order, in parallel where possible)
+## 8. Phase 0: hours 0 to 3, in parallel, budgeted in section 9
 
-1. Register at LSA SAF (mokey.lsasvcs.ipma.pt) and download the MTG FRP Pixel slots for 2026-07-03 to 2026-07-05 (144 files per day). Read one `.csv.gz` and record the column names.
-2. Create a Deepfire account and API client. Confirm the Gavarres cluster exists (hotspots and perimeters, July 2026). **Run one fire-spread simulation on a Spanish cluster** to confirm Spain is a modelled region and to see what `ensembleMembers > 1` returns. Ask the mentors about rate limits for the event and whether the values-at-risk endpoint can be previewed.
+Registrations and requests, all fired in the first 15 minutes, then treated as upgrades that land when they land:
+1. Register at LSA SAF (mokey.lsasvcs.ipma.pt). When approved, download the MTG FRP Pixel slots for 2026-07-03 to 2026-07-05 and record the ListProduct column names. Until then, replay runs on Deepfire hotspots with `source = 'MTG_I1'`.
+2. Create a Deepfire account and API client. Confirm the Gavarres cluster exists (hotspots and perimeters, July 2026). **Run one fire-spread simulation on a Spanish cluster** to confirm Spain is a modelled region, time a 1-member and a 10-member run, and see what `ensembleMembers > 1` returns. Ask the mentors about rate limits for the event and what the values-at-risk endpoint will return.
 3. Get a FIRMS MAP_KEY as a backup detection source.
 4. Open EMSR888 in a browser and download delineation and grading vectors; note acquisition timestamps. Ask Agents Rurals or DACC for the 2026 perimeter SHP.
-5. Pull the Gencat datasets listed in section 5 for the Baix Empordà and neighbouring comarques into `data/`; geocode care homes and campsites once and cache. Note every asset where the join or geocode fails: that list seeds the edge-case test set in section 10.
-6. Download ZAFM-DW Spain, GLO-30 tiles and ICGC land cover for the Gavarres bbox; build `grid.py` and check that all rasters align.
-7. Try the ELMFIRE Docker build once. If it does not run in an hour, note it and plan on Cell2Fire or the CA.
-8. Pull Open-Meteo Previous Runs data for 3 to 5 July 2026 at a 0.1 deg grid over the bbox and cache it.
-9. Reconstruct the Gavarres ground-truth timeline into `data/gavarres_truth.json` (section 10).
-10. Confirm with organisers the exact duration and submission format; ask the Deepfire mentors for their list of common values-at-risk edge cases and add them to the reason codes in section 6.3.
+5. Ask the organisers the exact duration and submission format; ask the Deepfire mentors for their list of common values-at-risk edge cases; ask whether a Bombers or Protecció Civil mentor can sanity-check section 6.4.
 
-## 9. Timeline (about 24 working hours; scale proportionally)
+Downloads and scaffolding, hours 0 to 3:
+6. Pull the Gencat datasets in section 5 for the Baix Empordà and neighbouring comarques into `data/`; join care homes and campsites once and cache. **Write down every asset where the join or geocode fails** with the true answer if it can be found in five minutes: this list is the edge-case test set in section 10.
+7. Download ZAFM-DW Spain (crop before warp), GLO-30 tiles and ICGC land cover for the Gavarres bbox; build `grid.py` (EPSG:25831) and check that all rasters align.
+8. Cache the osmnx drive graph for the Gavarres bbox and for a Catalonia-wide coarse graph as GraphML.
+9. Pull Open-Meteo Previous Runs (`ecmwf_ifs025`) for 3 to 5 July 2026 at a 0.1 deg grid over the bbox and cache it.
+10. Reconstruct the Gavarres ground-truth timeline into `data/gavarres_truth.json` (section 10), with a source URL per entry and a `verified` flag.
+11. Agree the contracts in section 11 and commit stubs: fixture asset table, fixture arrival raster from a synthetic ignition, scenario id.
 
-| Phase | Hours | Deliverable | Done when |
-|---|---|---|---|
-| 1. Common grid and feeds | 0 to 3 | Rasters aligned; `feeds.py` returns Deepfire clusters/perimeters and MTG slots for a bbox and time | One plot with all layers and the Gavarres perimeter at 14:00 on 3 July |
-| 2. Fire state | 3 to 5 | Alpha-shape perimeter and FROS from MTG pixels; matches Deepfire perimeter roughly | Replay animation of 3 July looks right |
-| 3. Spread | 5 to 9 | Deepfire simulation ingested; CA ensemble running; ELMFIRE attempt in parallel | Arrival rasters from at least one source; CA front roughly matches 13:20 to 16:04 progression |
-| 4. Exposure and decision | 9 to 13 | Asset table with tiers and confine/evacuate rule | Vall Repòs and Pou del Glaç appear at the top with plausible times |
-| 5. Routing and destinations | 13 to 16 | Routes, cut times, receiving facilities | GI-660 shows as cut early; routes avoid it |
-| 6. Agent | 16 to 19 | Edge-case triage, watch loop, what-if, alerts | Triage resolves the seeded Gavarres edge cases; scripted demo questions work 5 times in a row |
-| 7. Validation | 19 to 21 | Section 10 numbers | One slide |
-| 8. Live mode, polish, rehearsal | 21 to 24 | Live Catalonia view with synthetic ignition, backup video, pitch | Two full dry runs |
+## 9. Timeline (about 24 working hours, four lanes; scale proportionally)
 
-Cut lines if behind, in order: free-text ingestion, ELMFIRE (keep CA), staggered departures, INFOCAT choropleth, live mode (keep replay plus a screenshot of the live feed working). Never cut validation or edge-case triage; triage is the agentic part of the track.
+Sync points: **S1 (hour 3)** contracts and stubs committed, `grid.py` and `feeds.py` return data for the Gavarres bbox. **S2 (hour 10)** real asset table and at least one real arrival raster. **S3 (hour 17)** end-to-end replay at 10:00, 12:00 and 14:00 with decisions, routes and triage. **S4 (hour 22)** freeze; rehearsal only.
+
+| Lane | 0 to 3 | 3 to 10 | 10 to 17 | 17 to 22 | 22 to 24 |
+|---|---|---|---|---|---|
+| 1. Feeds and fire state | Phase 0 items 1 to 3, 7, 8; `grid.py`, `feeds.py` with `as_of` | Fire state from Deepfire hotspots and perimeters; MTG layer when access lands; replay slot precompute | Live mode: Deepfire poll, Bombers trigger, synthetic ignition, pre-warmed point | Latency measurement; live-mode hardening; cached snapshots | Rehearsal |
+| 2. Spread | Phase 0 item 2 and 9; CA skeleton on the fixture grid | Deepfire simulation ingested to arrival rasters; CA ensemble running; CA calibrated on a 2025 fire | Scripted what-if precomputed; ensemble member count tuned to run time | Spatial and timing validation numbers | Rehearsal |
+| 3. Assets, decision, routing | Phase 0 items 4, 6, 10; edge-case list started | Asset table on real data; deterministic edge cases; tiers | Decision rule 6.4; routing and destinations 6.5; edge-case set labelled and half held out | Asset-level, decision and road validation numbers; validation slide | Rehearsal |
+| 4. Agent and UI | LLM tool harness and Streamlit skeleton against fixtures; item 5 and 11 | Seven tools against fixtures; triage loop; coordinator queue | Triage on real assets; watch loop; alerts; what-if wiring | Demo script, backup video, polish | Rehearsal |
+
+Done-when per sync point: S1, one plot with all layers and the Gavarres perimeter at 14:00 on 3 July from `feeds.py`. S2, Vall Repòs and Pou del Glaç appear at the top of the asset table with plausible times. S3, GI-660 shows as cut early, routes avoid it, Can Xic escalation appears in the queue, scripted demo questions work five times in a row. S4, two full dry runs.
+
+Cut lines if behind, in order: free-text ingestion, what-if, alert languages beyond Catalan, live mode (keep replay plus a screenshot of the live poll working), INFOCAT context columns. Never cut validation or triage on the four day-one reason codes; triage is the agentic part of the track. ELMFIRE, Cell2Fire, cadastre, INE and MTG alpha shapes are not started, not cut.
 
 ## 10. Validation (Les Gavarres, 3 to 5 July 2026)
 
-Ground truth to reconstruct in phase 0 (sources: ca.wikipedia "Incendi de les Gavarres de 2026", Ràdio Capital live blog, govern.cat press notes 843820, 844100, 844400, 844440, 3cat, labisbal.cat):
+Ground truth, checked on 2026-09-19 against ca.wikipedia, 3cat live blogs, Vilaweb, ElNacional, Crònica Global, labisbal.cat and the Copernicus EMSR888 news post. Items marked *unverified* keep the source's value but are not used as scored targets.
 
-- Ignition about 09:15 on 3 July, GI-660 south of la Bisbal d'Empordà near barri Sant Pol (about 41.95 N, 3.03 E; verify against EMSR888).
-- ES-Alert confinements: 10:30 Sant Pol and the Pou del Glaç children's camp (150 kids); 13:16 Vall Repòs; 14:45 to 14:52 dispersed nuclei south of the C-66; 15:41 seven municipalities (la Bisbal, Cruïlles-Monells-Sant Sadurní, Calonge-Sant Antoni, Castell-Platja d'Aro, Forallac, Llagostera, Santa Cristina d'Aro).
-- Evacuations: Vall Repòs at 12:54 (about 70 people to Espai Ridaura); 80 children from the Romanyà de la Selva camp; Pou del Glaç by bus.
-- Roads: GI-660 km 1 to 12 closed, GIV-6612 closed, GI-664 residents only, C-66 temporarily closed.
-- Damage: 8 homes destroyed and 7 damaged in Les Cabanyes (Calonge) and Vall Repòs (Santa Cristina d'Aro). Final area 2,197.57 ha, 40 km perimeter. Stabilised 4 July 22:03. Confinements lifted 5 July 08:47.
+- Ignition **shortly after 09:45** on 3 July (not 09:15), GI-660 km 3 south of la Bisbal d'Empordà near barri Sant Pol (about 41.95 N, 3.03 E). The Wikipedia infobox coordinate (41.9158 N, 2.9794 E) is the burn centroid, not the ignition.
+- ES-Alert confinements: 10:30 Sant Pol and the Pou del Glaç children's camp (about 150 children) confirmed. Vall Repòs confinement time (13:16) *unverified*. A 3cat entry at 14:14 already reports six municipalities confined, so "14:45 to 14:52 nuclei south of the C-66" and "15:41 seven municipalities" are *unverified* as times; the seven-municipality list (la Bisbal, Cruïlles-Monells-Sant Sadurní, Calonge-Sant Antoni, Castell-Platja d'Aro, Forallac, Llagostera, Santa Cristina d'Aro) is confirmed.
+- Evacuations: Vall Repòs at 12:54, about 70 residents plus about 70 children and 10 monitors to Espai Ridaura, smoke-driven; about 150 residents evacuated in total, most to friends, 18 to a hotel, later Casa Santa Elena in Solius. About 80 children from the Romanyà de la Selva camp (Santa Cristina pavilion or Espai Ridaura, sources differ). Pou del Glaç: about 50 bussed out on 3 July, about 60 stayed confined overnight.
+- Roads: GI-660 km 1 to 12 closed; GIV-6612 km 0 to 15 closed; GI-664 (Cassà to Cruïlles) residents only; C-66 temporarily closed, reopened about 21:56 on 4 July.
+- Damage: **11 homes with severe structural damage, 14 partial, 25 total** (not 8 and 7), in Les Cabanyes (Calonge), Vall Repòs (Santa Cristina d'Aro), Mas Ambròs, Cruïlles and la Bisbal. Les Cabanyes impact about 23:46 on 3 July. Final area 2,197.57 ha (2,128.97 forest, 53.14 agricultural, 15.46 urban), 40 km perimeter. Stabilised the night of 4 July (22:03 *unverified*; announcements logged 22:13 and 23:56). Confinements lifted late morning 5 July (08:47 *unverified*; residents home by about 11:45).
+- Rate of spread 2.2 km/h confirmed as the afternoon rate under tramuntana.
+
+Leak rules for the replay, asserted in `feeds.py` and stated on the slide: the pipeline at time t sees only hotspots detected at or before t, MTG slots timestamped at or before t minus 20 min, SCT closures issued before t, and the Previous Runs forecast slice for t. EMSR888, the Agents Rurals perimeter and the truth file are read only by the scorer. `web_search` is off in replay.
 
 Metrics, reported honestly including misses:
-- **Spatial:** IoU of the burn-probability > 0.5 envelope (from Deepfire's simulation and from ours, separately) against the Agents Rurals or EMSR888 final perimeter, from the 10:00, 12:00 and 14:00 states. Reliability check on the 70 to 80 % bin.
-- **Asset-level:** for each real confinement or evacuation, at what replay time did we first put that nucleus in "act now", and what lead time does that give versus the real ES-Alert time. For Vall Repòs and Les Cabanyes, whether the destroyed-homes area was inside our envelope. False alarms: nuclei we flagged that were never affected.
-- **Decision:** whether our confine/evacuate rule agrees with what was actually done (Vall Repòs evacuated, most others confined).
-- **Roads:** whether GI-660 and GIV-6612 are the roads we predict cut first, and when.
-- **Timing:** predicted versus observed front position at the six area checkpoints in section 6.2.
-- **Edge cases:** build a labelled set of 15 to 30 `needs_review` assets from the Gavarres bbox (seasonal camps, unmatched care homes, straddling nuclei, track-only exits, conflicting perimeters) with the true answer found by hand. Report how many the agent resolved correctly, how many it escalated, and how many it got wrong with confidence. The last number matters most.
-- **Baseline:** a circular buffer at 2.2 km/h. If neither model beats it, say so.
-- **Real-time claim:** measured end-to-end latency from an MTG slot timestamp to an updated asset table.
+- **Headline, impact-relative lead time.** For each nucleus that was actually damaged (Les Cabanyes, Vall Repòs, Mas Ambròs) and each nucleus that was actually evacuated: the replay time at which we first put it in `act now`, the real ES-Alert or evacuation time, and the observed impact time from MTG or EMSR888. "Using only data available at HH:MM, we put Les Cabanyes in act-now X hours before homes burned there." The ES-Alert comparison is context, because it includes human decision latency.
+- **Precision and recall at nucleus level.** Candidate universe: every nucleus and facility in the seven confined municipalities plus a 2 km buffer. A nucleus put in `act now` that ended more than 1 km outside the final perimeter and was never confined or evacuated is a false alarm.
+- **Decision:** agreement of our output sequence with what was actually done (Vall Repòs evacuated, Pou del Glaç confined then bussed, most others confined). Count the cases where we say `evacuate` and the real order was `confine`.
+- **Spatial:** IoU of the burn-probability > 0.5 envelope (Deepfire simulation and CA, separately) against the EMSR888 or Agents Rurals final perimeter, from the 12:00 and 14:00 states. Reliability on the 70 to 80 % bin.
+- **Timing:** predicted versus observed front position at the confirmed area checkpoints in 6.2.
+- **Baselines:** persistence (extrapolate the FROS vector at t) and Deepfire's own simulation. Not a 2.2 km/h buffer, which is this fire's observed rate.
+- **Roads:** whether GI-660 and GIV-6612 are the roads we predict cut first, and when, scored against the closure times.
+- **Edge cases:** the list from phase 0 item 6 plus cases found during lane 3, target 10 to 15, labelled by the lane-3 owner before the agent prompt is written, with half held back from the agent developer. Report on the held-out half: resolved correctly, escalated, wrong with confidence. The last number is the one we say out loud; the target is zero.
+- **Real-time claim, two clocks:** data age (MTG about 20 min, Deepfire 60 s cache, not ours) and processing latency from feed publication to updated asset table (ours, target under one minute). Lead with the Deepfire clock for live mode.
 
 ## 11. Roles (team of 4; merge for fewer)
 
-| Role | Owns |
+| Lane | Owns |
 |---|---|
-| Feeds and geo | `feeds.py` (Deepfire, MTG, Bombers, SCT), `grid.py`, fire state, Gencat asset ingestion, ground-truth file |
-| Spread | Deepfire simulation ingestion, CA, ELMFIRE/Cell2Fire attempt, calibration |
-| Decision and routing | Exposure, INFOCAT rule, routing, receiving facilities, validation metrics |
-| Agent and UI | Tools, watch loop, what-if, alerts, Streamlit, demo script, video |
+| 1. Feeds and fire state | `grid.py`, `feeds.py` with `as_of` (Deepfire, MTG, Bombers, SCT), fire state, replay slot precompute, live mode, latency numbers |
+| 2. Spread | Deepfire simulation ingestion, CA, calibration on a 2025 fire, what-if precompute, spatial and timing validation |
+| 3. Assets, decision, routing | Gencat ingestion and joins, edge-case list and labels, asset table, deterministic edge cases, decision rule, routing and destinations, ground-truth file, asset-level and decision validation |
+| 4. Agent and UI | Tool harness from hour 0, seven tools, triage loop, coordinator queue, watch loop, what-if wiring, alerts, Streamlit, demo script, video |
 
-Agree in the first hour on: grid CRS (EPSG:25831) and shape, the arrival-raster contract, the asset table schema, the scenario id, and tool signatures. Everyone works against stubs after that.
+Agree by S1 on: grid CRS (EPSG:25831) and shape, the arrival-raster contract, the asset table schema including `needs_review` and override fields, the decision output schema, the scenario id, and the seven tool signatures. Everyone works against stubs after that. Lane 4 never waits for real data before S2.
 
 ## 12. Demo script (3 minutes)
 
-1. (20 s) Problem: at Gavarres, seven municipalities were confined and a camp with 150 children was in the path within an hour of ignition. Deepfire tells you where the fire is; we tell the INFOCAT director what to do about it.
-2. (30 s) Live mode: the agent is watching Deepfire and MTG over Catalonia. Drop a synthetic ignition; watch the pipeline run, tool calls visible.
-3. (50 s) Replay at 10:00 on 3 July: MTG-derived front, Deepfire spread, asset table. "Pou del Glaç camp: act now, evacuate, 150 children, receiving centre Espai Ridaura, via GI-664, leave by 10:40; GI-660 cut in about 90 minutes." Advance the slider to 12:00: Vall Repòs flips from confine to evacuate; the change log shows why.
-4. (30 s) What-if: "wind swings to tramuntana at 15:00". Rerun, diff, two nuclei change tier.
-5. (20 s) Alert for the camp director in Catalan and for campsite tourists in English.
-6. (20 s) Validation slide: lead time we would have given for each real ES-Alert, IoU, and the one thing we got wrong.
+1. (20 s) Problem: at Gavarres, seven municipalities were confined and a camp with 150 children was in the path within an hour of ignition. Deepfire tells you where the fire is; we tell the INFOCAT director what to decide, and what is still unresolved.
+2. (25 s) Live mode: the agent is watching Deepfire over Catalonia. Drop the synthetic ignition at the pre-warmed point; the precomputed scenario appears with tool calls visible.
+3. (60 s) Replay, the coordinator queue at 10:00 on 3 July, using only data available then: three decisions and two questions. "Pou del Glaç: act now, confine now and evacuate when the bus and GI-664 are confirmed; capacity about N children; reception centre Espai Ridaura; GI-660 cut in about 90 minutes." "Vall Repòs: prepare." The two open questions are Can Xic's track and whether the camp is in session. The presenter answers Can Xic with a click: the tier changes on screen. Advance the slider to 12:00: Vall Repòs flips to evacuate; the change log shows why.
+4. (25 s) What-if: "wind swings to tramuntana at 15:00". Precomputed rerun, diff, two nuclei change tier.
+5. (20 s) Alert for the camp director in Catalan and for campsite tourists in English, numbers traced to tool calls.
+6. (20 s) Validation slide: hours before impact at Les Cabanyes and Vall Repòs, agreement with the real order sequence, precision and recall, and the one thing we got wrong.
 7. (10 s) Close with section 3.
 
-Backup video recorded before the final rehearsal.
+Only one LLM call runs live (the Can Xic triage). Everything else is precomputed and keyed by scenario hash. Backup video recorded before the final rehearsal.
 
 ## 13. Risks and mitigations
 
 | Risk | Mitigation |
 |---|---|
-| Deepfire fire-spread does not cover Spain, or ensemble semantics unclear | Test in phase 0. Own model is always built; Deepfire polygons become an optional overlay. |
-| Deepfire rate limits or 503 during demo | 60 s cache, cached last snapshot, replay mode is fully offline. |
-| MTG feed outage (demonstration product) | Archive already downloaded for replay; live mode falls back to Deepfire hotspots with `source = 'MTG_I1'`. |
-| ELMFIRE does not build or run | CA is built first; Cell2Fire as middle option. |
-| Geocoding care homes and campsites fails for some | Fall back to OSM POIs for the missing ones; keep the Gencat occupancy fields where matched. |
-| Judges ask "Deepfire already has values at risk" | Answer: ours is the decision layer (confine vs evacuate per INFOCAT, receiving facility, route, latest departure, change log) and it can consume their endpoint when it ships. |
-| Agent states a number it made up | Tool results only, visible tool calls, low temperature, "recommendation" prefix. |
-| Agent resolves an edge case wrongly with confidence | Every resolution carries evidence and is reversible; escalate when evidence is thin; validation counts confident misses. |
-| Triage loops or burns time on one asset | Step cap per asset, tier-ordered queue, pessimistic default tier while unresolved. |
-| Raster or CRS bugs eat the first morning | One shared `grid.py` built first, in phase 0, that everything imports. |
-| Live demo fails | Cached scenario, backup video. |
+| Deepfire fire-spread does not cover Spain, or ensemble semantics unclear | Test in phase 0 item 2. CA is always built; Deepfire polygons become an optional overlay. |
+| Deepfire rate limits, 503 `ogc-busy` or slow ensemble runs during demo | 60 s cache, honour Retry-After, cached last snapshot, replay and demo scenarios fully precomputed. |
+| LSA SAF approval does not land in time | Replay and live both run on Deepfire hotspots with `source = 'MTG_I1'`; MTG layer is an upgrade. |
+| Geocoding care homes and campsites fails for some | They become edge cases with the pessimistic default; OSM POIs fill locations. |
+| Decision rule contradicts what a Bombers or Protecció Civil mentor expects | Rule is window-based and confines by default for care homes; get a mentor to read section 6.4 in phase 0; decision metric in section 10 counts disagreements with the real sequence. |
+| Judges ask "Deepfire already has values at risk" | Two things an API cannot ship: lead time validated against a real ES-Alert timeline, and counted edge-case triage. Show the column-level diff with their endpoint. |
+| Agent states a number it made up | Tool results only, visible tool calls, number post-check, "recommendation" prefix. |
+| Agent resolves an edge case optimistically from a stale page | Optimistic moves are escalations by construction; every override carries source, snippet and fetched-at with a reject button. |
+| Triage loops or burns time on one asset | Step cap per asset, tier-ordered queue, pessimistic default while unresolved. |
+| Replay accidentally uses future information | `as_of` assertion in `feeds.py`; truth file and final perimeters readable only by the scorer; web search off in replay. |
+| Raster or CRS bugs eat the first morning | One shared `grid.py` built in phase 0 that everything imports; crop before warp; ZAFM is EPSG:3035, Pla Alfa is 25831. |
+| Streamlit too slow with rasters and many layers | Precomputed slots, cached data, pre-rendered raster images. |
+| Lane 4 blocked on real data | Harness and UI built against fixtures from hour 0; real data only at S2. |
+| Live demo fails | Precomputed scenario, backup video. |
 
 ## 14. Stretch goals
 
 - Consume Deepfire's values-at-risk endpoint when available and show the diff with ours.
-- Open-Meteo multi-model spread (IFS, ICON, AROME) as wind perturbations instead of fixed ±30 %.
-- Staged departures for nuclei sharing an exit road.
+- MTG alpha-shape perimeters and FROS from successive shapes, per the Fire Event Tracker method, once the fire is large enough.
+- Cadastre INSPIRE building footprints with use codes; INE census sections with Idescat padró for real nucleus population.
+- Staggered departures for nuclei sharing an exit road.
+- Free-text ingestion of municipal notices as overrides.
+- Open-Meteo multi-model spread (IFS, ICON, AROME where available) as wind perturbations instead of fixed ±30 %.
 - Pla Alfa pre-alert: when a municipality goes to level 3 or 4, precompute exposure for its PPP zones so the first live tick is instant.
 - Public view: "your nucleus: decision, route, latest departure" in CA/ES/EN.
 
 ## 15. Open questions for kickoff
 
-- Deepfire: rate limits for the event, fire-spread coverage of Spain, ensemble output format, values-at-risk preview, whether the hackbarna page (deepfire.co/hackbarna) has extra datasets (it rendered empty on fetch).
+- Deepfire: rate limits for the event, fire-spread coverage of Spain, ensemble output format and run time, what the values-at-risk endpoint will return, whether the hackbarna page (deepfire.co/hackbarna) has extra datasets (it rendered empty on fetch).
 - Exact duration and submission format.
 - Deepfire's own list of frequent values-at-risk edge cases, to extend the `needs_review` reason codes.
-- Whether a mentor from Bombers or Protecció Civil can sanity-check the confine/evacuate rule.
+- Whether a mentor from Bombers or Protecció Civil can read section 6.4 and the destination table in 6.5.
+- MTG ListProduct column names (needs the LSA SAF account).
 
 ## Appendix: URLs
 
-- Deepfire docs: https://docs.deepfire.co/api/hotspots, /api/clusters, /api/satellite-perimeters, /api/fire-spread, /guides/authentication, /guides/paging-and-bulk-export, /ai/connect-to-ai. Token: `POST https://api.deepfire.co/v1/token`. MCP: https://api.deepfire.co/mcp
+- Deepfire docs: https://docs.deepfire.co/api/hotspots, /api/clusters, /api/satellite-perimeters, /api/fire-spread, /guides/authentication, /guides/performance-and-limits, /guides/paging-and-bulk-export, /ai/connect-to-ai. Token: `POST https://api.deepfire.co/v1/token` (client_id, client_secret). MCP: https://api.deepfire.co/mcp
 - MTG FRP Pixel: https://datalsasaf.lsasvcs.ipma.pt/PRODUCTS/MTG/MTFRPPixel/NATIVE/YYYY/MM/DD/ (files `LSA-509_MTG_MTFRPPIXEL-ListProduct_MTG-FD_YYYYMMDDhhmm.csv.gz`); signup https://mokey.lsasvcs.ipma.pt/auth/signup; access wiki https://gitlab.com/helpdesk.landsaf/lsasaf_data_access/-/wikis
-- Fire Event Tracker method: https://arxiv.org/abs/2606.06016; FCI-FireDyn: https://arxiv.org/abs/2510.26677
-- Open-Meteo forecast: https://api.open-meteo.com/v1/forecast ; previous runs: https://previous-runs-api.open-meteo.com
-- ELMFIRE: https://github.com/lautenberger/elmfire (Dockerfile, tutorials/03-real-fuels); Cell2Fire: https://github.com/fire2a/C2F-W
-- ZAFM-DW fuels: https://zenodo.org/records/21978709
-- Gencat Equipaments: https://analisi.transparenciacatalunya.cat/resource/8gmd-gz7i.geojson; care homes `ivft-vegh`; campsites `t2h3-cgys`; schools `kvmv-ahh4`; plan activations `wj9c-j6vf`; INFOCAT municipal plans `eqag-gzjs`
+- Fire Event Tracker method (Paugam et al.): https://arxiv.org/abs/2606.06016; FCI-FireDyn: https://arxiv.org/abs/2510.26677
+- Open-Meteo forecast: https://api.open-meteo.com/v1/forecast ; previous runs: https://previous-runs-api.open-meteo.com/v1/forecast (use `ecmwf_ifs025` or `best_match` for July 2026)
+- CA reference: Alexandridis et al. (2008), "A cellular automata model for forest fire spread prediction", Applied Mathematics and Computation
+- ZAFM-DW fuels: https://zenodo.org/records/21978709 (EPSG:3035)
+- Gencat Equipaments: https://analisi.transparenciacatalunya.cat/resource/8gmd-gz7i.geojson; care homes `ivft-vegh`; tourism register `t2h3-cgys` (filter `tipus_establiment`); schools `kvmv-ahh4` (use `coordenades_geo_x/y`); plan activations `wj9c-j6vf`; municipal plan register `eqag-gzjs` (filter `risc`)
 - INFOCAT WMS: https://pcivil.icgc.cat/ogc/geoservei?map=/opt/idec/dades/pcivil/risc_incendis.map&service=WMS&version=1.3.0&request=GetCapabilities ; viewer https://pcivil.icgc.cat/pcivil/v2/index.html
-- Pla Alfa: https://services7.arcgis.com/ZCqVt1fRXwwK6GF4/arcgis/rest/services/Pla_Alfa_Municipal_Avui_FL_2_view/FeatureServer/0
+- Pla Alfa: https://services7.arcgis.com/ZCqVt1fRXwwK6GF4/arcgis/rest/services/Pla_Alfa_Municipal_Avui_FL_2_view/FeatureServer/0 (request `outSR=4326`)
 - Bombers live actuacions: https://services7.arcgis.com/ZCqVt1fRXwwK6GF4/arcgis/rest/services/ACTUACIONS_URGENTS_online_PRO_VW/FeatureServer/0
 - Bombers historical perimeters KML: https://interior.gencat.cat/web/.content/home/serveis/bases_cartografiques/perimetres_cercador_incendis/pericat_qgis.kml ; Agricultura per-year SHP: http://www.gencat.cat/agricultura/sig/bases/incendisYY.zip ; PPP: https://www.gencat.cat/agricultura/sig/bases/perprot.zip
 - Trànsit incidents: http://www.gencat.cat/transit/opendata/incidenciesRSS.xml and incidenciesGML.xml
-- ICGC land cover: https://datacloud.icgc.cat/datacloud/cobertes-sol/gpkg/cobertes-sol-v1r0-2024.zip ; census sections https://datacloud.icgc.cat/datacloud/bseccen_etrs89/shp/
-- Cadastre buildings ATOM: https://www.catastro.hacienda.gob.es/INSPIRE/buildings/ES.SDGC.bu.atom.xml
-- INE sections 2025: https://www.ine.es/prodyser/cartografia/seccionado_2025.zip
+- ICGC land cover: https://datacloud.icgc.cat/datacloud/cobertes-sol/gpkg/cobertes-sol-v1r0-2024.zip ; census sections https://datacloud.icgc.cat/datacloud/bseccen_etrs89/shp/ (browser User-Agent required)
+- Cadastre buildings ATOM (stretch): https://www.catastro.hacienda.gob.es/INSPIRE/buildings/ES.SDGC.bu.atom.xml (browser User-Agent required)
+- INE sections 2025 (stretch): https://www.ine.es/prodyser/cartografia/seccionado_2025.zip
 - INFOCAT plan PDF: https://interior.gencat.cat/web/.content/home/030_arees_dactuacio/proteccio_civil/plans_de_proteccio_civil/plans_de_proteccio_civil_a_catalunya/02-plans-especials/infocat/document_pla_infocat.pdf
 - Copernicus EMSR888: https://mapping.emergency.copernicus.eu/activations/EMSR888/
-- Gavarres sources: https://ca.wikipedia.org/wiki/Incendi_de_les_Gavarres_de_2026 ; https://www.radiocapital.cat/incendi-a-la-bisbal-demporda/
-- DIBA (Barcelona province only): water points https://incendis.diba.cat/fitxers/DadesObertes/json/PuntsAigua.json ; urbanisations https://incendis.diba.cat/fitxers/DadesObertes/shp/UrbanitzacionsNuclis_shp.zip
+- Gavarres sources: https://ca.wikipedia.org/wiki/Incendi_de_les_Gavarres_de_2026 ; 3cat live blogs (directe/10630, directe/10650, noticia/3418433, 3418609, 3418696); https://www.radiocapital.cat/incendi-a-la-bisbal-demporda/ ; Vilaweb, ElNacional, Crònica Global coverage of 3 to 6 July 2026; labisbal.cat
+- DIBA (Barcelona province only, not Gavarres): water points https://incendis.diba.cat/fitxers/DadesObertes/json/PuntsAigua.json ; urbanisations https://incendis.diba.cat/fitxers/DadesObertes/shp/UrbanitzacionsNuclis_shp.zip
