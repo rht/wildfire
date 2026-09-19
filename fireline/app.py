@@ -8,17 +8,18 @@ override rejections live in st.session_state only; nothing is written to disk fr
 
 from __future__ import annotations
 
-import base64
 import json
 import math
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pydeck as pdk
 import streamlit as st
 
 from fireline import config
 from fireline.exposure import TIER_RANK
+from fireline.grid import xy_to_lonlat
 from fireline.scenario import Scenario
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -37,22 +38,47 @@ def load_index() -> dict:
 
 
 @st.cache_data(show_spinner=False)
-def load_layers(name: str) -> tuple[dict, str]:
-    """Map layers and the burn-probability PNG as a data URI (picklable, shared across sessions)."""
+def load_layers(name: str) -> tuple[dict, list[dict]]:
+    """Map layers and the burn-probability cells (picklable, shared across sessions).
+
+    Cells are built from the arrival raster rather than a bitmap: Streamlit's pydeck renderer parses
+    string props as expressions and rejects a base64 data URI ("Unexpected ':' at character 4")."""
     d = SCEN_DIR / name
     layers = json.loads((d / "layers.json").read_text())
-    png = base64.b64encode((d / "burn_prob.png").read_bytes()).decode()
-    return layers, f"data:image/png;base64,{png}"
+    sc = Scenario.from_json(d / "scenario.json")
+    return layers, burn_cells(sc, block=2, min_prob=0.05)
 
 
-def session_scenario(name: str) -> tuple[Scenario, dict, str]:
+def burn_cells(sc: Scenario, block: int = 2, min_prob: float = 0.05) -> list[dict]:
+    """Downsample burn_prob by `block` (max pooling) and return one square polygon per cell above min_prob."""
+    if sc.arrival is None:
+        return []
+    g, bp = sc.arrival.grid, sc.arrival.burn_prob
+    nr, nc = (bp.shape[0] // block) * block, (bp.shape[1] // block) * block
+    pooled = bp[:nr, :nc].reshape(nr // block, block, nc // block, block).max(axis=(1, 3))
+    rows, cols = np.nonzero(pooled >= min_prob)
+    size = g.cell * block
+    x0 = g.xmin + cols * size
+    y1 = g.ymax - rows * size
+    lon0, lat1 = (a.tolist() for a in xy_to_lonlat(x0, y1))
+    lon1, lat0 = (a.tolist() for a in xy_to_lonlat(x0 + size, y1 - size))
+    cells = []
+    for i in range(len(rows)):
+        p = float(pooled[rows[i], cols[i]])
+        cells.append({"polygon": [[lon0[i], lat0[i]], [lon1[i], lat0[i]], [lon1[i], lat1[i]], [lon0[i], lat1[i]]],
+                      "color": [255, int(200 * (1 - p)), 0, int(40 + 160 * p)],
+                      "tip": f"burn probability {p:.2f}"})
+    return cells
+
+
+def session_scenario(name: str) -> tuple[Scenario, dict, list[dict]]:
     """Per-session mutable Scenario (answers and rejections stay in st.session_state). The Scenario
     itself holds the config module, so it is built once per session rather than put in cache_data."""
-    layers, png = load_layers(name)
+    layers, cells = load_layers(name)
     store = st.session_state.setdefault("scenarios", {})
     if name not in store:
         store[name] = Scenario.from_json(SCEN_DIR / name / "scenario.json")
-    return store[name], layers, png
+    return store[name], layers, cells
 
 
 def fmt_min(v) -> str:
@@ -62,9 +88,10 @@ def fmt_min(v) -> str:
 
 
 # ----------------------------------------------------------------------------- map
-def build_deck(sc: Scenario, layers: dict, png_uri: str) -> pdk.Deck:
+def build_deck(sc: Scenario, layers: dict, cells: list[dict]) -> pdk.Deck:
     w, s, e, n = layers["bounds_lonlat"]
-    burn = pdk.Layer("BitmapLayer", data=None, image=png_uri, bounds=[w, s, e, n], opacity=0.75)
+    burn = pdk.Layer("PolygonLayer", data=cells, get_polygon="polygon", get_fill_color="color", stroked=False,
+                     pickable=True)
     perim = pdk.Layer("PolygonLayer", data=[{"polygon": ring, "tip": f"perimeter at {sc.t:%H:%M}Z, "
                                               f"{layers['perimeter_area_ha']} ha"} for ring in layers["perimeter_lonlat"]],
                       get_polygon="polygon", get_fill_color=[120, 0, 0, 120], get_line_color=[120, 0, 0],
@@ -159,7 +186,7 @@ def main() -> None:
         st.stop()
     index = load_index()
     name = sidebar(index)
-    sc, layers, png_uri = session_scenario(name)
+    sc, layers, cells = session_scenario(name)
 
     st.title(f"FireLine - {sc.cluster_id} at {sc.t:%Y-%m-%d %H:%M} UTC")
     st.caption(f"Wind from {layers['wind_dir_deg']:.0f} deg at {layers['wind_speed_mps']:.0f} m/s - spread source "
@@ -172,7 +199,7 @@ def main() -> None:
     c3.metric("Monitor", counts.get("monitor", 0))
     c4.metric("Open questions", sum(1 for e in sc.queue if e["status"] == "open"))
 
-    st.pydeck_chart(build_deck(sc, layers, png_uri), width="stretch")
+    st.pydeck_chart(build_deck(sc, layers, cells), width="stretch")
 
     st.subheader(f"Assets by tier - {DIRECTOR}")
     st.caption("director del pla / alcalde orders, CECAT sends. Times in minutes after t.")
