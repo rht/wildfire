@@ -155,3 +155,15 @@ def test_invalid_success_response_is_ambiguous_and_never_retried():
     with pytest.raises(RuntimeError, match='outcome_unknown'):
         client(t).create_web_session(request())
     assert len(t.calls) == 1
+
+
+def test_result_attachment_accepts_integer_subclasses_but_rejects_boolean_versions():
+    from fireline.slng_voice import result_tool_attachment
+
+    class PublishedVersion(int):
+        pass
+
+    assert result_tool_attachment(AGENT, PublishedVersion(2))['version'] == 2
+    for version in (True, False, 0, 1.5, '1'):
+        with pytest.raises(ValueError, match='version'):
+            result_tool_attachment(AGENT, version)

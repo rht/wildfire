@@ -99,7 +99,8 @@ class SlngClient:
             uuid(body['call_id'])
             for key in ('room_name', 'livekit_url', 'livekit_token'):
                 text(body[key], key, 16384)
-            if type(body['max_session_seconds']) is not int or body['max_session_seconds'] < 60:
+            duration = body['max_session_seconds']
+            if isinstance(duration, bool) or not isinstance(duration, int) or duration < 60:
                 raise ValueError()
         except (KeyError, ValueError):
             raise ProviderError('outcome_unknown: invalid session response') from None
@@ -173,7 +174,7 @@ def result_tool_configuration(url, secret_name):
 
 
 def result_tool_attachment(tool_id, version):
-    if type(version) is not int or version < 1:
+    if isinstance(version, bool) or not isinstance(version, int) or version < 1:
         raise ValueError('published tool version required')
     return dict(attachment_id=str(uuid4()), tool_id=uuid(tool_id), version=version, invocation='model',
                 argument_overrides={**{key: '{{' + key + '}}' for key in ('request_id', 'asset_id', 'snapshot_id')},

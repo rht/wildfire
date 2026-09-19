@@ -1,8 +1,36 @@
 """Scenario-level tests: ranking -> interview evidence -> durable UI state."""
 
 import pytest
+import fcntl
+import os
 
 from fireline.voice_replay import MockReplay, load_cases
+
+
+def test_lock_descriptor_is_closed_when_unlock_fails(tmp_path, monkeypatch):
+    session = MockReplay(tmp_path / 'lock-failure.sqlite', 'baseline')
+    descriptor = None
+    real_flock = fcntl.flock
+
+    def fail_unlock(fd, operation):
+        nonlocal descriptor
+        descriptor = fd if isinstance(fd, int) else fd.fileno()
+        if operation == fcntl.LOCK_UN:
+            raise OSError('unlock failed')
+        real_flock(fd, operation)
+
+    monkeypatch.setattr(fcntl, 'flock', fail_unlock)
+    try:
+        with pytest.raises(OSError, match='unlock failed'):
+            session.state()
+        with pytest.raises(OSError):
+            os.fstat(descriptor)
+    finally:
+        session.close()
+        try:
+            os.close(descriptor)
+        except OSError:
+            pass
 
 
 def row(state, aid='B'):
