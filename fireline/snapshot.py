@@ -646,9 +646,9 @@ def validate_snapshot(snap) -> list[str]:
 def write_snapshot(snap: dict, path) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(snap, indent=1, ensure_ascii=False, allow_nan=False) + "\n")
+    path.write_text(json.dumps(snap, indent=1, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
     return path
 
 
 def read_snapshot(path) -> dict:
-    return json.loads(Path(path).read_text())
+    return json.loads(Path(path).read_text(encoding="utf-8"))

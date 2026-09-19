@@ -1,0 +1,508 @@
+{
+  "date": "2026-09-19",
+  "audit_commit": "92ae882545ae6b45fb6e2356e1f8aa17da599312",
+  "audited_source_commit": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+  "original_report_sha256": "e518a2546f572acb7a4fa9537a0b460b9423f3d32d1438082fc27bc599041674",
+  "implementation_base": "c5d74f20c1bb762f53a93ac6418c29bfc6c51e9b",
+  "scope": "42 original findings on main; no feature-branch scans",
+  "summary": {
+    "original": 42,
+    "fixed": 42,
+    "stale": 0,
+    "exceptions": 0,
+    "unresolved": 0
+  },
+  "findings": [
+    {
+      "finding_id": "N001",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/agent.py",
+      "original_line": 232,
+      "original_snippet": "        d = json.loads(FIXTURE_REGISTERS.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 232
+    },
+    {
+      "finding_id": "N002",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/agent.py",
+      "original_line": 240,
+      "original_snippet": "                items = json.loads(p.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 240
+    },
+    {
+      "finding_id": "N003",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/agent.py",
+      "original_line": 255,
+      "original_snippet": "        entries = json.loads(FIXTURE_EVIDENCE.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 255
+    },
+    {
+      "finding_id": "N004",
+      "rule_id": "py-perf-double-lookup-1.0",
+      "original_file": "fireline/feeds.py",
+      "original_line": 117,
+      "original_snippet": "    if ts_key in record:\n        return record[ts_key]",
+      "status": "fixed",
+      "resolution": "Single key lookup with KeyError fallback, retaining explicit None/zero and key precedence.",
+      "current_line": 118
+    },
+    {
+      "finding_id": "N005",
+      "rule_id": "py-arch-global-keyword-1.0",
+      "original_file": "fireline/feeds.py",
+      "original_line": 145,
+      "original_snippet": "    global _session",
+      "status": "fixed",
+      "resolution": "Cache the module-level HTTP session factory with lru_cache(maxsize=1).",
+      "current_line": 146
+    },
+    {
+      "finding_id": "N006",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/fire_state.py",
+      "original_line": 76,
+      "original_snippet": "        Path(path).write_text(json.dumps(self.to_dict(), indent=2) + \"\\n\")",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 76
+    },
+    {
+      "finding_id": "N007",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/fire_state.py",
+      "original_line": 80,
+      "original_snippet": "        return cls.from_dict(json.loads(Path(path).read_text()))",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 80
+    },
+    {
+      "finding_id": "N008",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/forecast_input.py",
+      "original_line": 138,
+      "original_snippet": "        forecast = json.loads(path.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 138
+    },
+    {
+      "finding_id": "N009",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/forecast_input.py",
+      "original_line": 324,
+      "original_snippet": "    rec = json.loads(path.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 324
+    },
+    {
+      "finding_id": "N010",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/priority_examples.py",
+      "original_line": 13,
+      "original_snippet": "    return scenario_from_dict(json.loads(Path(path).read_text()))",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 13
+    },
+    {
+      "finding_id": "N011",
+      "rule_id": "py-perf-double-lookup-1.0",
+      "original_file": "fireline/priority.py",
+      "original_line": 160,
+      "original_snippet": "        if value in policy:\n            asset[\"value_score\"] = policy[value]\n            asset[\"value_basis\"] = cfg.VALUE_POLICY[\"version\"]\n            reasons = [r for r in reasons if r not in (\"class_ambiguous\", \"value_unknown\")]\n        else:\n            asset[\"value_score\"] = None\n            if \"value_unknown\" not in reasons:\n                reasons.append(\"value_unknown\")",
+      "status": "fixed",
+      "resolution": "Single key lookup with KeyError fallback, retaining explicit None/zero and key precedence.",
+      "current_line": 160
+    },
+    {
+      "finding_id": "N012",
+      "rule_id": "py-arch-global-keyword-1.0",
+      "original_file": "fireline/response_priority.py",
+      "original_line": 212,
+      "original_snippet": "        nonlocal best, visited",
+      "status": "fixed",
+      "resolution": "Return subtree optimum and visit count from recursion; retain first-action alternatives and tie breaks without nonlocal rebinding.",
+      "current_line": 209
+    },
+    {
+      "finding_id": "N013",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/routing.py",
+      "original_line": 43,
+      "original_snippet": "        with open(path) as f:",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 43
+    },
+    {
+      "finding_id": "N014",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/scenario.py",
+      "original_line": 253,
+      "original_snippet": "        path.write_text(json.dumps(payload, indent=1, default=_json_default))",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 253
+    },
+    {
+      "finding_id": "N015",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/scenario.py",
+      "original_line": 259,
+      "original_snippet": "        d = json.loads(path.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 259
+    },
+    {
+      "finding_id": "N016",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/snapshot.py",
+      "original_line": 649,
+      "original_snippet": "    path.write_text(json.dumps(snap, indent=1, ensure_ascii=False, allow_nan=False) + \"\\n\")",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 649
+    },
+    {
+      "finding_id": "N017",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "fireline/snapshot.py",
+      "original_line": 654,
+      "original_snippet": "    return json.loads(Path(path).read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 654
+    },
+    {
+      "finding_id": "N018",
+      "rule_id": "py-scal-range-len-1.0",
+      "original_file": "fireline/spread.py",
+      "original_line": 221,
+      "original_snippet": "    for k in range(len(_OFFSETS)):\n        b = cfg[\"p0\"] * slope_f[k]\n        if fuel is not None:\n            b = b * fuel\n        base.append(b.astype(np.float32) if isinstance(b, np.ndarray) else float(b))",
+      "status": "fixed",
+      "resolution": "Iterate the slope-factor sequence directly in the same direction order.",
+      "current_line": 221
+    },
+    {
+      "finding_id": "N019",
+      "rule_id": "py-sec-dbapi-execute-fstring-1.0",
+      "original_file": "fireline/tasks.py",
+      "original_line": 189,
+      "original_snippet": "                self.conn.execute(f\"ALTER TABLE asset_exposure ADD COLUMN {column} {kind}\")",
+      "status": "fixed",
+      "resolution": "Select complete literal SQL statements; do not interpolate identifiers.",
+      "current_line": 194
+    },
+    {
+      "finding_id": "N020",
+      "rule_id": "py-sec-dbapi-execute-fstring-1.0",
+      "original_file": "fireline/tasks.py",
+      "original_line": 201,
+      "original_snippet": "        n = self.conn.execute(f\"SELECT COALESCE(MAX(id), 0) + 1 FROM {table}\").fetchone()[0]",
+      "status": "fixed",
+      "resolution": "Select complete literal SQL statements; do not interpolate identifiers. Reject table names outside the two supported ID queries.",
+      "current_line": 206
+    },
+    {
+      "finding_id": "N021",
+      "rule_id": "py-sec-xml-xxe-1.0",
+      "original_file": "scripts/build_priority_report.py",
+      "original_line": 436,
+      "original_snippet": "        root = ET.parse(test_results).getroot()",
+      "status": "fixed",
+      "resolution": "Parse with defusedxml.ElementTree.parse(forbid_dtd=True); reject DTDs/entities and retain ordinary JUnit behavior.",
+      "current_line": 436
+    },
+    {
+      "finding_id": "N022",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/investigate.py",
+      "original_line": 58,
+      "original_snippet": "        a = json.loads(asset_json.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 58
+    },
+    {
+      "finding_id": "N023",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/investigate.py",
+      "original_line": 62,
+      "original_snippet": "        snap = json.loads(snapshot_path.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 62
+    },
+    {
+      "finding_id": "N024",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/investigate.py",
+      "original_line": 153,
+      "original_snippet": "            record = json.loads(PRERECORDED.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 153
+    },
+    {
+      "finding_id": "N025",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/investigate.py",
+      "original_line": 184,
+      "original_snippet": "        PRERECORDED.write_text(json.dumps(record, ensure_ascii=False, indent=1) + \"\\n\")",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 184
+    },
+    {
+      "finding_id": "N026",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/make_snapshots.py",
+      "original_line": 244,
+      "original_snippet": "        path.write_text(json.dumps(synthetic_forecast(seq, t), indent=1, ensure_ascii=False) + \"\\n\")",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 244
+    },
+    {
+      "finding_id": "N027",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/make_snapshots.py",
+      "original_line": 276,
+      "original_snippet": "    located = [r for r in json.loads(a_path.read_text()) if in_bbox(r)]",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 276
+    },
+    {
+      "finding_id": "N028",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/make_snapshots.py",
+      "original_line": 278,
+      "original_snippet": "    unlocated = [r for r in json.loads(u_path.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 278
+    },
+    {
+      "finding_id": "N029",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/make_snapshots.py",
+      "original_line": 310,
+      "original_snippet": "    (REAL_DIR / \"assets_gavarres.json\").write_text(json.dumps(payload, indent=1, ensure_ascii=False) + \"\\n\")",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 310
+    },
+    {
+      "finding_id": "N030",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/make_snapshots.py",
+      "original_line": 392,
+      "original_snippet": "    (REAL_DIR / \"README.md\").write_text(\"\\n\".join(lines))",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 392
+    },
+    {
+      "finding_id": "N031",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/make_snapshots.py",
+      "original_line": 398,
+      "original_snippet": "    rows = json.loads((FIX / \"assets.json\").read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 398
+    },
+    {
+      "finding_id": "N032",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/make_snapshots.py",
+      "original_line": 454,
+      "original_snippet": "        print(f\"{p.relative_to(ROOT)}: synthetic forecast-input-1, {len(json.loads(p.read_text())['estimates'])} estimates\")",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 454
+    },
+    {
+      "finding_id": "N033",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/make_snapshots.py",
+      "original_line": 507,
+      "original_snippet": "    rec = json.loads(files[-1].read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 507
+    },
+    {
+      "finding_id": "N034",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/make_snapshots.py",
+      "original_line": 571,
+      "original_snippet": "    series = json.loads(path.read_text())",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 571
+    },
+    {
+      "finding_id": "N035",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/precompute.py",
+      "original_line": 160,
+      "original_snippet": "    assets = json.load(open(fixtures / \"assets.json\"))",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 160
+    },
+    {
+      "finding_id": "N036",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/precompute.py",
+      "original_line": 161,
+      "original_snippet": "    dests = json.load(open(fixtures / \"destinations.json\"))",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 162
+    },
+    {
+      "finding_id": "N037",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/precompute.py",
+      "original_line": 178,
+      "original_snippet": "    (out / \"layers.json\").write_text(json.dumps(layers))",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 180
+    },
+    {
+      "finding_id": "N038",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/precompute.py",
+      "original_line": 219,
+      "original_snippet": "    (out_dir / \"index.json\").write_text(json.dumps(index, indent=1, ensure_ascii=False))",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 221
+    },
+    {
+      "finding_id": "N039",
+      "rule_id": "py-mng-open-no-encoding-1.0",
+      "original_file": "scripts/static_priorities.py",
+      "original_line": 36,
+      "original_snippet": "            args.output.write_text(encoded)",
+      "status": "fixed",
+      "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
+      "current_line": 36
+    },
+    {
+      "finding_id": "N040",
+      "rule_id": "py-maint-lambda-assignment-1.0",
+      "original_file": "scripts/validate.py",
+      "original_line": 401,
+      "original_snippet": "    non_fire = lambda a: [s for s in a[\"sources\"] if not fire_dependent & set(s[\"fields\"])]  # noqa: E731",
+      "status": "fixed",
+      "resolution": "Replace the assigned lambda with a named local function using the same expression.",
+      "current_line": 401
+    },
+    {
+      "finding_id": "N041",
+      "rule_id": "py-maint-lambda-assignment-1.0",
+      "original_file": "scripts/validate.py",
+      "original_line": 402,
+      "original_snippet": "    fire_src = lambda a: next(s for s in a[\"sources\"] if \"distance_to_fire_m\" in s[\"fields\"])  # noqa: E731",
+      "status": "fixed",
+      "resolution": "Replace the assigned lambda with a named local function using the same expression.",
+      "current_line": 404
+    },
+    {
+      "finding_id": "N042",
+      "rule_id": "py-maint-lambda-assignment-1.0",
+      "original_file": "scripts/validate.py",
+      "original_line": 542,
+      "original_snippet": "    actionable = lambda a: [r for r in a.get(\"review_reasons\") or [] if r not in timing_reasons]  # noqa: E731",
+      "status": "fixed",
+      "resolution": "Replace the assigned lambda with a named local function using the same expression.",
+      "current_line": 546
+    }
+  ],
+  "validation": {
+    "baseline_pytest": {
+      "passed": 294
+    },
+    "regression_red": {
+      "encoding_read": "UnicodeDecodeError under ASCII locale",
+      "encoding_write": "UnicodeEncodeError under ASCII locale",
+      "xml": "3 DTD/entity declaration cases were accepted before fix",
+      "sql": "unsupported internal ID table was accepted before fix"
+    },
+    "pytest": {
+      "passed": 309,
+      "failed": 0,
+      "skipped": 0,
+      "command": ".venv/bin/python -m pytest -q --junitxml=data/norma-final-tests.xml"
+    },
+    "offline_validation": {
+      "pass": 8,
+      "fail": 0,
+      "not_verified": [
+        "Agent (live model)"
+      ]
+    },
+    "norma": {
+      "file": "norma-livecheck-2026-09-19.json",
+      "changed_python_files": 24,
+      "clean": 24,
+      "reduced_coverage": false
+    },
+    "review": {
+      "reviewer": "independent Codex subagent",
+      "assessment": "approved; no blocking or important findings",
+      "pytest_passed": 309,
+      "targeted_passed": 140,
+      "follow_up": "No blocking or important issues; corrected two ledger references and clarified DTD versus XML declaration coverage."
+    },
+    "final_rebase": {
+      "base": "c5d74f20c1bb762f53a93ac6418c29bfc6c51e9b",
+      "outcome": "already_up_to_date",
+      "conflicts": false
+    },
+    "dependency_check": "uv pip check: all 57 installed packages compatible",
+    "github": {
+      "pr": "https://github.com/rht/wildfire/pull/3",
+      "branch_protected": false,
+      "checks_reported": 0,
+      "merge_state": "CLEAN"
+    }
+  },
+  "xml_probe": {
+    "expat_version": "expat_2.6.3",
+    "stdlib_internal_entity": "expanded",
+    "stdlib_external_entity": "ParseError: undefined entity; no external file disclosure demonstrated",
+    "policy": "Reject DTDs and entities; this is not a complete resource-exhaustion defense"
+  },
+  "account": {
+    "tier": null,
+    "remaining_quota": null,
+    "reason": "The connected MCP exposes no account or quota endpoint, and ruleset responses contain availability flags only."
+  },
+  "limitations": [
+    "No full portal repository scan: repository is not imported/linked in Norma.",
+    "No live model call was made.",
+    "Other feature branches were not scanned.",
+    "Applied-actions registration refused because the repository is unlinked; the local resolution ledger records all fixes."
+  ],
+  "applied_actions_registration": {
+    "status": "failed",
+    "reason": "unlinked",
+    "message": "Link a repository first with link_repository before reporting applied actions."
+  }
+}

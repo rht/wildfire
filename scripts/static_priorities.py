@@ -33,7 +33,7 @@ def main():
         )
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(encoded)
+            args.output.write_text(encoded, encoding="utf-8")
             print(f"Wrote {args.output}")
         else:
             print(encoded, end="")

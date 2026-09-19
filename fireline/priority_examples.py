@@ -10,7 +10,7 @@ from .response_priority import greedy_response, plan_response
 
 
 def load_scenario(path):
-    return scenario_from_dict(json.loads(Path(path).read_text()))
+    return scenario_from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
 
 
 def edge_cases(base):

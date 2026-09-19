@@ -294,3 +294,16 @@ def test_pla_alfa_maps_municipality_to_level(cache_dir, fake_get):
     fake_get["handler"] = lambda url, params: pages.pop(0)
     assert feeds.pla_alfa(T0) == {"170221": 3, "170792": 1}
     assert fake_get["calls"][1][1]["resultOffset"] == 1
+
+
+@pytest.mark.parametrize("value", [None, 0, ""])
+def test_record_timestamp_present_value_wins_over_properties(value):
+    record = {"t": value, "properties": {"t": "2026-07-03T12:00:01Z"}}
+    assert feeds._record_ts(record, "t") == value
+    assert feeds._record_ts({"properties": {"t": "fallback"}}, "t") == "fallback"
+
+
+def test_session_is_reused_with_user_agent():
+    first = feeds.get_session()
+    assert feeds.get_session() is first
+    assert first.headers["User-Agent"] == feeds.USER_AGENT

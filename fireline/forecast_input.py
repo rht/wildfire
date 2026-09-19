@@ -135,7 +135,7 @@ def load_forecast(path) -> dict:
     """Read and validate a forecast-input-1 JSON file; ValueError on a bad file."""
     path = Path(path)
     try:
-        forecast = json.loads(path.read_text())
+        forecast = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
         raise ValueError(f"{path}: not JSON ({e})") from e
     try:
@@ -321,7 +321,7 @@ def deepfire_spread_to_forecast(body: dict, received_at, asset_points: dict, *, 
 def read_recorded_spread(path) -> dict:
     """Read a recorded fire-spread record `{"collection", "received_at", "body", "note"}`; ValueError on a bad file."""
     path = Path(path)
-    rec = json.loads(path.read_text())
+    rec = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(rec, dict) or not all(k in rec for k in ("collection", "received_at", "body")):
         raise ValueError(f"{path}: not a recorded response (collection, received_at, body)")
     if "fire-spread" not in str(rec["collection"]):

@@ -714,3 +714,28 @@ def test_committed_real_snapshot_4_uses_the_recorded_fire_spread_run():
     assert min(a["distance_to_fire_m"] for a in located) > 5000
     assert all(snapshot.SIMULATED_NOTE in [s for s in a["sources"] if "distance_to_fire_m" in s["fields"]][0]["notes"]
                for a in located)
+
+
+@pytest.mark.parametrize("operation", ["read", "write"])
+def test_snapshot_utf8_under_ascii_default(tmp_path, operation):
+    import os
+    import subprocess
+    import sys
+
+    path = tmp_path / "snapshot.json"
+    payload = {"name": "Escola de Cruïlles — 東京"}
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    script = f"""
+import locale
+from pathlib import Path
+from fireline.snapshot import read_snapshot, write_snapshot
+assert locale.getpreferredencoding(False).lower() in ('ascii', 'us-ascii', 'ansi_x3.4-1968')
+payload = {ascii(payload)}
+path = Path({ascii(str(path))})
+if {operation!r} == 'write':
+    write_snapshot(payload, path)
+assert read_snapshot(path) == payload
+assert path.read_bytes().decode('utf-8')
+"""
+    env = dict(os.environ, LC_ALL="C", PYTHONUTF8="0", PYTHONCOERCECLOCALE="0")
+    subprocess.run([sys.executable, "-c", script], env=env, check=True, timeout=30)

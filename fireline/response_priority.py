@@ -204,15 +204,11 @@ class Planner:
 
 def plan_response(scenario):
     planner = Planner(scenario)
-    best = planner.initial()
     first_best = {}
-    visited = 0
 
-    def search(state):
-        nonlocal best, visited
-        visited += 1
-        if planner.better(state, best):
-            best = state
+    def search(state, first_best):
+        best = state
+        visited = 1
         if state.steps:
             first = state.steps[0]["action_id"]
             if first not in first_best or planner.better(state, first_best[first]):
@@ -220,9 +216,13 @@ def plan_response(scenario):
         for action in planner.actions:
             next_state = planner.extend(state, action)
             if next_state is not None:
-                search(next_state)
+                candidate, count = search(next_state, first_best)
+                visited += count
+                if planner.better(candidate, best):
+                    best = candidate
+        return best, visited
 
-    search(planner.initial())
+    best, visited = search(planner.initial(), first_best)
     result = planner.result(best, True, visited)
     result["first_action_alternatives"] = [
         {

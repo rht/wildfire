@@ -1,0 +1,415 @@
+{
+  "date": "2026-09-19",
+  "method": "MCP live_check",
+  "max_issues": 200,
+  "results": [
+    {
+      "file": "fireline/agent.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "18fe1508719d0504e6969e951c5fde7bd7202b43e6b3f58bc6b55cc95d040f3b"
+    },
+    {
+      "file": "fireline/feeds.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "4ec98e0e6db99b71b23dcdbab84b942a44225b0150113b435ed31378580da9e8"
+    },
+    {
+      "file": "fireline/fire_state.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "8037dcdb57a4973dbf13037d1c6c80125ddb20d73a2ecceece97392f0a75e8e7"
+    },
+    {
+      "file": "fireline/forecast_input.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "3a70699e1e1723ba7083d8179457c8c1d8975d30d5d2e2751640a01320a8f862"
+    },
+    {
+      "file": "fireline/priority_examples.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "0bb264b432aa1d1e9567b81bde7122b648377feb315f2fba5f6660a9476bb5bb"
+    },
+    {
+      "file": "fireline/priority.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "a8623a21d41d370247bd398002f0805df821d03eeb514d41e467e592e6a00bb0"
+    },
+    {
+      "file": "fireline/response_priority.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "04ba38e6784aff988a3a082322057c08b3fffc1545bed5ca4d568c59125a5151"
+    },
+    {
+      "file": "fireline/routing.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "72811771dd05e357797ab51fbe86b4c16e0f74762d5e59844529c72943bb7d06"
+    },
+    {
+      "file": "fireline/scenario.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "54b136192416386bfbb7e0926fce4619c52e3859a9d469bcf76e9c30c2b4f0a3"
+    },
+    {
+      "file": "fireline/snapshot.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "e32ecf49c25b762783a8134ab7566361a8112e4acf05cfad6485b176c5837152"
+    },
+    {
+      "file": "fireline/spread.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "16fd6d65ece11df04feeac3a0b826b5e0bdff9b0ddf1e5f0b9526b9bc903e435"
+    },
+    {
+      "file": "fireline/tasks.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "03ae8876ab33f55839f1ac82c12856da550f6eebd303950cf6f103a3fce3559e"
+    },
+    {
+      "file": "scripts/build_priority_report.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "a4d2b56c680441b07d4ab55ddc97a4fefddd85e90e952df4abb6729444997bb3"
+    },
+    {
+      "file": "scripts/investigate.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "fcc045b1ac0ae0c2855806f8713fedd4e70ef9f81db150044e8815e95e9e11fd"
+    },
+    {
+      "file": "scripts/make_snapshots.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "c36d5f53ce625e726435fef9aa3e83bd1d6f2e3e9bc0dc6aa1b0054d28697ac7"
+    },
+    {
+      "file": "scripts/precompute.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "cfbf77614d41ceaee5f4a25731c1ced1ec8a95e0153a6019eb367574784c686e"
+    },
+    {
+      "file": "scripts/static_priorities.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "c8a8a24dcf8f9a1dcae6ea90153d9b387a76eae8d28fd0422bdace6ece00a4a9"
+    },
+    {
+      "file": "scripts/validate.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "0b4d315cb4399560153d14dc4cf55ea027b6d38bd197f1f4f4771506d4355e2c"
+    },
+    {
+      "file": "tests/test_feeds.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "9b2800906d2c3284fb910b0315a1c375f7eb09d1107a1c51647c1d47167f91ba"
+    },
+    {
+      "file": "tests/test_priority_report.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "01ed289b1857ffe2e8b79a0a049a9afc3bcc1c97894ed0e4cc748bdfbb4cae31"
+    },
+    {
+      "file": "tests/test_priority.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "dec62f39e4b0ff847edf524e4c0d9cff8ad37376955af56713b8bc86d90754c5"
+    },
+    {
+      "file": "tests/test_snapshot.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "a347bbc1855b6e724ca0b4679597845f45983c32d6be1d4f35180691319f72e5"
+    },
+    {
+      "file": "tests/test_static_priorities.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "9d2bd39711ab6579cdafd7825d43baf342c84a3658d9844d9aa517cc2ff3389a"
+    },
+    {
+      "file": "tests/test_tasks.py",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      },
+      "source_sha256": "49d801105982145e997361ef224983c8f410509a33c78be2c5331fcba4aced6d"
+    }
+  ]
+}

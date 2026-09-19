@@ -55,11 +55,11 @@ def _rel(path: Path) -> str:
 def load_assets(snapshot_path: Path | None, asset_json: Path | None) -> tuple[list[dict], str]:
     """(scored assets, description of where they came from)."""
     if asset_json is not None:
-        a = json.loads(asset_json.read_text())
+        a = json.loads(asset_json.read_text(encoding="utf-8"))
         assets = a if isinstance(a, list) else [a]
         return score(assets, None), f"asset record(s) from {_rel(asset_json)}"
     if snapshot_path is not None and snapshot_path.exists():
-        snap = json.loads(snapshot_path.read_text())
+        snap = json.loads(snapshot_path.read_text(encoding="utf-8"))
         return score(snap.get("assets", []), snap), f"snapshot {_rel(snapshot_path)} ({snap.get('snapshot_id')})"
     return score([dict(INLINE_ASSET)], None), "inline smoke-test asset (snapshot file not found)"
 
@@ -150,7 +150,7 @@ def main(argv=None) -> int:
     if not have_key and not args.fake and not args.record:
         if PRERECORDED.exists():
             print(f"PRERECORDED FALLBACK: no ANTHROPIC_API_KEY; replaying {PRERECORDED.relative_to(ROOT)}")
-            record = json.loads(PRERECORDED.read_text())
+            record = json.loads(PRERECORDED.read_text(encoding="utf-8"))
             print(f"recorded_at:  {record.get('recorded_at')}   source: {record.get('input')}")
             print_record(record)
             return 0
@@ -181,7 +181,7 @@ def main(argv=None) -> int:
 
     if args.record:
         PRERECORDED.parent.mkdir(parents=True, exist_ok=True)
-        PRERECORDED.write_text(json.dumps(record, ensure_ascii=False, indent=1) + "\n")
+        PRERECORDED.write_text(json.dumps(record, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         print(f"\nrecorded to {PRERECORDED.relative_to(ROOT)}")
     return 0
 

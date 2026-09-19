@@ -250,13 +250,13 @@ class Scenario:
                 "xmax": self.arrival.grid.xmax, "ymax": self.arrival.grid.ymax, "cell": self.arrival.grid.cell},
         }
         # inf is written as the JSON-nonstandard token Infinity (Python's json reads it back).
-        path.write_text(json.dumps(payload, indent=1, default=_json_default))
+        path.write_text(json.dumps(payload, indent=1, default=_json_default), encoding="utf-8")
         return path
 
     @classmethod
     def from_json(cls, path) -> "Scenario":
         path = Path(path)
-        d = json.loads(path.read_text())
+        d = json.loads(path.read_text(encoding="utf-8"))
         arrival = None
         if d.get("arrival_npz") and d.get("grid"):
             npz_path = path.parent / d["arrival_npz"]
