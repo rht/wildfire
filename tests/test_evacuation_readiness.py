@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 from dataclasses import replace
+from enum import IntEnum
 from pathlib import Path
 from enum import IntEnum
 

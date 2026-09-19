@@ -958,7 +958,7 @@ that model has not been verified. [Manufacturer specifications](https://brovi-te
 The provider transport, interview extraction, authenticated callbacks and human-transfer path are
 not implemented in this static extension; its input contract is ready to receive those outcomes.
 
-Verification: 350 tests pass, including 41 readiness cases; targeted lint and whitespace checks
+Verification: 356 tests pass, including 47 readiness cases; whitespace checks
 pass. Independent code review found no important issues within the static scope.
 
 ### Priority queue for outbound calls
@@ -2563,4 +2563,14 @@ Norma results above refer to the historical file revisions, not a rescan of this
 
 ### Readiness branch Norma verification — 2026-09-19
 
-Rebased onto merged remediation main `587f5bd`. All four added/modified Python and JSON files pass Norma Livecheck with unreduced coverage; transient service errors were retained in the evidence and successful retries supersede them. The JSON check covers applicable Node rules, not fixture semantics. Markdown prose was not scanned. Capacity validation accepts nonnegative integers and their subclasses while explicitly rejecting booleans; readiness input uses UTF-8. The full suite passes 350 tests, including 41 readiness tests and an ASCII-locale CLI regression. Independent code review approved the remediation. Exact file hashes, outcomes and original-head backup refs are recorded on `codex/norma-feature-rollup`; the original audit is unchanged.
+Rebased onto merged remediation main `587f5bd`. At historical revision `d75d4b769940e0ca6b0a01949f5c7bf84daec44e`, all four added/modified Python and JSON files had zero Livecheck findings, and 350 tests passed. That as-of result remains in the phase-two evidence; it is superseded for the selected capacity check below. The JSON check covers applicable Node rules, not fixture semantics. Markdown prose was not scanned. Readiness input retains explicit UTF-8 and its ASCII-locale CLI regression. Exact file hashes, outcomes and original-head backup refs are recorded on `codex/norma-feature-rollup`; the original audit is unchanged.
+
+### Selected capacity contract and retained Norma finding
+
+The selected current contract accepts plain nonnegative Python integers only for `ReceptionCentre.remaining_places`. It rejects `bool` (including `False`), floats (including integral floats), strings, negative values, null and all `int` subclasses, including `IntEnum`. No coercion is performed. The original `type(centre.remaining_places) is not int or centre.remaining_places < 0` check is intentionally retained at `fireline/evacuation_readiness.py:103` under @mirrdj's explicit keep-and-defend decision; all other remediation remains in place.
+
+Norma reports one retained finding: `py-arch-type-eq` (HIGH, architecture), line 103, column 12. The final exact file was rechecked with unreduced coverage; it is not clean and the finding is not fixed. The rule generally favors accepting subtypes, while this input boundary deliberately requires primitive counts. A bare `isinstance(value, int)` would accept booleans as integers. The previous implementation explicitly rejected bool and accepted other integer subclasses; it was a valid broader policy, but the selected contract is narrower. Rejecting legitimate integer subclasses is the accepted interoperability tradeoff. Revisit the decision if the public input contract needs enum/subclass counts, numerical-library types or fractional units, or if normalization moves to another boundary. Preserve boolean rejection in any replacement.
+
+Verification: all 356 tests pass, including 47 readiness tests. Subclass and enum rejection tests fail against the previous implementation and pass with this check; tests also cover zero/positive capacity, both booleans, floats, strings, null, negative values and unchanged capacity reservation. The test file has zero Norma findings with unreduced coverage. This is one justified retained finding, separate from the fixed UTF-8 finding; no suppression or rule disablement is used. The evidence and defense are maintained in PRs [#10](https://github.com/rht/wildfire/pull/10) and [#11](https://github.com/rht/wildfire/pull/11), tied to the published branch SHA.
+
+Formal registration is unavailable through the exposed Norma MCP: no finding-scoped defense/exception endpoint is listed, and repository lookup reports no linked matching repository. The available applied-actions endpoint records fixed, prevented or verified-compliant rules, so it is not used for this retained finding. The user-approved defense is documented for review, not registered as an exception. This feature PR remains open; no merge is authorized by this decision.
