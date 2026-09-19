@@ -18,6 +18,9 @@ from .evacuation_plans import (
 from .priority_models import number, string_sequence
 
 
+SQLITE_BUSY_TIMEOUT_SECONDS = 30
+
+
 def _json(value):
     return json.dumps(value, sort_keys=True, allow_nan=False)
 
@@ -56,7 +59,7 @@ class AllocationStore:
 
     @contextmanager
     def _transaction(self):
-        db = sqlite3.connect(self.path, timeout=30, isolation_level=None)
+        db = sqlite3.connect(self.path, timeout=SQLITE_BUSY_TIMEOUT_SECONDS, isolation_level=None)
         try:
             db.execute('BEGIN IMMEDIATE')
             yield db
@@ -74,6 +77,9 @@ class AllocationStore:
             raise ValueError('supply inputs before allocating')
         context, *rest = _decode_inputs(row[0])
         if as_of is not None:
+            latest = db.execute('SELECT body FROM events ORDER BY revision DESC LIMIT 1').fetchone()
+            if latest and utc(as_of) < utc(json.loads(latest[0])['as_of']):
+                raise ValueError('cannot rewind past recorded events')
             if utc(as_of) < utc(context.as_of):
                 raise ValueError('cannot rewind scenario time')
             context = replace(context, as_of=as_of)
@@ -126,6 +132,8 @@ class AllocationStore:
                                        self._occupied(active, allocation['allocation_id']))
             match = next((r for r in rows if r['centre_id'] == allocation['destination_id']), None)
             reasons.extend(match['reasons'] if match else ['destination_missing'])
+            if match and match['evidence']['road_ids'] != allocation['evidence']['road_ids']:
+                reasons.append('approved_route_changed')
         return sorted(set(reasons))
 
     def update_inputs(self, context, candidates, groups, routes, roads):
@@ -170,6 +178,13 @@ class AllocationStore:
             return self._allocation(db, prior[1])
         return None
 
+    def _replay(self, db, allocation):
+        # A retry preserves the original command timestamp but returns the latest
+        # durable state, not historical safety evaluated against a past snapshot.
+        latest = db.execute('SELECT body FROM events ORDER BY revision DESC LIMIT 1').fetchone()
+        as_of = json.loads(latest[0])['as_of']
+        return self._public(allocation, self._inputs(db, as_of), self._active(db))
+
     def _finish(self, db, command_id, payload, allocation, kind, as_of):
         self._save(db, allocation)
         db.execute('INSERT INTO commands VALUES (?,?,?)', (command_id, _json(payload), allocation['allocation_id']))
@@ -205,7 +220,7 @@ class AllocationStore:
         with self._transaction() as db:
             prior = self._command(db, command_id, payload)
             if prior:
-                return self._public(prior, self._inputs(db, as_of), self._active(db))
+                return self._replay(db, prior)
             allocation = self._new_allocation(db, group_id, centre_id, approval, as_of, snapshot_id)
             return self._finish(db, command_id, payload, allocation, 'reserved', as_of)
 
@@ -216,9 +231,11 @@ class AllocationStore:
         with self._transaction() as db:
             prior = self._command(db, command_id, payload)
             if prior:
-                return self._public(prior, self._inputs(db, as_of), self._active(db))
+                return self._replay(db, prior)
             old = self._allocation(db, allocation_id)
             self._check_active_time(old, as_of)
+            if approval.approval_id == old['approval']['approval_id']:
+                raise ValueError('reassignment requires a new approval')
             # Confirmed physical movement requires explicit reconciliation, not a new
             # reservation that would silently forget the group's actual location.
             if old['state'] in ('departed', 'arrived'):
@@ -244,7 +261,7 @@ class AllocationStore:
         with self._transaction() as db:
             prior = self._command(db, command_id, payload)
             if prior:
-                return self._public(prior, self._inputs(db, as_of), self._active(db))
+                return self._replay(db, prior)
             allocation = self._allocation(db, allocation_id)
             self._check_active_time(allocation, as_of)
             current = self._inputs(db, as_of)
@@ -337,6 +354,7 @@ class AllocationStore:
         return {key: allocation[key] for key in (
             'allocation_id', 'group_id', 'asset_id', 'destination_id', 'people', 'state',
             'previous_allocation_id', 'snapshot_id', 'incident_id', 'created_at', 'last_at') } | {
+                'evaluated_as_of': context.as_of,
                 'safety': 'invalidated' if allocation['invalidation_reasons'] else 'review' if reasons else 'valid',
                 'reasons': reasons, 'tasks': sorted(set(tasks)),
                 'instruction_allowed': allocation['state'] in ('reserved', 'communicated') and not reasons and assistance_ready,
@@ -355,6 +373,8 @@ class AllocationStore:
             occupied = self._occupied(active)
             capacity = {c.centre.centre_id: None if c.centre.remaining_places is None else
                         c.centre.remaining_places - occupied.get(c.centre.centre_id, 0) for c in candidates}
+            for cid in occupied:
+                capacity.setdefault(cid, None)
             events = []
             for revision, body in db.execute('SELECT revision, body FROM events ORDER BY revision'):
                 event = json.loads(body)

@@ -210,3 +210,57 @@ def test_input_update_cannot_rewind_past_confirmed_departure(tmp_path):
     context, centre, group, route, road = inputs()
     with pytest.raises(ValueError, match='rewind'):
         store.update_inputs(replace(context, snapshot_id='out-of-order'), [centre], [group], [route], [road])
+
+
+def test_safe_replacement_route_cannot_hide_danger_on_previously_communicated_route(tmp_path):
+    store = setup_store(tmp_path)
+    a = reserve(store)
+    confirm(store, a['allocation_id'], 'communicated')
+    context, centre, group, route, road = inputs()
+    store.update_inputs(replace(context, snapshot_id='road-change'), [centre], [group],
+                        [replace(route, road_ids=('road-2',))],
+                        [replace(road, state='blocked'), replace(road, road_id='road-2')])
+    row = store.briefing('A', as_of=AT)[0]
+    assert row['instruction_allowed'] is False
+    assert row['destination_id'] == 'centre'
+    assert 'approved_route_changed' in row['reasons']
+    assert 'issue_new_instructions' in row['tasks']
+
+
+def test_removed_centre_preserves_unknown_capacity_and_occupied_allocation(tmp_path):
+    store = setup_store(tmp_path)
+    reserve(store)
+    context, _, group, _, road = inputs()
+    store.update_inputs(replace(context, snapshot_id='centre-missing'), [], [group], [], [road])
+    plan = store.public_plan(as_of=AT)
+    assert plan['remaining_capacity']['centre'] is None
+    assert plan['locations'][0]['people'] == 4
+
+
+def test_cannot_reserve_other_group_at_time_before_latest_ledger_event(tmp_path):
+    store = setup_store(tmp_path)
+    a = reserve(store)
+    store.release('release', a['allocation_id'], actor='analyst', evidence='cancelled', as_of='2026-09-20T00:01:00Z')
+    with pytest.raises(ValueError, match='rewind'):
+        reserve(store, command='reserve-B', group='group-B')
+
+
+def test_successful_command_retry_survives_new_snapshot_and_returns_current_safety(tmp_path):
+    store = setup_store(tmp_path)
+    a = reserve(store)
+    context, centre, group, route, road = inputs()
+    store.update_inputs(replace(context, snapshot_id='later', as_of='2026-09-20T00:01:00Z'),
+                        [replace(centre, closed=True)], [group], [route], [road])
+    replay = reserve(store)
+    assert replay['allocation_id'] == a['allocation_id']
+    assert replay['instruction_allowed'] is False
+    assert replay['evaluated_as_of'] == '2026-09-20T00:01:00Z'
+
+
+def test_same_approval_cannot_reauthorize_an_invalidated_allocation(tmp_path):
+    store = setup_store(tmp_path)
+    a = reserve(store)
+    approval = ep.AnalystApproval('allocation-reserve-A', 'analyst', 'incident-1', 'centre',
+                                  'private analyst notes', 'group-A')
+    with pytest.raises(ValueError, match='new approval'):
+        store.reassign('new-command', a['allocation_id'], 'centre', approval, as_of=AT, snapshot_id='snapshot-1')

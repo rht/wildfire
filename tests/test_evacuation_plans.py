@@ -111,3 +111,13 @@ def test_supplied_nonfinite_timing_cannot_pass_safety_checks():
     _, _, group, *_ = inputs()
     with pytest.raises(ValueError):
         evaluate(group=replace(group, evacuation_min=float('nan')))
+
+
+def test_discovery_source_provenance_survives_adapter_without_approval():
+    record = {'asset_id': 'facility-1', 'name': 'Hospital', 'asset_class': 'hospital',
+              'sources': [{'source': 'official-register', 'observed_at': '2026-09-20T00:00:00Z',
+                           'fields': ['name', 'asset_class']} ]}
+    candidate = ep.candidate_from_record(record)
+    assert candidate.kind == 'hospital'
+    assert candidate.provenance == tuple(record['sources'])
+    assert candidate.approval is None

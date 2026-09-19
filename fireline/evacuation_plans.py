@@ -3,6 +3,7 @@
 Elapsed minutes use PlanningContext.epoch. Capacity is a budget inclusive of this
 ledger's allocations, not an independently refreshed count of vacant beds.
 """
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
@@ -58,6 +59,7 @@ class CandidateFacility:
     threat_source: str | None = None
     capabilities: tuple[str, ...] | None = None
     closed: bool | None = False
+    provenance: tuple[dict, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -89,9 +91,10 @@ def candidate_from_record(record):
     """
     if 'centre' not in record:
         return CandidateFacility(ReceptionCentre(record['asset_id'], record.get('name', record['asset_id']),
-                                                  None, False, 0, ''), record.get('kind', 'unknown'),
-                                 closed=None)
+                                                  None, False, 0, ''), record.get('kind', record.get('asset_class', 'unknown')),
+                                 closed=None, provenance=tuple(deepcopy(record.get('sources', []))))
     data = dict(record)
+    data['provenance'] = tuple(deepcopy(data.get('provenance', ())))
     data['centre'] = ReceptionCentre(**data['centre'])
     if data.get('approval') is not None:
         data['approval'] = AnalystApproval(**data['approval'])

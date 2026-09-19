@@ -1836,16 +1836,16 @@ Use Superpowers executing-plans inline in the existing worktree, with test-drive
 implementation and scoped review. The prior authorization covers routine design choices.
 No new Markdown documents or implementation agents are needed.
 
-- [ ] Candidate boundary: add `CandidateFacility`, `EvacuationGroup`, `RoadEvidence`,
+- [x] Candidate boundary: add `CandidateFacility`, `EvacuationGroup`, `RoadEvidence`,
   `PlanningContext`, `candidate_from_record`, and `evaluate_candidates`. Write failing
   tests for hospital non-approval, missing/blocked roads, stale forecast, needs/access,
   origin/destination threat deadlines and deterministic selection; then implement.
-- [ ] Durable ledger: add `AllocationStore.update_inputs`, `reserve`, `reassign`,
+- [x] Durable ledger: add `AllocationStore.update_inputs`, `reserve`, `reassign`,
   `confirm`, `release`, `public_plan` and `briefing`. Write failing tests for competing
   buildings, retries/conflicting command IDs, restart occupancy, rollback on failed
   reassignment, distinct confirmations, closure/new incidents and assisted plans;
   implement with SQLite immediate transactions and persisted evidence.
-- [ ] Integration: add `coordinate_approved_evacuation` wrapper and
+- [x] Integration: add `coordinate_approved_evacuation` wrapper and
   `scripts/evacuation_plans.py` JSON CLI; exercise them with real local databases and
   synthetic fixtures. Preserve crew/contacts output and gate proposed destinations.
 - [ ] Verify relevant and full tests, inspect sibling exports, scan only changed files
@@ -1853,3 +1853,73 @@ No new Markdown documents or implementation agents are needed.
 
 Verification command from this worktree:
 `PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m pytest -q`.
+
+### Published evacuation allocation interfaces
+
+All elapsed minutes use the one `PlanningContext.epoch` (UTC). `as_of` is explicit,
+including on reads; offline replay must advance it. A database rejects a new scenario
+or epoch and time moving behind its latest committed event. Keep using the same database
+when `incident_id` changes so existing occupants and reservations cannot disappear.
+
+| Interface | Contract |
+| --- | --- |
+| `fireline.evacuation_plans.PlanningContext(scenario_id, incident_id, snapshot_id, epoch, as_of, forecast_observed_min, max_age_min=15, buffer_min=0)` | Immutable snapshot identity and freshness policy. Forecast and road observations must be current, never future-dated. |
+| `CandidateFacility(centre, kind='unknown', approval=None, safe_until_min=None, threat_source=None, capabilities=None, closed=False, provenance=())` | Wraps existing `ReceptionCentre`. `remaining_places` is this ledger's total budget, inclusive of its allocations, or null if unknown. `safe_until_min` is the supplied destination threat deadline. Capabilities are known supported needs; null means unknown. |
+| `AnalystApproval(approval_id, analyst_id, incident_id, centre_id, evidence, group_id=None)` | A facility approval has no group; an allocation approval binds a specific group. Explicit evidence is required. This trusted local interface does not authenticate an analyst. |
+| `EvacuationGroup(group_id, asset_id, people, assisted, needs, fire_arrival_min, evacuation_min, forecast_source)` | Stable group and asset IDs; groups must partition the building population without overlap. Null size, assistance or needs requires review. Empty needs means explicitly assessed as none. |
+| `RoadEvidence(road_id, state, observed_min, available_until_min, source)` | State is `open`, `blocked` or `unknown`. Every ordered `EvacuationRoute.road_ids` member needs current positive evidence and a window covering the complete evacuation. |
+| `evaluate_candidates(group, candidates, routes, roads, context, occupied=None)` | Deterministic rows with `eligible`/`review`/`unsafe`, reason codes, remaining capacity and cited approval, threat, needs and route evidence. Does not reserve. |
+| `candidate_from_record(record)` / `candidates_from_discovery(discovery)` | The latter is in `fireline.evacuation_plan_adapter` and consumes `discovery-1.assets_in` with `classifications[id] == 'destination_candidate'`. Raw records retain stable IDs, class and sources; approval, capacity and safety remain unknown. |
+| `fireline.evacuation_allocations.AllocationStore(path)` | One shared SQLite file for this scenario's allocation writers. `update_inputs(context, candidates, groups, routes, roads)` saves a complete immutable snapshot. Repeating an identical snapshot does nothing; changing its contents under the same ID fails. |
+| `store.reserve(command_id, group_id, centre_id, approval, *, as_of, snapshot_id)` | Transactional capacity check and explicit allocation approval. Returns an allocation summary. A group may have only one active allocation. |
+| `store.reassign(command_id, allocation_id, centre_id, approval, *, as_of, snapshot_id)` | Atomic explicit release/reserve before departure, with a new approval ID. Failed checks leave the original reservation intact. Invalidated reservations can be explicitly reapproved for the same centre. Departure/arrival require physical-location reconciliation and explicit release before another allocation. |
+| `store.confirm(command_id, allocation_id, state, *, actor, evidence, as_of)` | `communicated`, then `departed`, then `arrived` are distinct sourced facts. New danger blocks communication but does not suppress subsequently reported physical departure/arrival. |
+| `store.release(command_id, allocation_id, *, actor, evidence, as_of)` | Explicitly frees slots, including confirmed arrivals. Actor and evidence are retained privately. |
+| `AssistancePlan(transport_id, reception_id, pickup_min, seats, capabilities)` and `store.set_assistance(command_id, allocation_id, plan, *, actor, evidence, as_of)` | Stores a group/destination-bound proposed booking. Separate `confirm(..., state='transport_confirmed')` and `reception_confirmed` facts are required. Pickup delay must fit all route, road, origin and destination windows. No crew dispatch fulfills these facts. |
+| `store.public_plan(*, as_of)` | `evacuation-plan-1`: `scenario_id`, `snapshot_id`, `revision`, `as_of`, `locations`, `remaining_capacity`, `response: null`, `tasks`, `events`. Rows join on `asset_id` and include group/allocation/destination IDs, lifecycle `state`, `safety`, `reasons`, `tasks`, `instruction_allowed`, and `evaluated_as_of`. Missing centre capacity stays null, overcommitment stays negative. |
+| `store.briefing(asset_id, *, as_of)` | Public allocation rows for that asset, including retained but invalid destinations. Consumers **must honor `instruction_allowed`**; presence of a destination alone is not permission to relay instructions. |
+| `store.view(*, as_of)` | One consistent `(public_plan, private_input_tuple)` for trusted adapters; the tuple is context/candidates/groups/routes/roads. Do not publish the private tuple. |
+| `coordinate_approved_evacuation(scenario, assessments, store, *, as_of, readiness_policy=None, road_warnings=())` | Additive wrapper in `fireline.evacuation_plan_adapter`. Preserves core crew/contact proposals, adds allocations and candidate reviews, checks full population coverage, current contact timing, assistance conflicts and blocked roads even after acknowledgement. Like the existing readiness API, this is a **private analyst result** containing interview/source evidence; use `public_plan` for the public envelope. |
+| `build_approved_recommendation(store, asset_id, *, as_of, snapshot_id, route_guidance, expected_people=None)` | Call-briefings mapping or `None`. Requires known current building population equal to allocated headcount, all groups allowed instructions, and one common destination. Verified `route_guidance` must contain `asset_id`, `centre_id`, `snapshot_id`, `confirmed: true`, `instructions`, ordered `road_ids`, `road_names`, `source`. It returns `asset_id`, `snapshot_id`, `approved`, `plan_id`, `revision`, `source`, `destination: {name}`, `route: {instructions, road_ids, road_names, feasible}`. Never generates directions. |
+
+Command IDs bind the full original command. Identical successful retries return the
+current durable allocation state at the latest event time (`evaluated_as_of`), even after
+a newer snapshot; changed arguments under the same command ID fail. Obtain a fresh
+`public_plan(as_of=...)` before using a retried command result for current instructions.
+All CLI commands commit individually; a later failing command does not roll back earlier
+successful commands. Replaying the file is safe through the same command IDs.
+
+Routine safe forecast changes preserve approved destinations. Closure, missing evidence,
+changed group facts, changed approved road sequence or a new incident invalidate existing
+allocations without releasing their slots or choosing a replacement. Human review and
+new-instruction tasks remain until explicit reapproval; restoration of good evidence alone
+does not clear stored invalidation. Route checks after departure/arrival are conservative:
+this prototype retains the supplied origin route context rather than inferring an occupant's
+new location. Re-routing moving occupants needs separately verified location and route data.
+
+### Offline CLI example and verification
+
+`fixtures/evacuation_plans.json` is entirely synthetic. From this worktree:
+
+```sh
+mkdir -p data
+PYTHONPATH=. ../slng-voice-agent/.venv/bin/python scripts/evacuation_plans.py \
+  --input fixtures/evacuation_plans.json --database data/evacuation-plans.sqlite \
+  --as-of 2026-09-20T00:00:00Z
+PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m pytest \
+  tests/test_evacuation_plans.py tests/test_evacuation_allocations.py \
+  tests/test_evacuation_plan_adapter.py -q
+```
+
+The CLI consumes context/candidates/groups/routes/roads and optional commands with a
+`kind` of `reserve`, `reassign`, `confirm`, `release` or `set_assistance`; other fields
+match the Python signatures. It emits only the public plan. No provider is contacted.
+
+Cross-branch offline verification consumed actual sibling modules read-only: discovery
+`563afdd55ba7263d72359b8297e938ba28afc8a5` produced unapproved hospital candidates;
+call-briefings `a904ab370d4f1485ef5ca23fc33f25aff54c1389` accepted the supplied approved
+mapping and fell back to readiness-only when forecast evidence expired. Live-coordination
+still needs to wire this wrapper or overlay `public_plan` into its `coordination-state-1`
+envelope; this branch does not change its module. Verified directions, analyst approvals,
+current facility/road/threat evidence and transport/reception confirmations remain external
+inputs. This is not a live evacuation, directions or notification service.
