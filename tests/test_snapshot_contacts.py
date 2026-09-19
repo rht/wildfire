@@ -302,3 +302,69 @@ def test_cli_rejects_duplicate_json_keys_without_echo(tmp_path, capsys):
     captured = capsys.readouterr()
     assert 'private marker' not in captured.err and 'secret' not in captured.err
     assert not (tmp_path / 'no.db').exists()
+
+
+@pytest.mark.parametrize('missing', ['record', 'observed_at'])
+def test_missing_forecast_observation_is_not_fresh_evidence(queue, missing):
+    snap = produced_snapshot()
+    for asset in snap['assets']:
+        if missing == 'record':
+            asset['sources'] = [s for s in asset['sources'] if 'fire_arrival_at' not in s['fields']]
+        else:
+            for source in asset['sources']:
+                if 'fire_arrival_at' in source['fields']:
+                    source['observed_at'] = None
+    assert validate_snapshot(snap) == []
+    result = enqueue(queue, snap)
+    assert all('missing_forecast_observed_at' in r['reasons'] for r in result['blocked'][:2])
+    assert not queue.status()['pending']
+
+
+@pytest.mark.parametrize('change', ['evacuation', 'buffer', 'distance', 'arrival'])
+def test_changed_priority_on_pending_replay_is_explicit_conflict(queue, change):
+    snap = produced_snapshot()
+    first = enqueue(queue, snap)
+    kwargs = {}
+    if change == 'evacuation':
+        snap['assets'][0]['evacuation_min'] = 140
+        snap['assets'][1]['evacuation_min'] = 0
+    elif change == 'buffer':
+        kwargs['buffer_min'] = 5
+    elif change == 'distance':
+        for a in snap['assets']:
+            a['distance_to_fire_m'] += 100
+    else:
+        snap['assets'][0]['fire_arrival_at'] = at(160)
+        snap['assets'][1]['fire_arrival_at'] = at(120)
+    result = enqueue(queue, snap, **kwargs)
+    assert all('immutable_priority_conflict' in r['reasons'] for r in result['blocked'][:2])
+    assert all(result['existing'][rid] == 'cancelled' for rid in first['enqueue']['queued'])
+    assert not queue.status()['pending']
+
+
+def test_optional_sibling_briefing_export_adapter(queue):
+    from fireline.snapshot_contacts import briefing_adapter_from_recommendations
+    snap = produced_snapshot()
+    recommendation = {'asset_id': 'test:far', 'snapshot_id': snap['snapshot_id'], 'approved': True}
+    observed = []
+    def build(asset, recommendation, *, snapshot_id):
+        observed.append((asset['asset_id'], recommendation, snapshot_id))
+        return SimpleNamespace(asset_id=asset['asset_id'], snapshot_id=snapshot_id,
+                               incident_brief='Verified briefing export', road_warnings=[])
+    adapter = briefing_adapter_from_recommendations(snap['snapshot_id'], {'test:far': recommendation},
+                                                    build_briefing=build)
+    result = enqueue(queue, snap, briefing_adapter=adapter)
+    assert observed[0] == ('test:far', recommendation, snap['snapshot_id'])
+    assert observed[1][1] is None
+    assert queue.store.get(result['enqueue']['queued'][0])['request']['incident_brief'] == 'Verified briefing export'
+
+
+def test_bound_briefing_cannot_be_reused_for_another_snapshot(queue):
+    from fireline.snapshot_contacts import briefing_adapter_from_recommendations
+    def build(asset, recommendation, *, snapshot_id):
+        return SimpleNamespace(asset_id=asset['asset_id'], snapshot_id=snapshot_id,
+                               incident_brief='Old snapshot briefing', road_warnings=[])
+    adapter = briefing_adapter_from_recommendations('old-0001', {}, build_briefing=build)
+    result = enqueue(queue, briefing_adapter=adapter)
+    assert not result['enqueue']['queued']
+    assert all('invalid_request_data' in r['reasons'] for r in result['blocked'][:2])

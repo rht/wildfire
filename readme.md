@@ -1517,7 +1517,7 @@ existing English speech bindings; a language argument alone does not validate
 multilingual STT/TTS support.
 
 
-# Snapshot-call-adapter implementation plan (2026-09-20)
+## Snapshot-call-adapter (2026-09-20)
 
 This task for @mirrdj connects validated snapshot v1.1 dictionaries to the existing
 `VoiceCallQueue` without changing admission or dispatch. Only explicit private contacts,
@@ -1526,10 +1526,143 @@ The adapter uses a supplied UTC scenario epoch, the configured 30-minute contact
 and the current evacuation-window ordering. Observed geometry distance remains separate
 from forecast arrival. Unknown inputs and their provenance remain in the report.
 
-- [ ] Add failing producer-shaped tests for ranking, epoch conversion, authorization,
+- [x] Add failing producer-shaped tests for ranking, epoch conversion, authorization,
   stale/missing evidence, ambiguous contacts, replay and provider isolation.
-- [ ] Implement `fireline/snapshot_contacts.py`, stable request IDs and optional briefing
+- [x] Implement `fireline/snapshot_contacts.py`, stable request IDs and optional briefing
   callback. Project supplied coordinates only; never create response actions or effects.
-- [ ] Add an enqueue-only JSON CLI and privacy/error-path tests; document exact inputs.
+- [x] Add an enqueue-only JSON CLI and privacy/error-path tests; document exact inputs.
 - [ ] Run scoped/full offline tests, obtain scoped review and Norma checks, fix findings,
   commit/push the task branch and open a PR to main. Keep the worktree available.
+
+### Public Python boundary
+
+```python
+from fireline.snapshot_contacts import (
+    enqueue_snapshot_contacts, snapshot_request_id,
+    briefing_adapter_from_recommendations,
+)
+
+report = enqueue_snapshot_contacts(
+    queue, snapshot, contacts, approvals, request_data,
+    epoch="2026-09-20T08:00:00Z", now_at="2026-09-20T08:20:00Z",
+    # Optional: max_age_min=60, buffer_min=30, briefing_adapter=callback
+)
+```
+
+`queue` is an existing `VoiceCallQueue` whose `VoiceStore.epoch` must match `epoch`.
+Both timestamps must explicitly be UTC; epoch must precede snapshot `as_of` and
+evaluation time. `snapshot` must pass `validate_snapshot` as version `1.1`.
+Historical/synthetic snapshots can be inspected but receive `snapshot_not_live`
+and never become live requests. JSON files have these separate private shapes:
+
+| Input | Exact shape |
+|---|---|
+| contacts | Array of `{asset_id, contact_number}` records, indexed only by stable `asset_id`; zero or multiple matches block that asset. |
+| approvals | Array of `{asset_id, snapshot_id, contact_number}` records. Exactly one match for this asset and snapshot must equal the complete E.164 contact number. An approval for another snapshot does not carry forward. |
+| request_data (`--requests`) | Object keyed by `asset_id`, each value containing trusted `language` and `incident_brief`, optionally `human_callback_number` and `road_warnings` in the existing `CallRequest` shape. Other fields are rejected. |
+
+Obtain contact records and exact target approvals explicitly; this command does not
+discover contacts. Keep these files and the queue database private and ignored.
+No operational contact fixture is supplied. Duplicate JSON object keys are rejected
+instead of silently replacing an approval or request. Duplicate array records remain
+visible as `ambiguous_contact` or `ambiguous_authorization`.
+
+The return value is a `snapshot-contacts-1` report containing `scenario_id`,
+`snapshot_id`, `epoch`, UTC evaluation `as_of`, original `input_mode`, `policy`,
+`observed_geometry`, `ranked`, `review`, `blocked`, `existing` and `enqueue`.
+Ranking rows contain `asset_id`, `rank`, `status`, `slack_min`, `latest_start_min`,
+`time_to_impact_min`, `components`, forecast/evacuation source labels and original
+snapshot `evidence.sources`. `components.fire_arrival_min` and `latest_start_min`
+are absolute minutes from `epoch`; `now_min` is elapsed time from that same epoch.
+Slack and ordering agree with `rank_snapshot(snapshot, now_at=now_at)` using the
+same buffer. Property values and criticality do not affect order.
+
+The report contains no private contact, approval or request payloads. `blocked`
+contains `{asset_id, request_id, reasons}`; it is separate from timing `review`
+because a ranked location may still lack a valid phone or approval. `enqueue` is
+the existing queue's report (`queued`, `review`, `missing_contact`, `existing`),
+and top-level `existing` identifies preserved or cancelled replay entries.
+Observed geometry status/distance is reported separately and never supplies a
+forecast. Null distance does not prevent contact ranking or enqueue.
+
+The default freshness limit is `config.FRESHNESS['stale_after_s'] / 60` (60 minutes).
+Expired forecast horizons, missing forecast observation timestamps, stale forecasts,
+stale/future snapshots and future forecast evidence block enqueue. Negative remaining
+windows stay ranked as `window_exhausted`; they do not produce evacuation instructions.
+Arrivals before the supplied epoch are reported as `arrival_before_epoch` because the
+existing queue's location contract accepts only nonnegative absolute arrival minutes.
+Missing lat/lon yields `queue_coordinates_unavailable`: the queue requires projected
+coordinates, and the adapter does not invent a location from an asset ID or distance.
+
+`snapshot_request_id(snapshot_id, asset_id)` returns `snapshot-` plus a SHA-256
+digest of the ordered identity pair. Replays cannot create a second queue entry for
+that pair. Started calls remain unchanged, including when updated inputs are blocked.
+Changed request content or stored ranking inputs on a pending replay produce
+`immutable_request_conflict` or `immutable_priority_conflict` and cancel that unstarted
+entry. Other blocked replays also cancel their own pending entry. Cancelled entries
+are not revived; use a new producer snapshot and fresh exact approval after review.
+Older snapshot entries are not automatically superseded: the coordinator must use
+the queue's explicit cancellation policy before admitting replacement work.
+
+### Enqueue-only command
+
+```bash
+PYTHONPATH=. .venv/bin/python -m scripts.snapshot_contacts \
+  --snapshot /private/incident/snapshot.json \
+  --contacts /private/incident/contacts.json \
+  --approvals /private/incident/approvals.json \
+  --requests /private/incident/requests.json \
+  --epoch 2026-09-20T08:00:00Z \
+  --db /private/incident/voice-queue.sqlite3
+```
+
+`--now-at UTC_ISO` enables deterministic offline evaluation; otherwise current UTC
+is used. Optional `--max-age-min` and `--buffer-min` override the configured policy
+and appear in the report. The command writes only to the queue database and stdout;
+there is no dispatch option. It reserves/enforces mode `0600` for the database and
+rejects symlinks. All workers for an account must use this same database and identical
+`MAX_CONCURRENT_CALLS` / `MAX_CALL_STARTS_PER_SECOND` values; the command reads the
+existing queue configuration. The account's effective provider limits remain a
+separate verification responsibility. Exit `0` returns a report, including blocked
+assets; exit `2` reports malformed inputs/database errors without echoing private data.
+
+### Optional call-briefings boundary
+
+With the sibling `fireline.call_briefing` module integrated, use
+`briefing_adapter_from_recommendations(snapshot_id, recommendations)` as the
+`briefing_adapter`. Recommendations are keyed by `asset_id` and follow that module's
+approved recommendation contract. The wrapper invokes
+`build_call_briefing(asset, recommendation_or_none, snapshot_id=...)` and copies only
+`incident_brief` and `road_warnings` into trusted request data. Missing recommendations
+remain readiness/human-help briefings; target approvals are still required separately.
+The wrapper is bound to one snapshot and cannot be reused for another snapshot.
+Tests/integrators can inject the same export with `build_briefing=callable`.
+Without the sibling module, callers can supply trusted request data directly or an
+explicit `briefing_adapter(asset, request_data)` callback returning only allowed request
+fields. No optional module is imported during the base enqueue flow.
+
+### Verification and remaining integration
+
+Offline verification: **31 adapter/CLI tests passed; full suite 632 passed, 1 skipped**.
+Tests build genuine v1.1 records with `build_snapshot` plus forecast attachment and
+check `rank_snapshot` parity, nonzero epoch arithmetic, 30-minute/default and custom
+buffers, null inputs/provenance, stale and missing forecast observations, exact approvals,
+duplicate contacts, immutable replay, started calls, private CLI output and zero dispatch.
+Scoped read-only review found two issues (missing forecast observation evidence and
+changed priority on pending replay); both have failing-before/passing-after regressions
+and the final re-review found no remaining actionable findings.
+
+Norma scanned only this task's changed files. Adapter and tests returned `clean` with
+full reported coverage. CLI finding `py-perf-open-no-with` is inapplicable to its
+`os.open` descriptor: the immediately following `try/finally` always closes it with
+`os.close`. Markdown returned `not_checkable` (no rules for that type). This is a
+changed-file check, not a repository-wide compliance claim.
+
+Committed sibling exports were consumed read-only in an offline integration check:
+fire-discovery `5a4549e` (`DiscoveryService.discover().assets_in`) flowed through
+`build_snapshot` v1.1 into this adapter; call-briefings `8f1757d`
+(`build_call_briefing`) supplied approved and readiness-only briefs, while unlocated
+unknown assets remained in review. No contact records were discovered and no calls
+were placed. These branches still require separate integration into main; the base
+adapter works without them. Dispatch/deployment, current provider limits, coordinator
+supersession policy and real approved private inputs remain separate dependencies.

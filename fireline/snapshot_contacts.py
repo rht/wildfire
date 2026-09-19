@@ -6,6 +6,7 @@ travel, effects, headcounts or arrival forecasts are inferred here.
 """
 from collections import defaultdict
 import copy
+from dataclasses import asdict
 import hashlib
 import json
 
@@ -23,6 +24,32 @@ def snapshot_request_id(snapshot_id, asset_id):
     identifier(asset_id, 'asset_id')
     key = json.dumps([snapshot_id, asset_id], separators=(',', ':'))
     return 'snapshot-' + hashlib.sha256(key.encode()).hexdigest()
+
+
+def briefing_adapter_from_recommendations(snapshot_id, recommendations, *, build_briefing=None):
+    """Optional bridge to call-briefings' build_call_briefing export.
+
+    Recommendations are keyed by stable asset_id. Missing recommendations deliberately
+    reach the builder as None (readiness/human help only). Import the sibling module
+    only when requested, so the base adapter has no dependency on its installation.
+    """
+    identifier(snapshot_id, 'snapshot_id')
+    if not isinstance(recommendations, dict):
+        raise ValueError('recommendations must be keyed by asset_id')
+    if build_briefing is None:
+        from .call_briefing import build_call_briefing
+        build_briefing = build_call_briefing
+    recommendations = copy.deepcopy(recommendations)
+
+    def adapt(asset, data):
+        briefing = build_briefing(asset, recommendations.get(asset['asset_id']), snapshot_id=snapshot_id)
+        if briefing.asset_id != asset['asset_id'] or briefing.snapshot_id != snapshot_id:
+            raise ValueError('briefing association mismatch')
+        return {**data, 'incident_brief': briefing.incident_brief,
+                'road_warnings': copy.deepcopy(briefing.road_warnings)}
+
+    adapt.snapshot_id = snapshot_id
+    return adapt
 
 
 def _index(records, label):
@@ -97,9 +124,12 @@ def _timing_blocks(asset, row, now, as_of, max_age_min):
             reasons.append('arrival_after_forecast_horizon')
     # Fresh snapshot assembly cannot make an old forecast fresh. Geometry age is
     # separate: it never supplies or invalidates an otherwise current prediction.
-    for source in asset['sources']:
-        if not set(source['fields']) & {'fire_arrival_at', 'forecast_source'}:
-            continue
+    forecast_sources = [s for s in asset['sources']
+                        if set(s['fields']) & {'fire_arrival_at', 'forecast_source'}]
+    if asset['forecast_source'] and (not forecast_sources or any(
+            source.get('observed_at') is None for source in forecast_sources)):
+        reasons.append('missing_forecast_observed_at')
+    for source in forecast_sources:
         for key in ('observed_at', 'available_at', 'fetched_at'):
             if source.get(key) is None:
                 continue
@@ -155,6 +185,8 @@ def _location(asset, row):
 def _request(asset, snapshot_id, target, data, briefing_adapter):
     if briefing_adapter is not None:
         # Callback owns briefing content only, never association or authorization.
+        if getattr(briefing_adapter, 'snapshot_id', snapshot_id) != snapshot_id:
+            raise ValueError('briefing snapshot mismatch')
         data = briefing_adapter(copy.deepcopy(asset), copy.deepcopy(data))
     allowed = {'language', 'incident_brief', 'human_callback_number', 'road_warnings'}
     if not isinstance(data, dict) or set(data) - allowed:
@@ -223,7 +255,7 @@ def enqueue_snapshot_contacts(queue, snapshot, contacts, approvals, request_data
             except (ValueError, TypeError):
                 reasons.append('invalid_coordinates')
             existing = queue.store.conn.execute(
-                'SELECT request_id, state FROM voice_queue WHERE asset_id=? AND snapshot_id=?',
+                'SELECT * FROM voice_queue WHERE asset_id=? AND snapshot_id=?',
                 (asset_id, snapshot['snapshot_id'])).fetchone()
             if existing:
                 stored = queue.store.get(existing['request_id'])
@@ -239,9 +271,12 @@ def enqueue_snapshot_contacts(queue, snapshot, contacts, approvals, request_data
                 except (ValueError, TypeError, KeyError):
                     reasons.append('invalid_request_data')
             if existing and not reasons:
-                from dataclasses import asdict
                 if stored['request'] != asdict(request):
                     reasons.append('immutable_request_conflict')
+                expected_priority = (row['latest_start_min'], row['components']['fire_arrival_min'],
+                                     row['components']['distance_m'])
+                if tuple(existing[k] for k in ('latest_start', 'arrival', 'distance')) != expected_priority:
+                    reasons.append('immutable_priority_conflict')
             if reasons:
                 if existing and state in ('pending', 'review'):
                     queue.cancel(existing['request_id'])
