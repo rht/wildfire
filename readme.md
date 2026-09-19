@@ -923,9 +923,10 @@ These are offline software checks, not validation of provider audio, telephony o
 
 ### Mock scenario replay and dashboard updates
 
-The expanded mock exercise on `codex/slng-voice-agent` runs **25 isolated scenarios** through the
+The expanded mock exercise on `codex/slng-voice-agent` runs **32 isolated scenarios** through the
 existing contact ranking, one-crew response planner, interview normalization, readiness checks and
-persistent task store. Fixtures are in `fixtures/voice/replay_scenarios.json`; the reproducible
+persistent task store. Fixtures are in `fixtures/voice/replay_scenarios.json` and
+`fixtures/voice/neighbourhood.json`; the reproducible
 outcome report is [reports/mock-voice-results.json](reports/mock-voice-results.json). This tests
 structured synthetic answers, not SLNG speech recognition, generated conversation, real calls or
 successful human transfer. The phone number is fictional and the runner has no provider calls.
@@ -957,6 +958,33 @@ An existing ordinary incident database is rejected without modifying its content
 | Forecast update reduces B's fire arrival to minute 3 | Contact order becomes B → A → C; B's window is -1 minute and its previous self-evacuation proposal is withdrawn for review. |
 | Crew loses assisted-evacuation capability | Response proposal changes from C → A to B → C; A's action is explicitly blocked and its assistance need remains. |
 
+The default exercise is now a **six-building village with 49 people**, rather than just the A/B/C
+layout. It includes a care home (20 people), school (12), three households (6, 5 and 4), and an
+equipment depot (2). Two approved reception centres have 10 and 5 available places. The dashboard
+shows the local layout, the next event, per-building call outcomes and proposed remaining capacity.
+The original A/B/C cases remain available in the selector.
+
+| Village exercise | Interaction being tested |
+|---|---|
+| Shared capacity | Lower-priority households answer first. A later, more urgent answer moves a proposed destination to the second centre; no centre is overbooked and the depot cannot yet be accommodated. |
+| Mixed escalations | Different buildings report low confidence plus assistance, missing transport, a human request, no answer, or supported self-evacuation. Each keeps its own evidence and follow-up work. |
+| Road closure | Both supplied routes from Oak apartments become unavailable; its proposal is withdrawn and other allocations are recalculated. |
+| Reception centre closes | The 10-place hall loses approval; only the five-person household fits in the annex. |
+| Fire changes direction | Mill house's updated arrival forecast leaves a negative evacuation window. It moves to the front of the contact queue and loses its self-evacuation proposal. |
+| Later assistance request | Oak apartments initially reports self-evacuation, then reports needing help. Both calls remain in history and the latest assessment changes its mode. |
+| Crew capability loss | The crew loses transport and assisted-evacuation capabilities. Care-home and school actions become blocked, and the proposed sequence changes. |
+
+The village contact order initially is **CARE → SCHOOL → H1 → H2 → H3 → DEPOT**; its one-crew
+proposal is **CARE → SCHOOL**. Capacity is allocated only to proposed **self-evacuating** groups.
+The care home and school still require an analyst to arrange assisted transport and receiving
+capacity; the 15 places do not accommodate all 49 people. These exercises use six actions and
+one crew, not multiple concurrent teams. Building positions are a schematic in local metres;
+travel times and forecast arrivals are independent supplied inputs.
+
+Allocations can change after a later answer because they are **uncommunicated proposals**. The
+prototype does not model instructions already sent to residents or automatically preserve an
+issued destination; changing such instructions needs an analyst decision.
+
 The two algorithms remain separate:
 
 1. **Whom to contact first:** `rank_contacts` orders the smallest remaining window first:
@@ -983,7 +1011,8 @@ readiness API also withholds the old crew proposal when supplied a nonzero elaps
 
 **What the UI receives:** `MockReplay.state()` returns a `mock-coordination-state-1` object with
 `case_id`, `snapshot_id`, `revision`, `as_of`, `pending_events`, `calls`, `plan`, `tasks`,
-`response_review_required`, `input_mode="synthetic"`, `dispatch=false` and `live_validation=false`.
+`response_review_required`, `layout`, `reception_centres`, `input_mode="synthetic"`, `dispatch=false`
+and `live_validation=false`.
 `plan` contains both algorithm outputs, household modes and proposed reception capacity. Calls
 retain confidence/basis, evidence, reported assistance, human requests and escalation reasons.
 The UI can download the complete state as JSON.
@@ -1019,7 +1048,7 @@ authenticated SSE stream for server-to-browser notifications, or WebSockets if b
 interaction warrants them, and fetch current state after reconnecting. A socket is transport,
 not the durable output or source of truth. No new SSE/WebSocket endpoint is deployed here.
 
-Validation after integration: **451 tests passed**, including all eight combinations, additional
+Validation after integration: **460 tests passed**, including all eight combinations, additional
 adverse cases, both algorithm update examples, cross-reader refresh/restart, duplicate delivery,
 crash rollback, existing-database protection, CLI output and Streamlit interaction tests.
 Independent review findings about partial commits and incomplete invalidation IDs were fixed and

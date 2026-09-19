@@ -5,6 +5,1602 @@
   "live_validation": false,
   "cases": [
     {
+      "case": "village_shared_capacity",
+      "revision": 6,
+      "pending_events": 0,
+      "contact_order": [
+        "CARE",
+        "SCHOOL",
+        "H1",
+        "H2",
+        "H3",
+        "DEPOT"
+      ],
+      "remaining_windows": {
+        "CARE": 8,
+        "SCHOOL": 14,
+        "H1": 19,
+        "H2": 21,
+        "H3": 26,
+        "DEPOT": 35
+      },
+      "response_order": [
+        "CARE",
+        "SCHOOL"
+      ],
+      "response_review_required": true,
+      "modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "undetermined"
+      },
+      "destinations": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": "HALL",
+        "H2": "ANNEX",
+        "H3": "HALL",
+        "DEPOT": null
+      },
+      "remaining_capacity": {
+        "HALL": 0,
+        "ANNEX": 0
+      },
+      "reported_help": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": false,
+        "H2": false,
+        "H1": false,
+        "DEPOT": false
+      },
+      "escalation_reasons": {
+        "CARE": [],
+        "SCHOOL": [],
+        "H3": [],
+        "H2": [],
+        "H1": [],
+        "DEPOT": []
+      },
+      "evacuation_status": {
+        "CARE": "not_confirmed",
+        "SCHOOL": "not_confirmed",
+        "H1": "not_confirmed",
+        "H2": "not_confirmed",
+        "H3": "not_confirmed",
+        "DEPOT": "not_confirmed"
+      },
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "undetermined"
+      },
+      "passed": true,
+      "open_tasks": [
+        {
+          "asset_id": "CARE",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:human_callback",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "case": "village_mixed_escalations",
+      "revision": 6,
+      "pending_events": 0,
+      "contact_order": [
+        "CARE",
+        "SCHOOL",
+        "H1",
+        "H2",
+        "H3",
+        "DEPOT"
+      ],
+      "remaining_windows": {
+        "CARE": 8,
+        "SCHOOL": 14,
+        "H1": 19,
+        "H2": 21,
+        "H3": 26,
+        "DEPOT": 35
+      },
+      "response_order": [
+        "CARE",
+        "SCHOOL"
+      ],
+      "response_review_required": true,
+      "modes": {
+        "CARE": "undetermined",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "undetermined",
+        "H3": "undetermined",
+        "DEPOT": "self_evacuate"
+      },
+      "destinations": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": "HALL",
+        "H2": null,
+        "H3": null,
+        "DEPOT": "HALL"
+      },
+      "remaining_capacity": {
+        "HALL": 2,
+        "ANNEX": 5
+      },
+      "reported_help": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H1": false,
+        "H2": false,
+        "H3": null,
+        "DEPOT": false
+      },
+      "escalation_reasons": {
+        "CARE": [
+          "low_confidence"
+        ],
+        "SCHOOL": [],
+        "H1": [],
+        "H2": [
+          "human_requested"
+        ],
+        "H3": [
+          "household_unconfirmed",
+          "identity_unconfirmed",
+          "incomplete_answers",
+          "no_answer",
+          "readback_unconfirmed",
+          "unknown_confidence",
+          "unverified_confidence"
+        ],
+        "DEPOT": []
+      },
+      "evacuation_status": {
+        "CARE": "not_confirmed",
+        "SCHOOL": "not_confirmed",
+        "H1": "not_confirmed",
+        "H2": "not_confirmed",
+        "H3": "not_confirmed",
+        "DEPOT": "not_confirmed"
+      },
+      "expected_modes": {
+        "CARE": "undetermined",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "undetermined",
+        "H3": "undetermined",
+        "DEPOT": "self_evacuate"
+      },
+      "passed": true,
+      "open_tasks": [
+        {
+          "asset_id": "CARE",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:human_callback",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "case": "village_road_closure",
+      "revision": 7,
+      "pending_events": 0,
+      "contact_order": [
+        "CARE",
+        "SCHOOL",
+        "H1",
+        "H2",
+        "H3",
+        "DEPOT"
+      ],
+      "remaining_windows": {
+        "CARE": 8,
+        "SCHOOL": 14,
+        "H1": 19,
+        "H2": 21,
+        "H3": 26,
+        "DEPOT": 35
+      },
+      "response_order": [
+        "CARE",
+        "SCHOOL"
+      ],
+      "response_review_required": true,
+      "modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "undetermined",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      },
+      "destinations": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H2": "HALL",
+        "H3": "HALL",
+        "DEPOT": "ANNEX"
+      },
+      "remaining_capacity": {
+        "HALL": 1,
+        "ANNEX": 3
+      },
+      "reported_help": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": false,
+        "H2": false,
+        "H1": false,
+        "DEPOT": false
+      },
+      "escalation_reasons": {
+        "CARE": [],
+        "SCHOOL": [],
+        "H3": [],
+        "H2": [],
+        "H1": [],
+        "DEPOT": []
+      },
+      "evacuation_status": {
+        "CARE": "not_confirmed",
+        "SCHOOL": "not_confirmed",
+        "H1": "not_confirmed",
+        "H2": "not_confirmed",
+        "H3": "not_confirmed",
+        "DEPOT": "not_confirmed"
+      },
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "undetermined",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      },
+      "passed": true,
+      "open_tasks": [
+        {
+          "asset_id": "CARE",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:human_callback",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "case": "village_centre_closes",
+      "revision": 7,
+      "pending_events": 0,
+      "contact_order": [
+        "CARE",
+        "SCHOOL",
+        "H1",
+        "H2",
+        "H3",
+        "DEPOT"
+      ],
+      "remaining_windows": {
+        "CARE": 8,
+        "SCHOOL": 14,
+        "H1": 19,
+        "H2": 21,
+        "H3": 26,
+        "DEPOT": 35
+      },
+      "response_order": [
+        "CARE",
+        "SCHOOL"
+      ],
+      "response_review_required": true,
+      "modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "undetermined",
+        "H2": "self_evacuate",
+        "H3": "undetermined",
+        "DEPOT": "undetermined"
+      },
+      "destinations": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H2": "ANNEX",
+        "H3": null,
+        "DEPOT": null
+      },
+      "remaining_capacity": {
+        "HALL": 10,
+        "ANNEX": 0
+      },
+      "reported_help": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": false,
+        "H2": false,
+        "H1": false,
+        "DEPOT": false
+      },
+      "escalation_reasons": {
+        "CARE": [],
+        "SCHOOL": [],
+        "H3": [],
+        "H2": [],
+        "H1": [],
+        "DEPOT": []
+      },
+      "evacuation_status": {
+        "CARE": "not_confirmed",
+        "SCHOOL": "not_confirmed",
+        "H1": "not_confirmed",
+        "H2": "not_confirmed",
+        "H3": "not_confirmed",
+        "DEPOT": "not_confirmed"
+      },
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "undetermined",
+        "H2": "self_evacuate",
+        "H3": "undetermined",
+        "DEPOT": "undetermined"
+      },
+      "passed": true,
+      "open_tasks": [
+        {
+          "asset_id": "CARE",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:human_callback",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "case": "village_fire_turns",
+      "revision": 7,
+      "pending_events": 0,
+      "contact_order": [
+        "H2",
+        "CARE",
+        "SCHOOL",
+        "H1",
+        "H3",
+        "DEPOT"
+      ],
+      "remaining_windows": {
+        "H2": -1,
+        "CARE": 8,
+        "SCHOOL": 14,
+        "H1": 19,
+        "H3": 26,
+        "DEPOT": 35
+      },
+      "response_order": [
+        "CARE",
+        "SCHOOL"
+      ],
+      "response_review_required": true,
+      "modes": {
+        "H2": "undetermined",
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      },
+      "destinations": {
+        "H2": null,
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": "HALL",
+        "H3": "HALL",
+        "DEPOT": "ANNEX"
+      },
+      "remaining_capacity": {
+        "HALL": 0,
+        "ANNEX": 3
+      },
+      "reported_help": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": false,
+        "H2": false,
+        "H1": false,
+        "DEPOT": false
+      },
+      "escalation_reasons": {
+        "CARE": [],
+        "SCHOOL": [],
+        "H3": [],
+        "H2": [],
+        "H1": [],
+        "DEPOT": []
+      },
+      "evacuation_status": {
+        "H2": "not_confirmed",
+        "CARE": "not_confirmed",
+        "SCHOOL": "not_confirmed",
+        "H1": "not_confirmed",
+        "H3": "not_confirmed",
+        "DEPOT": "not_confirmed"
+      },
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "undetermined",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      },
+      "passed": true,
+      "open_tasks": [
+        {
+          "asset_id": "CARE",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:human_callback",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "case": "village_new_help_report",
+      "revision": 7,
+      "pending_events": 0,
+      "contact_order": [
+        "CARE",
+        "SCHOOL",
+        "H1",
+        "H2",
+        "H3",
+        "DEPOT"
+      ],
+      "remaining_windows": {
+        "CARE": 8,
+        "SCHOOL": 14,
+        "H1": 19,
+        "H2": 21,
+        "H3": 26,
+        "DEPOT": 35
+      },
+      "response_order": [
+        "CARE",
+        "SCHOOL"
+      ],
+      "response_review_required": true,
+      "modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "assisted_evacuation",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      },
+      "destinations": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H2": "HALL",
+        "H3": "HALL",
+        "DEPOT": "ANNEX"
+      },
+      "remaining_capacity": {
+        "HALL": 1,
+        "ANNEX": 3
+      },
+      "reported_help": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": false,
+        "H2": false,
+        "H1": true,
+        "DEPOT": false
+      },
+      "escalation_reasons": {
+        "CARE": [],
+        "SCHOOL": [],
+        "H3": [],
+        "H2": [],
+        "H1": [],
+        "DEPOT": []
+      },
+      "evacuation_status": {
+        "CARE": "not_confirmed",
+        "SCHOOL": "not_confirmed",
+        "H1": "not_confirmed",
+        "H2": "not_confirmed",
+        "H3": "not_confirmed",
+        "DEPOT": "not_confirmed"
+      },
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "assisted_evacuation",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      },
+      "passed": true,
+      "open_tasks": [
+        {
+          "asset_id": "CARE",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:human_callback",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "case": "village_resource_loss",
+      "revision": 7,
+      "pending_events": 0,
+      "contact_order": [
+        "CARE",
+        "SCHOOL",
+        "H1",
+        "H2",
+        "H3",
+        "DEPOT"
+      ],
+      "remaining_windows": {
+        "CARE": 8,
+        "SCHOOL": 14,
+        "H1": 19,
+        "H2": 21,
+        "H3": 26,
+        "DEPOT": 35
+      },
+      "response_order": [
+        "H1",
+        "H2",
+        "H3",
+        "DEPOT"
+      ],
+      "response_review_required": true,
+      "modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "undetermined"
+      },
+      "destinations": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": "HALL",
+        "H2": "ANNEX",
+        "H3": "HALL",
+        "DEPOT": null
+      },
+      "remaining_capacity": {
+        "HALL": 0,
+        "ANNEX": 0
+      },
+      "reported_help": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": false,
+        "H2": false,
+        "H1": false,
+        "DEPOT": false
+      },
+      "escalation_reasons": {
+        "CARE": [],
+        "SCHOOL": [],
+        "H3": [],
+        "H2": [],
+        "H1": [],
+        "DEPOT": []
+      },
+      "evacuation_status": {
+        "CARE": "not_confirmed",
+        "SCHOOL": "not_confirmed",
+        "H1": "not_confirmed",
+        "H2": "not_confirmed",
+        "H3": "not_confirmed",
+        "DEPOT": "not_confirmed"
+      },
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "undetermined"
+      },
+      "passed": true,
+      "open_tasks": [
+        {
+          "asset_id": "CARE",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:human_callback",
+          "status": "open"
+        }
+      ]
+    },
+    {
       "case": "baseline",
       "revision": 3,
       "pending_events": 0,
@@ -27,6 +1623,15 @@
         "A": "assisted_evacuation",
         "B": "self_evacuate",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": "community_centre",
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 2,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "A": true,
@@ -144,6 +1749,15 @@
         "B": "self_evacuate",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": "community_centre",
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 2,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": false
       },
@@ -221,6 +1835,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": false
       },
@@ -284,6 +1907,15 @@
         "A": "undetermined",
         "B": "assisted_evacuation",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": true
@@ -362,6 +1994,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": true
       },
@@ -426,6 +2067,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": false
       },
@@ -489,6 +2139,15 @@
         "A": "undetermined",
         "B": "undetermined",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": false
@@ -555,6 +2214,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": true
       },
@@ -618,6 +2286,15 @@
         "A": "undetermined",
         "B": "undetermined",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": true
@@ -684,6 +2361,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": false
       },
@@ -747,6 +2433,15 @@
         "A": "undetermined",
         "B": "undetermined",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": null
@@ -816,6 +2511,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": false
       },
@@ -879,6 +2583,15 @@
         "A": "undetermined",
         "B": "undetermined",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": null
@@ -950,6 +2663,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": false
       },
@@ -1013,6 +2735,15 @@
         "A": "undetermined",
         "B": "undetermined",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": false
@@ -1078,6 +2809,15 @@
         "A": "undetermined",
         "B": "self_evacuate",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": "community_centre",
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 2,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": false
@@ -1156,6 +2896,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": false
       },
@@ -1219,6 +2968,15 @@
         "A": "undetermined",
         "B": "undetermined",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": null
@@ -1290,6 +3048,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": null
       },
@@ -1359,6 +3126,15 @@
         "A": "undetermined",
         "B": "undetermined",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": null
@@ -1430,6 +3206,15 @@
         "A": "undetermined",
         "B": "assisted_evacuation",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": true
@@ -1508,6 +3293,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 7,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": false
       },
@@ -1575,6 +3369,15 @@
         "B": "undetermined",
         "C": "undetermined"
       },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
+      },
       "reported_help": {
         "B": false
       },
@@ -1641,6 +3444,15 @@
         "B": "undetermined",
         "A": "undetermined",
         "C": "undetermined"
+      },
+      "destinations": {
+        "B": null,
+        "A": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "B": false
@@ -1723,6 +3535,15 @@
         "A": "assisted_evacuation",
         "B": "undetermined",
         "C": "undetermined"
+      },
+      "destinations": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "remaining_capacity": {
+        "community_centre": 10,
+        "nearby_hospital": 100
       },
       "reported_help": {
         "A": true

@@ -23,6 +23,7 @@ def test_panel_receives_mock_result_and_refreshes_from_persistent_state(tmp_path
     monkeypatch.setenv('FIRELINE_MOCK_DB_DIR', str(tmp_path))
     app = AppTest.from_string('from fireline.voice_demo_panel import render_voice_demo\nrender_voice_demo()', default_timeout=10).run()
     assert not app.exception
+    app.selectbox(key='mock_case').set_value('baseline').run()
     assert any('Contact order: A' in m.value for m in app.markdown)
     app.button(key='mock_apply_next').click().run()
     assert not app.exception
@@ -37,6 +38,7 @@ def test_panel_receives_mock_result_and_refreshes_from_persistent_state(tmp_path
     assert app.dataframe[0].value.set_index('asset_id').loc['B', 'mode'] == 'self_evacuate'
     app = AppTest.from_string('from fireline.voice_demo_panel import render_voice_demo\nrender_voice_demo()', default_timeout=10).run()
     assert not app.exception
+    app.selectbox(key='mock_case').set_value('baseline').run()
     assert app.dataframe[0].value.set_index('asset_id').loc['B', 'mode'] == 'self_evacuate'
 
 
@@ -48,3 +50,32 @@ def test_main_dashboard_can_open_directly_in_mock_mode(tmp_path, monkeypatch):
     app.run()
     assert not app.exception
     assert app.title[0].value == 'Mock voice scenarios'
+
+
+def test_neighbourhood_ui_displays_buildings_capacity_and_event_updates(tmp_path, monkeypatch):
+    monkeypatch.setenv('FIRELINE_MOCK_DB_DIR', str(tmp_path))
+    app = AppTest.from_string('from fireline.voice_demo_panel import render_voice_demo\nrender_voice_demo()', default_timeout=10).run()
+    assert app.selectbox(key='mock_case').value == 'village_shared_capacity'
+    assert not app.exception
+    assert any('49 people' in c.value for c in app.caption)
+    assert any('Pine care home' in c.value for c in app.info)
+    app.button(key='mock_apply_all').click().run()
+    assert not app.exception
+    rows = app.dataframe[0].value
+    assert len(rows) == 6
+    assert rows.set_index('asset_id').loc['H2', 'destination_id'] == 'ANNEX'
+    capacities = next(d.value for d in app.dataframe if 'proposed_remaining_places' in d.value.columns)
+    assert capacities['proposed_remaining_places'].sum() == 0
+    assert any('Local layout' in c.value for c in app.subheader)
+
+
+def test_cli_supports_buildings_other_than_abc(tmp_path):
+    output = tmp_path / 'village.json'
+    proc = subprocess.run([sys.executable, 'scripts/replay_voice_scenarios.py', '--case', 'village_shared_capacity',
+        '--db-dir', str(tmp_path / 'db'), '--output', str(output)], capture_output=True, text=True)
+    assert proc.returncode == 0, proc.stderr
+    case = json.loads(output.read_text())['cases'][0]
+    assert case['passed'] is True
+    assert len(case['modes']) == 6
+    assert case['destinations']['H2'] == 'ANNEX'
+    assert case['remaining_capacity'] == {'HALL': 0, 'ANNEX': 0}

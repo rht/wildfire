@@ -1,10 +1,10 @@
-"""Offline, resumable O/B/C/A scenario replay using the real voice/task stores.
+"""Offline, resumable multi-building scenario replay using the real voice/task stores.
 
 A dedicated database per case isolates alternative worlds. No provider or network calls.
 The durable revision describes a processed fixture event, not a live call or a dispatch.
 """
 from contextlib import contextmanager
-from dataclasses import replace
+from dataclasses import asdict, replace
 import fcntl
 import hashlib
 import json
@@ -13,22 +13,26 @@ from pathlib import Path
 import sqlite3
 
 from .evacuation_readiness import coordinate_evacuation, ReceptionCentre, EvacuationRoute
-from .priority_examples import load_scenario
+from .priority_models import scenario_from_dict
 from .voice_models import CallRequest, CallResult, utc
 from .voice_store import VoiceStore, encoded
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'fixtures/voice/replay_scenarios.json'
+NEIGHBOURHOOD = ROOT / 'fixtures/voice/neighbourhood.json'
 
 
 def load_cases():
-    return json.loads(FIXTURE.read_text())['cases']
+    neighbourhood = json.loads(NEIGHBOURHOOD.read_text())
+    expanded = [dict(c, events=neighbourhood['call_sets'][c['call_set']] + c['events'])
+                for c in neighbourhood['cases']]
+    return expanded + json.loads(FIXTURE.read_text())['cases']
 
 
 class MockReplay:
     def __init__(self, path, case_name):
         fixture = json.loads(FIXTURE.read_text())
-        matches = [c for c in fixture['cases'] if c['name'] == case_name]
+        matches = [c for c in load_cases() if c['name'] == case_name]
         if not matches:
             raise ValueError('unknown mock case')
         self.case = matches[0]
@@ -36,10 +40,19 @@ class MockReplay:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.snapshot_id = 'mock-voice-' + case_name
-        self.scenario = load_scenario(ROOT / 'fixtures/static_priority.json')
-        self.readiness = json.loads((ROOT / 'fixtures/evacuation_readiness.json').read_text())
-        fingerprint = hashlib.sha256(encoded([fixture, self.readiness,
-            json.loads((ROOT / 'fixtures/static_priority.json').read_text())]).encode()).hexdigest()
+        self.centre_layout = []
+        if self.case.get('profile') == 'neighbourhood':
+            profile = json.loads(NEIGHBOURHOOD.read_text())
+            scenario_data, self.readiness = profile['scenario'], profile['readiness']
+            self.centre_layout = profile['centre_layout']
+            fingerprint_data = [fixture['epoch'], self.case, scenario_data, self.readiness, self.centre_layout]
+        else:
+            scenario_data = json.loads((ROOT / 'fixtures/static_priority.json').read_text())
+            self.readiness = json.loads((ROOT / 'fixtures/evacuation_readiness.json').read_text())
+            # Preserve the fingerprint of existing single-household databases.
+            fingerprint_data = [fixture, self.readiness, scenario_data]
+        self.scenario = scenario_from_dict(scenario_data)
+        fingerprint = hashlib.sha256(encoded(fingerprint_data).encode()).hexdigest()
         with self._lock():
             if not self.path.exists():
                 os.close(os.open(self.path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600))
@@ -81,6 +94,13 @@ class MockReplay:
         scenario = self.scenario
         assessments, calls = {}, []
         review_required = False
+        centres = [ReceptionCentre(**c) for c in self.readiness['centres']]
+        routes = [EvacuationRoute(**r) for r in self.readiness['routes']]
+        if 'centre_capacity' in self.case:
+            centres = [replace(c, remaining_places=self.case['centre_capacity'])
+                       if c.centre_id == 'community_centre' else c for c in centres]
+        if 'route_confirmed' in self.case:
+            routes = [replace(r, confirmed=self.case['route_confirmed']) for r in routes]
         for index, event in enumerate(self.case['events'][:revision]):
             if event['kind'] == 'call_result':
                 rid = self._request_id(index)
@@ -106,18 +126,24 @@ class MockReplay:
                     forecast_source='Synthetic changed forecast')
                     if a.asset_id == event['asset_id'] else a for a in scenario.locations))
                 review_required = True
+            elif event['kind'] == 'route_update':
+                matched = [r for r in routes if r.asset_id == event['asset_id'] and
+                           (not event.get('centre_id') or r.centre_id == event['centre_id'])]
+                if not matched:
+                    raise ValueError('route update has no matching route')
+                routes = [replace(r, confirmed=event['confirmed']) if r in matched else r for r in routes]
+                review_required = True
+            elif event['kind'] == 'centre_update':
+                if event['centre_id'] not in {c.centre_id for c in centres}:
+                    raise ValueError('centre update has no matching centre')
+                changes = {k: event[k] for k in ('approved', 'remaining_places') if k in event}
+                centres = [replace(c, **changes) if c.centre_id == event['centre_id'] else c for c in centres]
+                review_required = True
             elif event['kind'] == 'resource_update':
                 scenario = replace(scenario, capabilities=tuple(event['capabilities']))
                 review_required = True
             else:
                 raise ValueError('unknown mock event')
-        centres = [ReceptionCentre(**c) for c in self.readiness['centres']]
-        routes = [EvacuationRoute(**r) for r in self.readiness['routes']]
-        if 'centre_capacity' in self.case:
-            centres = [replace(c, remaining_places=self.case['centre_capacity'])
-                       if c.centre_id == 'community_centre' else c for c in centres]
-        if 'route_confirmed' in self.case:
-            routes = [replace(r, confirmed=self.case['route_confirmed']) for r in routes]
         plan = coordinate_evacuation(scenario, list(assessments.values()), centres, routes)
         if plan['response'] is not None:
             plan['response']['sequence'] = [s['action_id'] for s in plan['response']['steps']]
@@ -127,6 +153,9 @@ class MockReplay:
             pending_events=len(self.case['events'])-revision, calls=calls, plan=plan,
             response_review_required=bool(review_required),
             response_basis='Static one-crew proposal from supplied counts, deadlines and effects; interview answers do not supply revised counts or task durations. No action is dispatched.',
+            layout=[dict(asdict(a), kind='building') for a in scenario.locations] +
+                   [dict(c, kind='reception centre') for c in self.centre_layout],
+            reception_centres=[asdict(c) for c in centres],
             tasks=self.store.tasks.tasks())
 
     def state(self):
@@ -146,7 +175,7 @@ class MockReplay:
                 i = event['interview']
                 rid = self._request_id(index)
                 req = CallRequest(rid, i['asset_id'], self.snapshot_id, '+12025550123', 'en',
-                                  'SIMULATION: synthetic O/B/C/A readiness exercise.', input_mode='synthetic')
+                                  'SIMULATION: synthetic building readiness exercise.', input_mode='synthetic')
                 self.store.register(req)
                 self.store.bind(rid, 'call-' + rid)
                 self.store.record_lifecycle(event_id='lifecycle-' + rid, request_id=rid,
