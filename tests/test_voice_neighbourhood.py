@@ -87,8 +87,9 @@ def test_neighbourhood_updates_preserve_work_and_respect_constraints(tmp_path, c
     assert state['response_review_required']
     if case == 'village_road_closure':
         assert rows['H1']['destination_id'] is None
-        assert rows['H2']['destination_id'] == 'HALL'
-        assert rows['DEPOT']['destination_id'] == 'ANNEX'
+        assert all(r['mode'] == 'undetermined' for r in rows.values())
+        assert all(r['current_road_warning_acknowledged'] is False for r in rows.values())
+        assert all('road_warning_update_unconfirmed' in r['reasons'] for r in rows.values())
     elif case == 'village_centre_closes':
         assert all(r['destination_id'] != 'HALL' for r in rows.values())
         assert rows['H2']['destination_id'] == 'ANNEX'

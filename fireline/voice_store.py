@@ -119,8 +119,11 @@ class VoiceStore:
         payload = encoded(asdict(request))
         with self._transaction():
             existing = self.conn.execute('SELECT request FROM voice_calls WHERE request_id=?', (request.request_id,)).fetchone()
-            if existing and existing[0] != payload:
-                raise ValueError('request association is immutable')
+            if existing:
+                previous = json.loads(existing[0])
+                previous.setdefault('road_warnings', [])  # Older requests predate this optional field.
+                if encoded(previous) != payload:
+                    raise ValueError('request association is immutable')
             self.conn.execute('INSERT OR IGNORE INTO voice_calls (request_id, request) VALUES (?, ?)',
                               (request.request_id, payload))
             self._followup(self.get(request.request_id))
@@ -279,4 +282,7 @@ class VoiceStore:
                     kinds |= {'confirm_departure', 'confirm_arrival'}
                 for kind in kinds:
                     identifier(kind, 'task kind')
-                    self._task('plan:' + snapshot_id + ':' + row['asset_id'], row['asset_id'], snapshot_id, kind)
+                    plan_key = 'plan:' + snapshot_id + ':' + row['asset_id']
+                    if row.get('road_warning_version') and kind in ('communicate_road_warning', 'human_callback'):
+                        plan_key += ':roads:' + row['road_warning_version']
+                    self._task(plan_key, row['asset_id'], snapshot_id, kind)

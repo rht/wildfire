@@ -12,6 +12,7 @@ from uuid import UUID, uuid4
 import requests
 from .env import load_env
 from .voice_interview import interview_prompt
+from .route_guidance import road_warning_brief
 from .voice_models import ANSWER_FIELDS, text
 
 BASE_URL = 'https://api.agents.slng.ai'
@@ -132,7 +133,7 @@ def call_arguments(request):
     return {'request_id': request.request_id, 'asset_id': request.asset_id,
             'snapshot_id': request.snapshot_id, 'incident_brief': request.incident_brief,
             'scenario_notice': 'SIMULATION' if request.input_mode != 'live' else 'Analyst-authorized contact',
-            'language': request.language}
+            'language': request.language, 'road_warning_brief': road_warning_brief(request.road_warnings)}
 
 
 def agent_configuration(request, *, name, region, models, tool_refs=None, outbound_connection_id=None):
@@ -140,15 +141,11 @@ def agent_configuration(request, *, name, region, models, tool_refs=None, outbou
         text(models.get(key), key)
     text(name, 'name', 255)
     text(region, 'region', 64)
-    prompt = interview_prompt(request).replace(request.incident_brief, '{{incident_brief}}')
-    prompt = prompt.replace(f'location {request.asset_id}.', 'location {{asset_id}}.')
-    prompt = prompt.replace(f'Speak in {request.language}.', 'Speak in {{language}}.')
-    prompt = prompt.replace('SIMULATION. No real emergency instruction.', '{{scenario_notice}}.')
-    prompt = prompt.replace('Analyst-authorized contact.', '{{scenario_notice}}.')
+    prompt = interview_prompt(request, template=True)
     config = dict(name=name, system_prompt=prompt, greeting='I am an AI readiness assistant. {{scenario_notice}}. May I confirm your location?',
                   language=request.language, region=region, models=dict(models),
                   tool_mode='shared', tool_refs=list(tool_refs or []), mcp_refs=[],
-                  template_defaults={'scenario_notice': 'SIMULATION'})
+                  template_defaults={'scenario_notice': 'SIMULATION', 'road_warning_brief': road_warning_brief([])})
     if outbound_connection_id:
         config['sip_outbound_trunk_id'] = uuid(outbound_connection_id)
     return config
@@ -162,10 +159,10 @@ def result_tool_configuration(url, secret_name):
         raise ValueError('invalid Vault secret name')
     properties = {key: {'type': 'string'} for key in
                   ('request_id', 'asset_id', 'snapshot_id', 'provider_call_id')}
-    properties.update({key: {'type': ['boolean', 'null']} for key in ANSWER_FIELDS})
+    properties.update({key: {'type': ['boolean', 'null']} for key in ANSWER_FIELDS + ('road_warning_acknowledged',)})
     properties.update(contradictory={'type': 'boolean'}, bad_audio={'type': 'boolean'},
                       evidence={'type': 'object', 'properties': {
-                          key: {'type': 'string'} for key in ANSWER_FIELDS + ('help_needs', 'preparation_remaining', 'instruction_received')},
+                          key: {'type': 'string'} for key in ANSWER_FIELDS + ('help_needs', 'preparation_remaining', 'instruction_received', 'road_warning_acknowledged')},
                           'additionalProperties': False})
     return dict(name='submit_interview', description='Record evidenced household answers. Submit immediately when a person is requested. Unknown answers are null. Never invent evidence or confidence.',
         tool_type='api_request', config=dict(type='api_request', url=url, http_method='POST',

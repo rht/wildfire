@@ -79,3 +79,13 @@ def test_cli_supports_buildings_other_than_abc(tmp_path):
     assert len(case['modes']) == 6
     assert case['destinations']['H2'] == 'ANNEX'
     assert case['remaining_capacity'] == {'HALL': 0, 'ANNEX': 0}
+
+
+def test_road_closure_shows_named_warning_in_next_call_preview(tmp_path, monkeypatch):
+    monkeypatch.setenv('FIRELINE_MOCK_DB_DIR', str(tmp_path))
+    app = AppTest.from_string('from fireline.voice_demo_panel import render_voice_demo\nrender_voice_demo()', default_timeout=10).run()
+    app.selectbox(key='mock_case').set_value('village_road_closure').run()
+    app.button(key='mock_apply_all').click().run()
+    assert not app.exception
+    assert any('Do not take Oak Lane' in w.value for w in app.warning)
+    assert app.dataframe[0].value.set_index('asset_id').loc['H1', 'mode'] == 'undetermined'

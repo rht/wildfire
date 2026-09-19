@@ -9,7 +9,7 @@ from .voice_store import digest
 from .voice_models import CallResult, ANSWER_FIELDS
 
 RESULT_FIELDS = frozenset(('request_id', 'asset_id', 'snapshot_id', 'provider_call_id',
-                          'evidence', 'contradictory', 'bad_audio') + ANSWER_FIELDS)
+                          'evidence', 'contradictory', 'bad_audio', 'road_warning_acknowledged') + ANSWER_FIELDS)
 MAX_BODY = 32768
 
 

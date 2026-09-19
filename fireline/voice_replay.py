@@ -16,6 +16,7 @@ from .evacuation_readiness import coordinate_evacuation, ReceptionCentre, Evacua
 from .priority_models import scenario_from_dict
 from .voice_models import CallRequest, CallResult, utc
 from .voice_store import VoiceStore, encoded
+from .route_guidance import road_warning_brief
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'fixtures/voice/replay_scenarios.json'
@@ -96,6 +97,7 @@ class MockReplay:
         review_required = False
         centres = [ReceptionCentre(**c) for c in self.readiness['centres']]
         routes = [EvacuationRoute(**r) for r in self.readiness['routes']]
+        warnings = self.case.get('road_warnings', [])
         if 'centre_capacity' in self.case:
             centres = [replace(c, remaining_places=self.case['centre_capacity'])
                        if c.centre_id == 'community_centre' else c for c in centres]
@@ -116,6 +118,7 @@ class MockReplay:
                     can_self_evacuate=ability, transport_available=transport,
                     reported_needs_assistance=assistance, wants_human=result['wants_human'],
                     acknowledged=result['acknowledged'], confidence=result['confidence'],
+                    road_warning_acknowledged=result.get('road_warning_acknowledged'),
                     confidence_basis=result['confidence_basis'], evidence=result['evidence'],
                     human_followup_reasons=record['followup_reasons']))
                 review_required |= assistance is True or bool(record['followup_reasons'])
@@ -127,6 +130,8 @@ class MockReplay:
                     if a.asset_id == event['asset_id'] else a for a in scenario.locations))
                 review_required = True
             elif event['kind'] == 'route_update':
+                if 'road_warnings' in event:
+                    warnings = event['road_warnings']
                 matched = [r for r in routes if r.asset_id == event['asset_id'] and
                            (not event.get('centre_id') or r.centre_id == event['centre_id'])]
                 if not matched:
@@ -144,7 +149,7 @@ class MockReplay:
                 review_required = True
             else:
                 raise ValueError('unknown mock event')
-        plan = coordinate_evacuation(scenario, list(assessments.values()), centres, routes)
+        plan = coordinate_evacuation(scenario, list(assessments.values()), centres, routes, road_warnings=warnings)
         if plan['response'] is not None:
             plan['response']['sequence'] = [s['action_id'] for s in plan['response']['steps']]
         return dict(schema_version='mock-coordination-state-1', case_id=self.case['name'],
@@ -156,6 +161,7 @@ class MockReplay:
             layout=[dict(asdict(a), kind='building') for a in scenario.locations] +
                    [dict(c, kind='reception centre') for c in self.centre_layout],
             reception_centres=[asdict(c) for c in centres],
+            voice_briefings={r['asset_id']: road_warning_brief(r['road_warnings']) for r in plan['locations']},
             tasks=self.store.tasks.tasks())
 
     def state(self):
@@ -175,7 +181,9 @@ class MockReplay:
                 i = event['interview']
                 rid = self._request_id(index)
                 req = CallRequest(rid, i['asset_id'], self.snapshot_id, '+12025550123', 'en',
-                                  'SIMULATION: synthetic building readiness exercise.', input_mode='synthetic')
+                                  'SIMULATION: synthetic building readiness exercise.', input_mode='synthetic',
+                                  road_warnings=next(r['road_warnings'] for r in before['plan']['locations']
+                                                     if r['asset_id'] == i['asset_id']))
                 self.store.register(req)
                 self.store.bind(rid, 'call-' + rid)
                 self.store.record_lifecycle(event_id='lifecycle-' + rid, request_id=rid,

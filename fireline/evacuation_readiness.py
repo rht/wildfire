@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from .contact_priority import ContactPolicy, rank_contacts
 from .priority_models import number, unique_ids, validate_scenario
 from .response_priority import plan_response
+from .route_guidance import validate_road_ids, validate_road_warnings, road_warning_version
 
 
 @dataclass(frozen=True)
@@ -26,6 +27,7 @@ class CallAssessment:
     confidence: float | None = None
     evidence: str = ""
     contradictory: bool = False
+    acknowledged_road_warning_version: str | None = None
 
 
 @dataclass(frozen=True)
@@ -47,6 +49,7 @@ class EvacuationRoute:
     confirmed: bool
     available_until_min: float
     source: str
+    road_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -99,6 +102,8 @@ def _validate(scenario, assessments, centres, routes, policy):
         _boolean(call.contradictory, "contradictory")
         _text(call.source, "source")
         _text(call.evidence, "evidence")
+        if call.acknowledged_road_warning_version is not None:
+            _text(call.acknowledged_road_warning_version, "acknowledged_road_warning_version")
     for centre in centres:
         if type(centre.remaining_places) is not int or centre.remaining_places < 0:
             raise ValueError("remaining_places must be a nonnegative integer")
@@ -120,6 +125,7 @@ def _validate(scenario, assessments, centres, routes, policy):
             raise ValueError("total evacuation_min must include travel_min")
         _boolean(route.confirmed, "confirmed")
         _text(route.source, "source")
+        validate_road_ids(route.road_ids)
 
 
 def _review_reasons(call, asset, now, policy):
@@ -156,11 +162,15 @@ def _review_reasons(call, asset, now, policy):
     return reasons
 
 
-def _destinations(asset, contact, centres, routes, capacity, policy):
+def _destinations(asset, contact, centres, routes, capacity, policy, blocked_roads):
     eligible, rejected = [], []
     for route in sorted(routes, key=lambda r: r.centre_id):
         centre = centres[route.centre_id]
         reasons = []
+        if blocked_roads.intersection(route.road_ids):
+            reasons.append("road_danger_reported")
+        if blocked_roads and not route.road_ids:
+            reasons.append("route_roads_unknown")
         if not centre.approved or not centre.source.strip():
             reasons.append("reception_not_approved")
         if not route.confirmed or not route.source.strip():
@@ -205,6 +215,7 @@ def coordinate_evacuation(
     *,
     contact_policy=None,
     readiness_policy=None,
+    road_warnings=(),
 ):
     """Return one proposal per asset, contact queue and the original crew sequence.
 
@@ -215,6 +226,9 @@ def coordinate_evacuation(
     contact_policy = contact_policy or ContactPolicy()
     readiness_policy = readiness_policy or ReadinessPolicy()
     _validate(scenario, assessments, centres, routes, readiness_policy)
+    validate_road_warnings(road_warnings)
+    blocked_roads = {w["road_id"] for w in road_warnings}
+    warning_version = road_warning_version(road_warnings) if road_warnings else None
     contacts = rank_contacts(scenario.locations, contact_policy)
     response = plan_response(scenario) if contact_policy.now_min == 0 else None
     by_id = {a.asset_id: a for a in scenario.locations}
@@ -226,6 +240,9 @@ def coordinate_evacuation(
         aid = contact["asset_id"]
         asset, call = by_id[aid], calls.get(aid)
         reasons = _review_reasons(call, asset, contact_policy.now_min, readiness_policy)
+        warning_ack = bool(call and warning_version and call.acknowledged_road_warning_version == warning_version)
+        if road_warnings and not warning_ack:
+            reasons.append("road_warning_update_unconfirmed")
         row = {
             "asset_id": aid,
             "name": asset.name,
@@ -244,6 +261,10 @@ def coordinate_evacuation(
             "call_evidence": call.evidence if call else None,
             "call_confidence": call.confidence if call else None,
             "route_source": None,
+            "route_road_ids": [],
+            "road_warnings": [dict(w) for w in road_warnings],
+            "road_warning_version": warning_version,
+            "current_road_warning_acknowledged": warning_ack if road_warnings else None,
             "reception_source": None,
             "evacuation_min": None,
             "remaining_window_min": None,
@@ -263,6 +284,7 @@ def coordinate_evacuation(
                 [r for r in routes if r.asset_id == aid],
                 capacity,
                 contact_policy,
+                blocked_roads,
             )
             row["destination_rejections"] = rejections
             if not options:
@@ -283,10 +305,13 @@ def coordinate_evacuation(
                         "confirm_arrival",
                     ],
                     route_source=route.source,
+                    route_road_ids=list(route.road_ids),
                     reception_source=centre.source,
                     evacuation_min=duration,
                     remaining_window_min=window,
                 )
+        if road_warnings:
+            row["tasks"].append("communicate_road_warning")
         rows.append(row)
     return {
         "contacts": contacts,

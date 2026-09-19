@@ -49,6 +49,30 @@
         "HALL": 0,
         "ANNEX": 0
       },
+      "voice_briefings": {
+        "CARE": "No road restrictions supplied. This does not establish that any road is safe.",
+        "SCHOOL": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H1": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H2": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H3": "No road restrictions supplied. This does not establish that any road is safe.",
+        "DEPOT": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H3": null,
+        "H2": null,
+        "H1": null,
+        "DEPOT": null
+      },
+      "current_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H2": null,
+        "H3": null,
+        "DEPOT": null
+      },
       "reported_help": {
         "CARE": true,
         "SCHOOL": true,
@@ -270,6 +294,30 @@
         "HALL": 2,
         "ANNEX": 5
       },
+      "voice_briefings": {
+        "CARE": "No road restrictions supplied. This does not establish that any road is safe.",
+        "SCHOOL": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H1": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H2": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H3": "No road restrictions supplied. This does not establish that any road is safe.",
+        "DEPOT": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H2": null,
+        "H3": null,
+        "DEPOT": null
+      },
+      "current_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H2": null,
+        "H3": null,
+        "DEPOT": null
+      },
       "reported_help": {
         "CARE": true,
         "SCHOOL": true,
@@ -449,24 +497,48 @@
       ],
       "response_review_required": true,
       "modes": {
-        "CARE": "assisted_evacuation",
-        "SCHOOL": "assisted_evacuation",
+        "CARE": "undetermined",
+        "SCHOOL": "undetermined",
         "H1": "undetermined",
-        "H2": "self_evacuate",
-        "H3": "self_evacuate",
-        "DEPOT": "self_evacuate"
+        "H2": "undetermined",
+        "H3": "undetermined",
+        "DEPOT": "undetermined"
       },
       "destinations": {
         "CARE": null,
         "SCHOOL": null,
         "H1": null,
-        "H2": "HALL",
-        "H3": "HALL",
-        "DEPOT": "ANNEX"
+        "H2": null,
+        "H3": null,
+        "DEPOT": null
       },
       "remaining_capacity": {
-        "HALL": 1,
-        "ANNEX": 3
+        "HALL": 10,
+        "ANNEX": 5
+      },
+      "voice_briefings": {
+        "CARE": "Do not take Oak Lane: fire and smoke reported on the road. Source: Synthetic incident command update.",
+        "SCHOOL": "Do not take Oak Lane: fire and smoke reported on the road. Source: Synthetic incident command update.",
+        "H1": "Do not take Oak Lane: fire and smoke reported on the road. Source: Synthetic incident command update.",
+        "H2": "Do not take Oak Lane: fire and smoke reported on the road. Source: Synthetic incident command update.",
+        "H3": "Do not take Oak Lane: fire and smoke reported on the road. Source: Synthetic incident command update.",
+        "DEPOT": "Do not take Oak Lane: fire and smoke reported on the road. Source: Synthetic incident command update."
+      },
+      "last_call_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H3": null,
+        "H2": null,
+        "H1": null,
+        "DEPOT": null
+      },
+      "current_road_warning_acknowledged": {
+        "CARE": false,
+        "SCHOOL": false,
+        "H1": false,
+        "H2": false,
+        "H3": false,
+        "DEPOT": false
       },
       "reported_help": {
         "CARE": true,
@@ -493,12 +565,12 @@
         "DEPOT": "not_confirmed"
       },
       "expected_modes": {
-        "CARE": "assisted_evacuation",
-        "SCHOOL": "assisted_evacuation",
+        "CARE": "undetermined",
+        "SCHOOL": "undetermined",
         "H1": "undetermined",
-        "H2": "self_evacuate",
-        "H3": "self_evacuate",
-        "DEPOT": "self_evacuate"
+        "H2": "undetermined",
+        "H3": "undetermined",
+        "DEPOT": "undetermined"
       },
       "passed": true,
       "open_tasks": [
@@ -509,6 +581,11 @@
         },
         {
           "asset_id": "CARE",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
           "reason": "voice:confirm_arrival",
           "status": "open"
         },
@@ -534,17 +611,7 @@
         },
         {
           "asset_id": "DEPOT",
-          "reason": "voice:confirm_arrival",
-          "status": "open"
-        },
-        {
-          "asset_id": "DEPOT",
-          "reason": "voice:confirm_departure",
-          "status": "open"
-        },
-        {
-          "asset_id": "DEPOT",
-          "reason": "voice:confirm_instructions",
+          "reason": "voice:communicate_road_warning",
           "status": "open"
         },
         {
@@ -559,7 +626,7 @@
         },
         {
           "asset_id": "H1",
-          "reason": "voice:arrange_reception_or_assistance",
+          "reason": "voice:communicate_road_warning",
           "status": "open"
         },
         {
@@ -589,6 +656,11 @@
         },
         {
           "asset_id": "H2",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
           "reason": "voice:confirm_arrival",
           "status": "open"
         },
@@ -610,6 +682,11 @@
         {
           "asset_id": "H2",
           "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:communicate_road_warning",
           "status": "open"
         },
         {
@@ -640,6 +717,11 @@
         {
           "asset_id": "SCHOOL",
           "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:communicate_road_warning",
           "status": "open"
         },
         {
@@ -708,6 +790,30 @@
       "remaining_capacity": {
         "HALL": 10,
         "ANNEX": 0
+      },
+      "voice_briefings": {
+        "CARE": "No road restrictions supplied. This does not establish that any road is safe.",
+        "SCHOOL": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H1": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H2": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H3": "No road restrictions supplied. This does not establish that any road is safe.",
+        "DEPOT": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H3": null,
+        "H2": null,
+        "H1": null,
+        "DEPOT": null
+      },
+      "current_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H2": null,
+        "H3": null,
+        "DEPOT": null
       },
       "reported_help": {
         "CARE": true,
@@ -939,6 +1045,30 @@
       "remaining_capacity": {
         "HALL": 0,
         "ANNEX": 3
+      },
+      "voice_briefings": {
+        "H2": "No road restrictions supplied. This does not establish that any road is safe.",
+        "CARE": "No road restrictions supplied. This does not establish that any road is safe.",
+        "SCHOOL": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H1": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H3": "No road restrictions supplied. This does not establish that any road is safe.",
+        "DEPOT": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H3": null,
+        "H2": null,
+        "H1": null,
+        "DEPOT": null
+      },
+      "current_road_warning_acknowledged": {
+        "H2": null,
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H3": null,
+        "DEPOT": null
       },
       "reported_help": {
         "CARE": true,
@@ -1180,6 +1310,30 @@
       "remaining_capacity": {
         "HALL": 1,
         "ANNEX": 3
+      },
+      "voice_briefings": {
+        "CARE": "No road restrictions supplied. This does not establish that any road is safe.",
+        "SCHOOL": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H1": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H2": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H3": "No road restrictions supplied. This does not establish that any road is safe.",
+        "DEPOT": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H3": null,
+        "H2": null,
+        "H1": null,
+        "DEPOT": null
+      },
+      "current_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H2": null,
+        "H3": null,
+        "DEPOT": null
       },
       "reported_help": {
         "CARE": true,
@@ -1424,6 +1578,30 @@
         "HALL": 0,
         "ANNEX": 0
       },
+      "voice_briefings": {
+        "CARE": "No road restrictions supplied. This does not establish that any road is safe.",
+        "SCHOOL": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H1": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H2": "No road restrictions supplied. This does not establish that any road is safe.",
+        "H3": "No road restrictions supplied. This does not establish that any road is safe.",
+        "DEPOT": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H3": null,
+        "H2": null,
+        "H1": null,
+        "DEPOT": null
+      },
+      "current_road_warning_acknowledged": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": null,
+        "H2": null,
+        "H3": null,
+        "DEPOT": null
+      },
       "reported_help": {
         "CARE": true,
         "SCHOOL": true,
@@ -1601,6 +1779,553 @@
       ]
     },
     {
+      "case": "village_road_warning",
+      "revision": 6,
+      "pending_events": 0,
+      "contact_order": [
+        "CARE",
+        "SCHOOL",
+        "H1",
+        "H2",
+        "H3",
+        "DEPOT"
+      ],
+      "remaining_windows": {
+        "CARE": 8,
+        "SCHOOL": 14,
+        "H1": 19,
+        "H2": 21,
+        "H3": 26,
+        "DEPOT": 35
+      },
+      "response_order": [
+        "CARE",
+        "SCHOOL"
+      ],
+      "response_review_required": true,
+      "modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "undetermined"
+      },
+      "destinations": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": "HALL",
+        "H2": "ANNEX",
+        "H3": "HALL",
+        "DEPOT": null
+      },
+      "remaining_capacity": {
+        "HALL": 0,
+        "ANNEX": 0
+      },
+      "voice_briefings": {
+        "CARE": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "SCHOOL": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "H1": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "H2": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "H3": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "DEPOT": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update."
+      },
+      "last_call_road_warning_acknowledged": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": true,
+        "H2": true,
+        "H1": true,
+        "DEPOT": true
+      },
+      "current_road_warning_acknowledged": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H1": true,
+        "H2": true,
+        "H3": true,
+        "DEPOT": true
+      },
+      "reported_help": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": false,
+        "H2": false,
+        "H1": false,
+        "DEPOT": false
+      },
+      "escalation_reasons": {
+        "CARE": [],
+        "SCHOOL": [],
+        "H3": [],
+        "H2": [],
+        "H1": [],
+        "DEPOT": []
+      },
+      "evacuation_status": {
+        "CARE": "not_confirmed",
+        "SCHOOL": "not_confirmed",
+        "H1": "not_confirmed",
+        "H2": "not_confirmed",
+        "H3": "not_confirmed",
+        "DEPOT": "not_confirmed"
+      },
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "undetermined"
+      },
+      "passed": true,
+      "open_tasks": [
+        {
+          "asset_id": "CARE",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:arrange_reception_or_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:human_callback",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "case": "village_road_warning_unconfirmed",
+      "revision": 6,
+      "pending_events": 0,
+      "contact_order": [
+        "CARE",
+        "SCHOOL",
+        "H1",
+        "H2",
+        "H3",
+        "DEPOT"
+      ],
+      "remaining_windows": {
+        "CARE": 8,
+        "SCHOOL": 14,
+        "H1": 19,
+        "H2": 21,
+        "H3": 26,
+        "DEPOT": 35
+      },
+      "response_order": [
+        "CARE",
+        "SCHOOL"
+      ],
+      "response_review_required": true,
+      "modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "undetermined",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      },
+      "destinations": {
+        "CARE": null,
+        "SCHOOL": null,
+        "H1": "HALL",
+        "H2": null,
+        "H3": "HALL",
+        "DEPOT": "ANNEX"
+      },
+      "remaining_capacity": {
+        "HALL": 0,
+        "ANNEX": 3
+      },
+      "voice_briefings": {
+        "CARE": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "SCHOOL": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "H1": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "H2": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "H3": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update.",
+        "DEPOT": "Do not take Mill Road: fire reported beside the bridge. Source: Synthetic incident command update."
+      },
+      "last_call_road_warning_acknowledged": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": true,
+        "H2": false,
+        "H1": true,
+        "DEPOT": true
+      },
+      "current_road_warning_acknowledged": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H1": true,
+        "H2": false,
+        "H3": true,
+        "DEPOT": true
+      },
+      "reported_help": {
+        "CARE": true,
+        "SCHOOL": true,
+        "H3": false,
+        "H2": false,
+        "H1": false,
+        "DEPOT": false
+      },
+      "escalation_reasons": {
+        "CARE": [],
+        "SCHOOL": [],
+        "H3": [],
+        "H2": [
+          "road_warning_unconfirmed"
+        ],
+        "H1": [],
+        "DEPOT": []
+      },
+      "evacuation_status": {
+        "CARE": "not_confirmed",
+        "SCHOOL": "not_confirmed",
+        "H1": "not_confirmed",
+        "H2": "not_confirmed",
+        "H3": "not_confirmed",
+        "DEPOT": "not_confirmed"
+      },
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "undetermined",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      },
+      "passed": true,
+      "open_tasks": [
+        {
+          "asset_id": "CARE",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "CARE",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "DEPOT",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H1",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H2",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:confirm_instructions",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "H3",
+          "reason": "voice:human_callback",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:arrange_assistance",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:communicate_road_warning",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_arrival",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:confirm_departure",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:contact_household",
+          "status": "open"
+        },
+        {
+          "asset_id": "SCHOOL",
+          "reason": "voice:human_callback",
+          "status": "open"
+        }
+      ]
+    },
+    {
       "case": "baseline",
       "revision": 3,
       "pending_events": 0,
@@ -1632,6 +2357,21 @@
       "remaining_capacity": {
         "community_centre": 2,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "A": true,
@@ -1758,6 +2498,19 @@
         "community_centre": 2,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": false
       },
@@ -1844,6 +2597,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": false
       },
@@ -1916,6 +2682,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": true
@@ -2003,6 +2782,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": true
       },
@@ -2076,6 +2868,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": false
       },
@@ -2148,6 +2953,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": false
@@ -2223,6 +3041,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": true
       },
@@ -2295,6 +3126,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": true
@@ -2370,6 +3214,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": false
       },
@@ -2442,6 +3299,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": null
@@ -2520,6 +3390,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": false
       },
@@ -2592,6 +3475,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": null
@@ -2672,6 +3568,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": false
       },
@@ -2744,6 +3653,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": false
@@ -2818,6 +3740,19 @@
       "remaining_capacity": {
         "community_centre": 2,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": false
@@ -2905,6 +3840,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": false
       },
@@ -2977,6 +3925,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": null
@@ -3057,6 +4018,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": null
       },
@@ -3135,6 +4109,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": null
@@ -3215,6 +4202,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "B": true
@@ -3302,6 +4302,19 @@
         "community_centre": 7,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": false
       },
@@ -3378,6 +4391,19 @@
         "community_centre": 10,
         "nearby_hospital": 100
       },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
+      },
       "reported_help": {
         "B": false
       },
@@ -3453,6 +4479,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "B": null
+      },
+      "current_road_warning_acknowledged": {
+        "B": null,
+        "A": null,
+        "C": null
       },
       "reported_help": {
         "B": false
@@ -3544,6 +4583,19 @@
       "remaining_capacity": {
         "community_centre": 10,
         "nearby_hospital": 100
+      },
+      "voice_briefings": {
+        "A": "No road restrictions supplied. This does not establish that any road is safe.",
+        "B": "No road restrictions supplied. This does not establish that any road is safe.",
+        "C": "No road restrictions supplied. This does not establish that any road is safe."
+      },
+      "last_call_road_warning_acknowledged": {
+        "A": null
+      },
+      "current_road_warning_acknowledged": {
+        "A": null,
+        "B": null,
+        "C": null
       },
       "reported_help": {
         "A": true
