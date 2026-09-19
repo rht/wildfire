@@ -87,6 +87,18 @@ def test_discovery_groups_by_scenario_and_sorts_by_sequence():
     assert warnings == []
 
 
+def test_real_scenario_schools_carry_enrolled_pupils():
+    """The page's people column reads `estimated_occupancy` off the scored assets, so the real-area
+    schools must arrive with the Gencat enrolment count (the register lists no music, dance or
+    adult-education centres, which keep occupancy_unknown)."""
+    session = Session(db_path=":memory:", clock=lambda: NOW)
+    session.select_scenario("gavarres_real")
+    schools = [a for a in session.assets_in_order() if a["asset_type"] == "school"]
+    enrolled = [a for a in schools if a.get("estimated_occupancy") is not None]
+    assert len(enrolled) >= 0.8 * len(schools) > 0
+    assert all(a["estimated_occupancy"] > 0 and "enrolled pupils" in a["occupancy_basis"] for a in enrolled)
+
+
 def test_select_scenario_ranks_by_window_and_suggests(session, db):
     assert db.exists()                                     # parent dir created, sqlite opened
     assert session.snapshot["sequence"] == 1 and session.index == 0 and session.has_next

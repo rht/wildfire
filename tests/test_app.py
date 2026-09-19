@@ -9,6 +9,8 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+from fireline import ui_state
+
 APP = Path(__file__).resolve().parent.parent / "fireline" / "app.py"
 
 
@@ -23,3 +25,13 @@ def test_no_bare_expressions_streamlit_magic_would_render():
         and not (isinstance(node.value, ast.Constant) and isinstance(node.value.value, str))  # docstrings
     ]
     assert not rendered, f"bare expressions Streamlit magic would print: {rendered}"
+
+
+def test_default_scenario_is_the_real_area_one_and_is_discoverable():
+    """`make demo` opens on the real Gavarres scenario; the synthetic one stays selectable."""
+    tree = ast.parse(APP.read_text(encoding="utf-8"))
+    default = next(node.value.value for node in tree.body if isinstance(node, ast.Assign)
+                   and getattr(node.targets[0], "id", None) == "DEFAULT_SCENARIO")
+    scenarios, _ = ui_state.discover_snapshots()
+    assert default == "gavarres_real" and default in scenarios
+    assert "synthetic_gavarres" in scenarios

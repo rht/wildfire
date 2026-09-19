@@ -22,7 +22,7 @@ STATUS_COLOUR = {"current": "green", "stale": "orange", "unavailable": "red"}
 GREY = [150, 150, 150, 200]
 RED, ORANGE, YELLOW = [200, 30, 30, 230], [240, 140, 20, 230], [235, 210, 40, 230]
 SMALL_WINDOW_MIN = config.CONTACT_POLICY["attention_min"]   # "small window" threshold shared with task flagging
-DEFAULT_SCENARIO = "synthetic_gavarres"
+DEFAULT_SCENARIO = "gavarres_real"      # the real-area scenario opens first; the synthetic one stays selectable
 
 
 # ----------------------------------------------------------------------------- helpers
