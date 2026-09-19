@@ -84,6 +84,7 @@ def test_discovery_groups_by_scenario_and_sorts_by_sequence():
     for entries in scenarios.values():
         seqs = [e["sequence"] for e in entries]
         assert seqs == sorted(seqs) and len(set(seqs)) == len(seqs)
+        assert all(e["as_of"] for e in entries), "the sequence control labels its steps with as_of"
     assert warnings == []
 
 
@@ -140,6 +141,47 @@ def test_next_update_flags_assigned_task_and_keeps_owner(session):
     assert events and "remaining window 60 min -> -30 min" in events[0]["message"]
 
 
+def test_previous_update_views_an_earlier_snapshot_without_rewinding_the_store(session):
+    """Going back in time re-ranks the earlier snapshot with the confirmed overrides and shows it; the
+    store keeps its accepted sequence, its tasks and its change log (readme 9)."""
+    task = session.create_task(FAR, "check_access", "verify track from GI-660")
+    session.store.assign(task["task_id"], "team_access_1")
+    session.next_update()
+    assert session.asset(FAR)["priority_status"] == "window_exhausted" and session.applied_sequence == 2
+    events_before, tasks_before = len(session.store.events()), len(session.store.tasks())
+
+    back = session.previous_update()
+    assert back["view_only"] is True and back["accepted"] is False and back["advanced"] is False
+    assert back["sequence"] == 1 and session.index == 0 and session.reviewing_earlier is True
+    assert session.snapshot["as_of"] == AS_OF                                  # the earlier moment is displayed
+    far = session.asset(FAR)
+    assert far["fire_arrival_at"] == "2026-07-03T11:00:00+00:00" and far["priority_status"] == "window_open"
+    assert far["slack_min"] == 60.0                                            # ranking recomputed for that moment
+    status = session.status()
+    assert status["sequence"] == 1 and status["applied_sequence"] == 2 and status["reviewing_earlier"] is True
+    assert session.applied_sequence == 2, "the store's high-water sequence never moves back"
+    assert len(session.store.events()) == events_before and len(session.store.tasks()) == tasks_before
+    assert session.store.get(task["task_id"])["affected_by_snapshot_id"] == f"{SCENARIO}-0002"
+    assert session.last_suggested == [] and back["suggested_task_ids"] == []
+
+    forward = session.next_update()            # returning is a view too: nothing is re-applied or re-flagged
+    assert forward["view_only"] is True and session.index == 1 and not session.reviewing_earlier
+    assert session.asset(FAR)["priority_status"] == "window_exhausted"
+    assert len(session.store.events()) == events_before and len(session.store.tasks()) == tasks_before
+
+
+def test_go_to_applies_only_past_the_stores_high_water_sequence(session):
+    assert session.applied_sequence == 1 and not session.reviewing_earlier
+    with pytest.raises(IndexError):
+        session.go_to(5)
+    assert session.previous_update()["reason"].startswith("already at the first snapshot")
+    assert session.index == 0 and session.snapshot["sequence"] == 1
+    applied = session.go_to(1)
+    assert applied["accepted"] is True and applied["advanced"] is True and applied["view_only"] is False
+    assert session.applied_sequence == 2 and not session.reviewing_earlier
+    assert session.go_to(0)["view_only"] is True and session.reviewing_earlier is True
+
+
 def test_third_next_update_reports_not_advanced(session):
     assert session.next_update()["advanced"] is True
     third = session.next_update()
@@ -164,7 +206,9 @@ def test_tasks_and_overrides_survive_a_new_session_on_the_same_db(db, dirs):
 
     second = Session(db_path=db, snapshot_dirs=dirs, clock=lambda: NOW)
     reload = second.select_scenario(SCENARIO)
-    assert reload["accepted"] is False and "duplicate" in reload["reason"]     # store already holds seq 1
+    # store already holds seq 1, so resuming shows it from the store instead of re-applying it
+    assert reload["accepted"] is False and reload["view_only"] is True
+    assert "already applied" in reload["reason"] and not second.reviewing_earlier
     kept = second.store.get(task["task_id"])
     assert kept["assigned_team_id"] == "team_bisbal_1" and kept["status"] == "assigned"
     assert second.asset(NO_EVAC)["queue"] == "ranked"                              # override re-applied on reload

@@ -3,6 +3,12 @@
 One `Session` owns the discovered snapshot files, the current scenario/sequence position, the
 `tasks.TaskStore`, the ranked queues (remaining evacuation window) and the agent `Workbench`. `app.py` keeps one instance in
 `st.session_state` and only renders what these methods return, so the workflow is testable here.
+
+The sequence position moves both ways (`go_to`, `next_update`, `previous_update`). Moving past the
+store's high-water sequence applies the snapshot; moving back to one the store has already accepted
+is a **view**: the snapshot is re-ranked with the analyst's confirmed overrides and shown, while
+tasks, events, exposure and the accepted sequence stay where they are. The store's log is
+append-only (`tasks.SnapshotSequence`), so an earlier snapshot is reviewable but never replayed.
 """
 
 from __future__ import annotations
@@ -25,7 +31,8 @@ FAKE_LABEL_NO_KEY = "fake (no ANTHROPIC_API_KEY)"
 def discover_snapshots(dirs=SNAPSHOT_DIRS) -> tuple[dict[str, list[dict]], list[str]]:
     """Snapshot files grouped by scenario_id, each list sorted by sequence.
 
-    Returns `(scenarios, warnings)`; an entry is `{"path", "scenario_id", "snapshot_id", "sequence"}`.
+    Returns `(scenarios, warnings)`; an entry is `{"path", "scenario_id", "snapshot_id", "sequence",
+    "as_of"}` (`as_of` labels the sequence control, so the files are read once here, not per rerun).
     Unreadable files or ones without the envelope keys are skipped with a warning."""
     scenarios: dict[str, list[dict]] = {}
     warnings: list[str] = []
@@ -37,7 +44,8 @@ def discover_snapshots(dirs=SNAPSHOT_DIRS) -> tuple[dict[str, list[dict]], list[
             try:
                 snap = json.loads(path.read_text(encoding="utf-8"))
                 entry = {"path": str(path), "scenario_id": snap["scenario_id"],
-                         "snapshot_id": snap["snapshot_id"], "sequence": int(snap["sequence"])}
+                         "snapshot_id": snap["snapshot_id"], "sequence": int(snap["sequence"]),
+                         "as_of": snap.get("as_of")}
             except (OSError, ValueError, KeyError, TypeError) as e:
                 warnings.append(f"{path}: skipped ({type(e).__name__}: {e})")
                 continue
@@ -102,6 +110,23 @@ class Session:
     def has_next(self) -> bool:
         return 0 <= self.index < len(self.sequence_entries) - 1
 
+    @property
+    def has_previous(self) -> bool:
+        return self.index > 0
+
+    @property
+    def applied_sequence(self) -> int | None:
+        """Highest sequence the store has accepted for this scenario (its high-water mark), or None."""
+        return ((self.store.last_sequence(self.scenario_id) or {}).get("sequence")
+                if self.scenario_id else None)
+
+    @property
+    def reviewing_earlier(self) -> bool:
+        """True when the displayed snapshot is older than the store's high-water mark: an earlier
+        moment under review, not the state the tasks and the change log describe."""
+        applied = self.applied_sequence
+        return bool(self.snapshot is not None and applied is not None and self.snapshot["sequence"] < applied)
+
     def _load(self, index: int) -> dict:
         entry = self.sequence_entries[index]
         snap = json.loads(Path(entry["path"]).read_text(encoding="utf-8"))
@@ -109,9 +134,26 @@ class Session:
         self.snapshot = snap
         return snap
 
+    def _view(self, index: int) -> dict:
+        """Show a snapshot the store has already accepted: re-rank it with the confirmed overrides and
+        leave the store alone (no apply, no task suggestions from an earlier moment)."""
+        snap = self._load(index)
+        self.rescore()
+        self.last_suggested = []
+        applied = self.applied_sequence
+        reason = (f"reviewing {snap['snapshot_id']} (sequence {snap['sequence']}); tasks, change log and the "
+                  f"accepted sequence stay at {applied}") if self.reviewing_earlier else (
+            f"{snap['snapshot_id']} already applied; shown from the store (sequence {applied})")
+        result = {"accepted": False, "advanced": False, "view_only": True, "affected_task_ids": [],
+                  "missing_asset_ids": [], "changed": [], "suggested_task_ids": [],
+                  "snapshot_id": snap["snapshot_id"], "sequence": snap["sequence"], "reason": reason}
+        self.last_update = result
+        return result
+
     def _apply(self, snap: dict) -> dict:
         result = self.store.apply_snapshot(snap)
-        result = dict(result, advanced=True, snapshot_id=snap["snapshot_id"], sequence=snap["sequence"])
+        result = dict(result, advanced=True, view_only=False, snapshot_id=snap["snapshot_id"],
+                      sequence=snap["sequence"])
         self.rescore()
         self.last_suggested = self.suggest()
         result["suggested_task_ids"] = [t["task_id"] for t in self.last_suggested]
@@ -125,7 +167,8 @@ class Session:
         self.scenario_id = scenario_id
         self.workbench = None          # proposals and questions belong to the previous scenario
         self.investigations = {}
-        return self._apply(self._load(self._resume_index()))
+        self.index = -1
+        return self.go_to(self._resume_index())
 
     def _resume_index(self) -> int:
         """Index of the newest sequence file the store has already accepted for this scenario (so a
@@ -140,21 +183,52 @@ class Session:
                 idx = i
         return idx
 
+    def go_to(self, index: int) -> dict:
+        """Move the sequence position to `index` and return the update result.
+
+        A snapshot past the store's high-water sequence is applied (exposure bookkeeping, affected
+        tasks, suggestions); one at or below it is only displayed (`view_only`), so stepping back and
+        forward again never re-flags a task, re-suggests work or rejects a duplicate."""
+        entries = self.sequence_entries
+        if not entries:
+            raise RuntimeError("select a scenario first")
+        if not 0 <= index < len(entries):
+            raise IndexError(f"sequence index {index} outside 0..{len(entries) - 1} for {self.scenario_id}")
+        applied = self.applied_sequence
+        if applied is not None and entries[index]["sequence"] <= applied:
+            return self._view(index)
+        return self._apply(self._load(index))
+
     def next_update(self) -> dict:
-        """Advance to the next sequence file. Returns the store's apply result plus `advanced`,
-        `snapshot_id`, `sequence` and `suggested_task_ids`; when the store rejects the snapshot
-        (duplicate id or older sequence, e.g. after a reload) `accepted` is False and `reason` says why
-        while the newer file is still displayed."""
+        """Advance to the next sequence file (see `go_to`). Returns the store's apply result plus
+        `advanced`, `view_only`, `snapshot_id`, `sequence` and `suggested_task_ids`; at the end of the
+        sequence `advanced` is False and `reason` says so while the last file stays displayed."""
         if self.snapshot is None:
             raise RuntimeError("select a scenario first")
         if not self.has_next:
             last = self.sequence_entries[self.index]["snapshot_id"] if self.sequence_entries else None
-            result = {"accepted": False, "advanced": False, "affected_task_ids": [], "missing_asset_ids": [],
-                      "changed": [], "reason": f"no further snapshot for {self.scenario_id}; at {last}",
+            result = {"accepted": False, "advanced": False, "view_only": False,   # nothing moved
+                      "affected_task_ids": [], "missing_asset_ids": [], "changed": [],
+                      "reason": f"no further snapshot for {self.scenario_id}; at {last}",
                       "snapshot_id": last, "sequence": self.snapshot["sequence"], "suggested_task_ids": []}
             self.last_update = result
             return result
-        return self._apply(self._load(self.index + 1))
+        return self.go_to(self.index + 1)
+
+    def previous_update(self) -> dict:
+        """Step back to the previous sequence file: a view of an earlier moment, never a rewind of the
+        store (see `go_to`). At the first file nothing moves and `reason` says so."""
+        if self.snapshot is None:
+            raise RuntimeError("select a scenario first")
+        if not self.has_previous:
+            result = {"accepted": False, "advanced": False, "view_only": False,   # nothing moved
+                      "affected_task_ids": [], "missing_asset_ids": [], "changed": [],
+                      "reason": f"already at the first snapshot for {self.scenario_id}",
+                      "snapshot_id": self.snapshot["snapshot_id"], "sequence": self.snapshot["sequence"],
+                      "suggested_task_ids": []}
+            self.last_update = result
+            return result
+        return self.go_to(self.index - 1)
 
     # -- scoring, suggestions, workbench ---------------------------------------------------
 
@@ -294,6 +368,8 @@ class Session:
             "snapshot_id": snap.get("snapshot_id"),
             "sequence": snap.get("sequence"),
             "n_sequences": len(self.sequence_entries),
+            "applied_sequence": self.applied_sequence,
+            "reviewing_earlier": self.reviewing_earlier,
             "input_mode": snap.get("input_mode"),
             "as_of": snap.get("as_of"),
             "computed_at": snap.get("computed_at"),
