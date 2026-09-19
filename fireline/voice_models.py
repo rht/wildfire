@@ -99,10 +99,10 @@ class CallResult:
         text(self.source, 'source', 256)
         for key in ANSWER_FIELDS + ('road_warning_acknowledged',):
             value = getattr(self, key)
-            if value is not None and type(value) is not bool:
+            if value is not None and not isinstance(value, bool):
                 raise ValueError(f'invalid {key}')
         for key in ('contradictory', 'human_followup_required', 'bad_audio'):
-            if type(getattr(self, key)) is not bool:
+            if not isinstance(getattr(self, key), bool):
                 raise ValueError(f'invalid {key}')
         if self.confidence is not None and (type(self.confidence) not in (int, float)
                 or not math.isfinite(self.confidence) or not 0 <= self.confidence <= 1):

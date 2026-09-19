@@ -54,7 +54,7 @@ def main(argv=None):
                   live_validation=False, cases=results)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(report, indent=2) + '\n')
+        args.output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     return 1 if any(c['passed'] is False for c in results) else 0
 
 

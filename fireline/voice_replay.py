@@ -24,15 +24,15 @@ NEIGHBOURHOOD = ROOT / 'fixtures/voice/neighbourhood.json'
 
 
 def load_cases():
-    neighbourhood = json.loads(NEIGHBOURHOOD.read_text())
+    neighbourhood = json.loads(NEIGHBOURHOOD.read_text(encoding='utf-8'))
     expanded = [dict(c, events=neighbourhood['call_sets'][c['call_set']] + c['events'])
                 for c in neighbourhood['cases']]
-    return expanded + json.loads(FIXTURE.read_text())['cases']
+    return expanded + json.loads(FIXTURE.read_text(encoding='utf-8'))['cases']
 
 
 class MockReplay:
     def __init__(self, path, case_name):
-        fixture = json.loads(FIXTURE.read_text())
+        fixture = json.loads(FIXTURE.read_text(encoding='utf-8'))
         matches = [c for c in load_cases() if c['name'] == case_name]
         if not matches:
             raise ValueError('unknown mock case')
@@ -43,13 +43,13 @@ class MockReplay:
         self.snapshot_id = 'mock-voice-' + case_name
         self.centre_layout = []
         if self.case.get('profile') == 'neighbourhood':
-            profile = json.loads(NEIGHBOURHOOD.read_text())
+            profile = json.loads(NEIGHBOURHOOD.read_text(encoding='utf-8'))
             scenario_data, self.readiness = profile['scenario'], profile['readiness']
             self.centre_layout = profile['centre_layout']
             fingerprint_data = [fixture['epoch'], self.case, scenario_data, self.readiness, self.centre_layout]
         else:
-            scenario_data = json.loads((ROOT / 'fixtures/static_priority.json').read_text())
-            self.readiness = json.loads((ROOT / 'fixtures/evacuation_readiness.json').read_text())
+            scenario_data = json.loads((ROOT / 'fixtures/static_priority.json').read_text(encoding='utf-8'))
+            self.readiness = json.loads((ROOT / 'fixtures/evacuation_readiness.json').read_text(encoding='utf-8'))
             # Preserve the fingerprint of existing single-household databases.
             fingerprint_data = [fixture, self.readiness, scenario_data]
         self.scenario = scenario_from_dict(scenario_data)
@@ -77,13 +77,13 @@ class MockReplay:
     @contextmanager
     def _lock(self):
         # Serialize local UI/CLI writers and readers, including separate processes.
-        fd = os.open(str(self.path) + '.lock', os.O_CREAT | os.O_RDWR, 0o600)
-        try:
-            fcntl.flock(fd, fcntl.LOCK_EX)
-            yield
-        finally:
-            fcntl.flock(fd, fcntl.LOCK_UN)
-            os.close(fd)
+        with open(str(self.path) + '.lock', 'a+b',
+                  opener=lambda path, flags: os.open(path, flags, 0o600)) as lock_file:
+            try:
+                fcntl.flock(lock_file, fcntl.LOCK_EX)
+                yield
+            finally:
+                fcntl.flock(lock_file, fcntl.LOCK_UN)
 
     def _revision(self):
         return self.store.conn.execute('SELECT revision FROM mock_replay WHERE id=1').fetchone()[0]
@@ -130,8 +130,7 @@ class MockReplay:
                     if a.asset_id == event['asset_id'] else a for a in scenario.locations))
                 review_required = True
             elif event['kind'] == 'route_update':
-                if 'road_warnings' in event:
-                    warnings = event['road_warnings']
+                warnings = event.get('road_warnings', warnings)
                 matched = [r for r in routes if r.asset_id == event['asset_id'] and
                            (not event.get('centre_id') or r.centre_id == event['centre_id'])]
                 if not matched:
