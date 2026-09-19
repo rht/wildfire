@@ -2204,3 +2204,35 @@ it is not called by this projection. Integrate that ledger separately before tre
 proposed centre capacity as a durable reservation. All writers to that ledger must
 share its database; every automated call worker must share the voice queue database
 and identical configured limits.
+
+## Live dashboard integration — codex/live-dashboard
+
+For @mirrdj: preserve Michella's terminal frame, map, cards, location selection,
+provenance, database view and change log, with backend state as the source of truth.
+The dashboard is read-only; opening it never enqueues a call or changes a task.
+Call approval and dispatch remain in the existing explicit queue workflow.
+
+Design: `fireline.dashboard_server.create_app(store)` serves the dashboard and
+`GET /api/state`, plus `WS /api/updates?after_revision=N`. The injected store
+implements synchronous `state()` and `updates(after_revision)` returning complete
+`coordination-state-1` envelopes. Full envelopes make revision gaps recoverable;
+reconnect replays retained revisions or sends current state when history is missing.
+The service projects public fields, preserves nulls and evidence, and never serves
+the repository, credentials, raw phone numbers or private call payloads.
+Browser lists use `contacts.ranked` / `contacts.review` order and asset IDs, never
+frontend scoring. Backend-supplied routes are displayed as proposals with their
+status and provenance; no route or confirmation is inferred. Connection freshness
+and source age are displayed independently. The local CLI binds to 127.0.0.1:8521.
+
+Implementation plan (approved dispatch scope; execute locally without extra agents):
+
+- [ ] Write failing API/privacy/revision tests using a store contract double, then
+  implement `dashboard_server.py` and an explicit offline store/fixture.
+- [ ] Write failing UI tests for backend order, unknown values, independent call
+  facts, replay/reconnect and safe text; connect Michella's HTML to client/view JS.
+- [ ] Consume the verified coordination export if available, run relevant/full
+  tests, inspect browser if available, scan changed files with Norma and perform
+  scoped review. Commit/push checkpoints and create a PR to main.
+
+The offline demonstration is explicitly labelled and uses the same store/API
+interface. It contains illustrative state only and cannot call anyone.

@@ -1,0 +1,149 @@
+[
+  {
+    "asset_id": "a-poudelglac",
+    "name": "Pou del Glaç (casa de colònies)",
+    "asset_type": "school",
+    "latitude": 41.944,
+    "longitude": 3.041,
+    "capacity": null,
+    "estimated_occupancy": null,
+    "occupancy_basis": null,
+    "value_score": 0.9,
+    "value_basis": "children present, class v1",
+    "distance_to_fire_m": 480,
+    "intersects_fire": false,
+    "needs_review": true,
+    "review_reasons": [
+      "occupancy_seasonal"
+    ],
+    "sources": [
+      {
+        "fields": [
+          "estimated_occupancy"
+        ],
+        "source": "operator page (fixture)",
+        "observed_at": "2026-07-02",
+        "notes": "July programme listed; headcount not confirmed"
+      }
+    ]
+  },
+  {
+    "asset_id": "a-vallrepos",
+    "name": "Vall Repòs",
+    "asset_type": "care_home",
+    "latitude": 41.9505,
+    "longitude": 3.021,
+    "capacity": 78,
+    "estimated_occupancy": 70,
+    "occupancy_basis": "register capacitat",
+    "value_score": 1,
+    "value_basis": "care home, class v1",
+    "distance_to_fire_m": 950,
+    "intersects_fire": false,
+    "needs_review": false,
+    "review_reasons": [],
+    "sources": [
+      {
+        "fields": [
+          "capacity"
+        ],
+        "source": "Registre d'entitats i serveis socials",
+        "observed_at": "2026-06-01"
+      }
+    ]
+  },
+  {
+    "asset_id": "a-escolabisbal",
+    "name": "Escola la Bisbal",
+    "asset_type": "school",
+    "latitude": 41.961,
+    "longitude": 3.039,
+    "capacity": 240,
+    "estimated_occupancy": 180,
+    "occupancy_basis": "enrolment register",
+    "value_score": 0.7,
+    "value_basis": "school, class v1",
+    "distance_to_fire_m": 1400,
+    "intersects_fire": false,
+    "needs_review": false,
+    "review_reasons": [],
+    "sources": [
+      {
+        "fields": [
+          "capacity"
+        ],
+        "source": "Directori de centres docents",
+        "observed_at": "2026-05-15"
+      }
+    ]
+  },
+  {
+    "asset_id": "a-canxic",
+    "name": "Can Xic (masia)",
+    "asset_type": "residential",
+    "latitude": 41.939,
+    "longitude": 3.05,
+    "capacity": null,
+    "estimated_occupancy": 4,
+    "occupancy_basis": "estimated, isolated dwelling",
+    "value_score": 0.4,
+    "value_basis": "residential, class v1",
+    "distance_to_fire_m": 620,
+    "intersects_fire": false,
+    "needs_review": true,
+    "review_reasons": [
+      "exposure_unknown"
+    ],
+    "sources": [
+      {
+        "fields": [
+          "distance_to_fire_m"
+        ],
+        "source": "OSM building centroid (point fallback)",
+        "notes": "footprint unavailable"
+      }
+    ]
+  },
+  {
+    "asset_id": "a-urbsantpol",
+    "name": "Urbanització Sant Pol",
+    "asset_type": "residential",
+    "latitude": 41.97,
+    "longitude": 3.025,
+    "capacity": null,
+    "estimated_occupancy": 210,
+    "occupancy_basis": "Idescat allocation",
+    "value_score": 0.6,
+    "value_basis": "residential nucleus, class v1",
+    "distance_to_fire_m": 2600,
+    "intersects_fire": false,
+    "needs_review": false,
+    "review_reasons": [],
+    "sources": [
+      {
+        "fields": [
+          "estimated_occupancy"
+        ],
+        "source": "Idescat municipal allocation",
+        "observed_at": "2026-01-01"
+      }
+    ]
+  },
+  {
+    "asset_id": "a-capbisbal",
+    "name": "CAP la Bisbal (medical centre)",
+    "asset_type": "medical",
+    "latitude": 41.9615,
+    "longitude": 3.0355,
+    "capacity": null,
+    "estimated_occupancy": 15,
+    "occupancy_basis": "typical staffing estimate",
+    "value_score": 0.85,
+    "value_basis": "medical, class v1",
+    "distance_to_fire_m": 1550,
+    "intersects_fire": false,
+    "needs_review": false,
+    "review_reasons": [],
+    "sources": []
+  }
+]

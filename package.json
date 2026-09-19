@@ -1,0 +1,6 @@
+{
+  "name": "wildfire-dashboard-tests",
+  "private": true,
+  "scripts": {"test": "node --test tests/test_ui_mockup.cjs tests/test_dashboard_client.cjs"},
+  "devDependencies": {"jsdom": "^26.1.0", "@playwright/test": "^1.55.0"}
+}
