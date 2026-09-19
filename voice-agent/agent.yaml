@@ -10,13 +10,13 @@ agents:
     tools:
       - end_call
 
-# Official hosted example bindings. Compilation checks syntax; deployment and
-# a spoken interaction must establish availability in the account and region.
+# Hosted bindings accepted by SLNG for this mock agent on 2026-09-19.
+# A spoken interaction must still establish runtime availability and quality.
 models:
   think:
     reasoning:
-      provider: google
-      model: gemini/google/gemini-3.1-flash-lite:latest
+      provider: bedrock
+      model: bedrock-mantle/nvidia.nemotron-super-3-120b:latest
   listen:
     transcriber:
       provider: deepgram
