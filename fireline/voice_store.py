@@ -78,11 +78,13 @@ class VoiceStore:
         if not self.epoch <= utc(observed_at) <= now:
             raise ValueError('evidence outside scenario time range')
 
-    def _task(self, request_id, asset_id, snapshot_id, kind):
+    def _task(self, request_id, asset_id, snapshot_id, kind, *, fresh_event=False):
         link = self.conn.execute('SELECT task_id FROM voice_task_links WHERE request_id=? AND kind=?',
                                  (request_id, kind)).fetchone()
         if link:
-            return link[0]
+            if not fresh_event or self.tasks.get(link[0])['status'] != 'done':
+                return link[0]
+            self.conn.execute('DELETE FROM voice_task_links WHERE request_id=? AND kind=?', (request_id, kind))
         action = 'request_resources' if kind == 'arrange_assistance' else 'contact_facility'
         reason = 'voice:' + kind
         # Reuse held work across requests/snapshots. A new request may create work after an
@@ -94,12 +96,12 @@ class VoiceStore:
         self.conn.execute('INSERT INTO voice_task_links VALUES (?, ?, ?)', (request_id, kind, task_id))
         return task_id
 
-    def _followup(self, record, reasons=()):
+    def _followup(self, record, reasons=(), *, fresh_event=False):
         req = record['request']
         merged = sorted(set(record['followup_reasons']) | set(reasons))
         self.conn.execute('UPDATE voice_calls SET followup_reasons=? WHERE request_id=?',
                           (encoded(merged), req['request_id']))
-        self._task(req['request_id'], req['asset_id'], req['snapshot_id'], 'human_callback')
+        self._task(req['request_id'], req['asset_id'], req['snapshot_id'], 'human_callback', fresh_event=fresh_event)
 
     def human_tasks(self, asset_id):
         return [t for t in self.tasks.tasks(asset_id) if t['reason'] == 'voice:human_callback']
@@ -151,10 +153,12 @@ class VoiceStore:
                 reasons.append('unknown_provider_status')
             if transfer_status:
                 reasons.append('transfer_failed' if transfer_status == 'failed' else 'transfer_pending')
-                self.conn.execute('UPDATE voice_calls SET transfer_status=? WHERE request_id=?', (transfer_status, request_id))
+                if transfer_status == 'failed' or (record['transfer_status'] != 'failed' and
+                        (not record['lifecycle_at'] or utc(observed_at) >= utc(record['lifecycle_at']))):
+                    self.conn.execute('UPDATE voice_calls SET transfer_status=? WHERE request_id=?', (transfer_status, request_id))
             if status in ('failed', 'no_answer', 'declined'):
                 reasons.append(status)
-            self._followup(record, reasons)
+            self._followup(record, reasons, fresh_event=bool(reasons) or (status in TERMINAL and not record['result']))
             previous_at = utc(record['lifecycle_at']) if record['lifecycle_at'] else None
             progression = {'queued': 0, 'ringing': 1, 'in_progress': 2}
             ignore = (record['status'] in TERMINAL or
@@ -168,19 +172,21 @@ class VoiceStore:
                               (status, observed_at, request_id))
             return 'accepted'
 
-    def record_result(self, result):
+    def record_result(self, result, *, delivery_id=None):
         self._time(result.observed_at)
         with self._transaction():
             record = self.get(result.request_id)
             req = CallRequest(**record['request'])
             association(req, result, record['provider_call_id'])
-            event_id = 'result:' + digest(asdict(result))
+            if delivery_id is not None:
+                identifier(delivery_id, 'delivery_id')
+            event_id = 'result:' + (delivery_id or digest(asdict(result)))
             if self.conn.execute('SELECT 1 FROM voice_events WHERE event_id=?', (event_id,)).fetchone():
                 return 'duplicate'
             normalized = normalize_result(req, result)
             self.conn.execute('INSERT INTO voice_events VALUES (?, ?, ?)', (event_id, req.request_id, '{}'))
             # Adverse facts survive older callbacks; good later answers never silently erase them.
-            self._followup(record, normalized.human_followup_reasons)
+            self._followup(record, normalized.human_followup_reasons, fresh_event=True)
             previous = record['result']
             if previous and utc(result.observed_at) <= utc(previous['observed_at']):
                 if utc(result.observed_at) == utc(previous['observed_at']):

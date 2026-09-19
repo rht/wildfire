@@ -118,24 +118,24 @@ adapter), `fireline/voice_store.py` (call lifecycle persistence and task linkage
 `scripts/voice_demo.py` (offline and explicit live modes), `tests/test_voice_*.py`, synthetic JSON
 under `fixtures/voice/`. Keep provider details outside the readiness algorithm.
 
-- [ ] **A1 — Contract and offline interview.** Read the existing readiness module. Write failing
+- [x] **A1 — Contract and offline interview.** Read the existing readiness module. Write failing
   tests for a confirmed self-evacuating household, assistance needed, requested person, low/unknown
   confidence, missing evidence, contradictory answers and no answer. Implement validation and
   normalization; demonstrate all outcomes without an API key. Assert that no-answer/low-confidence
   results cannot become `self_evacuate` and that every location retains a follow-up path.
-- [ ] **A2 — SLNG adapter.** Verify current official API schemas before writing the client.
+- [x] **A2 — SLNG adapter.** Verify current official API schemas before writing the client.
   Implement explicit configuration, HTTP timeouts, sanitized errors, agent configuration and
   browser-session creation; separate outbound dispatch from both. Validate `SLNG_API_KEY`, agent ID
   and outbound-connection requirements. Use injectable HTTP transport in unit tests. Do not blindly
   retry an ambiguous call-creation timeout, since that may dial twice. A missing key produces a clear
   not-configured result while the offline demo continues to work.
-- [ ] **A3 — Results and human handoff.** Add authenticated result ingestion or a verified polling
+- [x] **A3 — Results and human handoff.** Add authenticated result ingestion or a verified polling
   path (choose based on current SLNG support). Persist requests/results, enforce idempotency and
   ordering, and map only evidenced answers to the readiness input. Add a human callback task for a
   requested person, low/unknown confidence, incomplete interview, bad audio, no answer or failed
   transfer. Do not label a transfer successful before the provider confirms connection. Extend
   `TaskStore` only where needed, preserving assigned work across snapshots and restarts.
-- [ ] **A4 — Demonstrable local flow.** Provide an offline command that consumes the same location
+- [x] **A4 — Demonstrable local flow.** Provide an offline command that consumes the same location
   fixture and prints the call result, proposed mode and remaining tasks. Test restart/replay, wrong
   call identity, timeout, duplicate event and failed transfer. Keep any UI adapter separate from
   @rht's ongoing priority/UI work. Run the full Python suite, request code review, document exact
@@ -736,8 +736,9 @@ snapshot/window-ranking changes. Baseline at `736253b`: 253 tests passed.
 
 1. A1: add `voice_models.py` and `voice_interview.py`; first exercise malformed records,
    evidence/identity/time gates and all readiness outcomes in `test_voice_interview.py`.
-   Normalize unknowns to null; only synthetic or locally reviewed confidence may pass the
-   readiness review gate. Preserve acknowledgement separately from departure/arrival.
+   Normalize unknowns to null; only labelled synthetic confidence may pass the
+   automated readiness review gate. Real interviews require independent human review.
+   Preserve acknowledgement separately from departure/arrival.
 2. A2: add `slng_voice.py` with an injectable `requests` transport, fixed official API host,
    explicit timeouts and sanitized failures. Test documented create-agent, web-session,
    dispatch and GET-call schemas offline before implementing them. Outbound dispatch is a
@@ -758,3 +759,164 @@ checkpoint. Current primary references are the [SLNG OpenAPI schema](https://doc
 [dispatch guide](https://docs.slng.ai/guides/agents/telephony/dispatch-calls), and
 [browser integration guide](https://docs.slng.ai/guides/agents/production/embed-in-website).
 Older `/voice-agents` and `/examples/agents-api` README links returned 404 during this check.
+
+
+**Workstream A delivery status:** A1–A4 implemented and verified offline on
+`codex/slng-voice-agent`; A5 remains deferred. No provider session, phone call, message,
+transfer, hardware interaction or live credentialed API request was performed. Independent
+code review found and verified fixes for follow-up after completed tasks, transfer event
+ordering, callback timing, the outbound preflight endpoint and browser-token file reservation.
+
+#### Running the offline flow
+
+From `.worktrees/slng-voice-agent`:
+
+```sh
+uv --cache-dir data/uv-cache venv
+uv --cache-dir data/uv-cache pip install -e ".[dev]"
+.venv/bin/python scripts/voice_demo.py
+.venv/bin/python scripts/voice_demo.py --case all --db data/voice-all.sqlite
+.venv/bin/python scripts/voice_demo.py --case all --db data/voice-all.sqlite
+.venv/bin/python scripts/voice_demo.py --mode check-config
+.venv/bin/python -m pytest -q
+git diff --check
+```
+
+The default demo uses `fixtures/static_priority.json`, reception/route data from
+`fixtures/evacuation_readiness.json`, and entirely synthetic interviews in
+`fixtures/voice/interviews.json`. It proposes assistance for A, self evacuation for B, and
+human follow-up for unanswered C. All three evacuation outcomes remain `not_confirmed`.
+`--case all` also demonstrates requested person, low/unknown confidence, missing evidence,
+contradictions, bad audio, missed call and failed transfer. Each report prints normalized
+synthetic call results, per-location proposals and durable remaining tasks. Repeating with
+the same database does not duplicate tasks. Use a fresh database when changing scenario
+inputs or language; immutable request identities deliberately reject altered replay inputs.
+`--language en` is configurable, but the supplied conversations are English fixtures and do
+not validate another language's spoken quality.
+
+The offline mode does not load credentials or create an HTTP client. `check-config` uses
+`fireline.env.load_env()` and prints only configuration status/missing variable names. During
+verification it returned `not_configured`, missing `SLNG_API_KEY` and `SLNG_AGENT_ID`, with no
+outbound connection configured. No key is required for the demo or tests.
+
+#### Provider/backend integration
+
+`SlngClient` accepts an injectable HTTP transport. Its documented operations use Bearer auth
+at `https://api.agents.slng.ai`: `POST /v1/agents`,
+`POST /v1/agents/{agent_id}/web-sessions`, `POST /v1/agents/{agent_id}/calls`,
+`GET /v1/agents/{agent_id}`, and `GET /v1/agents/{agent_id}/calls/{call_id}`.
+Outbound preflight checks the typed agent response's ID and `sip_outbound_trunk_id` against
+configuration. HTTP connect/read timeouts default to 5/20 seconds; redirects and retries
+are disabled. Errors omit provider response bodies, contacts, tokens and transcripts.
+A POST timeout, malformed success or server failure has an ambiguous outcome. The store
+claims the attempt durably **before** HTTP; both `attempting` after a crash and
+`outcome_unknown` prohibit another automated dispatch. Reconcile against provider records
+manually; `bind(request_id, verified_provider_call_id)` can link a verified existing call.
+Do not create a fresh request ID merely to bypass an ambiguous attempt.
+
+Generate a private agent configuration offline with explicitly selected provider model codes:
+
+```sh
+.venv/bin/python scripts/voice_demo.py --mode agent-config \
+  --stt SELECTED_STT_CODE --llm SELECTED_LLM_CODE \
+  --tts SELECTED_TTS_CODE --voice SELECTED_VOICE_CODE \
+  --output data/voice-agent-config.json
+```
+
+Those names are placeholders to replace with the account's available models, not tested
+model IDs. `agent_configuration()` accepts published `tool_refs` and an optional outbound
+connection ID; `SlngClient.create_agent(configuration)` implements agent creation. Nothing
+is provisioned by generating the JSON. Browser creation returns the documented LiveKit URL,
+token and session duration; the CLI exclusively reserves a private output file before HTTP
+and never prints the token. Joining its audio room still needs a browser client using the
+[official LiveKit embedding flow](https://docs.slng.ai/guides/agents/production/embed-in-website).
+
+Answer delivery uses `result_tool_configuration(https_url, vault_secret_name)` and
+`result_tool_attachment(tool_id, published_version)` from `fireline/slng_voice.py`. Create,
+test and publish that API Request tool in SLNG, store the dedicated result secret in its
+Vault, then attach the published version. The attachment locks request, asset and snapshot
+IDs from call arguments and the provider call ID from `{{@call_id}}`. It uses the documented
+raw JSON/Bearer format; `fireline.voice_ingest.make_app(store_factory, token)` supplies the
+WSGI `POST /voice/results` receiver. Deploy it behind HTTPS with a dedicated random token
+of at least 32 characters, a per-request `VoiceStore` connection and the same scenario epoch.
+No public endpoint or service was deployed during this task. The receiver has a 32 KiB body
+limit and returns sanitized errors; it does not log request bodies or authorization headers.
+
+The receiver accepts only answer fields, evidence excerpts, contradiction/bad-audio flags
+and the pinned association IDs. Model-supplied lifecycle, confidence and transfer-success
+fields are rejected. It records the receiver's first observation time as `observed_at`,
+with the additional `evidence_time_basis="receipt_only"` field: this is **not** the time the
+respondent spoke. `evidence_time_unknown` therefore requires human review. Replayed payloads
+retain their first timestamp. Transport-neutral records with a genuine source observation
+retain it unchanged (`evidence_time_basis="source_observation"`); future or pre-epoch evidence
+is rejected. No transcript extraction from SLNG's undocumented internal runtime report is
+attempted. Only minimal submitted excerpts and latest answers are retained locally.
+
+Authenticated polling verifies call/agent IDs and all three request arguments, then records
+provider lifecycle separately. Unknown statuses stay unresolved; terminal states cannot be
+downgraded. A tool execution marked `succeeded` does not establish connection to a person.
+Transfer remains `requested`/`failed`; the available stable schema has no explicit connection
+proof used by this implementation. A request for a person creates human follow-up immediately,
+regardless of confidence. An approved published transfer tool may be attached separately;
+its destination and actual connection must be verified in A5. The stored
+`human_callback_number` never triggers an automatic transfer or call.
+
+Provider confidence is never calibrated safety certainty and cannot automatically clear the
+readiness gate. Only explicitly synthetic scores exercise successful proposals in the demo.
+Real/recorded interviews produce conservative readiness inputs and independent human tasks;
+an analyst follows up and records the operational decision separately. Neither a completed
+call nor acknowledgement closes tasks or establishes departure/arrival.
+
+`VoiceStore` shares a database with `TaskStore`. A minimal `create_task(commit=False)` extension
+lets call state and task linkage commit atomically. Voice work uses existing analyst actions
+(`contact_facility`, `request_resources`) with stable `voice:` reasons. Assigned work is reused
+across snapshots and restarts. A distinct adverse event after an analyst closed the prior task
+creates fresh work without reopening the old task; exact replays create none. Initial callback
+work remains for analyst disposition even after a successful synthetic proposal. Departure and
+arrival checks are separate tasks. Uncontacted locations also retain tasks in the demo's plan.
+New CLI databases/token files are created with private file modes; use ignored `data/` storage
+and retain/delete local evidence under the incident's operational retention policy. Existing
+files' permissions are not changed. SQLite storage is local, not encrypted by this feature.
+
+#### Exact prerequisites for A5 (not executed)
+
+1. Supply `SLNG_API_KEY` and a created/reviewed `SLNG_AGENT_ID` via the ignored `.env`;
+   choose available STT, LLM, TTS, voice, region and language. Publish/attach the answer tool
+   and provide its authenticated HTTPS receiver, matching Vault secret and scenario epoch.
+2. Explicitly approve a browser test. Use a private `CallRequest` JSON and a separate
+   persistent database; consume the returned credentials with the LiveKit browser client.
+3. For a later phone test, supply an explicitly approved consenting test destination and
+   an active outbound connection assigned to that agent. Set
+   `SLNG_OUTBOUND_CONNECTION_ID`. A private approval JSON must contain the exact
+   `request_id` and matching `approved_target`; credentials alone do not authorize dispatch.
+4. For human transfer, configure the published transfer tool, approved human destination
+   and outbound telephony; verify actual audio and connection. A tool success is insufficient.
+   Spanish/Catalan model availability and spoken quality remain unverified.
+
+Commands prepared for a subsequent authorized session (not run here):
+
+```sh
+.venv/bin/python scripts/voice_demo.py --mode browser \
+  --request-file data/approved-browser-request.json --epoch SCENARIO_UTC_EPOCH \
+  --db data/voice-live.sqlite --output data/private-browser-session.json
+.venv/bin/python scripts/voice_demo.py --mode poll \
+  --request-file data/approved-browser-request.json --epoch SCENARIO_UTC_EPOCH \
+  --db data/voice-live.sqlite
+.venv/bin/python scripts/voice_demo.py --mode outbound \
+  --request-file data/approved-phone-request.json --approval-file data/phone-approval.json \
+  --epoch SCENARIO_UTC_EPOCH --db data/voice-phone.sqlite
+```
+
+Replace `SCENARIO_UTC_EPOCH` with the incident's common UTC ISO epoch, never a fresh time on
+restart. Browser and outbound creation are separate explicit commands. No background polling
+or credential-wait loop runs. The implementation leaves snapshot ranking, the crew sequence,
+UI integration and Workstream B untouched.
+
+
+Final offline verification: **344 Python tests passed** (253 baseline plus 91 voice tests),
+`git diff --check` passed, and all nine demo cases replayed with **11 tasks before and after**.
+The baseline modes were A=`assisted_evacuation`, B=`self_evacuate`, C=`undetermined`; every
+case retained `evacuation_status="not_confirmed"`. Verification artifacts are ignored local
+files under `data/agent-session/` (`voice-demo.json`, `voice-replay.json`, `voice-pytest.txt`).
+The implementation was independently reviewed; all reported findings were fixed and verified.
+These are offline software checks, not validation of provider audio, telephony or hardware.

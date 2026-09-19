@@ -251,6 +251,7 @@ class TaskStore:
     def create_task(self, asset_id: str, action: str, reason: str, *, required_capabilities=None,
                     snapshot_id: str | None, notes: str = "", suggested: bool = False,
                     commit: bool = True) -> dict:
+        """Create work; commit=False participates in the caller's transaction."""
         if action not in self.cfg.TASK_ACTIONS:
             raise ValueError(f"unknown action {action!r}; expected one of {list(self.cfg.TASK_ACTIONS)}")
         caps = list(required_capabilities) if required_capabilities is not None else list(self.cfg.TASK_ACTIONS[action])

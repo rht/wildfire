@@ -82,6 +82,7 @@ class CallResult:
     human_followup_reasons: list[str] = field(default_factory=list)
     transfer_status: str | None = None
     bad_audio: bool = False
+    evidence_time_basis: str = 'source_observation'
 
     def __post_init__(self):
         for key in ('request_id', 'asset_id', 'snapshot_id', 'provider_call_id'):
@@ -89,6 +90,8 @@ class CallResult:
         if self.status not in STATUSES:
             raise ValueError('invalid call status')
         utc(self.observed_at)
+        if self.evidence_time_basis not in ('source_observation', 'receipt_only'):
+            raise ValueError('invalid evidence_time_basis')
         text(self.source, 'source', 256)
         for key in ANSWER_FIELDS:
             value = getattr(self, key)

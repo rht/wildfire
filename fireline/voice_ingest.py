@@ -5,10 +5,11 @@ confidence and transfer success cannot be supplied through this endpoint.
 """
 import hmac
 import json
+from .voice_store import digest
 from .voice_models import CallResult, ANSWER_FIELDS
 
 RESULT_FIELDS = frozenset(('request_id', 'asset_id', 'snapshot_id', 'provider_call_id',
-                          'observed_at', 'evidence', 'contradictory', 'bad_audio') + ANSWER_FIELDS)
+                          'evidence', 'contradictory', 'bad_audio') + ANSWER_FIELDS)
 MAX_BODY = 32768
 
 
@@ -24,11 +25,13 @@ def ingest(store, body, *, authorization, token):
         if not isinstance(payload, dict) or set(payload) - RESULT_FIELDS:
             raise ValueError()
         # Authenticated tool output is model extraction, not independent confidence review.
-        result = CallResult(**payload, status='in_progress', source='SLNG API Request tool',
+        result = CallResult(**payload, observed_at=store.clock().isoformat(),
+                            evidence_time_basis='receipt_only',
+                            status='in_progress', source='SLNG API Request tool',
                             confidence=None, confidence_basis=None)
     except (ValueError, TypeError):
         raise ValueError('invalid interview result') from None
-    outcome = store.record_result(result)
+    outcome = store.record_result(result, delivery_id='delivery:' + digest(payload))
     return {'accepted': True, 'outcome': outcome, 'human_followup_required': True}
 
 

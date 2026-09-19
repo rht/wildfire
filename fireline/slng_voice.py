@@ -67,7 +67,7 @@ class SlngClient:
     def _path(self, suffix):
         if not self.config.agent_id:
             raise ValueError('SLNG_AGENT_ID is required')
-        return f'/v1/agents/{uuid(self.config.agent_id)}/{suffix}'
+        return f'/v1/agents/{uuid(self.config.agent_id)}/{suffix}'.rstrip('/')
 
     def _http(self, method, path, payload=None):
         if not self.config.api_key:
@@ -109,6 +109,10 @@ class SlngClient:
             raise ValueError('explicit live request and approved target required')
         if not self.config.outbound_connection_id:
             raise ValueError('SLNG outbound connection is required on the configured agent')
+        configuration = self._http('GET', self._path(''))
+        if (configuration.get('id') != self.config.agent_id or
+                configuration.get('sip_outbound_trunk_id') != self.config.outbound_connection_id):
+            raise ValueError('agent outbound connection does not match configured connection')
         body = self._http('POST', self._path('calls'),
                           {'phone_number': request.contact_number, 'arguments': call_arguments(request)})
         try:
@@ -157,7 +161,7 @@ def result_tool_configuration(url, secret_name):
     if not re.fullmatch(r'[A-Z][A-Z0-9_]*', secret_name):
         raise ValueError('invalid Vault secret name')
     properties = {key: {'type': 'string'} for key in
-                  ('request_id', 'asset_id', 'snapshot_id', 'provider_call_id', 'observed_at')}
+                  ('request_id', 'asset_id', 'snapshot_id', 'provider_call_id')}
     properties.update({key: {'type': ['boolean', 'null']} for key in ANSWER_FIELDS})
     properties.update(contradictory={'type': 'boolean'}, bad_audio={'type': 'boolean'},
                       evidence={'type': 'object', 'properties': {

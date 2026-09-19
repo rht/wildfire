@@ -21,7 +21,10 @@ class Transport:
             raise self.error
         response = requests.Response()
         response.status_code = self.status
-        response._content = json.dumps(self.body).encode()
+        body = self.body.pop(0) if isinstance(self.body, list) else self.body
+        if isinstance(body, Exception):
+            raise body
+        response._content = json.dumps(body).encode()
         return response
 
 
@@ -55,7 +58,7 @@ def test_browser_uses_documented_endpoint_and_no_phone_number():
 
 
 def test_dispatch_requires_live_request_and_explicit_authorized_target():
-    t = Transport(dict(call_id=CALL, message='created'))
+    t = Transport([{'id': AGENT, 'sip_outbound_trunk_id': TRUNK}, dict(call_id=CALL, message='created')])
     c = client(t)
     for req, approved in [(request(), '+12025550123'), (request(input_mode='live'), None),
                            (request(input_mode='live'), '+12025550124')]:
@@ -136,3 +139,19 @@ def test_result_tool_uses_documented_raw_bearer_format_and_locks_identity():
     attachment = m.result_tool_attachment(AGENT, 1)
     assert attachment['argument_overrides']['provider_call_id'] == '{{@call_id}}'
     assert attachment['argument_overrides']['request_id'] == '{{request_id}}'
+
+
+def test_outbound_checks_actual_agent_connection_before_dispatch():
+    t = Transport({'sip_outbound_trunk_id': None})
+    with pytest.raises(ValueError, match='outbound connection'):
+        client(t).dispatch(request(input_mode='live'), approved_target='+12025550123')
+    assert len(t.calls) == 1
+    assert t.calls[0][0] == 'GET'
+    assert t.calls[0][1] == f'https://api.agents.slng.ai/v1/agents/{AGENT}'
+
+
+def test_invalid_success_response_is_ambiguous_and_never_retried():
+    t = Transport({'call_id': 'not-a-uuid'})
+    with pytest.raises(RuntimeError, match='outcome_unknown'):
+        client(t).create_web_session(request())
+    assert len(t.calls) == 1
