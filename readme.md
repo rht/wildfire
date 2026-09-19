@@ -2086,15 +2086,15 @@ VoiceStore/TaskStore SQLite database and scenario epoch. An explicit service tic
 reads durable assessments, the supplied current location snapshot, StaticScenario,
 ReceptionCentre and EvacuationRoute inputs. Snapshot timing, distance and occupancy
 are authoritative; scenario actions, assistance and explicit effects stay supplied.
-Stable asset IDs join records. Calls from previously accepted snapshots may carry
+Stable asset IDs join records. Calls from snapshots accepted by coordination or TaskStore may carry
 forward with their original observation times; foreign snapshots and input modes
 cannot supply readiness. Negative assistance/human requests survive newer calls.
 No UI imports, calls, provider configuration writes or numeric live confidence.
 
 The projection and ordered revision events commit atomically with suggested task
-links under SQLite's write lock. Repeating a refresh at the same scenario minute
+links under SQLite's write lock. Repeating a refresh at the same scenario time
 with unchanged facts is a no-op, including after restart. Time advances on explicit
-ticks in whole elapsed minutes; no background process runs implicitly. Snapshot
+ticks in exact elapsed minutes; no background process runs implicitly. Snapshot
 identity is immutable, sequence/time cannot regress, and a database binds to one
 scenario and input mode. Human ownership and status always remain analyst-controlled.
 The public envelope excludes private call text/numbers and task notes/evidence.
@@ -2104,7 +2104,7 @@ Public API (dashboard contract):
 
 ```python
 CoordinationStore(path, *, epoch, clock=None)  # UTC datetime epoch and clock
-store.refresh(snapshot, scenario, centres, routes, *, road_warnings=())  # dict
+store.refresh(snapshot, scenario, centres, routes, *, road_warnings=(), response_plan=None)  # dict
 store.state()  # latest coordination-state-1 dict; None before first refresh
 store.updates(after_revision=0)  # ordered list of coordination-update-1 dicts
 store.close()
@@ -2121,11 +2121,11 @@ analyst assignment/status operations, followed by a refresh to publish changes.
 
 Implementation plan (Python/SQLite; all documentation stays here):
 
-- [ ] Restore commit 923d494's exact built-in integer capacity regression tests,
+- [x] Restore commit 923d494's exact built-in integer capacity regression tests,
   observe failure, restore only the capacity predicate, and verify road warnings.
-- [ ] Write failing persistence, live-assistance, privacy, restart, sequence,
+- [x] Write failing persistence, live-assistance, privacy, restart, sequence,
   concurrent refresh and atomic rollback tests; implement the projection boundary.
-- [ ] Add an offline `python -m fireline.coordination tick` CLI with explicit
+- [x] Add an offline `python -m fireline.coordination tick` CLI with explicit
   database, epoch, snapshot, scenario and readiness JSON files, and test it.
 - [ ] Consume verified sibling interfaces when available, review changed files,
   run Norma on changed files only, run relevant/full tests, commit, push and PR.
@@ -2134,3 +2134,38 @@ Destination capacity remains a proposal within one refresh. A durable allocation
 ledger from evacuation-plans requires an explicit adapter before reservation or
 arrival claims; multi-crew response proposals likewise require a verified export.
 Actual telephone transfer and real evacuation completion remain unverified.
+
+The optional `response_plan` accepts `multi-response-plan-1` from the verified
+multi-crew producer (contract fixture generated from commit `c9c46cc`). Its scenario,
+snapshot and exact elapsed `now_min` must match the tick. The public export appears
+under `plan.response`; roster membership, assignments and task completion are not
+changed. The caller supplies current commitments and readiness to that planner.
+An omitted proposal is not reused across ticks. The CLI accepts the same export
+with `--response-plan FILE`. Destination allocation ledger integration remains pending.
+
+Run one local tick after durable provider facts have been ingested:
+
+```sh
+PYTHONPATH=. python -m fireline.coordination tick \
+  --database data/shared-voice.sqlite --epoch 2026-09-20T10:00:00Z \
+  --snapshot data/current-snapshot.json --scenario data/current-scenario.json \
+  --readiness data/current-readiness.json
+```
+
+`--as-of UTC_ISO` supplies an exact clock for offline fixtures; otherwise the clock
+is current UTC. Readiness JSON contains `centres`, `routes`, and optional
+`road_warnings`. No daemon, provider polling, LLM call or live call worker starts.
+Public `as_of` is the publication time; `snapshot_as_of` retains risk input time;
+`elapsed_min` uses the database epoch with fractional minutes intact. Advancing
+time is itself a changed input, so it can publish a revision without a new call.
+`events` contains the latest compact revision event; `updates(cursor)` gives the
+ordered durable history. Public asset records allowlist the current snapshot
+contract (including optional value-at-risk fields); arbitrary extensions are omitted.
+Call evidence stays private, with evidence field names, verification, observation
+basis/times and request references exposed. Task notes, free-text reasons, blocking
+answers and evidence are private; only enumerated voice task kinds are exposed.
+Tasks for current assets remain visible even if their earlier snapshot association
+is not known to coordination. Such call facts stay excluded with a structured
+`call_snapshot_not_accepted` error until snapshot history has an accepted association.
+Unresolved assistance tasks retain human review even when a delayed negative result
+was deliberately not substituted for a newer stored answer.

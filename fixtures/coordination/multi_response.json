@@ -1,0 +1,140 @@
+{
+  "producer_commit": "c9c46ccfa4057c9cfed12072feb36a803e596851",
+  "input": {
+    "schema_version": "multi-response-input-1",
+    "scenario_id": "diagonal_access",
+    "snapshot_id": "diagonal_access-0001",
+    "now_min": 0,
+    "horizon_min": 30,
+    "buffer_min": 0,
+    "assets": [
+      {
+        "asset_id": "B",
+        "node_id": "B",
+        "people": 8,
+        "assisted": 0,
+        "value": 80,
+        "deadline_min": 30
+      },
+      {
+        "asset_id": "C",
+        "node_id": "C",
+        "people": 4,
+        "assisted": 0,
+        "value": 20,
+        "deadline_min": 30
+      },
+      {
+        "asset_id": "A",
+        "node_id": "A",
+        "people": 80,
+        "assisted": 60,
+        "value": 100,
+        "deadline_min": 30
+      }
+    ],
+    "teams": [
+      {
+        "team_id": "crew-1",
+        "start_node_id": "BASE",
+        "available": true,
+        "available_from_min": 0,
+        "available_until_min": 30,
+        "transport_capacity": 8,
+        "capabilities": []
+      }
+    ],
+    "actions": [
+      {
+        "action_id": "help-B",
+        "asset_id": "B",
+        "duration_min": 2,
+        "deadline_min": 30,
+        "requires": [],
+        "capabilities": [],
+        "transport_people": 8,
+        "readiness_required": false,
+        "effects": [
+          {
+            "asset_id": "B",
+            "coverage": 1,
+            "confirmed": true,
+            "source": "synthetic assumption"
+          }
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "from_node": "BASE",
+        "to_node": "B",
+        "minutes": 1,
+        "confirmed": true,
+        "safe": true,
+        "available_until_min": 30,
+        "source": "synthetic route"
+      }
+    ],
+    "readiness": [],
+    "committed": []
+  },
+  "response": {
+    "schema_version": "multi-response-plan-1",
+    "scenario_id": "diagonal_access",
+    "snapshot_id": "diagonal_access-0001",
+    "now_min": 0,
+    "optimal": false,
+    "dispatch": false,
+    "method": "deterministic prerequisite-aware greedy heuristic",
+    "teams": [
+      {
+        "team_id": "crew-1",
+        "tasks": [
+          {
+            "action_id": "help-B",
+            "asset_id": "B",
+            "team_id": "crew-1",
+            "scenario_id": "diagonal_access",
+            "snapshot_id": "diagonal_access-0001",
+            "action_version": "79bc4cc09463f2c58263e66752decf1af69e2033f7a9ea2536d70584e54d0384",
+            "status": "proposed",
+            "from_node": "BASE",
+            "to_node": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "effects": [
+              {
+                "asset_id": "B",
+                "coverage": 1,
+                "confirmed": true,
+                "source": "synthetic assumption"
+              }
+            ],
+            "transport_people": 8,
+            "route_source": "synthetic route",
+            "coverage_gained": {
+              "B": 1.0
+            }
+          }
+        ],
+        "locked": false,
+        "remaining_transport_capacity": 0
+      }
+    ],
+    "coverage": {
+      "A": 0.0,
+      "B": 1.0,
+      "C": 0.0
+    },
+    "objective": {
+      "assisted_units": 0.0,
+      "people_units": 8.0,
+      "value_units": 80.0
+    },
+    "unassigned": [],
+    "review": []
+  }
+}

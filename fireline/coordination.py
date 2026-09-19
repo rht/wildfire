@@ -11,7 +11,7 @@ import re
 
 from .contact_priority import ContactPolicy
 from .evacuation_readiness import coordinate_evacuation
-from .snapshot import validate_snapshot
+from .snapshot import ASSET_KEYS, SOURCE_KEYS, VALUE_AT_RISK_KEYS, validate_snapshot
 from .voice_models import ANSWER_FIELDS, utc
 from .voice_store import VoiceStore, digest, encoded
 
@@ -31,6 +31,11 @@ PRIVATE_KEYS = frozenset({
     'email', 'api_key', 'authorization', 'token', 'access_token', 'secret',
     'password', 'incident_brief', 'transcript', 'raw_payload', 'arguments',
 })
+TASK_KINDS = frozenset({
+    'human_callback', 'arrange_assistance', 'contact_household', 'confirm_arrival',
+    'confirm_departure', 'confirm_instructions', 'arrange_reception_or_assistance',
+    'communicate_road_warning',
+})
 PHONE = re.compile(r'(?<!\w)\+\d[\d ()-]{6,}\d')
 
 
@@ -42,6 +47,16 @@ def _public(value):
     if isinstance(value, str):
         return PHONE.sub('[redacted phone]', value)
     return value
+
+
+def _public_assets(assets):
+    public = []
+    for asset in assets:
+        row = {k: asset[k] for k in ASSET_KEYS + VALUE_AT_RISK_KEYS if k in asset}
+        row['sources'] = [{k: source.get(k) for k in SOURCE_KEYS}
+                          for source in asset['sources']]
+        public.append(row)
+    return public
 
 
 def _snapshot_scenario(snapshot, scenario, epoch):
@@ -115,7 +130,8 @@ def _task_summary(task):
             'assigned_team_id', 'deadline_at', 'created_at', 'updated_at',
             'based_on_snapshot_id', 'affected_by_snapshot_id', 'suggested')
     public = {k: task[k] for k in keys}
-    public['kind'] = task['reason'][6:] if task['reason'].startswith('voice:') else 'analyst_task'
+    kind = task['reason'][6:] if task['reason'].startswith('voice:') else None
+    public['kind'] = kind if kind in TASK_KINDS else 'analyst_task'
     public['human_controlled'] = True
     return public
 
@@ -127,6 +143,58 @@ def _asset_views(state):
         for row in section:
             views.setdefault(row['asset_id'], []).append(row)
     return views
+
+
+def _response_proposal(response, snapshot, elapsed):
+    """Attach the verified multi-crew export without applying its proposed work.
+
+    The producer owns feasibility and commitments. This boundary checks association
+    and exposes only its public contract; the TaskStore roster remains authoritative.
+    """
+    if (response.get('schema_version') != 'multi-response-plan-1'
+            or response.get('scenario_id') != snapshot['scenario_id']
+            or response.get('snapshot_id') != snapshot['snapshot_id']
+            or isinstance(response.get('now_min'), bool) or response.get('now_min') != elapsed
+            or response.get('dispatch') is not False):
+        raise ValueError('response proposal association, time or dispatch mismatch')
+    assets = {a['asset_id'] for a in snapshot['assets']}
+    task_keys = ('action_id', 'asset_id', 'team_id', 'scenario_id', 'snapshot_id',
+                 'action_version', 'status', 'from_node', 'to_node', 'depart_min',
+                 'travel_min', 'start_min', 'finish_min', 'actual_finish_min',
+                 'prerequisites', 'transport_people', 'route_source', 'path_lonlat', 'path_nodes')
+    teams, action_ids, team_ids = [], set(), set()
+    for team in response['teams']:
+        if team['team_id'] in team_ids:
+            raise ValueError('duplicate proposed team')
+        team_ids.add(team['team_id'])
+        tasks = []
+        for task in team['tasks']:
+            if (task['asset_id'] not in assets or task['team_id'] != team['team_id']
+                    or task['scenario_id'] != snapshot['scenario_id']
+                    or task['action_id'] in action_ids
+                    or task['status'] not in ('proposed', 'informed', 'en_route', 'in_progress', 'completed')):
+                raise ValueError('response proposal task association mismatch')
+            action_ids.add(task['action_id'])
+            public = {k: task[k] for k in task_keys if k in task}
+            public['effects'] = []
+            for effect in task['effects']:
+                if effect['asset_id'] not in assets:
+                    raise ValueError('response effect asset mismatch')
+                public['effects'].append({k: effect[k] for k in
+                    ('asset_id', 'coverage', 'confirmed', 'source') if k in effect})
+            tasks.append(public)
+        teams.append(dict(team_id=team['team_id'], tasks=tasks, locked=team['locked'],
+                          remaining_transport_capacity=team['remaining_transport_capacity']))
+    public = {k: response[k] for k in ('schema_version', 'scenario_id', 'snapshot_id',
+                                     'now_min', 'optimal', 'dispatch', 'method')}
+    public.update(teams=teams, coverage={k: v for k, v in response['coverage'].items() if k in assets},
+                  objective={k: response['objective'].get(k) for k in
+                             ('assisted_units', 'people_units', 'value_units')})
+    for section in ('unassigned', 'review'):
+        public[section] = [{k: row[k] for k in
+                           ('action_id', 'asset_id', 'team_id', 'reason', 'reasons') if k in row}
+                          for row in response[section]]
+    return public
 
 
 class CoordinationStore:
@@ -178,7 +246,10 @@ class CoordinationStore:
         same = self.conn.execute('SELECT fingerprint FROM coordination_snapshots WHERE snapshot_id=?',
                                  (snapshot['snapshot_id'],)).fetchone()
         newest = self.conn.execute(
-            'SELECT sequence, as_of FROM coordination_snapshots ORDER BY sequence DESC LIMIT 1').fetchone()
+            'SELECT sequence, as_of FROM coordination_snapshots UNION ALL '
+            'SELECT sequence, as_of FROM snapshots WHERE scenario_id=? AND input_mode=? '
+            'ORDER BY sequence DESC LIMIT 1',
+            (snapshot['scenario_id'], snapshot['input_mode'])).fetchone()
         if newest and (snapshot['sequence'] < newest['sequence'] or as_of < utc(newest['as_of'])):
             raise ValueError('snapshot sequence or time cannot regress')
         if same and same[0] != fingerprint:
@@ -186,8 +257,15 @@ class CoordinationStore:
         self.conn.execute('INSERT OR IGNORE INTO coordination_snapshots VALUES (?, ?, ?, ?)',
             (snapshot['snapshot_id'], snapshot['sequence'], fingerprint, snapshot['as_of']))
 
-    def _calls(self, snapshot):
+    def _accepted_snapshots(self, snapshot):
         accepted = {r[0] for r in self.conn.execute('SELECT snapshot_id FROM coordination_snapshots')}
+        accepted.update(r[0] for r in self.conn.execute(
+            'SELECT snapshot_id FROM snapshots WHERE scenario_id=? AND input_mode=? AND sequence<=?',
+            (snapshot['scenario_id'], snapshot['input_mode'], snapshot['sequence'])))
+        return accepted
+
+    def _calls(self, snapshot):
+        accepted = self._accepted_snapshots(snapshot)
         asset_ids = {a['asset_id'] for a in snapshot['assets']}
         assessments, summaries, records, errors = {}, [], [], []
         for row in self.conn.execute('SELECT request_id FROM voice_calls ORDER BY request_id').fetchall():
@@ -202,13 +280,15 @@ class CoordinationStore:
                 continue
             assessment = self.voice.assessment(row[0]) if record['provider_call_id'] else None
             if assessment:
+                if 'human_requested' in record['followup_reasons']:
+                    assessment = replace(assessment, wants_human=True, confidence=None)
                 assessments.setdefault(req['asset_id'], []).append(assessment)
             summaries.append(_call_summary(record, assessment))
             records.append(record)
         return _merge_assessments(assessments), summaries, records, errors
 
-    def refresh(self, snapshot, scenario, centres, routes, *, road_warnings=()):
-        """Recompute at whole elapsed minutes and atomically publish changed state.
+    def refresh(self, snapshot, scenario, centres, routes, *, road_warnings=(), response_plan=None):
+        """Recompute at the exact elapsed scenario time and atomically publish changes.
 
         Snapshot records are authoritative for timing, distance and occupancy.
         Call evidence keeps its exact UTC observation time. Capacity is proposed,
@@ -222,13 +302,28 @@ class CoordinationStore:
             self._accept_snapshot(snapshot, scenario, now, previous)
             current = _snapshot_scenario(snapshot, scenario, self.epoch)
             assessments, calls, records, errors = self._calls(snapshot)
-            elapsed = int((now - self.epoch).total_seconds() // 60)
+            pending_assistance = {t['asset_id'] for t in self.tasks.tasks()
+                                  if t['reason'] == 'voice:arrange_assistance' and t['status'] != 'done'}
+            assessments = [replace(a, confidence=None) if a.asset_id in pending_assistance else a
+                           for a in assessments]
+            elapsed = (now - self.epoch).total_seconds() / 60
             plan = coordinate_evacuation(current, assessments, centres, routes,
                 contact_policy=ContactPolicy(now_min=elapsed, buffer_min=scenario.buffer_min),
                 road_warnings=road_warnings)
+            for row in plan['locations']:
+                row['assistance_review_required'] = row['asset_id'] in pending_assistance
+                if row['assistance_review_required']:
+                    row['reasons'].append('unresolved_assistance_request')
+                    if 'arrange_assistance' not in row['tasks']:
+                        row['tasks'].append('arrange_assistance')
+            if response_plan is not None:
+                plan['response'] = _response_proposal(response_plan, snapshot, elapsed)
+                plan['response_replanning_required'] = False
             self.voice.record_plan(plan, snapshot_id=snapshot['snapshot_id'])
-            accepted = {r[0] for r in self.conn.execute('SELECT snapshot_id FROM coordination_snapshots')}
-            tasks = [t for t in self.tasks.tasks() if t['based_on_snapshot_id'] in accepted]
+            accepted = self._accepted_snapshots(snapshot)
+            asset_ids = {a['asset_id'] for a in snapshot['assets']}
+            tasks = [t for t in self.tasks.tasks() if t['asset_id'] in asset_ids
+                     or t['based_on_snapshot_id'] in accepted]
             for row in plan['locations']:
                 row['call_evidence'] = None
                 row['call_source'] = 'stored_call_assessment' if row['call_id'] else None
@@ -240,7 +335,7 @@ class CoordinationStore:
             candidate = _public(dict(schema_version='coordination-state-1',
                 scenario_id=snapshot['scenario_id'], snapshot_id=snapshot['snapshot_id'],
                 input_mode=snapshot['input_mode'], epoch=self.epoch.isoformat(), elapsed_min=elapsed,
-                assets=snapshot['assets'], contacts=plan['contacts'], calls=calls, plan=plan,
+                assets=_public_assets(snapshot['assets']), contacts=plan['contacts'], calls=calls, plan=plan,
                 teams=self.tasks.teams(), tasks=[_task_summary(t) for t in tasks], errors=errors,
                 snapshot_as_of=snapshot['as_of'], data_status=snapshot['data_status'],
                 dispatch=False, live_validation=False))
@@ -282,6 +377,7 @@ def main(argv=None):
     parser.add_argument('--scenario', required=True)
     parser.add_argument('--readiness', required=True,
                         help='JSON object with centres, routes, optional road_warnings')
+    parser.add_argument('--response-plan', help='verified multi-response-plan-1 JSON proposal')
     args = parser.parse_args(argv)
     store = None
     try:
@@ -292,8 +388,10 @@ def main(argv=None):
         routes = [EvacuationRoute(**r) for r in readiness['routes']]
         clock = (lambda: args.as_of) if args.as_of is not None else None
         store = CoordinationStore(args.database, epoch=args.epoch, clock=clock)
+        response = (json.loads(Path(args.response_plan).read_text(encoding='utf-8'))
+                    if args.response_plan else None)
         state = store.refresh(snapshot, scenario, centres, routes,
-                              road_warnings=readiness.get('road_warnings', ()))
+                              road_warnings=readiness.get('road_warnings', ()), response_plan=response)
         print(encoded(state))
     except (ValueError, TypeError, KeyError, OSError):
         parser.exit(2, 'Coordination tick rejected: check input contracts, database and UTC times.\n')

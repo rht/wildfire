@@ -338,3 +338,162 @@ def test_event_cursor_requires_nonnegative_builtin_integer(tmp_path, cursor):
     with pytest.raises(ValueError, match='after_revision'):
         store.updates(cursor)
     store.close()
+
+
+def test_subminute_call_evidence_uses_the_exact_shared_epoch(tmp_path):
+    path = tmp_path / 'live.sqlite'
+    args = supplied()
+    now = EPOCH + timedelta(seconds=30)
+    save_call(path, args[0], at=now)
+    store = coordinator(path, now)
+    state = store.refresh(*args)
+    assert 'future_assessment' not in location(state)['reasons']
+    assert state['elapsed_min'] == 0.5
+    assert location(state)['mode'] == 'self_evacuate'
+    store.close()
+
+
+def test_existing_unscoped_analyst_task_for_current_asset_is_visible(tmp_path):
+    store = coordinator(tmp_path / 'live.sqlite')
+    task = store.tasks.create_task('B', 'contact_facility', 'PRIVATE analyst task', snapshot_id=None)
+    state = store.refresh(*supplied())
+    assert task['task_id'] in {t['task_id'] for t in state['tasks']}
+    assert 'PRIVATE analyst task' not in json.dumps(state)
+    store.close()
+
+
+def test_starting_with_newer_snapshot_preserves_existing_assigned_work(tmp_path):
+    path = tmp_path / 'live.sqlite'
+    older = supplied()
+    save_call(path, older[0], can_self_evacuate=False, wants_human=True)
+    voice = VoiceStore(path, epoch=EPOCH, clock=lambda: EPOCH)
+    callback = voice.human_tasks('B')[0]
+    roster = tmp_path / 'roster.json'
+    roster.write_text(json.dumps([dict(team_id='desk', name='Desk', available=True,
+        capabilities=callback['required_capabilities'])]))
+    voice.tasks.load_roster(roster)
+    voice.tasks.assign(callback['task_id'], 'desk')
+    existing_ids = {t['task_id'] for t in voice.tasks.tasks()}
+    voice.close()
+    store = coordinator(path)
+    state = store.refresh(*supplied(2))
+    assert existing_ids <= {t['task_id'] for t in state['tasks']}
+    held = next(t for t in state['tasks'] if t['task_id'] == callback['task_id'])
+    assert held['assigned_team_id'] == 'desk'
+    assert held['status'] == 'assigned'
+    # Unknown earlier snapshot facts still require explicit association; work stays visible.
+    assert state['errors'][0]['code'] == 'call_snapshot_not_accepted'
+    store.close()
+
+
+def test_public_allowlists_exclude_private_extensions_and_arbitrary_task_reasons(tmp_path):
+    args = supplied()
+    args[0]['assets'][0]['metadata'] = dict(credentials=dict(slng_api_key='PRIVATE_CREDENTIAL'),
+        notes='Call 202-555-0123')
+    store = coordinator(tmp_path / 'live.sqlite')
+    store.tasks.create_task('B', 'contact_facility', 'voice:PRIVATE respondent excerpt',
+        snapshot_id=args[0]['snapshot_id'])
+    state = store.refresh(*args)
+    assert 'PRIVATE' not in json.dumps(state)
+    assert '202-555-0123' not in json.dumps(state)
+    store.close()
+
+
+def test_prior_taskstore_accepted_snapshot_supplies_durable_assessments(tmp_path):
+    path = tmp_path / 'live.sqlite'
+    older = supplied()
+    save_call(path, older[0])
+    voice = VoiceStore(path, epoch=EPOCH, clock=lambda: EPOCH)
+    assert voice.tasks.apply_snapshot(older[0])['accepted']
+    voice.close()
+    store = coordinator(path)
+    state = store.refresh(*supplied(2))
+    assert location(state)['mode'] == 'self_evacuate'
+    assert state['calls'][0]['snapshot_id'] == older[0]['snapshot_id']
+    store.close()
+
+
+def test_explicit_human_request_without_excerpt_survives_later_call(tmp_path):
+    path = tmp_path / 'live.sqlite'
+    args = supplied()
+    evidence = {k: v for k, v in result().evidence.items() if k != 'wants_human'}
+    save_call(path, args[0], wants_human=True, evidence=evidence)
+    save_call(path, args[0], rid='req-new', at=EPOCH + timedelta(seconds=30))
+    store = coordinator(path, EPOCH + timedelta(seconds=30))
+    state = store.refresh(*args)
+    assert location(state)['human_followup'] is True
+    assert 'human_requested' in location(state)['reasons']
+    assert location(state)['mode'] == 'undetermined'
+    store.close()
+
+
+def multi_export():
+    from pathlib import Path
+    return json.loads(Path('fixtures/coordination/multi_response.json').read_text())['response']
+
+
+def test_verified_multi_crew_export_is_published_only_as_a_proposal(tmp_path):
+    store = coordinator(tmp_path / 'live.sqlite')
+    response = multi_export()
+    state = store.refresh(*supplied(), response_plan=response)
+    assert state['plan']['response']['schema_version'] == 'multi-response-plan-1'
+    assert state['plan']['response']['teams'][0]['tasks'][0]['status'] == 'proposed'
+    assert state['plan']['response_replanning_required'] is False
+    assert state['teams'] == []  # proposals do not claim roster membership/assignment
+    assert all(t['assigned_team_id'] is None for t in state['tasks'])
+    assert store.refresh(*supplied(), response_plan=response) == state
+    # An omitted export is not silently reused on a later tick.
+    assert store.refresh(*supplied())['plan']['response'].get('schema_version') != 'multi-response-plan-1'
+    store.close()
+
+
+@pytest.mark.parametrize('change', ['snapshot', 'time', 'dispatch', 'asset'])
+def test_stale_or_mismatched_multi_crew_export_is_rejected_atomically(tmp_path, change):
+    store = coordinator(tmp_path / 'live.sqlite')
+    first = store.refresh(*supplied())
+    response = multi_export()
+    if change == 'snapshot':
+        response['snapshot_id'] = 'wrong'
+    elif change == 'time':
+        response['now_min'] = 1
+    elif change == 'dispatch':
+        response['dispatch'] = True
+    else:
+        response['teams'][0]['tasks'][0]['asset_id'] = 'unknown'
+    with pytest.raises(ValueError):
+        store.refresh(*supplied(), response_plan=response)
+    assert store.state() == first
+    store.close()
+
+
+def test_delayed_adverse_result_keeps_assistance_review_even_when_result_is_ignored(tmp_path):
+    path = tmp_path / 'live.sqlite'
+    args = supplied()
+    now = EPOCH + timedelta(minutes=1)
+    save_call(path, args[0], at=now)
+    voice = VoiceStore(path, epoch=EPOCH, clock=lambda: now)
+    assert voice.record_result(result(snapshot_id=args[0]['snapshot_id'],
+        provider_call_id='call-req-B', can_self_evacuate=False)) == 'ignored'
+    voice.close()
+    store = coordinator(path, now)
+    state = store.refresh(*args)
+    assert location(state)['human_followup'] is True
+    assert location(state)['mode'] == 'undetermined'
+    assert 'unresolved_assistance_request' in location(state)['reasons']
+    assert location(state)['destination_id'] is None
+    assert state['plan']['remaining_capacity']['centre'] == 10
+    assert state['calls'][0]['can_self_evacuate'] is True  # do not fabricate the retained answer
+    store.close()
+
+
+def test_startup_rejects_snapshot_older_than_existing_taskstore_history(tmp_path):
+    path = tmp_path / 'live.sqlite'
+    voice = VoiceStore(path, epoch=EPOCH, clock=lambda: EPOCH)
+    assert voice.tasks.apply_snapshot(supplied(2)[0])['accepted']
+    voice.close()
+    store = coordinator(path)
+    with pytest.raises(ValueError, match='regress'):
+        store.refresh(*supplied(1))
+    assert store.state() is None
+    assert store.refresh(*supplied(2))['revision'] == 1
+    store.close()
