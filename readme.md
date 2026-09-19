@@ -726,3 +726,35 @@ not implemented in this static extension; its input contract is ready to receive
 
 Verification: 253 tests pass, including 36 readiness cases; targeted lint and whitespace checks
 pass. Independent code review found no important issues within the static scope.
+
+### Workstream A implementation notes
+
+Implementation plan (19 September 2026; authorized scope A1–A4): use the existing
+readiness algorithm unchanged, with strict transport-neutral records, a separate SLNG HTTP
+adapter and a SQLite lifecycle store sharing the existing `TaskStore` database. No UI or
+snapshot/window-ranking changes. Baseline at `736253b`: 253 tests passed.
+
+1. A1: add `voice_models.py` and `voice_interview.py`; first exercise malformed records,
+   evidence/identity/time gates and all readiness outcomes in `test_voice_interview.py`.
+   Normalize unknowns to null; only synthetic or locally reviewed confidence may pass the
+   readiness review gate. Preserve acknowledgement separately from departure/arrival.
+2. A2: add `slng_voice.py` with an injectable `requests` transport, fixed official API host,
+   explicit timeouts and sanitized failures. Test documented create-agent, web-session,
+   dispatch and GET-call schemas offline before implementing them. Outbound dispatch is a
+   separate explicit operation, never retried after ambiguous creation failure.
+3. A3: add `voice_store.py` and `voice_ingest.py`; test authenticated ingestion, immutable
+   request/call association, restart/replay, event ordering, task linkage and failed handoff.
+   Persist provider facts separately from interview answers. Use a bearer-authenticated API
+   Request tool for answers and authenticated GET-call polling for lifecycle facts; never
+   parse undocumented runtime diagnostics as confirmed answers or transfer connection.
+4. A4: add synthetic `fixtures/voice/` cases and `scripts/voice_demo.py`, reusing
+   `fixtures/static_priority.json` and reception/route inputs from the readiness fixture.
+   Exercise no-key demo and persistent replay, run the full suite, request independent code
+   review, fix findings, then commit and push. A5 remains deferred; no live calls or messages.
+
+Each step uses failing behavior tests, implementation, focused verification and a pushed
+checkpoint. Current primary references are the [SLNG OpenAPI schema](https://docs.slng.ai/api-reference/agents/agents.oas.yaml),
+[API Request tool guide](https://docs.slng.ai/guides/agents/tools-and-mcp/api-request-tool),
+[dispatch guide](https://docs.slng.ai/guides/agents/telephony/dispatch-calls), and
+[browser integration guide](https://docs.slng.ai/guides/agents/production/embed-in-website).
+Older `/voice-agents` and `/examples/agents-api` README links returned 404 during this check.
