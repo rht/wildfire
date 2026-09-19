@@ -87,6 +87,8 @@ class CallResult:
     bad_audio: bool = False
     evidence_time_basis: str = 'source_observation'
     road_warning_acknowledged: bool | None = None
+    evidence_verification: dict[str, str] = field(default_factory=dict)
+    evidence_observed_at: dict[str, str] = field(default_factory=dict)
 
     def __post_init__(self):
         for key in ('request_id', 'asset_id', 'snapshot_id', 'provider_call_id'):
@@ -94,7 +96,7 @@ class CallResult:
         if self.status not in STATUSES:
             raise ValueError('invalid call status')
         utc(self.observed_at)
-        if self.evidence_time_basis not in ('source_observation', 'receipt_only'):
+        if self.evidence_time_basis not in ('source_observation', 'receipt_only', 'provider_record_update'):
             raise ValueError('invalid evidence_time_basis')
         text(self.source, 'source', 256)
         for key in ANSWER_FIELDS + ('road_warning_acknowledged',):
@@ -115,6 +117,14 @@ class CallResult:
             if key not in ANSWER_FIELDS + ('help_needs', 'preparation_remaining', 'instruction_received', 'road_warning_acknowledged'):
                 raise ValueError('invalid evidence field')
             text(value, 'evidence excerpt', 2048)
+        if not isinstance(self.evidence_observed_at, dict) or any(
+                key not in self.evidence or utc(value) > utc(self.observed_at)
+                for key, value in self.evidence_observed_at.items()):
+            raise ValueError('invalid evidence observation time')
+        if not isinstance(self.evidence_verification, dict) or any(
+                key not in self.evidence or value not in ('provider_reported', 'transcript_verified')
+                for key, value in self.evidence_verification.items()):
+            raise ValueError('invalid evidence verification')
         if not isinstance(self.human_followup_reasons, list):
             raise ValueError('invalid followup reasons')
         for reason in self.human_followup_reasons:

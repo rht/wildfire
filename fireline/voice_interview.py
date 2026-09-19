@@ -72,7 +72,7 @@ def normalize_result(request, result):
         reasons.append('unverified_confidence')
     if result.contradictory:
         reasons.append('contradictory_answers')
-    if result.evidence_time_basis == 'receipt_only':
+    if result.evidence_time_basis != 'source_observation':
         reasons.append('evidence_time_unknown')
     if result.bad_audio:
         reasons.append('bad_audio')

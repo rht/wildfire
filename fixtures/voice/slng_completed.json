@@ -1,0 +1,98 @@
+{
+  "id": "00000000-0000-4000-8000-000000000002",
+  "agent_id": "00000000-0000-4000-8000-000000000001",
+  "status": "completed",
+  "arguments": {},
+  "updated_at": "2026-09-19T12:00:00+00:00",
+  "memory_variables": [
+    {
+      "name": "can_self_evacuate",
+      "value": "no",
+      "status": "set"
+    },
+    {
+      "name": "can_self_evacuate_evidence",
+      "value": "I need help to leave.",
+      "status": "set"
+    },
+    {
+      "name": "transport_available",
+      "value": "yes",
+      "status": "set"
+    },
+    {
+      "name": "transport_available_evidence",
+      "value": "We have a car.",
+      "status": "set"
+    },
+    {
+      "name": "wants_human",
+      "value": "yes",
+      "status": "set"
+    },
+    {
+      "name": "wants_human_evidence",
+      "value": "Please ask a person to call me.",
+      "status": "set"
+    },
+    {
+      "name": "identity_confirmed",
+      "value": "yes",
+      "status": "set"
+    },
+    {
+      "name": "identity_confirmed_evidence",
+      "value": "That is our house.",
+      "status": "set"
+    },
+    {
+      "name": "whole_household_confirmed",
+      "value": "yes",
+      "status": "set"
+    },
+    {
+      "name": "whole_household_confirmed_evidence",
+      "value": "I can answer for everyone.",
+      "status": "set"
+    },
+    {
+      "name": "message_received",
+      "value": "yes",
+      "status": "set"
+    },
+    {
+      "name": "message_received_evidence",
+      "value": "I heard your message.",
+      "status": "set"
+    },
+    {
+      "name": "acknowledged",
+      "value": null,
+      "status": "unset"
+    },
+    {
+      "name": "acknowledged_evidence",
+      "value": null,
+      "status": "unset"
+    }
+  ],
+  "livekit_session_report": {
+    "chat_history": {
+      "items": [
+        {
+          "role": "user",
+          "content": [
+            "[REDACTED]"
+          ]
+        },
+        {
+          "role": "assistant",
+          "content": [
+            "Thank you."
+          ]
+        }
+      ]
+    }
+  },
+  "tool_executions": []
+}
