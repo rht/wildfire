@@ -1,4 +1,4 @@
-"""JUnit report parsing accepts ordinary results and rejects XML declarations."""
+"""JUnit report parsing accepts ordinary results and rejects DTD declarations."""
 
 from pathlib import Path
 
@@ -28,7 +28,7 @@ def test_report_rejects_dtd_and_entities(tmp_path, declaration):
 def test_report_accepts_plain_junit_and_preserves_failure_guard(tmp_path, failed):
     junit = tmp_path / "junit.xml"
     failure = '<failure message="a &amp; b"/>' if failed else ''
-    junit.write_text(f'<testsuites><testsuite><testcase name="Cruïlles">{failure}</testcase></testsuite></testsuites>',
+    junit.write_text(f'<?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite><testcase name="Cruïlles">{failure}</testcase></testsuite></testsuites>',
                      encoding="utf-8")
     output = tmp_path / "report.pdf"
     if failed:
