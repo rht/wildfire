@@ -10,6 +10,187 @@ The colleague builds **risk assessment**, which consumes fire updates, discovers
 
 Use [Superpowers](https://github.com/obra/superpowers) for development. Work in a dedicated branch and worktree under this repository's `.worktrees/` directory, publish every task branch to `origin`, and push progress so colleagues can review it. See [AGENTS.md](AGENTS.md) for the persistent workflow.
 
+## Three-component architecture
+
+This diagram describes the agreed responsibility split and proposed extensions, not a claim that
+every arrow is implemented. **1 assesses what is exposed; 2 coordinates what to do; 3 shows the
+recommendations and captures the analyst's decisions.** AI calling belongs to component 2.
+The existing MVP remains one incident in a bounded area; multiple incidents and automatic
+multi-crew scheduling below are design requirements for subsequent integration.
+
+```mermaid
+flowchart LR
+    F["FIRE INPUT<br/>Observed perimeter / hotspot centre<br/>Separate spread forecast over time"]
+    D["DISCOVERY DATA<br/>Facility and asset APIs / registers<br/>Occupancy evidence and contacts"]
+    R["OPERATIONAL INPUT<br/>Crews, trucks, positions, capabilities<br/>Approved centres, routes, capacity"]
+
+    A["1. ASSESS LOCATIONS<br/><b>Which infrastructure, people and assets?<br/>What risk and value?</b><br/><br/>Discover locations and forecast exposure<br/>LLM proposes evidenced estimates<br/>Assess mobility and evacuation duration<br/>Identify reception-centre candidates"]
+    B["2. COORDINATE AND ESCALATE<br/><b>Who needs what action,<br/>by whom, where and when?</b><br/><br/>Rank contacts and feasible crew actions<br/>Allocate approved reception capacity<br/>AI calls confirm ability and help needs<br/>Escalate uncertainty / human requests<br/>Revise unsafe plans; preserve commitments"]
+    C["3. ANALYST DASHBOARD<br/><b>How do we show, explain<br/>and supervise the response?</b><br/><br/>Map, priorities and resource status<br/>Reasons, evidence and missing data<br/>Human handoff and evacuation progress<br/>Approve, assign, override, acknowledge"]
+
+    F --> A
+    D --> A
+    A -->|"Versioned location snapshot<br/>Risk, value, timing, candidates, sources"| B
+    R --> B
+    B -->|"Proposed plan and persistent tasks<br/>Destinations, blockers, progress"| C
+    C -->|"Analyst decisions and updates"| B
+    B -.->|"Sourced household corrections"| A
+
+    classDef input fill:#f1f5f9,stroke:#64748b,color:#0f172a
+    classDef assessment fill:#dbeafe,stroke:#2563eb,color:#172554
+    classDef coordination fill:#ede9fe,stroke:#7c3aed,color:#2e1065
+    classDef dashboard fill:#dcfce7,stroke:#16a34a,color:#052e16
+    class F,D,R input
+    class A assessment
+    class B coordination
+    class C dashboard
+```
+
+### 1 — Assess locations: exposure, vulnerability, value and reception candidates
+
+**Questions:** What infrastructure/assets and associated populations are in the area? Which face
+the earliest fire impact? Who may need assistance or more time? What equipment/property or critical
+service is at stake? Which buildings merit evaluation as reception centres?
+
+**Inputs checked against the repository on 19 September 2026:**
+
+| Input | What the code/data currently provides | Remaining gap |
+|---|---|---|
+| Fire observation | `fire_input.py` normalizes Deepfire `satellite-perimeters` polygons, with `clusters` hotspot centres as fallback; incident ID, observation/receipt times, source and geometry kind accompany GeoJSON. Live and recorded paths exist. | A hotspot centre is not a measured boundary. Polling selects one incident/update; coordinated multi-incident state is not implemented. |
+| Spread model | `DeepfireClient.start_spread_simulation` accepts a cluster ID **or** latitude/longitude, plus model, duration and ensemble size. On `claude/window-ranking`, `forecast_input.py` converts recorded hourly burned-area polygons to facility arrival estimates. | Point-ignition simulation is separate from the observed incident. The adapter assumes `createdAt` is simulation start and uses the first covering hourly polygon; neither exact arrival nor arrival quantiles are established by that conversion. |
+| Facilities and people | Gencat API/register adapters and cached real-area facilities cover hospitals, schools, care homes and campsites. Matching extracts identity, coordinates where present, class and occupancy evidence. The latest colleague branch adds school-enrolment evidence. | No general API discovering every person/household, private equipment inventory or resident phone number. Enrolment/capacity are proxies, not confirmed people currently present. Authorized contact records are a separate input. |
+| Value and duration | Class-based `value_score`/`value_basis` are operational importance. The colleague's v1.1 producer supplies `evacuation_min`/`evacuation_source` from explicit class-policy assumptions, with override support. | These are not monetary valuations or confirmed household evacuation times. Flammability and actual mobility need evidence; travel/transport and receiving arrangements can change duration. |
+| Search extent | Current discovery uses the fixed Gavarres bounding box `(2.85, 41.80, 3.20, 42.05)` in longitude/latitude order. | No adaptive radius or validated confinement/suppression-capability model is wired into this path. |
+
+Checked baseline: `main` at `59d8c23`; colleague's integration branch
+[`claude/window-ranking`](https://github.com/rht/wildfire/tree/claude/window-ranking) at `f91178e`.
+Its committed real spread example reaches **0 of 99 located facilities within its 12-hour horizon**;
+those facilities have no arrival estimate. This demonstrates the adapter, not a usable automatic
+contact order for that example. Outside the simulated footprint/horizon does not mean safe.
+
+**Assessment workflow:** select the area, fetch/cache available datasets, resolve stable identities,
+calculate geometric exposure and attach forecast estimates, then enrich gaps with an LLM that
+uses cited evidence. The current agent can propose occupancy/capacity/class updates for analyst
+confirmation; monetary valuation, flammability and mobility proposals are extensions. The LLM can
+propose a monetary range with currency, inventory/area assumptions and source, and flag a care
+home as likely to need assisted evacuation. It must not present those assumptions as verified
+occupancy, ability, a burn probability or an exact market valuation. Keep unknown values null.
+Human vulnerability, critical-service importance and monetary value remain separate dimensions.
+
+**Reception candidates:** component 1 supplies location, forecast exposure, suitability evidence,
+accessible capacity and supported needs. Component 2 checks current approval, route feasibility,
+capacity reservations and the whole travel/reception time window before proposing a destination.
+A hospital with firefighters present is not automatically safe or able to receive evacuees.
+Reception is also distinct from sheltering in place; the latter needs its own authorized plan.
+
+### Shared output from component 1
+
+Reuse section 5's envelope and the colleague's **v1.1** location contract; do not replace it with an
+unversioned LLM JSON response. One record represents a location and its associated population,
+not a public list of named residents. Stable IDs link assessments to private contact/interview data.
+
+| Data group | Existing / agreed field names | Proposed additions, not yet in the shared validator |
+|---|---|---|
+| Snapshot | `schema_version`, `scenario_id`, `incident_id`, `snapshot_id`, `sequence`, `as_of`, `computed_at`, `input_mode`, `data_status`, `assets` | Search-area geometry, selection basis, forecast coverage and policy version |
+| Location | `asset_id`, `name`, `asset_type`, `latitude`, `longitude`, `geometry`, `area_m2` | Equipment/infrastructure inventory where sourced |
+| People and duration | `capacity`, `estimated_occupancy`, `occupancy_basis`, `evacuation_min`, `evacuation_source` | Mobility/assistance estimates with basis and confidence; explicit duration components and transport assumptions |
+| Exposure | `distance_to_fire_m`, `intersects_fire`, `fire_arrival_at`, `fire_arrival_basis`, `arrival_p10_at`, `arrival_p50_at`, `burn_probability`, `forecast_horizon_at`, `forecast_source` | Flammability evidence/estimate and its basis; keep it separate from forecast probability |
+| Value | `value_score`, `value_basis` | Monetary estimate range, currency, method, source and review state; `value_score` remains operational importance |
+| Reception candidates | Supplied separately in the readiness prototype as `ReceptionCentre` and `EvacuationRoute` records | Link candidates to `asset_id`; suitability, accessibility, approval authority, capacity freshness, supported needs and route evidence |
+| Evidence | `needs_review`, `review_reasons`, `sources` | Field-level estimate/confirmed distinction and confidence where applicable |
+
+Additions require a versioned producer/consumer agreement before implementation. Contact numbers,
+call results, allocations and task progress belong to separate operational records; a new exposure
+snapshot must not overwrite them. Component 1 supplies the baseline evacuation duration; component
+2 must reassess it when a call changes mobility/transport facts or a destination/crew changes.
+
+### How large should the search area be?
+
+Prefer the **union of forecast footprints over a planning horizon, expanded by an explicit
+uncertainty buffer**, to a circle around the ignition point. Include threatened access routes and
+search separately for reception candidates beyond the affected footprint. Retain already contacted
+locations and assigned work even when they fall outside the next search result.
+
+The planning horizon must cover the next review interval plus the relevant notification,
+mobilisation, preparation and onward-travel time, with an analyst-selected margin. If that exceeds
+forecast coverage, expose the gap rather than treating the uncovered period as safe. Where a
+defensible upper spread-speed estimate exists but only a circular API query is available, a
+discovery approximation is `buffer distance = upper spread speed * horizon + uncertainty distance`
+around the **current perimeter**. This is a query bound, not an evacuation boundary; it must account
+for the extent of the existing fire and any separate ignitions. Do not invent the speed from distance.
+
+**Do we have the inputs?** We have recorded spread geometry over time and a fixed discovery box.
+We do not have a validated operational suppression forecast, live containment effectiveness, or
+confirmed shelter-in-place capability in the current pipeline. Truck count alone cannot establish
+containment success. Do not shrink the search area because crews are present; only incorporate a
+sourced, current operational forecast with its uncertainty. For the MVP retain the explicit fixed
+area, show coverage limitations, and let the analyst expand it; there is no justified universal radius.
+
+### 2 — Coordinate and escalate: contacts, crews, destinations and human handoff
+
+**Questions:** Who needs contacting first? Who can self-evacuate and who needs help? Which crew
+action is feasible next, with what benefit? Where can people be received? Who owns unresolved cases?
+What must change when a new incident or forecast invalidates an existing plan?
+
+In addition to assessment snapshots, this component needs confirmed resource records: crew/truck
+counts, identities, positions with timestamps, availability, skills, vehicle capacity, travel/action
+times and existing commitments. A fire truck is not automatically an evacuation vehicle. The repo
+has a manual capability/availability roster and task store, but no verified live fleet feed or
+integrated multi-crew dispatch. The Bombers intervention feed identifies incidents, not a confirmed
+available-crew inventory. The static response planner supports one crew and at most eight actions.
+
+- **Contact order:** smallest `fire_arrival - now - evacuation_duration - buffer` first. Show exhausted
+  windows and missing estimates for analyst review. Monetary value never overrides this urgency.
+- **Crew recommendations:** require travel, action duration, capabilities, deadlines and explicit
+  protective effects/prerequisites. Preserve the existing ordering of assisted people, total people,
+  then asset value when comparing feasible response alternatives; proximity alone does not prove
+  that protecting one building protects another. Surface unavailable resources and unserved locations.
+- **Destination assignment:** use approved suitable centres, confirmed route information, current
+  remaining capacity and required accessibility/care. Reserve capacity across households and keep
+  existing reservations until explicitly changed. Nearby/valuable buildings are only candidates.
+- **AI interview:** use an authorized contact record; confirm current location and household coverage,
+  ability to self-evacuate, transport, need for assistance and whether a human is requested. Explain
+  only analyst-approved incident/destination instructions. Unknown/low confidence, missing answers,
+  contradiction, no answer, failed call/transfer or an explicit human request produce a persistent
+  escalation task. Missing phone numbers remain unresolved contact work.
+- **Human escalation:** attach the asset, deadline, concise evidence and reason; notify an operator,
+  record acceptance/ownership, attempt configured live transfer, and retain a callback task if it
+  fails. A transfer tool invocation is not proof of connection. A shrinking window can require an
+  immediate resource decision instead of repeated call retries.
+- **Progress:** track instruction version and acknowledgement, declared ability, assistance request,
+  departure and arrival separately. Agreement to evacuate does not establish that anyone has left.
+
+**Stable updates:** persist plans, tasks, reservations and communication history separately from
+snapshots. Recompute affected uncommitted work; keep accepted assignments and communicated
+destinations while they remain feasible. Raise an explicit revision for a newly threatened route,
+centre or deadline, resource loss, or urgent new incident. The analyst confirms the change and the
+system tracks who must receive and acknowledge revised instructions. Stability never hides an
+invalid plan. Multiple incidents need a shared resource/capacity ledger and per-incident update
+ordering so a truck or reception place cannot be allocated twice; that integration is future work.
+
+**Output:** a proposed plan with source snapshot IDs, contact order, feasible crew recommendations,
+destination reservations, reasons/uncertainties, unmet needs and persistent escalation/progress tasks.
+Analyst decisions and call facts feed back into coordination; sourced household corrections can
+also update the next assessment without rewriting the fire forecast.
+
+### 3 — Show the response: analyst dashboard
+
+**Questions:** What needs attention now, why, who owns it, and what changed? Which recommendations
+can be accepted, which need evidence, and which households still need assistance or confirmation?
+
+Show the fire observation and labelled forecast/horizon; risk/value layers; threatened locations;
+candidate versus approved reception centres; and known resource positions with age. Display separate
+contact, crew-action and human-escalation queues so their different objectives are visible. Each
+location should show timing arithmetic, value basis, mobility evidence, destination/capacity,
+contact outcome and acknowledgement/departure/arrival status. Unknown inputs remain visible.
+
+The analyst can inspect evidence, approve a proposal, assign a capable available team, accept an
+escalation, record a callback/outcome, override a sourced estimate and approve revised instructions.
+Show a change log and explicit reasons for replanning. The UI displays component 2's versioned
+results; it must not implement a competing priority formula. The existing Streamlit map, ranking,
+tasks and investigation UI are the foundation; voice handoff, destination reservations and live
+multi-crew views still need integration.
+
 ## Voice-agent delivery plan
 
 **Owner:** [@mirrdj](https://github.com/mirrdj). **Status:** planned; implementation and calling
