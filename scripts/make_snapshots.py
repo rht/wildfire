@@ -24,16 +24,32 @@ Writes
                                                     incident centroid, run 2026-09-19): hour-1 burned area as a
                                                     `simulated` fire geometry, per-location arrivals through
                                                     forecast_input.deepfire_spread_to_forecast (0 of 99 located
-                                                    facilities inside the 12 h area: all forecast_unavailable)
+                                                    facilities inside the 12 h area: all forecast_unavailable,
+                                                    all 99 with burn_probability 0.0 from the run itself)
 
 The synthetic snapshots get their v1.1 `fire_arrival_at` from the synthetic forecast files through
-`forecast_input.load_forecast` + `snapshot.build_snapshot(forecast=...)`. The July real snapshots have no
-provider forecast (Deepfire fire-spread runs are seeded from hotspots observed now, so the July incident
-cannot be simulated there); instead `real_arrival` runs the v0 CA ensemble (`spread.run_ca`, `config.CA`,
-CA_N_RUNS runs, CA_HORIZON_MIN horizon, CA_SEED, no fuel, no slope, Grid.gavarres()) seeded on the recorded
-perimeter and the result goes through `snapshot.build_snapshot(arrival=..., cfg=enrichment_config())`, i.e.
-the existing `_enrich_forecast` hook behind FEATURES["forecast_enrichment"], switched on for these snapshots
-only through a config copy. Wind for the CA: the committed Open-Meteo Previous Runs slice
+`forecast_input.load_forecast` + `snapshot.build_snapshot(forecast=...)`.
+
+Every real snapshot follows one rule (handoff 002, Fix B): when the recorded response carries a provider
+forecast that forecast is the only source and the CA does not run; every other real snapshot is enriched by
+the v0 CA ensemble seeded on its own perimeter, whatever its `as_of`. So the July perimeters, which no
+provider forecast covers (Deepfire fire-spread runs are seeded from hotspots observed now, so the July
+incident cannot be simulated there), get `real_arrival` -- `spread.run_ca`, `config.CA`, CA_N_RUNS runs,
+CA_HORIZON_MIN horizon, CA_SEED, no fuel, no slope, Grid.gavarres() -- through
+`snapshot.build_snapshot(arrival=..., cfg=enrichment_config())`, i.e. the existing `_enrich_forecast` hook
+behind FEATURES["forecast_enrichment"], switched on for the committed snapshots only through a config copy.
+The two are never combined. The CA needs a wind vector, so `ca_arrival` runs it only when a usable wind
+value exists for that perimeter and hour; without one it prints why and returns None, and the snapshot's
+assets stay `forecast_unavailable` rather than being enriched from a guessed wind.
+
+`FEATURES["value_at_risk"]` is on for every committed snapshot (`enrichment_config` for the real ones,
+`snapshot_config` for the synthetic ones), so each asset carries `people_exposed`, `people_at_risk_p50` /
+`_p10` and `expected_loss_eur_low` / `_mid` / `_high` from `config.VALUE_AT_RISK_POLICY`: assumed per-class
+placeholders that never enter the ranking, null (never zero) wherever an input is missing. The per-snapshot
+totals and that policy's limits are written into the real-area README. `fixtures/real_area/assets_gavarres.json`
+stays on the module config, flags off: it is an asset extract, not a snapshot.
+
+Wind for the CA: the committed Open-Meteo Previous Runs slice
 (fixtures/wind/<lat>_<lon>.json, model ecmwf_ifs025, previous_day1 = the run initialised ~24 h before the
 valid hour, real model output, not an observation), nearest 0.1 deg grid point to the perimeter centroid,
 hour containing `as_of` (see fixtures/wind/README.md). The wind values and CA settings are written into the
@@ -69,6 +85,7 @@ from fireline.fire_state import FireState  # noqa: E402
 from fireline.forecast_input import SYNTHETIC_LABEL, forecast_from_recorded_spread, load_forecast, read_recorded_spread  # noqa: E402
 from fireline.grid import Grid, lonlat_to_xy, xy_to_lonlat  # noqa: E402
 from fireline.snapshot import asset_record, build_snapshot, validate_snapshot, write_snapshot  # noqa: E402
+from fireline.ui_state import value_at_risk_totals  # noqa: E402
 
 FIX = ROOT / "fixtures"
 DATA = ROOT / "data"
@@ -294,9 +311,12 @@ def real_asset_record(row: dict) -> dict:
     return asset_record(prepared, config)
 
 
-def write_real_area(located, unlocated, ca_lines: list[str] | None = None) -> list[dict]:
-    """Write assets_gavarres.json + README.md; `ca_lines` = one README bullet line per real snapshot
-    naming the wind and the arrival count of its CA enrichment (from `real_arrival`)."""
+def write_real_area(located, unlocated, ca_lines: list[str] | None = None,
+                    value_lines: list[str] | None = None) -> list[dict]:
+    """Write assets_gavarres.json + README.md; `ca_lines` = one README bullet line per CA-enriched snapshot
+    naming its wind and arrival count (from `real_arrival`), `value_lines` = one bullet per snapshot with the
+    value-at-risk totals (from `value_lines`). The extract itself is written with the module config, flags
+    off: it is an asset list, not a snapshot, and has no fire, no forecast and no value-at-risk fields."""
     REAL_DIR.mkdir(parents=True, exist_ok=True)
     records = [real_asset_record(r) for r in located] + [real_asset_record(r) for r in unlocated]
     payload = {
@@ -384,9 +404,30 @@ def write_real_area(located, unlocated, ca_lines: list[str] | None = None) -> li
         "  per-location forecast comes from `forecast_input.deepfire_spread_to_forecast` (hourly isochrone crossing,",
         "  t0 = createdAt assumed). Its 12 h burned area is about 20 ha and the nearest located facility is 5.3 km",
         "  away, so **0 of 99 located facilities get a `fire_arrival_at`** (the 5-member run at member fraction 0.2",
-        "  also covers none); the adapter path is demonstrated, not tuned to produce arrivals.",
+        "  also covers none); the adapter path is demonstrated, not tuned to produce arrivals. The adapter does",
+        "  keep the run's own probability for every located facility: all 99 get `burn_probability: 0.0` with the",
+        "  run named in `forecast_source` and in a `sources` entry. A `0.0` there is the forecast's statement that",
+        "  it covers that location and puts no burned area on it within its 12 h horizon, which is not the same as",
+        "  the `null` the 69 unlocated rows keep, meaning no forecast covers them at all; neither is inferred from",
+        "  distance, and both still carry `forecast_unavailable` for want of an arrival.",
         f"  `evacuation_min` comes from `config.EVACUATION_POLICY` ({config.EVACUATION_POLICY['version']}) for the",
         "  classes hospital, care_home, school and campsite; no row has an unknown class.",
+        f"- **Value at risk** (`config.FEATURES[\"value_at_risk\"]`, policy {config.VALUE_AT_RISK_POLICY['version']}):",
+        "  every snapshot above carries `people_exposed`, `people_at_risk_p50` / `_p10` and `expected_loss_eur_low`",
+        "  / `_mid` / `_high`. People exposed is the estimated headcount times the burn probability; people at risk",
+        "  is the whole headcount of an asset whose remaining evacuation window at that arrival quantile is",
+        "  exhausted, and it does not model partial clearance. The euros are an **assumed per-class replacement",
+        "  value times an assumed damage ratio**, rounded placeholders for a per-asset figure with no per-asset",
+        "  basis: the band shown is the damage-ratio band only, so the value uncertainty is at least as large.",
+        "  They are total economic loss, insured and uninsured, not an insurer's figure, and they never enter the",
+        "  ranking, the sort or a filter. A field is null, never zero, when an input is missing (no headcount, no",
+        "  burn probability, no evacuation estimate, no forecast, no location, or a class with no replacement value",
+        "  such as `nucleus`), so a total is always reported with the count of assets left out of it. The",
+        "  CA-derived burn probabilities of `gavarres_real_0001..0003` are uncalibrated and, under light wind, the",
+        "  ensemble percolates almost isotropically, so those probabilities are high across most of the grid and",
+        "  the expected loss is correspondingly pessimistic (handoff 001 recalibrates; the interface does not",
+        "  change). Totals over the located assets of each snapshot:",
+        *(value_lines or ["  (not rebuilt)"]),
         "",
     ]
     (REAL_DIR / "README.md").write_text("\n".join(lines), encoding="utf-8")
@@ -429,18 +470,43 @@ def build_pair(assets, fires, scenario_id: str, incident_id: str, input_mode: st
         near = sorted((a for a in snap["assets"] if a["distance_to_fire_m"] is not None),
                       key=lambda a: (a["distance_to_fire_m"], a["asset_id"]))[:3]
         n = len(snap["assets"])
-        arrivals = sum(a["fire_arrival_at"] is not None for a in snap["assets"])
+        n_arrivals = sum(a["fire_arrival_at"] is not None for a in snap["assets"])
         evacs = sum(a["evacuation_min"] is not None for a in snap["assets"])
         shown = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
         print(f"{shown}: {n} assets, data_status {snap['data_status']}, "
               f"{sum(a['intersects_fire'] is True for a in snap['assets'])} intersecting, "
               f"{sum(a['needs_review'] for a in snap['assets'])} need review, "
-              f"fire_arrival_at set {arrivals} / null {n - arrivals}, evacuation_min set {evacs} / null {n - evacs}, "
+              f"fire_arrival_at set {n_arrivals} / null {n - n_arrivals}, evacuation_min set {evacs} / null {n - evacs}, "
               f"{path.stat().st_size / 1e6:.2f} MB; nearest: "
               + ", ".join(f"{a['name']} {a['distance_to_fire_m']:.0f} m" for a in near)
               + (f"; arrival from {arrival.summary}" if arrival is not None else ""))
         snaps.append(snap)
     return snaps
+
+
+def value_totals(snap: dict) -> dict:
+    """Scenario totals of the value-at-risk layer for one snapshot (handoff 002).
+
+    One definition, shared with the analyst header: `ui_state.value_at_risk_totals`. Located assets only,
+    since an unlocated asset can never be reached by a forecast; a null field is left out of its sum and
+    counted instead, so a total is never read as complete.
+    """
+    return value_at_risk_totals(snap["assets"])
+
+
+def value_lines(snaps: list[dict]) -> list[str]:
+    """One README bullet per snapshot with the totals a scenario header shows."""
+    lines = []
+    for snap in snaps:
+        t = value_totals(snap)
+        lines.append(
+            f"  - `{snap['snapshot_id']}`: {t['people_exposed']:g} people exposed, "
+            f"{t['people_at_risk_p50']:g} at risk at p50 and {t['people_at_risk_p10']:g} at p10, "
+            f"expected loss EUR {t['expected_loss_eur_mid']:,.0f} "
+            f"(band {t['expected_loss_eur_low']:,.0f} to {t['expected_loss_eur_high']:,.0f}); "
+            f"of {t['located']} located assets, {t['excluded_people']} are left out of the people totals "
+            f"and {t['excluded_eur']} out of the euro totals for want of an input.")
+    return lines
 
 
 def main() -> int:
@@ -453,7 +519,7 @@ def main() -> int:
     for p in forecast_paths:
         print(f"{p.relative_to(ROOT)}: synthetic forecast-input-1, {len(json.loads(p.read_text(encoding="utf-8"))['estimates'])} estimates")
     build_pair(synthetic_assets(), fires, "synthetic_gavarres", fs.cluster_id,
-               forecasts=[load_forecast(p) for p in forecast_paths])
+               forecasts=[load_forecast(p) for p in forecast_paths], cfg=snapshot_config())
 
     real = real_area_rows()
     if real is None:
@@ -465,25 +531,30 @@ def main() -> int:
         write_real_area(located, unlocated)
         print("fixtures/fire/deepfire/real/ has no satellite-perimeters response: real snapshots not rebuilt")
         return 0
+    records = [real_asset_record(r) for r in located + unlocated]
+    # One entry per real snapshot in sequence order: `(fire, as_of, forecast | None)`. A provider forecast,
+    # when the recorded response carries one, is the only source; every other snapshot gets the CA ensemble
+    # seeded on its own perimeter, and neither is ever combined with the other (handoff 002, Fix B).
+    entries = [(fire, t, None) for fire, t in real_fires]
+    sim = simulated_real_fire(records)
+    if sim is None:
+        print("fixtures/fire/deepfire/real/ has no fire-spread response: gavarres_real_0004 not rebuilt")
+    else:
+        entries.append(sim)
     grid = Grid.gavarres()
-    arrivals = [real_arrival(fire, t, grid) for fire, t in real_fires]
-    snaps = build_pair([real_asset_record(r) for r in located + unlocated], real_fires, "gavarres_real",
-                       real_fires[0][0]["incident_id"], input_mode="recorded", arrivals=arrivals,
+    arrivals = [None if forecast is not None else ca_arrival(fire, t, grid, f"gavarres_real-{seq:04d}")
+                for seq, (fire, t, forecast) in enumerate(entries, start=1)]
+    snaps = build_pair(records, [(fire, t) for fire, t, _ in entries], "gavarres_real",
+                       real_fires[0][0]["incident_id"], input_mode="recorded",
+                       forecasts=[forecast for _, _, forecast in entries], arrivals=arrivals,
                        cfg=enrichment_config())
     ca_lines = [f"- `{snap['snapshot_id']}`: {arr.summary}; "
                 f"{sum(a['fire_arrival_at'] is not None for a in snap['assets'])} of "
                 f"{sum(a['latitude'] is not None for a in snap['assets'])} located assets get a `fire_arrival_at`."
-                for snap, arr in zip(snaps, arrivals)]
-    records = write_real_area(located, unlocated, ca_lines)
+                for snap, arr in zip(snaps, arrivals) if arr is not None]
+    write_real_area(located, unlocated, ca_lines, value_lines(snaps))
     print(f"fixtures/real_area/assets_gavarres.json: {len(located)} located + {len(unlocated)} unlocated "
           f"in {len(munis)} municipalities")
-    sim = simulated_real_fire(records)
-    if sim is None:
-        print("fixtures/fire/deepfire/real/ has no fire-spread response: gavarres_real_0004 not rebuilt")
-        return 0
-    fire, as_of, forecast = sim
-    build_pair(records, [(fire, as_of)], "gavarres_real", real_fires[0][0]["incident_id"], input_mode="recorded",
-               forecasts=[forecast], start_sequence=len(real_fires) + 1)
     return 0
 
 
@@ -560,19 +631,31 @@ def wind_at(series: dict, as_of: datetime) -> dict:
             "wind_speed_mps": float(v), "wind_dir_deg": float(d)}
 
 
-def real_fire_state(fire: dict, as_of: datetime, wind_dir: Path = WIND_DIR) -> tuple[FireState, dict]:
-    """(FireState in EPSG:25831, wind record) for a real FireUpdate (WGS84 GeoJSON `geometry`) at `as_of`.
-    Wind = the fixture file nearest the perimeter centroid, hour containing `as_of` (see `wind_at`)."""
+def perimeter_geometry(fire: dict):
+    """The FireUpdate's WGS84 GeoJSON `geometry` as one valid shapely polygon."""
     geom = make_valid(shape(fire["geometry"]))
     if geom.geom_type == "GeometryCollection":
         geom = unary_union([g for g in geom.geoms if g.geom_type in ("Polygon", "MultiPolygon")])
-    c = geom.centroid
+    return geom
+
+
+def perimeter_wind(fire: dict, as_of: datetime, wind_dir: Path = WIND_DIR) -> dict:
+    """Wind record for a real perimeter at `as_of`: the committed file nearest its centroid, hour containing
+    `as_of` (see `wind_at`). Raises FileNotFoundError when no wind file exists and ValueError when the series
+    holds no usable value -- the two conditions under which the CA must not run."""
+    c = perimeter_geometry(fire).centroid
     path = nearest_wind_file(c.x, c.y, wind_dir)
     series = json.loads(path.read_text(encoding="utf-8"))
-    wind = dict(wind_at(series, as_of), file=str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path),
+    return dict(wind_at(series, as_of), file=str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path),
                 lat=float(series["lat"]), lon=float(series["lon"]),
                 source=f"{series.get('model', '?')} {series.get('slice', '?')}")
-    perimeter = shapely_transform(lonlat_to_xy, geom)
+
+
+def real_fire_state(fire: dict, as_of: datetime, wind_dir: Path = WIND_DIR) -> tuple[FireState, dict]:
+    """(FireState in EPSG:25831, wind record) for a real FireUpdate (WGS84 GeoJSON `geometry`) at `as_of`.
+    Wind = the fixture file nearest the perimeter centroid, hour containing `as_of` (see `wind_at`)."""
+    wind = perimeter_wind(fire, as_of, wind_dir)
+    perimeter = shapely_transform(lonlat_to_xy, perimeter_geometry(fire))
     fs = FireState(cluster_id=str(fire["incident_id"]), t=as_of.astimezone(timezone.utc), perimeter=perimeter,
                    wind_dir_deg=wind["wind_dir_deg"], wind_speed_mps=wind["wind_speed_mps"])
     return fs, wind
@@ -594,13 +677,46 @@ def real_arrival(fire: dict, as_of: datetime, grid: Grid | None = None, n_runs: 
     return CaArrival(raster=raster, wind=wind, note=note, summary=summary)
 
 
-def enrichment_config():
-    """A copy of `fireline.config` (every UPPERCASE attribute) with FEATURES["forecast_enrichment"] on, so the
-    real snapshots enrich from the CA raster without mutating the module config for other callers."""
+def ca_arrival(fire: dict, as_of: datetime, grid: Grid | None = None, label: str = "",
+               wind_dir: Path = WIND_DIR) -> CaArrival | None:
+    """`real_arrival` for a real snapshot no provider forecast covers, or None when no wind covers it.
+
+    The CA needs a wind vector (`fire_state.FireState`), and a guessed or defaulted wind would be a model
+    input nobody could trace. Without a usable wind value the ensemble therefore does not run at all: the
+    snapshot keeps `arrival=None` and its assets stay `forecast_unavailable`, exactly as if no forecast
+    existed. Fetch one with `scripts/fetch_data.py wind` and copy it into `fixtures/wind/`.
+    """
+    try:
+        perimeter_wind(fire, as_of, wind_dir)
+    except (FileNotFoundError, ValueError) as e:
+        print(f"{label or as_of.isoformat()}: no usable wind ({e}); CA enrichment skipped, "
+              "every asset stays forecast_unavailable")
+        return None
+    return real_arrival(fire, as_of, grid, wind_dir=wind_dir)
+
+
+def feature_config(**flags):
+    """A copy of `fireline.config` (every UPPERCASE attribute) with `flags` set in FEATURES, so one build can
+    switch a feature on without mutating the module config for other callers. Policies are deep-copied."""
     ns = SimpleNamespace(**{k: json.loads(json.dumps(v)) if isinstance(v, (dict, list)) else v
                             for k, v in vars(config).items() if k.isupper()})
-    ns.FEATURES["forecast_enrichment"] = True
+    unknown = [k for k in flags if k not in ns.FEATURES]
+    if unknown:
+        raise KeyError(f"not a config.FEATURES flag: {unknown}")
+    ns.FEATURES.update(flags)
     return ns
+
+
+def enrichment_config():
+    """`feature_config` with `forecast_enrichment` on (the CA raster path) and `value_at_risk` on: the config
+    the committed real snapshots are built with."""
+    return feature_config(forecast_enrichment=True, value_at_risk=True)
+
+
+def snapshot_config():
+    """`feature_config` with `value_at_risk` on only: the config the committed synthetic snapshots are built
+    with. They take their arrivals from a forecast file, so the CA raster path stays off."""
+    return feature_config(value_at_risk=True)
 
 
 # ------------------------------------------------------------------------ real fire-spread run

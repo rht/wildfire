@@ -375,9 +375,31 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "replacement_value_eur",
+      "replacement_value_basis",
+      "expected_loss_eur_low",
+      "expected_loss_eur_mid",
+      "expected_loss_eur_high"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class camp: replacement_value_eur 3000000, damage ratio 0.15 / 0.4 / 0.8 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter"
     }
    ],
-   "municipality": "la Bisbal d'Empordà"
+   "municipality": "la Bisbal d'Empordà",
+   "replacement_value_eur": 3000000,
+   "replacement_value_basis": "assumed per-class replacement cost for camp, policy value-at-risk-proto-2026-09-19 (assumed)",
+   "expected_loss_eur_low": 405000,
+   "expected_loss_eur_mid": 1080000,
+   "expected_loss_eur_high": 2160000,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
   },
   {
    "asset_id": "fixture:sant_pol",
@@ -479,9 +501,29 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "people_exposed",
+      "people_at_risk_p50",
+      "people_at_risk_p10"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class nucleus: not valued, damage ratio 0.15 / 0.4 / 0.8 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; no dwelling count in the data: not valued"
     }
    ],
-   "municipality": "la Bisbal d'Empordà"
+   "municipality": "la Bisbal d'Empordà",
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": 80.8,
+   "people_at_risk_p50": 0,
+   "people_at_risk_p10": 0
   },
   {
    "asset_id": "fixture:can_xic",
@@ -583,9 +625,34 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "replacement_value_eur",
+      "replacement_value_basis",
+      "expected_loss_eur_low",
+      "expected_loss_eur_mid",
+      "expected_loss_eur_high",
+      "people_exposed",
+      "people_at_risk_p50",
+      "people_at_risk_p10"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class masia: replacement_value_eur 400000, damage ratio 0.3 / 0.6 / 0.9 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; rural housing in forest"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "replacement_value_eur": 400000,
+   "replacement_value_basis": "assumed per-class replacement cost for masia, policy value-at-risk-proto-2026-09-19 (assumed)",
+   "expected_loss_eur_low": 96000,
+   "expected_loss_eur_mid": 192000,
+   "expected_loss_eur_high": 288000,
+   "people_exposed": 3.2,
+   "people_at_risk_p50": 0,
+   "people_at_risk_p10": 0
   },
   {
    "asset_id": "fixture:camping_gavarres",
@@ -689,9 +756,31 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "replacement_value_eur",
+      "replacement_value_basis",
+      "expected_loss_eur_low",
+      "expected_loss_eur_mid",
+      "expected_loss_eur_high"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class campsite: replacement_value_eur 3000000, damage ratio 0.3 / 0.6 / 0.9 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; tents and caravans"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "replacement_value_eur": 3000000,
+   "replacement_value_basis": "assumed per-class replacement cost for campsite, policy value-at-risk-proto-2026-09-19 (assumed)",
+   "expected_loss_eur_low": 675000,
+   "expected_loss_eur_mid": 1350000,
+   "expected_loss_eur_high": 2025000,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
   },
   {
    "asset_id": "fixture:les_cabanyes",
@@ -793,9 +882,29 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "people_exposed",
+      "people_at_risk_p50",
+      "people_at_risk_p10"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class nucleus: not valued, damage ratio 0.15 / 0.4 / 0.8 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; no dwelling count in the data: not valued"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": 72.0,
+   "people_at_risk_p50": 0,
+   "people_at_risk_p10": 0
   },
   {
    "asset_id": "fixture:vall_repos",
@@ -883,9 +992,28 @@
      "available_at": "2026-07-03T08:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "replacement_value_eur",
+      "replacement_value_basis"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class care_home: replacement_value_eur 5000000, damage ratio 0.1 / 0.25 / 0.5 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; confinable masonry"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "replacement_value_eur": 5000000,
+   "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
   },
   {
    "asset_id": "fixture:residencia_la_bisbal",
@@ -978,9 +1106,31 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "replacement_value_eur",
+      "replacement_value_basis",
+      "expected_loss_eur_low",
+      "expected_loss_eur_mid",
+      "expected_loss_eur_high"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class care_home: replacement_value_eur 5000000, damage ratio 0.1 / 0.25 / 0.5 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; confinable masonry"
     }
    ],
-   "municipality": "la Bisbal d'Empordà"
+   "municipality": "la Bisbal d'Empordà",
+   "replacement_value_eur": 5000000,
+   "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
+   "expected_loss_eur_low": 175000,
+   "expected_loss_eur_mid": 437500,
+   "expected_loss_eur_high": 875000,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
   },
   {
    "asset_id": "fixture:escola_cruilles",
@@ -1084,9 +1234,31 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "replacement_value_eur",
+      "replacement_value_basis",
+      "expected_loss_eur_low",
+      "expected_loss_eur_mid",
+      "expected_loss_eur_high"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class school: replacement_value_eur 4000000, damage ratio 0.15 / 0.4 / 0.8 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "replacement_value_eur": 4000000,
+   "replacement_value_basis": "assumed per-class replacement cost for school, policy value-at-risk-proto-2026-09-19 (assumed)",
+   "expected_loss_eur_low": 360000,
+   "expected_loss_eur_mid": 960000,
+   "expected_loss_eur_high": 1920000,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
   },
   {
    "asset_id": "fixture:hospital_palamos",
@@ -1188,9 +1360,31 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "replacement_value_eur",
+      "replacement_value_basis",
+      "expected_loss_eur_low",
+      "expected_loss_eur_mid",
+      "expected_loss_eur_high"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class hospital: replacement_value_eur 25000000, damage ratio 0.1 / 0.25 / 0.5 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; confinable masonry; equipment not separately valued"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "replacement_value_eur": 25000000,
+   "replacement_value_basis": "assumed per-class replacement cost for hospital, policy value-at-risk-proto-2026-09-19 (assumed)",
+   "expected_loss_eur_low": 1000000,
+   "expected_loss_eur_mid": 2500000,
+   "expected_loss_eur_high": 5000000,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
   },
   {
    "asset_id": "fixture:sant_sadurni",
@@ -1292,9 +1486,29 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "people_exposed",
+      "people_at_risk_p50",
+      "people_at_risk_p10"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class nucleus: not valued, damage ratio 0.15 / 0.4 / 0.8 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; no dwelling count in the data: not valued"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": 60.0,
+   "people_at_risk_p50": 0,
+   "people_at_risk_p10": 0
   },
   {
    "asset_id": "fixture:monells",
@@ -1396,9 +1610,29 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "people_exposed",
+      "people_at_risk_p50",
+      "people_at_risk_p10"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class nucleus: not valued, damage ratio 0.15 / 0.4 / 0.8 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; no dwelling count in the data: not valued"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": 40.0,
+   "people_at_risk_p50": 0,
+   "people_at_risk_p10": 0
   },
   {
    "asset_id": "fixture:mas_pla",
@@ -1502,9 +1736,29 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
+    },
+    {
+     "fields": [
+      "people_exposed",
+      "people_at_risk_p50",
+      "people_at_risk_p10"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class nucleus: not valued, damage ratio 0.15 / 0.4 / 0.8 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; no dwelling count in the data: not valued"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "replacement_value_eur": null,
+   "replacement_value_basis": null,
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": 182.0,
+   "people_at_risk_p50": 0,
+   "people_at_risk_p10": 0
   },
   {
    "asset_id": "fixture:residencia_sense_coordenades",
@@ -1592,9 +1846,28 @@
      "available_at": "2026-07-03T08:00:00+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
+    },
+    {
+     "fields": [
+      "replacement_value_eur",
+      "replacement_value_basis"
+     ],
+     "source": "config.VALUE_AT_RISK_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy value-at-risk-proto-2026-09-19 for class care_home: replacement_value_eur 5000000, damage ratio 0.1 / 0.25 / 0.5 (low / mid / high); people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that arrival quantile is exhausted (arrival - evacuation_min - buffer 30 min <= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; the replacement value is an assumed per-class placeholder with no per-asset basis and the band shown is the damage-ratio band only, so the value uncertainty is at least as large; total economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, the sort or a filter; confinable masonry"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "replacement_value_eur": 5000000,
+   "replacement_value_basis": "assumed per-class replacement cost for care_home, policy value-at-risk-proto-2026-09-19 (assumed)",
+   "expected_loss_eur_low": null,
+   "expected_loss_eur_mid": null,
+   "expected_loss_eur_high": null,
+   "people_exposed": null,
+   "people_at_risk_p50": null,
+   "people_at_risk_p10": null
   }
  ]
 }

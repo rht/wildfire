@@ -250,7 +250,9 @@ faster than the real fire did (its p50 burned area at 12 h is about 10,000 ha, a
 1,263 to 3,867 ha over about 17 h), so its arrivals are early and its ranking is a demonstration of the
 pipeline on real inputs, not an assessment of the July incident. Nothing is inferred from distance.
 `gavarres_real_0004` holds a real recorded Deepfire fire-spread run seeded at the July centroid; its 12 h
-burned area reaches no facility, so every asset there is `forecast_unavailable`.
+burned area reaches no facility, so its 99 located assets carry `burn_probability = 0.0` with the run named
+as their `forecast_source` -- the run's own statement about those locations -- and every asset stays
+`forecast_unavailable` for want of an arrival.
 
 What is real and what is synthetic: the facilities in `fixtures/real_area/` are a real Gencat
 Equipaments and schools extract for the Gavarres area (2026-09-19), with real enrolled-pupil counts
@@ -340,7 +342,7 @@ Use a sorted asset table for ranking. A graph is deferred until route connectivi
 | Fire footprint | Deepfire for one incident. Cache original responses and timestamps. Confirm authentication and one usable response at kickoff. |
 | Facility location/class | One Gencat Equipaments extract for the selected area. Cache it, record extraction time and preserve source IDs. |
 | Size | Estimated people present where sourced. Capacity may be a clearly labelled proxy; it is not a confirmed headcount. Missing values remain null. |
-| Value | Analyst-configured operational importance by facility class: a prototype policy, not monetary valuation or an established emergency-service rule. |
+| Value | Analyst-configured operational importance by facility class: a prototype policy, not monetary valuation or an established emergency-service rule. Euros appear only in the optional value-at-risk layer (section 5.2), from a separate assumed per-class replacement-cost policy, and never enter the ranking. |
 | Investigation evidence | Small cache of registry records or facility pages with URLs, snippets and dates. Label manual enrichment; avoid several ingestion pipelines. |
 | Teams | Manually entered or fixture roster with team IDs, capabilities, availability and source labels. |
 | Spread forecast | Provided per-location fire arrival estimates, with source and estimate semantics. Without a usable forecast, show an unranked review queue; do not substitute distance for arrival time. |
@@ -376,7 +378,7 @@ Ignore duplicate snapshot IDs and lower/equal sequences within a scenario. Prese
 
 ### 5.2 Per-location fields
 
-All keys are present. Unknown measurements are `null`, not zero. Times are ISO 8601 UTC; distances are metres; normalised scores and probabilities are in [0, 1]. GeoJSON coordinates use longitude, latitude order.
+All keys are present, except the optional value-at-risk layer below, which is present in full or not at all. Unknown measurements are `null`, not zero. Times are ISO 8601 UTC; distances are metres; normalised scores and probabilities are in [0, 1]; monetary values are euros. GeoJSON coordinates use longitude, latitude order.
 
 | Fields | Type | Meaning |
 |---|---|---|
@@ -388,13 +390,31 @@ All keys are present. Unknown measurements are `null`, not zero. Times are ISO 8
 | `occupancy_basis` | String or null | Evidence or estimation method; capacity used as a proxy is explicit. |
 | `value_score`, `value_basis` | Number or null; string or null | Class-based operational importance and versioned analyst policy. |
 | `distance_to_fire_m`, `intersects_fire` | Nonnegative number or null; boolean or null | Geometric exposure; record point/footprint approximation in provenance. |
-| `burn_probability` | Number or null | Optional provider estimate over its documented horizon; null when unsupported. |
+| `burn_probability` | Number or null | Optional provider estimate over its documented horizon; null when unsupported. `0.0` is a value, not a gap: the forecast covers the location and puts no fire there within its horizon. Null means no forecast covers it. Neither is derived from distance. |
 | `arrival_p10_at`, `arrival_p50_at` | Timestamps or null | Optional arrival quantiles only when supported by the provider. Null does not establish safety. |
 | `forecast_horizon_at`, `forecast_source` | Timestamp or null; string or null | Forecast horizon and source/method; required provenance for forecast-based contact ranking. |
 | `fire_arrival_at`, `fire_arrival_basis` | Timestamp or null; string or null | Selected spread-predicted arrival estimate and meaning, e.g. p10 when supported. Never infer it from distance alone. |
 | `evacuation_min`, `evacuation_source` | Nonnegative number or null; string or null | Total estimated evacuation duration in minutes, including mobilisation, preparation/loading and onward movement, with its basis. |
+| `people_exposed` | Nonnegative number or null | Optional value-at-risk layer: `estimated_occupancy` x `burn_probability`. |
+| `people_at_risk_p50`, `people_at_risk_p10` | Nonnegative integers or null | The whole `estimated_occupancy` when the remaining evacuation window at that arrival quantile is exhausted, else 0. |
+| `replacement_value_eur`, `replacement_value_basis` | Nonnegative number or null; string or null | Assumed per-class replacement cost and the policy that gave it; null together, and null for a class the policy does not value. Not a per-asset valuation. |
+| `expected_loss_eur_low`, `expected_loss_eur_mid`, `expected_loss_eur_high` | Nonnegative numbers or null | `burn_probability` x the class damage ratio x `replacement_value_eur`, at the low, mid and high ratio. |
 | `needs_review`, `review_reasons` | Boolean; array of strings | Such as `location_unknown`, `occupancy_unknown`, `occupancy_seasonal`, `class_ambiguous`, `value_unknown`, `exposure_unknown`. |
 | `sources` | Array of objects | Field-level provenance: `fields`, `source`, `observed_at`, `available_at`, `fetched_at`, `notes`. Unknown source times remain null. |
+
+**Value at risk** (`people_exposed` through `expected_loss_eur_high` above) is an optional layer behind `config.FEATURES["value_at_risk"]`, off by default. All eight keys are present together or absent together; `schema_version` stays `1.1` and a snapshot without them is valid, so a producer with the flag off emits exactly what it emitted before. The layer is computed after the forecast, never from distance:
+
+```text
+people_exposed         = estimated_occupancy x burn_probability
+people_at_risk_p50     = estimated_occupancy if slack_p50 <= 0 else 0
+people_at_risk_p10     = estimated_occupancy if slack_p10 <= 0 else 0
+expected_loss_eur_low  = burn_probability x d_low x replacement_value_eur      # mid and high alike
+slack_pXX              = arrival_pXX_at - evacuation_min - buffer - as_of
+```
+
+`slack_pXX` is the remaining evacuation window of section 6 evaluated at that arrival quantile rather than at the selected arrival. The threshold is `<= 0`, the boundary of `window_exhausted`, because `people_at_risk` re-labels that status weighted by headcount; it counts the whole headcount of such an asset and does not model partial clearance. Occupancy means `estimated_occupancy`; `capacity` is never used as a headcount here. Every field is `null`, never zero, when an input is null: no headcount, no `burn_probability`, no `evacuation_min`, no forecast covering the asset, no location, or a class the policy does not value. A `burn_probability` of `0.0` is a statement rather than a gap and yields zeros, and an asset a forecast covers but does not reach inside its horizon is not at risk (`0`), not unknown.
+
+Replacement values and damage ratios are assumed per-class placeholders from `config.VALUE_AT_RISK_POLICY` (`value_basis = "assumed"`), standing in for a per-asset figure; the band shown is the damage-ratio band only, so the value uncertainty is at least as large. The euros are total economic loss, insured and uninsured, not an insurer's figure. **Euros never enter the ranking, the sort or any filter**: they are a display column and a scenario header total, and there is no euro figure for lives anywhere in the UI. `value_score` is unrelated and unchanged: it stays a class-based operational-importance score and is not derived from this table. The fatality chain, a value of a statistical life, VaR and CVaR, a Catastro footprint fetch and a land ledger are deliberately not built; `docs/VALUE_AT_RISK.md` keeps them as the upgrade path.
 
 For historical replay, evidence must have been available by `as_of`; missing availability information cannot establish that. Document any forecast-to-asset aggregation method. Missing forecasts do not block ingestion or manual tasks, but they do block automatic contact ranking.
 
@@ -461,7 +481,7 @@ stay reproducible; `scripts/validate.py --live` records what the real model did 
 
 ## 9. Interface and implementation
 
-One screen contains the fire/facility map, ranked table, visible review queue, selected-facility evidence and timing breakdown, team/task controls, and change log. Show input mode, timestamps and stale-data state. Live and recorded inputs use the same screen; a "next update" control suffices for the demo.
+One screen contains the fire/facility map, ranked table, visible review queue, selected-facility evidence and timing breakdown, team/task controls, and change log. Show input mode, timestamps and stale-data state. Live and recorded inputs use the same screen; a "next update" control suffices for the demo. When the snapshot carries the value-at-risk layer (section 5.2) the header adds people exposed, people at risk and expected loss with its band, each stating how many located assets are excluded for a null input, and the ranked and review tables gain the matching per-asset columns; the euro column is a display string with its band, never a sort key.
 
 **Moving through the sequence (2026-09-19):** the sidebar walks the scenario's snapshots in both directions - "Previous" / "Next update" and a slider labelled with each snapshot's `as_of` (`1 - 2026-07-03 13:20Z` ... `4 - 2026-09-19 13:49Z` on `gavarres_real`). Forward past the store's accepted sequence applies the update as before (exposure bookkeeping, affected tasks, suggested tasks). Anywhere at or below it is a **view**: the snapshot is re-ranked with the analyst's confirmed overrides and shown on the map, the ranked table and the review queue, while tasks, the change log and the store's accepted sequence stay where they are and nothing is suggested from the earlier moment. The store's snapshot log is append-only (`tasks.SnapshotSequence`), so an earlier moment is reviewable but never replayed; a banner says which sequence is under review and where the store stands.
 
