@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "purpose": "Primary branch-specific defense proposal from real pre-remediation scans; already refactored, not a current unresolved bug",
-  "selection": "evacuation-readiness strict primitive integer capacity",
+  "purpose": "Historical candidate comparison at f86798c and d75d4b7; superseded by the selected CURRENT design in norma-selected-capacity-defense-2026-09-19.json",
+  "selection": "Historical rationale and comparison evidence; strict primitive capacity is now selected and implemented at 923d49476ecca0276b5d3b88b5ce9bc065479fd0",
   "raw_evidence_source": {
     "branch": "codex/norma-feature-rollup",
     "commit": "271de8216e3ac58b09931098846c5e495aef5dc3",
@@ -273,13 +273,6 @@
       ]
     }
   },
-  "current_implementation": {
-    "branch": "codex/evacuation-readiness",
-    "commit": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
-    "file": "fireline/evacuation_readiness.py",
-    "sha256": "d05131a74ca895f89ce5ca5dddf5a26938c7b6eb7bee48a306a212b24b272876",
-    "behavior": "Reject bool explicitly; accept nonnegative int subclasses. No automatic reversion requested or performed."
-  },
   "verification": {
     "public_api_probes": [
       {
@@ -397,7 +390,8 @@
       "command": "PYTHONPATH=. python -m pytest -q -p no:cacheprovider tests/test_evacuation_readiness.py",
       "environment_note": "Initial archive runs without PYTHONPATH used another worktree's editable package in CLI subprocesses: original 35 passed/1 import failure; current 39 passed/2 import failures. Setting PYTHONPATH=. to the tested archive fixed isolation; both complete focused suites then passed without source changes."
     },
-    "probe_reproduction": "Export original/current revisions into separate archives; run probe_source as a Python file with arguments ARCHIVE_PATH EXPECTED_FILE_SHA256 original|current. Requires project dev dependencies."
+    "probe_reproduction": "Export original/current revisions into separate archives; run probe_source as a Python file with arguments ARCHIVE_PATH EXPECTED_FILE_SHA256 original|current. Requires project dev dependencies.",
+    "as_of_note": "The mode current in the preserved probe output means d75d4b7 at execution time; it is now a historical comparison revision, not the selected branch head."
   },
   "rationale": {
     "rule_mismatch": "Rule assumes subtypes should be accepted. Strict primitive input deliberately does not promise that; bool is an int subclass but is not a place count.",
@@ -413,10 +407,18 @@
   },
   "formal_exception_submitted": false,
   "source_reverted": false,
-  "review_status": "reviewed; provenance and behavior approved, author-intent wording clarified as requested",
+  "review_status": "historical comparison approved; current selected design has separate evidence",
   "independent_review": {
     "provenance": "recorded attempts, original hashes and JS source-line mapping verified",
     "behavior": "11 public API cases reproduced on both exact archives",
     "wording_correction": "contract explicitly proposed; no claim of undocumented original author intent"
-  }
+  },
+  "comparison_revision": {
+    "branch": "codex/evacuation-readiness",
+    "commit": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+    "file": "fireline/evacuation_readiness.py",
+    "sha256": "d05131a74ca895f89ce5ca5dddf5a26938c7b6eb7bee48a306a212b24b272876",
+    "behavior": "At historical d75d4b7, bool was rejected and nonnegative int subclasses accepted. Superseded by the selected strict implementation."
+  },
+  "current_selected_evidence": "reports/norma-selected-capacity-defense-2026-09-19.json"
 }

@@ -86,17 +86,7 @@
       "reason": "Current historical callers pass fixed literals, but helper accepts arbitrary strings without enforcing a whitelist. Defense depends on ongoing call-graph discipline and is weaker than the closure candidate."
     }
   ],
-  "current_state": {
-    "main_merge": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
-    "remediation_pr": "https://github.com/rht/wildfire/pull/3",
-    "feature_evidence_pr": "https://github.com/rht/wildfire/pull/10",
-    "current_branch_findings": "All six eligible branches have zero reported findings in final checked files; JavaScript coverage is reduced.",
-    "historical_source_changed": false,
-    "production_reversion": false,
-    "formal_exception_submitted": false,
-    "slng": "deferred; untouched"
-  },
-  "review_status": "approved for historical demonstration; user selection and any formal exception submission remain pending",
+  "review_status": "Historical demonstration approved at 1c991f8. Current strict capacity selection is implemented and recorded in norma-selected-capacity-defense-2026-09-19.json; formal registration remains unavailable/not submitted.",
   "independent_review": {
     "result": "approved, no blockers",
     "verified": [
@@ -109,6 +99,17 @@
       "no source mutation or production reversion"
     ]
   },
-  "selection_status": "secondary appendix; superseded as preferred candidate by original evacuation-readiness branch strict integer check",
-  "primary_candidate_evidence": "reports/norma-branch-defense-2026-09-19.json"
+  "selection_status": "secondary historical appendix; current selected defense is strict capacity at 923d49476ecca0276b5d3b88b5ce9bc065479fd0",
+  "primary_candidate_evidence": "reports/norma-selected-capacity-defense-2026-09-19.json",
+  "state_at_historical_review": {
+    "main_merge": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+    "remediation_pr": "https://github.com/rht/wildfire/pull/3",
+    "feature_evidence_pr": "https://github.com/rht/wildfire/pull/10",
+    "historical_source_changed": false,
+    "formal_exception_submitted": false,
+    "slng": "deferred; untouched",
+    "as_of_note": "Historical state when this appendix was written at 1c991f8; see current selected evidence for retained finding.",
+    "branch_findings_at_that_time": "All six eligible branches have zero reported findings in final checked files; JavaScript coverage is reduced.",
+    "production_reversion_at_that_time": false
+  }
 }
