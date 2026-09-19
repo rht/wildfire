@@ -1,259 +1,400 @@
-"""Agent tools + triage loop on the Gavarres fixtures with the offline FakeLLM (no network, no key)."""
+"""Four agent tools, proposals pending confirmation and the investigate loop with the offline FakeLLM
+(CONTRACTS section 6). No network, no key."""
 
 import json
-from pathlib import Path
 
 import pytest
 
 from fireline import agent, config
-from fireline.agent import (POSTCHECK_FAILED_TEXT, STORE, TOOLS, ScenarioStore, dispatch, postcheck_numbers,
-                            triage)
-from fireline.llm import FakeLLM, FakeResponse, TextBlock, ToolUseBlock
-from fireline.routing import RoadGraph
-from fireline.scenario import Scenario
-from tests.test_exposure import make_arrival
-from tests.test_scenario import fire_state
-
-FIX = Path(__file__).resolve().parents[1] / "fixtures"
+from fireline.agent import (POSTCHECK_FAILED_TEXT, STEP_CAP_TEXT, TOOLS, Workbench, confirm_proposal, dispatch,
+                            investigate, investigate_all, postcheck_numbers, reject_proposal)
+from fireline.llm import AnthropicLLM, FakeLLM, FakeResponse, TextBlock, ToolUseBlock
 
 
-def build(arrival, closures=None) -> Scenario:
-    assets = json.load(open(FIX / "assets.json"))
-    dests = json.load(open(FIX / "destinations.json"))
-    rg = RoadGraph.from_fixture(FIX / "roads.json")
-    return Scenario.run(fire_state(), arrival, assets, dests, rg, config, closures=closures)
+# ---------------------------------------------------------------------------
+# helpers (local so this file does not depend on tests/helpers.py)
+# ---------------------------------------------------------------------------
+def _asset(**overrides) -> dict:
+    asset_type = overrides.get("asset_type", "school")
+    review_reasons = list(overrides.get("review_reasons", []))
+    record = {
+        "asset_id": "fixture:test_asset", "name": "Test asset", "asset_type": asset_type,
+        "latitude": 41.95, "longitude": 3.05, "geometry": None, "area_m2": None,
+        "capacity": 200, "estimated_occupancy": None, "occupancy_basis": "register capacity",
+        "value_score": config.VALUE_POLICY["by_type"].get(asset_type), "value_basis": config.VALUE_POLICY["version"],
+        "distance_to_fire_m": 2000.4, "intersects_fire": False, "burn_probability": None,
+        "arrival_p10_at": None, "arrival_p50_at": None, "forecast_horizon_at": None, "forecast_source": None,
+        "needs_review": bool(review_reasons), "review_reasons": review_reasons, "sources": [],
+        "municipality": None,
+        # scored keys (CONTRACTS 4)
+        "priority_score": 0.6543, "priority_rank": 1, "queue": "ranked", "score_components": {},
+        "priority_policy_version": config.PRIORITY_POLICY["version"], "priority_reasons": [],
+    }
+    record.update(overrides)
+    if "needs_review" not in overrides:
+        record["needs_review"] = bool(record["review_reasons"])
+    return record
 
 
-@pytest.fixture(scope="module")
-def arrival():
-    return make_arrival()
+POU = dict(asset_id="fixture:pou_del_glac", name="Pou del Glaç", asset_type="camp", municipality="la Bisbal d'Empordà",
+           capacity=None, occupancy_basis=None, review_reasons=["occupancy_unknown", "occupancy_seasonal"],
+           priority_score=None, priority_rank=None, queue="needs_review")
+CAMPING = dict(asset_id="fixture:camping_gavarres", name="Càmping Gavarres", asset_type="campsite",
+               municipality="Calonge i Sant Antoni", capacity=200, review_reasons=["class_ambiguous"],
+               priority_score=0.4321, priority_rank=2, queue="ranked")
+RESI = dict(asset_id="fixture:residencia_sense_coordenades", name="Residència sense coordenades",
+            asset_type="care_home", municipality="Cruïlles, Monells i Sant Sadurní de l'Heura", latitude=None,
+            longitude=None,
+            capacity=None, distance_to_fire_m=None, intersects_fire=None,
+            review_reasons=["location_unknown", "exposure_unknown", "occupancy_unknown"],
+            priority_score=None, priority_rank=None, queue="needs_review")
+NOWHERE = dict(asset_id="fixture:mas_nou", name="Mas Nou de Ningú", asset_type="masia", municipality="Cruïlles",
+               capacity=None, review_reasons=["occupancy_unknown"], priority_score=None, priority_rank=None,
+               queue="needs_review")
+PLAIN = dict(asset_id="fixture:sant_pol", name="Sant Pol", asset_type="nucleus", capacity=85, review_reasons=[],
+             priority_score=0.9, priority_rank=1)
 
 
 @pytest.fixture
-def sc(arrival):
-    # Camí de Can Xic closed so Can Xic is a real no_exit case.
-    return build(arrival, closures=["Camí de Can Xic"])
+def wb() -> Workbench:
+    return Workbench.from_scored([_asset(**PLAIN), _asset(**CAMPING), _asset(**POU), _asset(**RESI), _asset(**NOWHERE)])
 
 
-@pytest.fixture
-def triaged(sc):
-    records = triage(sc, llm=FakeLLM())
-    return sc, records
+class StubTasks:
+    """Tiny stand-in for tasks.TaskStore: records confirm_override calls."""
 
+    def __init__(self):
+        self.calls = []
+        self._tasks = [{"task_id": "t1", "asset_id": "fixture:pou_del_glac", "action": "confirm_occupancy",
+                        "status": "open"},
+                       {"task_id": "t2", "asset_id": "fixture:pou_del_glac", "action": "contact_facility",
+                        "status": "done"}]
 
-def rec(records, aid):
-    return next(r for r in records if r["asset_id"] == aid)
+    def confirm_override(self, asset_id, field, value, *, source, snippet, url=None, observed_at=None,
+                         confidence, proposal_id=None):
+        rec = {"override_id": f"ov-{len(self.calls) + 1}", "asset_id": asset_id, "field": field, "value": value,
+               "source": source, "snippet": snippet, "url": url, "observed_at": observed_at,
+               "confidence": confidence, "proposal_id": proposal_id}
+        self.calls.append(rec)
+        return rec
 
+    def overrides(self, asset_id=None):
+        return [c for c in self.calls if asset_id is None or c["asset_id"] == asset_id]
 
-# ---------------------------------------------------------------------------
-# triage end-to-end
-# ---------------------------------------------------------------------------
-def test_triage_covers_needs_review_in_tier_order(triaged):
-    sc, records = triaged
-    ids = [r["asset_id"] for r in records]
-    assert set(ids) == {"fixture:pou_del_glac", "fixture:can_xic", "fixture:camping_gavarres",
-                        "fixture:residencia_la_bisbal", "fixture:escola_cruilles", "fixture:mas_pla"}
-    # tiers recorded after triage may have moved pessimistically; the visit order was by initial tier
-    assert ids[0] in ("fixture:pou_del_glac", "fixture:can_xic")
-    for r in records:
-        assert r["postcheck_ok"] is True
-        assert r["steps"] <= 6
-        assert r["final_text"].startswith("Recommendation, not an order")
-        assert set(r) >= {"asset_id", "reason_codes", "steps", "final_text", "overrides_added",
-                          "escalations_added", "postcheck_ok"}
-    assert sum(1 for line in sc.change_log if ": triage " in line) == len(records)
-    assert sc.id in STORE
-
-
-def test_residencia_gets_register_occupancy(triaged):
-    sc, records = triaged
-    r = rec(records, "fixture:residencia_la_bisbal")
-    assert r["reason_codes"] == ["occupancy_unknown"]
-    a = sc.asset("fixture:residencia_la_bisbal")
-    assert a["occupancy"] == 48 and a["occupancy_source"] == "override"
-    assert "occupancy_unknown" not in a["needs_review"]
-    assert len(r["overrides_added"]) == 1
-    ov = r["overrides_added"][0]
-    assert ov["field"] == "occupancy" and ov["value"] == 48 and ov["direction"] == "pessimistic"
-    assert "Residència Geriàtrica de la Bisbal" in ov["quoted_snippet"]
-    assert "care_homes" in ov["source"]
-    assert r["escalations_added"] == []
-    assert "48" in r["final_text"]
-
-
-def test_pou_del_glac_escalated_default_yes(triaged):
-    sc, records = triaged
-    r = rec(records, "fixture:pou_del_glac")
-    assert {"occupancy_unknown", "occupancy_seasonal"} <= set(r["reason_codes"])
-    assert r["overrides_added"] == []          # no register gives a capacity: nothing invented
-    assert len(r["escalations_added"]) == 1
-    esc = r["escalations_added"][0]
-    assert esc["default"] == "yes" and esc["options"] == ["yes", "no"] and esc["status"] == "open"
-    assert esc in sc.queue
-    assert sc.asset("fixture:pou_del_glac")["occupancy"] is None
-
-
-def test_can_xic_no_exit(triaged):
-    sc, records = triaged
-    r = rec(records, "fixture:can_xic")
-    assert r["reason_codes"] == ["no_exit"]
-    escs = r["escalations_added"]
-    assert len(escs) == 1 and escs[0]["default"] == "no" and "passable" in escs[0]["question"].lower()
-    a = sc.asset("fixture:can_xic")
-    assert a["shelter_viable"] is False
-    assert any(o["field"] == "shelter_viable" and o["value"] is False for o in r["overrides_added"])
-    assert a["decision"]["decision"] == "confine_request_protection"
-
-
-def test_camping_class_ambiguous(triaged):
-    sc, records = triaged
-    r = rec(records, "fixture:camping_gavarres")
-    escs = r["escalations_added"]
-    assert len(escs) == 1 and escs[0]["default"] == "tents" and escs[0]["field"] == "shelter_viable"
-    assert sc.asset("fixture:camping_gavarres")["shelter_viable"] is False
-
-
-def test_triage_default_llm_is_fake(arrival):
-    sc = build(arrival)
-    records = triage(sc)
-    assert records and all(r["postcheck_ok"] for r in records)
+    def tasks(self, asset_id=None, status=None):
+        return [t for t in self._tasks if (asset_id is None or t["asset_id"] == asset_id)
+                and (status is None or t["status"] == status)]
 
 
 # ---------------------------------------------------------------------------
-# tools and dispatch
+# tool schemas and dispatch
 # ---------------------------------------------------------------------------
 def test_tools_schema_names():
-    names = [t["name"] for t in TOOLS]
-    assert names == ["get_assets", "get_decision", "get_route", "lookup_facility", "sample_raster",
-                     "add_override", "escalate"]
+    assert [t["name"] for t in TOOLS] == ["get_asset", "lookup_facility", "propose_update", "escalate"]
     for t in TOOLS:
         assert t["input_schema"]["type"] == "object" and "required" in t["input_schema"]
+    assert set(agent.TOOL_FUNCTIONS) == {t["name"] for t in TOOLS}
 
 
-def test_dispatch_outputs_are_json_serialisable(sc):
-    store = ScenarioStore()
-    store.register(sc)
-    sid = sc.id
-    calls = [
-        ("get_assets", {"scenario_id": sid}),
-        ("get_assets", {"scenario_id": sid, "tier": "act_now", "needs_review": True}),
-        ("get_decision", {"scenario_id": sid, "asset_id": "fixture:vall_repos"}),
-        ("get_route", {"scenario_id": sid, "asset_id": "fixture:vall_repos"}),
-        ("get_route", {"scenario_id": sid, "asset_id": "fixture:can_xic"}),          # None
-        ("lookup_facility", {"query": "residència"}),
-        ("sample_raster", {"scenario_id": sid, "layer": "arrival_p10", "lon": 3.04, "lat": 41.94}),
-        ("sample_raster", {"scenario_id": sid, "layer": "arrival_p10", "lon": 2.86, "lat": 41.81}),  # inf
-        ("sample_raster", {"scenario_id": sid, "layer": "burn_prob", "lon": 0.0, "lat": 0.0}),       # outside
-        ("add_override", {"scenario_id": sid, "asset_id": "fixture:sant_pol", "field": "occupancy", "value": 90,
-                          "source": "test", "quoted_snippet": "90", "confidence": "low"}),
-        ("escalate", {"scenario_id": sid, "asset_id": "fixture:sant_pol", "question": "q?",
-                      "options": ["yes", "no"], "default": "yes"}),
-        ("nope", {}),
-        ("get_decision", {"scenario_id": "zzz", "asset_id": "x"}),
-    ]
-    for name, inp in calls:
-        out = dispatch(name, inp, store=store)
-        json.dumps(out)  # must not raise
-    assert dispatch("get_route", {"scenario_id": sid, "asset_id": "fixture:can_xic"}, store=store) is None
-    assert dispatch("sample_raster", {"scenario_id": sid, "layer": "arrival_p10", "lon": 2.86, "lat": 41.81},
-                    store=store) == "inf"
-    assert dispatch("sample_raster", {"scenario_id": sid, "layer": "burn_prob", "lon": 0.0, "lat": 0.0},
-                    store=store) is None
-    assert "error" in dispatch("nope", {}, store=store)
-    assert "error" in dispatch("get_decision", {"scenario_id": "zzz", "asset_id": "x"}, store=store)
-    rows = dispatch("get_assets", {"scenario_id": sid}, store=store)
-    assert len(rows) == 12 and "lon" not in rows[0] and "overrides" not in rows[0]
-    # inf survives as the string "inf" in trimmed rows
-    monitor = dispatch("get_assets", {"scenario_id": sid, "tier": "monitor"}, store=store)
-    assert any(r["arrival_p10_min"] == "inf" for r in monitor)
+def test_dispatch_get_asset(wb):
+    out = dispatch("get_asset", {"asset_id": "fixture:camping_gavarres"}, workbench=wb)
+    json.dumps(out)
+    assert out["asset_id"] == "fixture:camping_gavarres" and out["asset_type"] == "campsite"
+    assert out["distance_to_fire_m"] == 2000 and out["priority_score"] == 0.43
+    assert out["queue"] == "ranked" and out["review_reasons"] == ["class_ambiguous"]
+    assert out["open_tasks"] == [] and out["confirmed_overrides"] == [] and out["pending_proposals"] == 0
+    assert "geometry" not in out and "score_components" not in out
+    assert "error" in dispatch("get_asset", {"asset_id": "fixture:nope"}, workbench=wb)
+    assert "error" in dispatch("nope", {}, workbench=wb)
 
 
-def test_add_override_rejects_optimistic_move(sc):
-    store = ScenarioStore()
-    store.register(sc)
-    out = dispatch("add_override", {"scenario_id": sc.id, "asset_id": "fixture:vall_repos", "field": "occupancy",
-                                    "value": 10, "source": "t", "quoted_snippet": "10", "confidence": "high"},
-                   store=store)
-    assert "error" in out and "escalate" in out["hint"]
-    assert sc.asset("fixture:vall_repos")["occupancy"] == 70
-    with pytest.raises(agent.OptimisticMoveError):
-        agent.add_override(sc.id, "fixture:vall_repos", "occupancy", 10, "t", "10", "high", store=store)
-    # pessimistic move goes through and re-decides
-    out = dispatch("add_override", {"scenario_id": sc.id, "asset_id": "fixture:vall_repos", "field": "occupancy",
-                                    "value": 75, "source": "t", "quoted_snippet": "75", "confidence": "high"},
-                   store=store)
-    assert out["ok"] and out["value"] == 75 and out["direction"] == "pessimistic"
-    assert sc.asset("fixture:vall_repos")["overrides"][-1]["direction"] == "pessimistic"
+def test_get_asset_shows_tasks_and_overrides(wb):
+    wb.tasks = StubTasks()
+    wb.tasks.confirm_override("fixture:pou_del_glac", "capacity", 120, source="page", snippet="s", confidence="high")
+    dispatch("propose_update", {"asset_id": "fixture:pou_del_glac", "field": "capacity", "value": 130,
+                                "source": "x", "quoted_snippet": "capacitat 130", "confidence": "low"}, workbench=wb)
+    out = dispatch("get_asset", {"asset_id": "fixture:pou_del_glac"}, workbench=wb)
+    assert out["open_tasks"] == [{"task_id": "t1", "action": "confirm_occupancy", "status": "open"}]  # done one hidden
+    assert out["confirmed_overrides"] == [{"field": "capacity", "value": 120, "source": "page"}]
+    assert out["pending_proposals"] == 1
 
 
-def test_escalate_tool_records_queue_and_default(sc):
-    store = ScenarioStore()
-    store.register(sc)
-    out = dispatch("escalate", {"scenario_id": sc.id, "asset_id": "fixture:camping_gavarres",
-                                "question": "tents or bungalows?", "options": ["tents", "bungalows"],
-                                "default": "tents", "field": "shelter_viable", "default_value": False}, store=store)
-    assert out["ok"] and sc.queue[-1]["escalation_id"] == out["escalation_id"]
-    assert sc.asset("fixture:camping_gavarres")["shelter_viable"] is False
-    bad = dispatch("escalate", {"scenario_id": sc.id, "asset_id": "fixture:camping_gavarres",
-                                "question": "?", "options": ["a", "b"], "default": "c"}, store=store)
+def test_dispatch_lookup_facility(wb):
+    out = dispatch("lookup_facility", {"query": "Pou del Glaç"}, workbench=wb)
+    json.dumps(out)
+    assert out and out[0]["name"] == "Pou del Glaç"
+    assert {"evidence_id", "name", "municipality", "register", "url", "capacity", "snippet", "observed_at",
+            "fetched_at", "score", "fields"} <= set(out[0])
+
+
+def test_dispatch_propose_update_is_pending_and_does_not_mutate(wb):
+    before = dict(wb.asset("fixture:pou_del_glac"))
+    out = dispatch("propose_update", {"asset_id": "fixture:pou_del_glac", "field": "capacity", "value": 120,
+                                      "source": "manual enrichment", "quoted_snippet": "Capacitat 120 places",
+                                      "confidence": "medium", "url": "https://example.invalid/p",
+                                      "observed_at": "2026-06-15"}, workbench=wb)
+    json.dumps(out)
+    assert out["proposal_id"] == "prop-001-pou_del_glac" and out["status"] == "pending"
+    assert out["field"] == "capacity" and out["value"] == 120 and out["previous"] is None
+    assert out["url"] == "https://example.invalid/p" and out["observed_at"] == "2026-06-15"
+    assert out["created_at"]
+    assert wb.asset("fixture:pou_del_glac") == before          # nothing applied
+    assert wb.proposals[0]["status"] == "pending" and len(wb.proposals) == 1
+    assert any("pending" in line for line in wb.change_log)
+
+
+def test_propose_update_refuses_capacity_as_occupancy(wb):
+    out = dispatch("propose_update", {"asset_id": "fixture:pou_del_glac", "field": "estimated_occupancy",
+                                      "value": 120, "source": "facility page",
+                                      "quoted_snippet": "Capacitat 120 places", "confidence": "medium"},
+                   workbench=wb)
+    assert "error" in out and "capacity" in out["hint"]
+    assert wb.proposals == [] and wb.asset("fixture:pou_del_glac")["estimated_occupancy"] is None
+    with pytest.raises(agent.CapacityAsOccupancyError):
+        agent.propose_update("fixture:pou_del_glac", "estimated_occupancy", 120, "register total_places",
+                             "total_places 120", "high", workbench=wb)
+    # a headcount statement is accepted as estimated_occupancy
+    ok = dispatch("propose_update", {"asset_id": "fixture:pou_del_glac", "field": "estimated_occupancy",
+                                     "value": 42, "source": "facility phone call",
+                                     "quoted_snippet": "42 people present today", "confidence": "high"},
+                  workbench=wb)
+    assert ok["status"] == "pending" and ok["field"] == "estimated_occupancy"
+
+
+def test_propose_update_validates_values(wb):
+    aid = "fixture:camping_gavarres"
+    base = {"asset_id": aid, "source": "s", "quoted_snippet": "snippet", "confidence": "low"}
+    assert "error" in dispatch("propose_update", {**base, "field": "asset_type", "value": "hotel"}, workbench=wb)
+    assert "error" in dispatch("propose_update", {**base, "field": "capacity", "value": -1}, workbench=wb)
+    assert "error" in dispatch("propose_update", {**base, "field": "capacity", "value": "many"}, workbench=wb)
+    assert "error" in dispatch("propose_update", {**base, "field": "capacity", "value": 1.5}, workbench=wb)
+    assert "error" in dispatch("propose_update", {**base, "field": "latitude", "value": 41.0}, workbench=wb)
+    assert "error" in dispatch("propose_update", {**base, "field": "capacity", "value": 1, "confidence": "sure"},
+                               workbench=wb)
+    assert wb.proposals == []
+    for value in list(config.VALUE_POLICY["by_type"]) + ["unknown"]:
+        out = dispatch("propose_update", {**base, "field": "asset_type", "value": value}, workbench=wb)
+        assert out["status"] == "pending" and out["value"] == value
+    out = dispatch("propose_update", {**base, "field": "capacity", "value": "150"}, workbench=wb)
+    assert out["value"] == 150
+    assert wb.asset(aid)["asset_type"] == "campsite" and wb.asset(aid)["capacity"] == 200
+
+
+def test_dispatch_escalate_applies_nothing(wb):
+    before = dict(wb.asset("fixture:camping_gavarres"))
+    out = dispatch("escalate", {"asset_id": "fixture:camping_gavarres", "question": "tents or bungalows?",
+                                "options": ["tents", "bungalows"], "default": "tents"}, workbench=wb)
+    json.dumps(out)
+    assert out["question_id"] == "q-001-camping_gavarres" and out["status"] == "open" and out["answer"] is None
+    assert out["options"] == ["tents", "bungalows"] and out["default"] == "tents"
+    assert wb.asset("fixture:camping_gavarres") == before and wb.proposals == []
+    assert wb.questions[0] is not out and wb.questions[0]["question_id"] == out["question_id"]
+    bad = dispatch("escalate", {"asset_id": "fixture:camping_gavarres", "question": "?", "options": ["a", "b"],
+                                "default": "c"}, workbench=wb)
     assert "error" in bad
-
-
-def test_lookup_facility():
-    cands = agent.lookup_facility("Residència la Bisbal")
-    names = [c["name"] for c in cands]
-    assert names[0] == "Residència la Bisbal"
-    assert "Residència Geriàtrica de la Bisbal" in names
-    geri = next(c for c in cands if c["name"] == "Residència Geriàtrica de la Bisbal")
-    assert geri["capacity"] == 48 and geri["register"] == "fixture:care_homes"
-    assert geri["fields"]["capacitat"] == 48
-    assert agent.lookup_facility("") == []
-    assert agent.lookup_facility("pou del glac")           # accent-insensitive
-    top = agent.lookup_facility("Càmping Gavarres")[0]
-    assert top["name"] == "Càmping Gavarres" and top["capacity"] == 200
+    answered = agent.answer_question(wb, out["question_id"], "bungalows")
+    assert answered["status"] == "answered" and answered["answer"] == "bungalows"
 
 
 # ---------------------------------------------------------------------------
-# number post-check
+# analyst confirmation
+# ---------------------------------------------------------------------------
+def test_confirm_proposal_persists_and_applies(wb):
+    tasks = StubTasks()
+    wb.tasks = tasks
+    p = agent.propose_update("fixture:pou_del_glac", "capacity", 120, "manual enrichment", "Capacitat 120 places",
+                             "medium", url="https://example.invalid/p", observed_at="2026-06-15", workbench=wb)
+    rescored = []
+    out = confirm_proposal(wb, p["proposal_id"], rescore=lambda w: rescored.append(w))
+    assert out["status"] == "confirmed" and out["confirmed_at"] and out["override_id"] == "ov-1"
+    assert rescored == [wb]
+    call = tasks.calls[0]
+    assert call["asset_id"] == "fixture:pou_del_glac" and call["field"] == "capacity" and call["value"] == 120
+    assert call["source"] == "manual enrichment" and call["snippet"] == "Capacitat 120 places"
+    assert call["url"] == "https://example.invalid/p" and call["observed_at"] == "2026-06-15"
+    assert call["confidence"] == "medium" and call["proposal_id"] == p["proposal_id"]
+    a = wb.asset("fixture:pou_del_glac")
+    assert a["capacity"] == 120 and a["occupancy_basis"] == "analyst override"
+    assert any("confirmed" in line and "persisted" in line for line in wb.change_log)
+    with pytest.raises(ValueError):
+        confirm_proposal(wb, p["proposal_id"])
+
+
+def test_confirm_proposal_without_tasks_updates_in_memory(wb):
+    p = agent.propose_update("fixture:camping_gavarres", "asset_type", "camp", "page", "bungalows", "high", workbench=wb)
+    confirm_proposal(wb, p["proposal_id"])
+    a = wb.asset("fixture:camping_gavarres")
+    assert a["asset_type"] == "camp" and a["value_score"] == config.VALUE_POLICY["by_type"]["camp"]
+    assert wb.proposals[0]["status"] == "confirmed"
+
+
+def test_reject_proposal(wb):
+    p = agent.propose_update("fixture:pou_del_glac", "capacity", 120, "page", "Capacitat 120 places", "low",
+                             workbench=wb)
+    out = reject_proposal(wb, p["proposal_id"], note="wrong facility")
+    assert out["status"] == "rejected" and out["note"] == "wrong facility"
+    assert wb.asset("fixture:pou_del_glac")["capacity"] is None
+    with pytest.raises(ValueError):
+        confirm_proposal(wb, p["proposal_id"])
+    with pytest.raises(KeyError):
+        reject_proposal(wb, "prop-999-x")
+
+
+# ---------------------------------------------------------------------------
+# lookup_facility
+# ---------------------------------------------------------------------------
+def test_lookup_facility_evidence_and_registers():
+    cands = agent.lookup_facility("Pou del Glaç")
+    ids = [c["evidence_id"] for c in cands]
+    assert ids[0] == "ev:pou_del_glac:page"                     # evidence page first (has capacity + url)
+    page = cands[0]
+    assert page["capacity"] == 120 and page["url"] and page["observed_at"] == "2026-06-15"
+    assert "capacitat 120" in page["snippet"].lower()
+    assert "reg:fixture:schools:0" in ids                        # register rows carry deterministic ids
+    reg = next(c for c in cands if c["evidence_id"] == "reg:fixture:schools:0")
+    assert reg["register"] == "fixture:schools" and reg["url"] is None and reg["capacity"] is None
+    assert reg["snippet"] == "Pou del Glaç, la Bisbal d'Empordà, capacity unknown"
+    geri = agent.lookup_facility("Residència Geriàtrica de la Bisbal")[0]
+    assert geri["register"] == "fixture:care_homes" and geri["capacity"] == 48 and geri["fields"]["capacitat"] == 48
+    assert geri["snippet"] == "Residència Geriàtrica de la Bisbal, la Bisbal d'Empordà, capacity 48"
+    assert agent.lookup_facility("") == []
+    assert agent.lookup_facility("pou del glac")                # accent-insensitive
+    real = agent.lookup_facility("Residència Calonge")
+    assert real and real[0]["evidence_id"] == "ev:gencat:care_homes:S07567" and real[0]["capacity"] == 35
+
+
+def test_lookup_facility_municipality_filter_excludes_distractor():
+    all_hits = agent.lookup_facility("Residència sense coordenades")
+    munis = {c["municipality"] for c in all_hits}
+    assert {"Cruïlles, Monells i Sant Sadurní de l'Heura", "Palafrugell"} <= munis
+    filtered = agent.lookup_facility("Residència sense coordenades", municipality="Cruïlles, Monells i Sant Sadurní de l'Heura")
+    assert filtered and all(c["municipality"].startswith("Cruïlles") for c in filtered)
+    assert filtered[0]["capacity"] == 40 and "Carrer de la Font" in filtered[0]["snippet"]
+    assert filtered[0]["evidence_id"] == "ev:residencia_sense_coordenades:register"
+    # the distractor (same name, Palafrugell) is excluded; a municipality with no such facility returns only
+    # weak token matches, never the fixture entries
+    elsewhere = agent.lookup_facility("Residència sense coordenades", municipality="Girona")
+    assert not any(c["name"] == "Residència sense coordenades" for c in elsewhere)
+    assert not any(c["evidence_id"].startswith("ev:residencia_sense_coordenades") for c in elsewhere)
+
+
+# ---------------------------------------------------------------------------
+# investigate with FakeLLM
+# ---------------------------------------------------------------------------
+def test_investigate_occupancy_unknown_proposes_capacity_not_occupancy(wb):
+    r = investigate(wb, "fixture:pou_del_glac", llm=FakeLLM())
+    assert r["llm_mode"] == "fake" and r["postcheck_ok"] is True and r["steps"] <= 6
+    assert [c["name"] for c in r["tool_calls"]][:2] == ["get_asset", "lookup_facility"]
+    assert r["tool_calls"][1]["input"]["municipality"] == "la Bisbal d'Empordà"
+    assert len(r["proposals_added"]) == 1
+    p = r["proposals_added"][0]
+    assert p["field"] == "capacity" and p["value"] == 120 and p["status"] == "pending"
+    assert "120" in p["quoted_snippet"] and p["url"] and p["observed_at"] == "2026-06-15"
+    assert not any(p["field"] == "estimated_occupancy" for p in r["proposals_added"])
+    a = wb.asset("fixture:pou_del_glac")
+    assert a["capacity"] is None and a["estimated_occupancy"] is None      # nothing applied
+    assert len(r["questions_added"]) == 1 and r["questions_added"][0]["default"] == "yes"
+    assert "session" in r["questions_added"][0]["question"]
+    assert r["final_text"].startswith("Recommendation, not an order") and "120" in r["final_text"]
+    assert "pending" in r["final_text"]
+    assert set(r) >= {"asset_id", "name", "review_reasons", "steps", "tool_calls", "final_text", "proposals_added",
+                      "questions_added", "postcheck_ok", "llm_mode"}
+
+
+def test_investigate_class_ambiguous(wb):
+    r = investigate(wb, "fixture:camping_gavarres", llm=FakeLLM())
+    assert r["postcheck_ok"] and (r["proposals_added"] or r["questions_added"])
+    if r["proposals_added"]:
+        assert r["proposals_added"][0]["field"] == "asset_type"
+    assert wb.asset("fixture:camping_gavarres")["asset_type"] == "campsite"
+
+
+def test_investigate_location_unknown_escalates_with_address(wb):
+    r = investigate(wb, "fixture:residencia_sense_coordenades", llm=FakeLLM())
+    assert r["postcheck_ok"]
+    qs = [q["question"] for q in r["questions_added"]]
+    assert any("address" in q and "Carrer de la Font" in q for q in qs)
+    assert all(p["field"] == "capacity" for p in r["proposals_added"])
+    assert wb.asset("fixture:residencia_sense_coordenades")["latitude"] is None
+
+
+def test_investigate_no_evidence_escalates_only(wb):
+    r = investigate(wb, "fixture:mas_nou", llm=FakeLLM())
+    assert r["postcheck_ok"] and r["proposals_added"] == []
+    assert len(r["questions_added"]) == 1 and r["questions_added"][0]["status"] == "open"
+    assert wb.asset("fixture:mas_nou")["capacity"] is None
+
+
+def test_investigate_default_llm_is_fake(wb):
+    r = investigate(wb, "fixture:mas_nou")
+    assert r["llm_mode"] == "fake" and r["postcheck_ok"]
+
+
+def test_investigate_all_order_and_coverage(wb):
+    records = investigate_all(wb, llm=FakeLLM())
+    ids = [r["asset_id"] for r in records]
+    assert "fixture:sant_pol" not in ids                                         # no review reasons
+    assert set(ids) == {"fixture:pou_del_glac", "fixture:residencia_sense_coordenades", "fixture:mas_nou",
+                        "fixture:camping_gavarres"}
+    assert ids[-1] == "fixture:camping_gavarres"                                 # ranked after needs_review
+    assert ids[:3] == ["fixture:pou_del_glac", "fixture:residencia_sense_coordenades", "fixture:mas_nou"]
+    assert all(r["postcheck_ok"] for r in records)
+    assert sum(1 for line in wb.change_log if ": investigation (fake)" in line) == len(records)
+
+
+# ---------------------------------------------------------------------------
+# post-check, step cap, llm_mode
 # ---------------------------------------------------------------------------
 def test_postcheck_numbers():
-    results = ['{"occupancy": 48, "exit_window_min": 123}']
-    assert postcheck_numbers("Recommendation: 48 people, window 123 min", results) == (True, [])
-    ok, bad = postcheck_numbers("Recommendation: 150 children", results)
+    results = ['{"capacity": 48, "distance_to_fire_m": 2135}']
+    assert postcheck_numbers("48 places, 2135 m", results) == (True, [])
+    ok, bad = postcheck_numbers("150 children", results)
     assert not ok and bad == ["150"]
     assert postcheck_numbers("asset x:12 has 48", results, asset_id="fixture:x12")[0]
     assert postcheck_numbers("no numbers here", [])[0]
 
 
 class LyingLLM:
-    """Emits one tool call then a final text with a number that no tool result contains."""
+    """One get_asset call then a final text with a number that no tool result contains."""
 
     def create(self, system, messages, tools):
         payload = json.loads(messages[0]["content"][messages[0]["content"].index("{"):])
         if len(messages) == 1:
-            return FakeResponse([ToolUseBlock("t1", "get_decision", {"scenario_id": payload["scenario_id"],
-                                                                     "asset_id": payload["asset"]["asset_id"]})],
-                                "tool_use")
+            return FakeResponse([ToolUseBlock("t1", "get_asset", {"asset_id": payload["asset_id"]})], "tool_use")
         return FakeResponse([TextBlock("There are 150 children on site.")], "end_turn")
 
 
-def test_postcheck_replaces_invented_number(sc):
-    records = triage(sc, llm=LyingLLM())
-    assert records and all(r["postcheck_ok"] is False for r in records)
-    assert all(r["final_text"] == POSTCHECK_FAILED_TEXT for r in records)
-    assert any("post-check failed" in line and "150" in line for line in sc.change_log)
+def test_postcheck_withholds_invented_number(wb):
+    r = investigate(wb, "fixture:pou_del_glac", llm=LyingLLM())
+    assert r["postcheck_ok"] is False and r["final_text"] == POSTCHECK_FAILED_TEXT
+    assert r["llm_mode"] == "custom"
+    assert any("post-check failed" in line and "150" in line for line in wb.change_log)
 
 
 class LoopingLLM:
     def create(self, system, messages, tools):
         payload = json.loads(messages[0]["content"][messages[0]["content"].index("{"):])
-        return FakeResponse([ToolUseBlock(f"t{len(messages)}", "get_route",
-                                          {"scenario_id": payload["scenario_id"],
-                                           "asset_id": payload["asset"]["asset_id"]})], "tool_use")
+        return FakeResponse([ToolUseBlock(f"t{len(messages)}", "get_asset", {"asset_id": payload["asset_id"]})],
+                            "tool_use")
 
 
-def test_step_cap(sc):
-    records = triage(sc, llm=LoopingLLM(), max_steps_per_asset=3)
-    assert all(r["steps"] == 3 for r in records)
-    assert all(r["final_text"] == agent.STEP_CAP_TEXT for r in records)
-    assert any("step cap" in line for line in sc.change_log)
+def test_step_cap(wb):
+    r = investigate(wb, "fixture:pou_del_glac", llm=LoopingLLM(), max_steps=3)
+    assert r["steps"] == 3 and len(r["tool_calls"]) == 3
+    assert r["final_text"] == STEP_CAP_TEXT
+    assert any("step cap" in line for line in wb.change_log)
+
+
+def test_llm_mode_labelling():
+    assert agent.llm_mode(None) == "fake"
+    assert agent.llm_mode(FakeLLM()) == "fake"
+    assert agent.llm_mode(AnthropicLLM(client=object())) == "live"   # client injected: no credentials needed
+    assert agent.llm_mode(LyingLLM()) == "custom"
+
+
+def test_system_prompt_mentions_four_tools_and_confirmation():
+    for name in ("get_asset", "lookup_facility", "propose_update", "escalate"):
+        assert name in agent.SYSTEM_PROMPT
+    assert "confirm" in agent.SYSTEM_PROMPT and "Capacity is not occupancy" in agent.SYSTEM_PROMPT
+    for reason in agent.REVIEW_REASONS:
+        assert reason in agent.SYSTEM_PROMPT

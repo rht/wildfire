@@ -1,0 +1,37 @@
+[
+  {
+    "team_id": "team_bisbal_1",
+    "name": "Bisbal outreach team",
+    "capabilities": ["occupancy_check", "facility_contact"],
+    "available": true,
+    "source": "fixture"
+  },
+  {
+    "team_id": "team_access_1",
+    "name": "Access and transport unit",
+    "capabilities": ["access_check", "transport"],
+    "available": true,
+    "source": "fixture"
+  },
+  {
+    "team_id": "team_logistics_1",
+    "name": "Logistics desk",
+    "capabilities": ["resource_request"],
+    "available": true,
+    "source": "fixture"
+  },
+  {
+    "team_id": "team_medical_1",
+    "name": "Medical liaison",
+    "capabilities": ["medical"],
+    "available": true,
+    "source": "fixture"
+  },
+  {
+    "team_id": "team_palafrugell_1",
+    "name": "Palafrugell outreach team (off shift)",
+    "capabilities": ["occupancy_check", "facility_contact", "access_check"],
+    "available": false,
+    "source": "fixture"
+  }
+]

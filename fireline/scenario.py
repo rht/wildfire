@@ -19,8 +19,9 @@ import numpy as np
 from . import config
 from .decide import decide
 from .exposure import TIER_RANK, apply_override, build_asset_table
-from .grid import Grid
+from .grid import Grid, xy_to_lonlat
 from .routing import best_route
+from .snapshot import build_snapshot
 from .spread import ArrivalRaster
 
 
@@ -47,6 +48,7 @@ class Scenario:
     spread_source: str = ""
     horizon_min: int = 0
     cfg: object = field(default=config, repr=False, compare=False)
+    fire_state: object = field(default=None, repr=False, compare=False)   # kept for to_snapshot()
 
     # ---------- build ----------
     @classmethod
@@ -79,6 +81,7 @@ class Scenario:
             spread_source=arrival.source,
             horizon_min=arrival.horizon_min,
             cfg=cfg,
+            fire_state=fire_state,
         )
         counts = {}
         for a in table:
@@ -189,6 +192,36 @@ class Scenario:
                     out.append(f"{aid} ({a['name']}): " + "; ".join(parts))
         return out
 
+    # ---------- v4 snapshot ----------
+    def to_snapshot(self, sequence: int, scenario_id: str | None = None, input_mode: str = "synthetic",
+                    *, fire_state=None, computed_at=None, metrics=None, fire_source: str | None = None) -> dict:
+        """CONTRACTS 2.1 snapshot from this scenario's asset table and fire state.
+
+        The FireState perimeter (EPSG:25831) becomes a WGS84 GeoJSON polygon; the arrival raster is
+        passed on only when `FEATURES["forecast_enrichment"]` is on (labelled enrichment).
+        `fire_state` defaults to the one `run` was given; without one the fire fields are null."""
+        fs = fire_state if fire_state is not None else self.fire_state
+        fire = None
+        if fs is not None:
+            fire = {
+                "provider": "fixture",
+                "incident_id": fs.cluster_id,
+                "observed_at": fs.t.isoformat(),
+                "received_at": fs.t.isoformat(),
+                "geometry": _perimeter_geojson(fs.perimeter),
+                "geometry_kind": "perimeter",
+                "source": fire_source or f"synthetic:{fs.cluster_id}",
+                "raw_ref": None,
+            }
+            if fire["geometry"] is None:
+                fire["geometry_kind"] = None
+        cfg = self.cfg
+        arrival = self.arrival if cfg.FEATURES.get("forecast_enrichment") else None
+        return build_snapshot(
+            self.assets, fire, scenario_id=scenario_id or self.cluster_id, incident_id=self.cluster_id,
+            sequence=sequence, as_of=self.t, input_mode=input_mode, computed_at=computed_at,
+            metrics=metrics, arrival=arrival, cfg=cfg)
+
     # ---------- persistence ----------
     def to_json(self, path) -> Path:
         path = Path(path)
@@ -244,6 +277,26 @@ class Scenario:
             closures=d.get("closures", []), spread_source=d.get("spread_source", ""),
             horizon_min=int(d.get("horizon_min", 0)),
         )
+
+
+def _perimeter_geojson(perimeter) -> dict | None:
+    """Shapely (Multi)Polygon in EPSG:25831 -> GeoJSON Polygon/MultiPolygon in WGS84 (6 decimals)."""
+    if perimeter is None or perimeter.is_empty:
+        return None
+
+    def ring(coords):
+        xs, ys = zip(*[(c[0], c[1]) for c in coords])
+        lon, lat = xy_to_lonlat(np.array(xs), np.array(ys))
+        return [[round(float(a), 6), round(float(b), 6)] for a, b in zip(lon, lat)]
+
+    def poly(p):
+        return [ring(p.exterior.coords)] + [ring(r.coords) for r in p.interiors]
+
+    if perimeter.geom_type == "Polygon":
+        return {"type": "Polygon", "coordinates": poly(perimeter)}
+    if perimeter.geom_type == "MultiPolygon":
+        return {"type": "MultiPolygon", "coordinates": [poly(p) for p in perimeter.geoms if not p.is_empty]}
+    return None
 
 
 def _fmt(v) -> str:

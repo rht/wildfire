@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from fireline import feeds  # noqa: E402
+from fireline import feeds, fire_input  # noqa: E402
 
 COMARQUES = ["Baix Empordà", "Gironès", "Selva"]
 REPLAY_START = date(2026, 7, 3)
@@ -102,17 +102,32 @@ def cmd_deepfire(args) -> int:
         for p in plan:
             print("  " + p)
         print(f"  and write data/deepfire/{{clusters,hotspots,perimeters}}.json")
+        print("  and record each raw response as {collection, received_at, body} in "
+              "data/deepfire/recorded/ (fire_input.load_recorded shape)")
         return 0
     client = feeds.DeepfireClient(max_age_s=None)
     out = feeds.DATA_DIR / "deepfire"
-    clusters = client.clusters(bbox, as_of)
-    hotspots = client.hotspots(bbox, as_of, since=since)
-    perimeters = client.satellite_perimeters(bbox, as_of)
+    recorded = out / "recorded"
+    results = {}
+    for collection, fetch in (("clusters", lambda: client.clusters(bbox, as_of)),
+                              ("hotspots", lambda: client.hotspots(bbox, as_of, since=since)),
+                              ("satellite-perimeters", lambda: client.satellite_perimeters(bbox, as_of))):
+        features = fetch()
+        received_at = datetime.now(timezone.utc)
+        results[collection] = features
+        body = {"type": "FeatureCollection", "features": features,
+                "numberReturned": len(features), "bbox": list(bbox), "as_of": as_of.isoformat()}
+        path = fire_input.record_response(collection, body, received_at, recorded)
+        print(f"recorded {collection}: {len(features)} features -> {path}")
+    clusters, hotspots, perimeters = results["clusters"], results["hotspots"], results["satellite-perimeters"]
     _dump(out / "clusters.json", clusters)
     _dump(out / "hotspots.json", hotspots)
     _dump(out / "hotspot_records.json", feeds.hotspots_to_records(hotspots))
     _dump(out / "perimeters.json", perimeters)
     print(f"deepfire: {len(clusters)} clusters, {len(hotspots)} hotspots, {len(perimeters)} perimeters -> {out}")
+    for update in fire_input.load_recorded(recorded):
+        print(f"  update {update['source']} {update['geometry_kind']} observed_at={update['observed_at']} "
+              f"incident={update['incident_id']}")
     return 0
 
 

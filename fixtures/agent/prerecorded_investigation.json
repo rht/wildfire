@@ -1,0 +1,208 @@
+{
+ "asset_id": "fixture:pou_del_glac",
+ "name": "Pou del Glaç",
+ "review_reasons": [
+  "occupancy_unknown",
+  "occupancy_seasonal"
+ ],
+ "steps": 5,
+ "tool_calls": [
+  {
+   "name": "get_asset",
+   "input": {
+    "asset_id": "fixture:pou_del_glac"
+   },
+   "result": {
+    "asset_id": "fixture:pou_del_glac",
+    "name": "Pou del Glaç",
+    "asset_type": "camp",
+    "municipality": "la Bisbal d'Empordà",
+    "latitude": 41.933,
+    "longitude": 3.04,
+    "capacity": null,
+    "estimated_occupancy": null,
+    "occupancy_basis": null,
+    "value_score": 0.8,
+    "intersects_fire": false,
+    "queue": "needs_review",
+    "review_reasons": [
+     "occupancy_unknown",
+     "occupancy_seasonal"
+    ],
+    "distance_to_fire_m": 1762,
+    "priority_score": null,
+    "priority_rank": null,
+    "open_tasks": [],
+    "confirmed_overrides": [],
+    "pending_proposals": 0
+   }
+  },
+  {
+   "name": "lookup_facility",
+   "input": {
+    "query": "Pou del Glaç",
+    "municipality": "la Bisbal d'Empordà"
+   },
+   "result": [
+    {
+     "evidence_id": "ev:pou_del_glac:page",
+     "name": "Pou del Glaç",
+     "municipality": "la Bisbal d'Empordà",
+     "register": null,
+     "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
+     "source": "manual enrichment",
+     "capacity": 120,
+     "asset_type": "camp",
+     "snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
+     "observed_at": "2026-06-15",
+     "fetched_at": "2026-09-19T13:47:00+00:00",
+     "fields": {
+      "evidence_id": "ev:pou_del_glac:page",
+      "name": "Pou del Glaç",
+      "municipality": "la Bisbal d'Empordà",
+      "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
+      "snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
+      "observed_at": "2026-06-15",
+      "fetched_at": "2026-09-19T13:47:00+00:00",
+      "capacity": 120,
+      "asset_type": "camp",
+      "source": "manual enrichment",
+      "notes": "synthetic fixture evidence for the demo; URL illustrative"
+     },
+     "score": 100
+    },
+    {
+     "evidence_id": "reg:fixture:equipaments:6",
+     "name": "Pou del Glaç",
+     "municipality": "la Bisbal d'Empordà",
+     "register": "fixture:equipaments",
+     "url": null,
+     "source": "fixture:equipaments",
+     "capacity": null,
+     "asset_type": null,
+     "snippet": "Pou del Glaç, la Bisbal d'Empordà, capacity unknown",
+     "observed_at": null,
+     "fetched_at": null,
+     "fields": {
+      "name": "Pou del Glaç",
+      "municipality": "la Bisbal d'Empordà",
+      "categoria": "Centre",
+      "adreca": "Camí del Pou del Glaç, s/n",
+      "lon": 3.04,
+      "lat": 41.933
+     },
+     "score": 100
+    },
+    {
+     "evidence_id": "reg:fixture:schools:0",
+     "name": "Pou del Glaç",
+     "municipality": "la Bisbal d'Empordà",
+     "register": "fixture:schools",
+     "url": null,
+     "source": "fixture:schools",
+     "capacity": null,
+     "asset_type": null,
+     "snippet": "Pou del Glaç, la Bisbal d'Empordà, capacity unknown",
+     "observed_at": null,
+     "fetched_at": null,
+     "fields": {
+      "name": "Pou del Glaç",
+      "municipality": "la Bisbal d'Empordà",
+      "tipologia": "casa de colònies",
+      "titularitat": "privada"
+     },
+     "score": 100
+    }
+   ]
+  },
+  {
+   "name": "propose_update",
+   "input": {
+    "asset_id": "fixture:pou_del_glac",
+    "field": "capacity",
+    "value": 120,
+    "source": "manual enrichment",
+    "quoted_snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
+    "confidence": "medium",
+    "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
+    "observed_at": "2026-06-15"
+   },
+   "result": {
+    "proposal_id": "prop-001-pou_del_glac",
+    "asset_id": "fixture:pou_del_glac",
+    "field": "capacity",
+    "value": 120,
+    "previous": null,
+    "source": "manual enrichment",
+    "quoted_snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
+    "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
+    "observed_at": "2026-06-15",
+    "confidence": "medium",
+    "status": "pending",
+    "created_at": "2026-09-19T12:56:25+00:00"
+   }
+  },
+  {
+   "name": "escalate",
+   "input": {
+    "asset_id": "fixture:pou_del_glac",
+    "question": "Pou del Glaç: in session today (people on site)? If yes, how many are present?",
+    "options": [
+     "yes",
+     "no"
+    ],
+    "default": "yes"
+   },
+   "result": {
+    "question_id": "q-001-pou_del_glac",
+    "asset_id": "fixture:pou_del_glac",
+    "question": "Pou del Glaç: in session today (people on site)? If yes, how many are present?",
+    "options": [
+     "yes",
+     "no"
+    ],
+    "default": "yes",
+    "status": "open",
+    "answer": null,
+    "created_at": "2026-09-19T12:56:25+00:00"
+   }
+  }
+ ],
+ "final_text": "Recommendation, not an order. Pou del Glaç: 1762 m from the fire, queue needs_review; proposed capacity=120 from manual enrichment (pending analyst confirmation); escalated 'Pou del Glaç: in session today (people on site)? If yes, how many are present?' default 'yes'.",
+ "proposals_added": [
+  {
+   "proposal_id": "prop-001-pou_del_glac",
+   "asset_id": "fixture:pou_del_glac",
+   "field": "capacity",
+   "value": 120,
+   "previous": null,
+   "source": "manual enrichment",
+   "quoted_snippet": "Casa de colònies Pou del Glaç (la Bisbal d'Empordà). Capacitat 120 places en habitacions de 6 i 8 llits. Menjador, sala polivalent i piscina.",
+   "url": "https://educacio.gencat.cat/ca/serveis/cases-de-colonies/pou-del-glac/",
+   "observed_at": "2026-06-15",
+   "confidence": "medium",
+   "status": "pending",
+   "created_at": "2026-09-19T12:56:25+00:00"
+  }
+ ],
+ "questions_added": [
+  {
+   "question_id": "q-001-pou_del_glac",
+   "asset_id": "fixture:pou_del_glac",
+   "question": "Pou del Glaç: in session today (people on site)? If yes, how many are present?",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "default": "yes",
+   "status": "open",
+   "answer": null,
+   "created_at": "2026-09-19T12:56:25+00:00"
+  }
+ ],
+ "postcheck_ok": true,
+ "llm_mode": "fake",
+ "label": "prerecorded with FakeLLM (no API key available on 2026-09-19); rerun scripts/investigate.py --record with ANTHROPIC_API_KEY to replace with a live transcript",
+ "recorded_at": "2026-09-19T12:56:25+00:00",
+ "input": "snapshot fixtures/snapshots/synthetic_gavarres_0001.json (synthetic_gavarres-0001)"
+}

@@ -21,4 +21,4 @@ Use [Superpowers](https://github.com/obra/superpowers) for development in this r
 
 ## Project context
 
-`PLAN.md` is the project plan and shared interface reference. Risk assessment produces location snapshots; analyst coordination consumes them to produce priorities, recommendations and team work items. Preserve that boundary and update the documented contract when it changes.
+`readme.md` is the MVP scope and the shared interface reference (section 5 is the location snapshot contract; `CONTRACTS.md` restates it as module APIs). `PLAN.md` is the earlier, broader design and is superseded where they differ. Risk assessment produces location snapshots; analyst coordination consumes them to produce priorities, recommendations and team work items. Preserve that boundary and update the documented contract when it changes.

@@ -1,0 +1,1046 @@
+{
+ "schema_version": "1.0",
+ "scenario_id": "synthetic_gavarres",
+ "incident_id": "synthetic-bisbal-2026-07-03",
+ "snapshot_id": "synthetic_gavarres-0002",
+ "sequence": 2,
+ "as_of": "2026-07-03T10:00:00+00:00",
+ "computed_at": "2026-07-03T10:00:20+00:00",
+ "input_mode": "synthetic",
+ "fire_observed_at": "2026-07-03T10:00:00+00:00",
+ "fire_source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+ "fire_geometry": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     3.036178,
+     41.928296
+    ],
+    [
+     3.031562,
+     41.928983
+    ],
+    [
+     3.028527,
+     41.930343
+    ],
+    [
+     3.026151,
+     41.932302
+    ],
+    [
+     3.024351,
+     41.935549
+    ],
+    [
+     3.024178,
+     41.938189
+    ],
+    [
+     3.02645,
+     41.950528
+    ],
+    [
+     3.027441,
+     41.951911
+    ],
+    [
+     3.029295,
+     41.95265
+    ],
+    [
+     3.030707,
+     41.95265
+    ],
+    [
+     3.032297,
+     41.952088
+    ],
+    [
+     3.044717,
+     41.943669
+    ],
+    [
+     3.046824,
+     41.941545
+    ],
+    [
+     3.048015,
+     41.939056
+    ],
+    [
+     3.048012,
+     41.935541
+    ],
+    [
+     3.046818,
+     41.933053
+    ],
+    [
+     3.045503,
+     41.931586
+    ],
+    [
+     3.041864,
+     41.929358
+    ],
+    [
+     3.038531,
+     41.928468
+    ],
+    [
+     3.036178,
+     41.928296
+    ]
+   ]
+  ]
+ },
+ "fire_geometry_kind": "perimeter",
+ "data_status": "current",
+ "metrics": {
+  "source_age_s": 0.0,
+  "processing_s": 20.0
+ },
+ "assets": [
+  {
+   "asset_id": "fixture:pou_del_glac",
+   "name": "Pou del Glaç",
+   "asset_type": "camp",
+   "latitude": 41.933,
+   "longitude": 3.04,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.8,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 0.0,
+   "intersects_fire": true,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "occupancy_seasonal"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "casa de colònies ~2 km SSE of the ignition; school register has no capacity field"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "la Bisbal d'Empordà"
+  },
+  {
+   "asset_id": "fixture:sant_pol",
+   "name": "Sant Pol",
+   "asset_type": "nucleus",
+   "latitude": 41.942,
+   "longitude": 3.036,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": 85,
+   "occupancy_basis": "allocated headcount (fixture)",
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 0.0,
+   "intersects_fire": true,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": false,
+   "review_reasons": [],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": null
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "allocated estimate of people present, not a register capacity"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "la Bisbal d'Empordà"
+  },
+  {
+   "asset_id": "fixture:can_xic",
+   "name": "Can Xic",
+   "asset_type": "masia",
+   "latitude": 41.923,
+   "longitude": 3.03,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": 4,
+   "occupancy_basis": "allocated headcount (fixture)",
+   "value_score": 0.4,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 676.8,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": false,
+   "review_reasons": [],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "isolated masia ~3 km S of the ignition; only link is an unpaved track"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "allocated estimate of people present, not a register capacity"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+  },
+  {
+   "asset_id": "fixture:camping_gavarres",
+   "name": "Càmping Gavarres",
+   "asset_type": "campsite",
+   "latitude": 41.885,
+   "longitude": 3.075,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": 200,
+   "estimated_occupancy": null,
+   "occupancy_basis": "register capacity (fixture); maximum places, not a headcount",
+   "value_score": 0.6,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 5639.8,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": true,
+   "review_reasons": [
+    "class_ambiguous"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "register does not say whether places are tents or bungalows"
+    },
+    {
+     "fields": [
+      "capacity",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "register capacity: not a confirmed headcount; estimated_occupancy left null"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "Calonge i Sant Antoni"
+  },
+  {
+   "asset_id": "fixture:les_cabanyes",
+   "name": "Les Cabanyes",
+   "asset_type": "nucleus",
+   "latitude": 41.86,
+   "longitude": 3.06,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": 120,
+   "occupancy_basis": "allocated headcount (fixture)",
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 7807.6,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": false,
+   "review_reasons": [],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": null
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "allocated estimate of people present, not a register capacity"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "Calonge i Sant Antoni"
+  },
+  {
+   "asset_id": "fixture:vall_repos",
+   "name": "Vall Repòs",
+   "asset_type": "care_home",
+   "latitude": 41.83,
+   "longitude": 3.0,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": 70,
+   "estimated_occupancy": null,
+   "occupancy_basis": "register capacity (fixture); maximum places, not a headcount",
+   "value_score": 1.0,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 11297.5,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": false,
+   "review_reasons": [],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": null
+    },
+    {
+     "fields": [
+      "capacity",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "register capacity: not a confirmed headcount; estimated_occupancy left null"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "Santa Cristina d'Aro"
+  },
+  {
+   "asset_id": "fixture:residencia_la_bisbal",
+   "name": "Residència la Bisbal",
+   "asset_type": "care_home",
+   "latitude": 41.962,
+   "longitude": 3.038,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 1.0,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 1196.9,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "Equipaments row without capacitat; care-home register join failed on the name"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "la Bisbal d'Empordà"
+  },
+  {
+   "asset_id": "fixture:escola_cruilles",
+   "name": "Escola de Cruïlles",
+   "asset_type": "school",
+   "latitude": 41.953,
+   "longitude": 3.012,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": 60,
+   "estimated_occupancy": null,
+   "occupancy_basis": "register capacity (fixture); maximum places, not a headcount",
+   "value_score": 0.8,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 1228.7,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_seasonal"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "school in July: register enrolment, calendar says closed; casal d'estiu possible"
+    },
+    {
+     "fields": [
+      "capacity",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "register capacity: not a confirmed headcount; estimated_occupancy left null"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+  },
+  {
+   "asset_id": "fixture:hospital_palamos",
+   "name": "Hospital de Palamós",
+   "asset_type": "hospital",
+   "latitude": 41.85,
+   "longitude": 3.13,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": 140,
+   "estimated_occupancy": null,
+   "occupancy_basis": "register capacity (fixture); maximum places, not a headcount",
+   "value_score": 1.0,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 11449.4,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": false,
+   "review_reasons": [],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": null
+    },
+    {
+     "fields": [
+      "capacity",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "register capacity: not a confirmed headcount; estimated_occupancy left null"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "Palamós"
+  },
+  {
+   "asset_id": "fixture:sant_sadurni",
+   "name": "Sant Sadurní de l'Heura",
+   "asset_type": "nucleus",
+   "latitude": 41.955,
+   "longitude": 2.975,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": 300,
+   "occupancy_basis": "allocated headcount (fixture)",
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 4292.0,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": false,
+   "review_reasons": [],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": null
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "allocated estimate of people present, not a register capacity"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+  },
+  {
+   "asset_id": "fixture:monells",
+   "name": "Monells",
+   "asset_type": "nucleus",
+   "latitude": 41.973,
+   "longitude": 2.985,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": 200,
+   "occupancy_basis": "allocated headcount (fixture)",
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 4225.1,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": false,
+   "review_reasons": [],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": null
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "allocated estimate of people present, not a register capacity"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+  },
+  {
+   "asset_id": "fixture:mas_pla",
+   "name": "Urbanització Mas Pla",
+   "asset_type": "nucleus",
+   "latitude": 41.872,
+   "longitude": 3.066,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": 260,
+   "occupancy_basis": "allocated headcount (fixture)",
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 6670.6,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_seasonal"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "second-home urbanisation on the GI-660 above Calonge"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "allocated estimate of people present, not a register capacity"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    }
+   ],
+   "municipality": "Calonge i Sant Antoni"
+  },
+  {
+   "asset_id": "fixture:residencia_sense_coordenades",
+   "name": "Residència sense coordenades",
+   "asset_type": "care_home",
+   "latitude": null,
+   "longitude": null,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": 40,
+   "estimated_occupancy": null,
+   "occupancy_basis": "register capacity (fixture); maximum places, not a headcount",
+   "value_score": 1.0,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": null,
+   "intersects_fire": null,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "needs_review": true,
+   "review_reasons": [
+    "location_unknown",
+    "exposure_unknown"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "synthetic care-home register row with no coordinates (the care-home register carries none); register carries no coordinates"
+    },
+    {
+     "fields": [
+      "capacity",
+      "occupancy_basis"
+     ],
+     "source": "fixture",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "register capacity: not a confirmed headcount; estimated_occupancy left null"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": "2026-07-03T10:00:00+00:00",
+     "fetched_at": null,
+     "notes": "asset location unknown"
+    }
+   ],
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+  }
+ ]
+}

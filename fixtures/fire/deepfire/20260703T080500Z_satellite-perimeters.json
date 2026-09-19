@@ -1,0 +1,175 @@
+{
+ "collection": "satellite-perimeters",
+ "received_at": "2026-07-03T08:05:00+00:00",
+ "body": {
+  "type": "FeatureCollection",
+  "features": [
+   {
+    "type": "Feature",
+    "id": "synthetic-gavarres-perim-1",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        3.03362,
+        41.949999
+       ],
+       [
+        3.03355,
+        41.949472
+       ],
+       [
+        3.033344,
+        41.948965
+       ],
+       [
+        3.033009,
+        41.948498
+       ],
+       [
+        3.032558,
+        41.948089
+       ],
+       [
+        3.03201,
+        41.947753
+       ],
+       [
+        3.031384,
+        41.947503
+       ],
+       [
+        3.030705,
+        41.94735
+       ],
+       [
+        3.029999,
+        41.947298
+       ],
+       [
+        3.029293,
+        41.94735
+       ],
+       [
+        3.028614,
+        41.947504
+       ],
+       [
+        3.027988,
+        41.947754
+       ],
+       [
+        3.02744,
+        41.94809
+       ],
+       [
+        3.02699,
+        41.9485
+       ],
+       [
+        3.026656,
+        41.948967
+       ],
+       [
+        3.02645,
+        41.949474
+       ],
+       [
+        3.02638,
+        41.950001
+       ],
+       [
+        3.02645,
+        41.950528
+       ],
+       [
+        3.026656,
+        41.951035
+       ],
+       [
+        3.026991,
+        41.951502
+       ],
+       [
+        3.027441,
+        41.951911
+       ],
+       [
+        3.02799,
+        41.952247
+       ],
+       [
+        3.028616,
+        41.952497
+       ],
+       [
+        3.029295,
+        41.95265
+       ],
+       [
+        3.030001,
+        41.952702
+       ],
+       [
+        3.030707,
+        41.95265
+       ],
+       [
+        3.031386,
+        41.952496
+       ],
+       [
+        3.032012,
+        41.952246
+       ],
+       [
+        3.03256,
+        41.95191
+       ],
+       [
+        3.03301,
+        41.9515
+       ],
+       [
+        3.033345,
+        41.951033
+       ],
+       [
+        3.03355,
+        41.950526
+       ],
+       [
+        3.03362,
+        41.949999
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "id": "synthetic-gavarres-perim-1",
+     "cluster_id": "synthetic-gavarres",
+     "computed_at": "2026-07-03T08:00:00Z",
+     "observed_watermark": "2026-07-03T07:48:00Z",
+     "area_ha": 28.2,
+     "sources": [
+      "MTG_I1",
+      "VIIRS"
+     ],
+     "hotspot_count": 6
+    }
+   }
+  ],
+  "numberMatched": 1,
+  "numberReturned": 1,
+  "timeStamp": "2026-07-03T08:04:30Z",
+  "links": [
+   {
+    "rel": "self",
+    "type": "application/geo+json",
+    "href": "https://api.deepfire.co/ogc/features/v1/collections/deepfire:satellite-perimeters/items"
+   }
+  ]
+ },
+ "note": "SYNTHETIC recorded response built to the documented Deepfire OGC API Features schema (docs.deepfire.co read 2026-09-19). No token was available, so this is not a real provider response; see fixtures/fire/deepfire/README.md."
+}

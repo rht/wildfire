@@ -1,14 +1,14 @@
-"""LLM back-ends for the triage agent (PLAN 6.6).
+"""LLM back-ends for the investigation agent (CONTRACTS section 6, readme 8).
 
 Two classes with the same `.create(system, messages, tools)` interface, both returning an object
 with `.content` (blocks with `.type` in {"text", "tool_use"}) and `.stop_reason`:
 
 - `AnthropicLLM` wraps `anthropic.Anthropic().messages.create` (network, needs credentials).
-- `FakeLLM` is deterministic and offline: it reads the asset's reason codes from the first user
-  message and scripts the same investigate-resolve-or-escalate steps the prompt asks of the real
-  model, quoting only numbers that appeared in tool results.
+- `FakeLLM` is deterministic and offline: it reads the asset's review reasons from the first user
+  message and scripts the same get_asset -> lookup_facility -> propose_update / escalate steps the
+  system prompt asks of the real model, quoting only numbers that appeared in tool results.
 
-`agent.triage` treats the two identically.
+`agent.investigate` treats the two identically.
 """
 
 from __future__ import annotations
@@ -74,25 +74,36 @@ class FakeResponse:
     stop_reason: str = "end_turn"
 
 
-_CAPACITY_KEYS = ("capacitat", "total_places", "alumnes")
+_HEADCOUNT_KEYS = ("headcount", "estimated_occupancy", "people_present")
 
 
 def _norm(s: str) -> str:
     return re.sub(r"\s+", " ", (s or "").strip().lower())
 
 
-class FakeLLM:
-    """Scripted stand-in for the model. One instance can serve many asset loops; state is keyed by
-    the asset_id found in the first user message of each conversation.
+def _loads(text: str):
+    try:
+        return json.loads(text)
+    except (json.JSONDecodeError, TypeError):
+        return None
 
-    Script per reason code (pessimistic-only autonomy, PLAN 6.6):
-    - occupancy_unknown: lookup_facility(name); if a candidate with a capacity field matches the
-      asset's municipality, add_override(occupancy=capacity) citing the register; else escalate
-      (folded into the seasonal question when occupancy_seasonal is also present).
+
+class FakeLLM:
+    """Scripted stand-in for the model. One instance can serve many asset loops; the script is
+    derived from the conversation alone (first user message + completed tool results).
+
+    Script per review reason (everything is a proposal or a question, nothing is applied):
+    - always: get_asset(asset_id) first.
+    - occupancy_unknown: lookup_facility(name, municipality); if a candidate matches by name and
+      municipality and has a capacity, propose_update(capacity) quoting its snippet (never
+      estimated_occupancy from a capacity); propose estimated_occupancy only when the candidate carries
+      a headcount field; then escalate "how many people are present today?" unless headcount evidence
+      exists (folded into the seasonal question when occupancy_seasonal is also present).
     - occupancy_seasonal: escalate "in session today?" default yes.
-    - class_ambiguous: escalate tents/bungalows, default tents, shelter_viable False.
-    - no_exit: escalate "track passable by car?" default no, and add_override shelter_viable False
-      for masia/campsite.
+    - class_ambiguous / value_unknown: propose asset_type when a matching candidate states one, else
+      escalate with two readings.
+    - location_unknown: lookup, then escalate "confirm address/coordinates" quoting any address found.
+    - exposure_unknown: escalate.
     Final text quotes only numbers present in tool results of the loop.
     """
 
@@ -107,13 +118,13 @@ class FakeLLM:
 
     @staticmethod
     def _first_user_payload(messages: list[dict]) -> dict:
-        """The asset row + reason codes that triage puts in the first user message (JSON block)."""
+        """The asset id, name and review reasons that investigate puts in the first user message."""
         first = messages[0]
         content = first["content"]
         if isinstance(content, list):
             content = " ".join(b.get("text", "") for b in content if isinstance(b, dict))
         m = re.search(r"\{.*\}", content, re.S)
-        return json.loads(m.group(0)) if m else {}
+        return _loads(m.group(0)) or {} if m else {}
 
     @staticmethod
     def _tool_results(messages: list[dict]) -> list[tuple[str, dict, str]]:
@@ -140,119 +151,167 @@ class FakeLLM:
                     out.append((name, inp, str(res)))
         return out
 
+    @staticmethod
+    def _match(cands, name: str, muni: str) -> dict | None:
+        """First candidate whose name matches (score >= 50) and whose municipality matches."""
+        if not isinstance(cands, list):
+            return None
+        for c in cands:
+            if not isinstance(c, dict) or c.get("score", 0) < 50:
+                continue
+            cm = _norm(c.get("municipality", ""))
+            if muni and cm and cm != muni and muni not in cm and cm not in muni:
+                continue
+            if muni and not cm:
+                continue
+            return c
+        return None
+
+    @staticmethod
+    def _headcount(c: dict | None) -> int | None:
+        if not c:
+            return None
+        fields = c.get("fields") or {}
+        for k in _HEADCOUNT_KEYS:
+            v = fields.get(k)
+            if isinstance(v, int) and not isinstance(v, bool):
+                return v
+        return None
+
+    @staticmethod
+    def _address(c: dict | None) -> str | None:
+        if not c:
+            return None
+        fields = c.get("fields") or {}
+        for k in ("address", "adreca", "adre_a"):
+            v = fields.get(k)
+            if v:
+                return str(v)
+        return None
+
+    @staticmethod
+    def _source(c: dict) -> str:
+        return c.get("source") or c.get("register") or c.get("evidence_id") or "cached facility page"
+
+    def _propose(self, aid: str, c: dict, field_name: str, value, confidence: str = "medium") -> ToolUseBlock:
+        return ToolUseBlock(self._next_id(), "propose_update", {
+            "asset_id": aid, "field": field_name, "value": value, "source": self._source(c),
+            "quoted_snippet": c.get("snippet") or c.get("name", ""), "confidence": confidence,
+            "url": c.get("url"), "observed_at": c.get("observed_at")})
+
+    def _escalate(self, aid: str, question: str, options: list[str], default: str) -> ToolUseBlock:
+        return ToolUseBlock(self._next_id(), "escalate", {
+            "asset_id": aid, "question": question, "options": options, "default": default})
+
     # -- scripted plan --------------------------------------------------
     def _plan(self, payload: dict, done: list[tuple[str, dict, str]]) -> list[ToolUseBlock] | TextBlock:
-        asset = payload.get("asset", {})
-        codes = list(payload.get("reason_codes", []))
-        sid = payload.get("scenario_id")
-        aid = asset.get("asset_id")
-        name = asset.get("name", "")
-        cls = asset.get("asset_class", "")
-        muni = _norm(asset.get("municipality", ""))
+        aid = payload.get("asset_id")
+        codes = list(payload.get("review_reasons", []))
+        name = payload.get("name") or ""
+        muni = _norm(payload.get("municipality") or "")
+        atype = payload.get("asset_type") or "unknown"
         done_names = [d[0] for d in done]
+        asked = [d[1].get("question", "").lower() for d in done if d[0] == "escalate"]
+        proposed = [d[1].get("field") for d in done if d[0] == "propose_update"]
 
-        # Step 1: always ground the numbers with get_decision.
-        if "get_decision" not in done_names:
-            return [ToolUseBlock(self._next_id(), "get_decision", {"scenario_id": sid, "asset_id": aid})]
+        def asked_about(word: str) -> bool:
+            return any(word in q for q in asked)
 
-        # Step 2: occupancy_unknown -> lookup, then override or escalate.
+        # Step 1: always ground the numbers with get_asset.
+        if "get_asset" not in done_names:
+            return [ToolUseBlock(self._next_id(), "get_asset", {"asset_id": aid})]
+        asset = _loads(next(d[2] for d in done if d[0] == "get_asset")) or {}
+        if isinstance(asset, dict) and not asset.get("error"):
+            name = asset.get("name") or name
+            muni = _norm(asset.get("municipality") or "") or muni
+            atype = asset.get("asset_type") or atype
+
+        needs_lookup = any(c in codes for c in ("occupancy_unknown", "class_ambiguous", "value_unknown",
+                                                 "location_unknown"))
+        if needs_lookup and "lookup_facility" not in done_names:
+            inp = {"query": name}
+            if muni:
+                inp["municipality"] = payload.get("municipality") or asset.get("municipality")
+            return [ToolUseBlock(self._next_id(), "lookup_facility", inp)]
+        cands = _loads(next((d[2] for d in done if d[0] == "lookup_facility"), "null"))
+        match = self._match(cands, name, muni) if needs_lookup else None
+        headcount = self._headcount(match)
+
+        # Step 2: occupancy_unknown -> propose capacity (never occupancy from capacity), then ask headcount.
         if "occupancy_unknown" in codes:
-            if "lookup_facility" not in done_names:
-                return [ToolUseBlock(self._next_id(), "lookup_facility", {"query": name})]
-            if not any(d[0] == "add_override" and d[1].get("field") == "occupancy" for d in done) and not any(
-                d[0] == "escalate" and "occupied today" in d[1].get("question", "").lower() for d in done
-            ):
-                lookup = next(d for d in done if d[0] == "lookup_facility")
-                try:
-                    cands = json.loads(lookup[2])
-                except json.JSONDecodeError:
-                    cands = []
-                if isinstance(cands, dict):
-                    cands = cands.get("candidates", [])
-                match = None
-                for c in cands:
-                    if c.get("capacity") is None:
-                        continue
-                    if muni and _norm(c.get("municipality", "")) != muni:
-                        continue
-                    match = c
-                    break
-                if match is not None:
-                    snippet = (f"{match['register']}: '{match['name']}' ({match['municipality']}) "
-                               f"capacity {match['capacity']}; joined to asset '{name}' by name and municipality")
-                    return [ToolUseBlock(self._next_id(), "add_override", {
-                        "scenario_id": sid, "asset_id": aid, "field": "occupancy",
-                        "value": int(match["capacity"]), "source": f"register {match['register']}",
-                        "quoted_snippet": snippet, "confidence": "medium"})]
-                if "occupancy_seasonal" not in codes:
-                    return [ToolUseBlock(self._next_id(), "escalate", {
-                        "scenario_id": sid, "asset_id": aid,
-                        "question": f"No register gives a capacity for {name}. Is it occupied today?",
-                        "options": ["yes", "no"], "default": "yes"})]
-                # seasonal present: the seasonal escalation below carries the question.
+            if match and match.get("capacity") is not None and "capacity" not in proposed:
+                return [self._propose(aid, match, "capacity", int(match["capacity"]))]
+            if headcount is not None and "estimated_occupancy" not in proposed:
+                return [self._propose(aid, match, "estimated_occupancy", int(headcount))]
+            if headcount is None and not asked_about("present") and "occupancy_seasonal" not in codes:
+                if match:
+                    q = (f"{name}: the evidence gives a capacity but no headcount. How many people are "
+                         f"present today?")
+                    return [self._escalate(aid, q, ["headcount confirmed with the facility",
+                                                    "unknown, treat capacity as an upper bound",
+                                                    "nobody on site today"],
+                                           "unknown, treat capacity as an upper bound")]
+                q = f"{name}: no evidence found for this facility. Is it occupied today, and how many people are present?"
+                return [self._escalate(aid, q, ["occupied, headcount to confirm", "not occupied today"],
+                                       "occupied, headcount to confirm")]
 
-        # Step 3: occupancy_seasonal -> escalate, default yes.
-        if "occupancy_seasonal" in codes and not any(
-            d[0] == "escalate" and "session" in d[1].get("question", "").lower() for d in done
-        ):
-            return [ToolUseBlock(self._next_id(), "escalate", {
-                "scenario_id": sid, "asset_id": aid,
-                "question": f"{name}: in session today (people on site)?",
-                "options": ["yes", "no"], "default": "yes"})]
+        # Step 3: occupancy_seasonal -> escalate in-session question (carries the headcount question).
+        if "occupancy_seasonal" in codes and not asked_about("session"):
+            q = f"{name}: in session today (people on site)? If yes, how many are present?"
+            return [self._escalate(aid, q, ["yes", "no"], "yes")]
 
-        # Step 4: class_ambiguous -> escalate tents/bungalows, pessimistic default.
-        if "class_ambiguous" in codes and not any(
-            d[0] == "escalate" and "bungalow" in d[1].get("question", "").lower() for d in done
-        ):
-            return [ToolUseBlock(self._next_id(), "escalate", {
-                "scenario_id": sid, "asset_id": aid,
-                "question": f"{name}: places are tents or bungalows? (tents: shelter not viable)",
-                "options": ["tents", "bungalows"], "default": "tents",
-                "field": "shelter_viable", "default_value": False})]
+        # Step 4: class_ambiguous / value_unknown -> propose asset_type from evidence or escalate readings.
+        if "class_ambiguous" in codes or "value_unknown" in codes:
+            stated = (match or {}).get("asset_type")
+            if stated and "asset_type" not in proposed:
+                return [self._propose(aid, match, "asset_type", stated)]
+            if not stated and not asked_about("class"):
+                other = "camp" if atype == "campsite" else ("campsite" if atype == "camp" else "unknown")
+                q = f"{name}: which class applies? The register does not say (current reading: {atype})."
+                return [self._escalate(aid, q, [atype, other], atype)]
 
-        # Step 5: no_exit -> escalate passability, default no; shelter_viable False for masia/campsite.
-        if "no_exit" in codes:
-            if not any(d[0] == "escalate" and "passable" in d[1].get("question", "").lower() for d in done):
-                return [ToolUseBlock(self._next_id(), "escalate", {
-                    "scenario_id": sid, "asset_id": aid,
-                    "question": f"{name}: only exit is a track. Passable by car?",
-                    "options": ["yes", "no"], "default": "no"})]
-            if cls in ("masia", "campsite") and not any(
-                d[0] == "add_override" and d[1].get("field") == "shelter_viable" for d in done
-            ):
-                return [ToolUseBlock(self._next_id(), "add_override", {
-                    "scenario_id": sid, "asset_id": aid, "field": "shelter_viable", "value": False,
-                    "source": "routing", "quoted_snippet": "no exit route found; pessimistic default",
-                    "confidence": "medium"})]
+        # Step 5: location_unknown -> escalate address confirmation, quoting any evidence address.
+        if "location_unknown" in codes and not asked_about("address"):
+            addr = self._address(match)
+            if addr:
+                q = f"{name}: confirm address / coordinates. Evidence address: {addr} ({match.get('municipality')})."
+            else:
+                q = f"{name}: no address found in the evidence. Confirm address / coordinates with the municipality."
+            return [self._escalate(aid, q, ["address confirmed, geocode it", "wrong facility", "still unknown"],
+                                   "still unknown")]
+
+        # Step 6: exposure_unknown -> escalate (nothing the agent can supply).
+        if "exposure_unknown" in codes and "location_unknown" not in codes and not asked_about("exposure"):
+            q = f"{name}: exposure unknown (no fire geometry or location). Keep in the review queue?"
+            return [self._escalate(aid, q, ["keep in review", "resolved manually"], "keep in review")]
 
         # Done: final text quoting only numbers from tool results.
         return TextBlock(self._final_text(name, done))
 
     @staticmethod
     def _final_text(name: str, done: list[tuple[str, dict, str]]) -> str:
-        parts = [f"Recommendation, not an order. {name}:"]
+        parts = []
         for tool, inp, res in done:
-            if tool == "get_decision":
-                try:
-                    d = json.loads(res)
-                except json.JSONDecodeError:
-                    d = {}
-                if isinstance(d, dict) and d.get("decision"):
-                    parts.append(f"decision {d['decision']}")
-                    if isinstance(d.get("exit_window_min"), (int, float)):
-                        parts.append(f"exit window {d['exit_window_min']} min")
-            elif tool == "add_override":
-                try:
-                    r = json.loads(res)
-                except json.JSONDecodeError:
-                    r = {}
-                if isinstance(r, dict) and r.get("ok"):
-                    parts.append(f"override {r['field']}={r['value']} recorded from {inp.get('source')}")
+            r = _loads(res)
+            if tool == "get_asset" and isinstance(r, dict) and not r.get("error"):
+                bits = []
+                if isinstance(r.get("distance_to_fire_m"), (int, float)):
+                    bits.append(f"{r['distance_to_fire_m']} m from the fire")
+                if isinstance(r.get("priority_score"), (int, float)):
+                    bits.append(f"priority {r['priority_score']}")
+                if r.get("queue"):
+                    bits.append(f"queue {r['queue']}")
+                if bits:
+                    parts.append(", ".join(bits))
+            elif tool == "propose_update":
+                if isinstance(r, dict) and r.get("proposal_id"):
+                    parts.append(f"proposed {r['field']}={r['value']} from {inp.get('source')} "
+                                 f"(pending analyst confirmation)")
                 else:
-                    parts.append("override refused")
+                    parts.append(f"proposal of {inp.get('field')} refused")
             elif tool == "escalate":
                 parts.append(f"escalated '{inp.get('question')}' default '{inp.get('default')}'")
-        return "; ".join(parts) + "."
+        return f"Recommendation, not an order. {name}: " + "; ".join(parts) + "."
 
     # -- interface ------------------------------------------------------
     def create(self, system: str, messages: list[dict], tools: list[dict]) -> FakeResponse:

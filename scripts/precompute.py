@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-"""Precompute the demo scenarios into data/scenarios/<name>/ (no network, no LLM key needed).
+"""Precompute the v0 demo scenarios into data/scenarios/<name>/ (no network, no LLM key needed).
+
+v0 engine only: spread (CA), routing and confine/evacuate decisions are gated behind
+`config.FEATURES` and are labelled enrichment in the v4 path. This script is not the default
+path any more (`scripts/make_snapshots.py` builds the v4 snapshots); run it explicitly for the demo.
 
     .venv/bin/python scripts/precompute.py            # all three demo scenarios
     .venv/bin/python scripts/precompute.py --fast     # 10 runs, 360 min (smoke test)
@@ -121,12 +125,20 @@ def summarize(sc: Scenario) -> dict:
             "needs_review": sum(1 for a in sc.assets if a["needs_review"])}
 
 
+def feature_label() -> str:
+    """One-line label of which gated v0 features are on (they are enrichment, not the v4 default path)."""
+    flags = config.FEATURES
+    state = ", ".join(f"{k}={'on' if v else 'off'}" for k, v in flags.items())
+    return (f"v0 engine: spread/routing/decisions are labelled enrichment under config.FEATURES ({state}); "
+            "this script runs them explicitly for the v0 demo")
+
+
 def run_triage(sc: Scenario) -> str:
-    """Call fireline.agent.triage with the fake LLM if the agent module has landed."""
+    """Call fireline.agent.triage with the fake LLM if the v0 agent entry point still exists."""
     try:
         from fireline.agent import triage
-    except ImportError:
-        return "agent not available; skipped triage"
+    except (ImportError, AttributeError):
+        return "v0 agent.triage not available; skipped triage"
     try:
         triage(sc, llm=None)
         return "triage ran (fake LLM)"
@@ -220,6 +232,7 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     if a.fast:
         a.runs, a.horizon = 10, 360
+    print(feature_label())
     t0 = time.time()
     build_all(a.out, n_runs=a.runs, horizon_min=a.horizon)
     print(f"done in {time.time() - t0:.1f}s")

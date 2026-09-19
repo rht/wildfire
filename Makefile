@@ -1,9 +1,10 @@
 PY := .venv/bin/python
 PYTEST := .venv/bin/pytest
 STREAMLIT := .venv/bin/streamlit
-SCENARIOS := data/scenarios/index.json
+SNAPSHOTS := fixtures/snapshots/synthetic_gavarres_0001.json
+V0_SCENARIOS := data/scenarios/index.json
 
-.PHONY: setup test precompute demo fetch clean-scenarios
+.PHONY: setup test snapshots demo investigate fetch precompute demo-v0 clean-scenarios clean-db
 
 setup:
 	uv venv
@@ -12,18 +13,35 @@ setup:
 test:
 	$(PYTEST) -q
 
-precompute:
-	$(PY) scripts/precompute.py
+# v4 MVP (readme.md): fixture + real-area snapshots, the analyst UI, one agent investigation.
+snapshots:
+	$(PY) scripts/make_snapshots.py
 
-$(SCENARIOS):
-	$(PY) scripts/precompute.py
+$(SNAPSHOTS):
+	$(PY) scripts/make_snapshots.py
 
-demo: $(SCENARIOS)
+demo: $(SNAPSHOTS)
 	$(STREAMLIT) run fireline/app.py
+
+investigate:
+	$(PY) scripts/investigate.py
 
 fetch:
 	$(PY) scripts/fetch_data.py registers
 	$(PY) scripts/fetch_data.py wind
 
+# v0 engine (spread CA, routing, decisions): labelled enrichment behind config.FEATURES, off by default.
+precompute:
+	$(PY) scripts/precompute.py
+
+$(V0_SCENARIOS):
+	$(PY) scripts/precompute.py
+
+demo-v0: $(V0_SCENARIOS)
+	@echo "v0 scenarios are precomputed under data/scenarios/; the v4 UI (make demo) reads snapshots."
+
 clean-scenarios:
 	rm -rf data/scenarios
+
+clean-db:
+	rm -f data/fireline.sqlite

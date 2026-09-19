@@ -1,12 +1,18 @@
-"""Agent layer: seven tools + edge-case triage loop (CONTRACTS "Agent tools", PLAN 6.6).
+"""Agent layer: four tools + one bounded investigation loop (CONTRACTS section 6, readme 8).
 
-Deterministic engine for the common case, agent for the edge cases, human decides (PLAN 3). The
-agent only ever acts through the tools below; it may move an asset in the pessimistic direction on
-its own (`add_override`) and must `escalate` anything optimistic as one question with options and a
-default. Every number in its final message must come from a tool result of the same loop
-(post-check); otherwise the message is replaced and the failure logged.
+Deterministic scoring for the common case, agent for the flagged cases, analyst decides. The agent
+only ever acts through the four tools below and never changes an asset itself:
 
-Works offline with `llm.FakeLLM` (default when `llm=None`).
+- `get_asset`        read the scored record (numbers rounded so they can be quoted verbatim)
+- `lookup_facility`  search the cached evidence (facility pages, register rows) by name
+- `propose_update`   record a sourced field update as a *pending* proposal
+- `escalate`         record one concrete question for the analyst
+
+Every proposal needs analyst confirmation (`confirm_proposal`), which persists it through
+`tasks.TaskStore.confirm_override` when a store is attached, updates the in-memory asset and lets
+the caller rescore. Every number in the agent's final message must come from a tool result of the
+same loop (post-check); otherwise the message is replaced and the failure logged. The loop is capped
+at `max_steps` model calls. Works offline with `llm.FakeLLM` (default when `llm=None`).
 """
 
 from __future__ import annotations
@@ -15,49 +21,39 @@ import json
 import math
 import re
 import unicodedata
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
-from .exposure import OptimisticMoveError, TIER_RANK, apply_override
+from . import config
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_REGISTERS = ROOT / "fixtures" / "registers.json"
+FIXTURE_EVIDENCE = ROOT / "fixtures" / "evidence.json"
 DATA_REGISTERS_DIR = ROOT / "data" / "registers"
 
+PROPOSAL_FIELDS = ("estimated_occupancy", "capacity", "asset_type")
+OCCUPANCY_FIELDS = ("estimated_occupancy", "capacity")
+CONFIDENCE_LEVELS = ("low", "medium", "high")
+REVIEW_REASONS = ("location_unknown", "occupancy_unknown", "occupancy_seasonal", "class_ambiguous",
+                  "value_unknown", "exposure_unknown")
+
 POSTCHECK_FAILED_TEXT = ("Recommendation, not an order. Agent message withheld: number post-check failed "
-                         "(the draft quoted a number that is not in any tool result). See the coordinator "
-                         "queue and overrides for what was recorded.")
-STEP_CAP_TEXT = ("Recommendation, not an order. Agent stopped at the step cap for this asset; the pessimistic "
-                 "defaults already applied stand until a coordinator answers.")
+                         "(the draft quoted a number that is not in any tool result). See the proposals "
+                         "and questions recorded for this asset.")
+STEP_CAP_TEXT = ("Recommendation, not an order. Agent stopped at the step cap for this asset; the proposals "
+                 "and questions recorded so far await the analyst, nothing was applied.")
+
+# Words that mean "capacity" (a ceiling, not a headcount) and words that mean an actual headcount.
+_CAPACITY_WORDS = ("capacity", "capacitat", "capacidad", "places", "plazas", "total_places", "beds", "llits")
+_HEADCOUNT_WORDS = ("headcount", "head count", "present", "presents", "on site", "occupied", "occupancy",
+                    "ocupació", "ocupacio", "ocupats", "ocupades", "ocupación", "persones avui", "people today",
+                    "today", "avui", "hoy", "residents actuals", "actual", "counted", "recompte")
 
 
-# ---------------------------------------------------------------------------
-# Scenario store
-# ---------------------------------------------------------------------------
-class ScenarioStore:
-    """scenario_id -> Scenario. Tools address scenarios by id, so the store is the tools' only state."""
-
-    def __init__(self):
-        self._by_id: dict[str, object] = {}
-
-    def register(self, scenario) -> str:
-        self._by_id[scenario.id] = scenario
-        return scenario.id
-
-    def get(self, scenario_id: str):
-        try:
-            return self._by_id[scenario_id]
-        except KeyError:
-            raise KeyError(f"unknown scenario_id {scenario_id!r}; known: {sorted(self._by_id)}") from None
-
-    def __contains__(self, scenario_id: str) -> bool:
-        return scenario_id in self._by_id
-
-    def ids(self) -> list[str]:
-        return sorted(self._by_id)
-
-
-STORE = ScenarioStore()
+class CapacityAsOccupancyError(ValueError):
+    """Raised when capacity evidence is proposed as an actual-occupancy claim (readme 11)."""
 
 
 # ---------------------------------------------------------------------------
@@ -96,51 +92,61 @@ def _round(v, nd=0):
     return v
 
 
-_ASSET_FIELDS = ("asset_id", "name", "asset_class", "municipality", "occupancy", "occupancy_source",
-                 "shelter_viable", "tier", "needs_review", "notes", "lead_time_min")
-_DECISION_FIELDS = ("decision", "staged", "exit_window_min", "latest_departure_min", "reception_centre",
-                    "medical_destination", "checks", "issuer_note")
-_ROUTE_FIELDS = ("asset_id", "destination_id", "destination_name", "destination_kind", "travel_min",
-                 "first_cut_road", "first_cut_min", "via_track")
-
-
-def trim_asset(row: dict) -> dict:
-    """The fields the agent needs, numbers rounded so they are easy to quote verbatim."""
-    out = {k: row.get(k) for k in _ASSET_FIELDS}
-    out["burn_prob"] = _round(row.get("burn_prob"), 2)
-    for k in ("arrival_p10_min", "arrival_p50_min", "lead_adjusted_p10_min"):
-        out[k] = _round(row.get(k))
-    out["n_overrides"] = len(row.get("overrides") or [])
-    dec = row.get("decision") or {}
-    out["decision"] = dec.get("decision")
-    out["exit_window_min"] = _round(dec.get("exit_window_min"))
-    return jsonable(out)
-
-
-def trim_decision(dec: dict) -> dict:
-    out = {k: dec.get(k) for k in _DECISION_FIELDS}
-    out["asset_id"] = dec.get("asset_id")
-    for k in ("exit_window_min", "latest_departure_min"):
-        out[k] = _round(out.get(k))
-    route = dec.get("route")
-    out["route"] = trim_route(route) if route else None
-    return jsonable(out)
-
-
-def trim_route(route: dict) -> dict:
-    out = {k: route.get(k) for k in _ROUTE_FIELDS}
-    out["travel_min"] = _round(out.get("travel_min"))
-    out["first_cut_min"] = _round(out.get("first_cut_min"))
-    out["n_points"] = len(route.get("path_lonlat") or [])
-    return jsonable(out)
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 # ---------------------------------------------------------------------------
-# Registers (lookup_facility)
+# Workbench: the tools' only state
+# ---------------------------------------------------------------------------
+@dataclass
+class Workbench:
+    """Scored assets plus the agent's pending proposals and open questions.
+
+    `assets` maps asset_id -> scored asset record (CONTRACTS 2.2 + 4). `tasks` is a
+    `tasks.TaskStore` or None (then confirmations only update the in-memory asset). `change_log`
+    is a list of one-line strings."""
+
+    assets: dict = field(default_factory=dict)
+    tasks: object | None = None
+    proposals: list = field(default_factory=list)
+    questions: list = field(default_factory=list)
+    change_log: list = field(default_factory=list)
+
+    @classmethod
+    def from_scored(cls, scored_assets, tasks=None) -> "Workbench":
+        """Build from a list of scored assets or the dict `priority.score_snapshot` returns."""
+        if isinstance(scored_assets, dict) and "all" in scored_assets:
+            scored_assets = scored_assets["all"]
+        assets = {a["asset_id"]: a for a in scored_assets}
+        return cls(assets=assets, tasks=tasks)
+
+    def asset(self, asset_id: str) -> dict:
+        try:
+            return self.assets[asset_id]
+        except KeyError:
+            raise KeyError(f"unknown asset_id {asset_id!r}") from None
+
+    def proposal(self, proposal_id: str) -> dict:
+        for p in self.proposals:
+            if p["proposal_id"] == proposal_id:
+                return p
+        raise KeyError(f"unknown proposal_id {proposal_id!r}")
+
+    def question(self, question_id: str) -> dict:
+        for q in self.questions:
+            if q["question_id"] == question_id:
+                return q
+        raise KeyError(f"unknown question_id {question_id!r}")
+
+
+# ---------------------------------------------------------------------------
+# Evidence cache and registers (lookup_facility)
 # ---------------------------------------------------------------------------
 _NAME_KEYS = ("name", "nom", "r_tol", "denominaci_completa", "alies")
 _MUNI_KEYS = ("municipality", "municipi", "poblacio", "nom_municipi")
-_CAPACITY_KEYS = ("capacitat", "total_places", "alumnes", "capacity")
+_CAPACITY_KEYS = ("capacity", "capacitat", "total_places", "alumnes")
+_ADDRESS_KEYS = ("address", "adreca", "adre_a")
 _STOPWORDS = {"la", "el", "els", "les", "de", "del", "dels", "d", "l", "i", "s", "n", "s/n", "a", "en", "the", "of"}
 
 
@@ -162,9 +168,8 @@ def _first(row: dict, keys) -> str | None:
     return None
 
 
-def _capacity(row: dict) -> int | None:
-    v = _first(row, _CAPACITY_KEYS)
-    if v is None:
+def _as_int(v) -> int | None:
+    if v is None or isinstance(v, bool):
         return None
     try:
         return int(float(str(v).replace(",", ".")))
@@ -172,16 +177,53 @@ def _capacity(row: dict) -> int | None:
         return None
 
 
+def _capacity(row: dict) -> int | None:
+    return _as_int(_first(row, _CAPACITY_KEYS))
+
+
+def _file_time(path: Path) -> str | None:
+    try:
+        return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc).isoformat(timespec="seconds")
+    except OSError:
+        return None
+
+
 @lru_cache(maxsize=1)
-def _load_registers() -> list[tuple[str, dict]]:
-    """(register_name, raw_row) for every row in fixtures/registers.json and data/registers/*.json."""
-    rows: list[tuple[str, dict]] = []
+def _load_registers() -> list[dict]:
+    """One candidate skeleton per row in fixtures/registers.json and data/registers/*.json."""
+    out: list[dict] = []
+
+    def add(register: str, items, fetched_at):
+        for i, row in enumerate(items):
+            if not isinstance(row, dict):
+                continue
+            name = _first(row, _NAME_KEYS)
+            if not name:
+                continue
+            muni = str(_first(row, _MUNI_KEYS) or "")
+            cap = _capacity(row)
+            cap_text = f"capacity {cap}" if cap is not None else "capacity unknown"
+            out.append({
+                "evidence_id": f"reg:{register}:{i}",
+                "name": str(name),
+                "municipality": muni,
+                "register": register,
+                "url": None,
+                "source": register,
+                "capacity": cap,
+                "asset_type": None,
+                "snippet": f"{name}, {muni}, {cap_text}",
+                "observed_at": None,
+                "fetched_at": fetched_at,
+                "fields": jsonable(row),
+            })
+
     if FIXTURE_REGISTERS.exists():
         d = json.loads(FIXTURE_REGISTERS.read_text())
         for reg, items in d.items():
             if reg.startswith("_") or not isinstance(items, list):
                 continue
-            rows.extend((f"fixture:{reg}", r) for r in items if isinstance(r, dict))
+            add(f"fixture:{reg}", items, None)
     if DATA_REGISTERS_DIR.is_dir():
         for p in sorted(DATA_REGISTERS_DIR.glob("*.json")):
             try:
@@ -190,8 +232,41 @@ def _load_registers() -> list[tuple[str, dict]]:
                 continue
             if isinstance(items, dict):
                 items = items.get("rows") or items.get("data") or []
-            rows.extend((f"gencat:{p.stem}", r) for r in items if isinstance(r, dict))
-    return rows
+            add(f"gencat:{p.stem}", items, _file_time(p))
+    return out
+
+
+@lru_cache(maxsize=1)
+def _load_evidence() -> list[dict]:
+    """Candidates from fixtures/evidence.json (cached facility pages / register rows, readme 4)."""
+    if not FIXTURE_EVIDENCE.exists():
+        return []
+    try:
+        entries = json.loads(FIXTURE_EVIDENCE.read_text())
+    except (OSError, json.JSONDecodeError):
+        return []
+    if isinstance(entries, dict):
+        entries = entries.get("entries") or []
+    out = []
+    for i, e in enumerate(entries):
+        if not isinstance(e, dict) or not e.get("name"):
+            continue
+        source = e.get("source") or ""
+        out.append({
+            "evidence_id": e.get("evidence_id") or f"ev:{i}",
+            "name": str(e["name"]),
+            "municipality": str(e.get("municipality") or ""),
+            "register": e.get("register") or (source if source and not e.get("url") else None),
+            "url": e.get("url"),
+            "source": source or None,
+            "capacity": _as_int(e.get("capacity")),
+            "asset_type": e.get("asset_type"),
+            "snippet": e.get("snippet") or "",
+            "observed_at": e.get("observed_at"),
+            "fetched_at": e.get("fetched_at"),
+            "fields": jsonable(e),
+        })
+    return out
 
 
 def _score(query: str, name: str) -> int:
@@ -205,268 +280,332 @@ def _score(query: str, name: str) -> int:
     return len(_tokens(query) & _tokens(name))
 
 
+def _muni_matches(wanted: str, actual: str) -> bool:
+    w, a = _fold(wanted), _fold(actual)
+    if not w:
+        return True
+    if not a:
+        return False
+    return w == a or w in a or a in w
+
+
 # ---------------------------------------------------------------------------
-# The seven tools
+# The four tools
 # ---------------------------------------------------------------------------
-def get_assets(scenario_id: str, tier: str | None = None, needs_review: bool | None = None,
-               store: ScenarioStore | None = None) -> list[dict]:
-    sc = (store or STORE).get(scenario_id)
-    rows = []
-    for a in sc.assets:
-        if tier and a["tier"] != tier:
-            continue
-        if needs_review is True and not a.get("needs_review"):
-            continue
-        if needs_review is False and a.get("needs_review"):
-            continue
-        rows.append(trim_asset(a))
-    return rows
+_ASSET_FIELDS = ("asset_id", "name", "asset_type", "municipality", "latitude", "longitude", "capacity",
+                 "estimated_occupancy", "occupancy_basis", "value_score", "intersects_fire", "queue",
+                 "review_reasons")
 
 
-def get_decision(scenario_id: str, asset_id: str, store: ScenarioStore | None = None) -> dict:
-    sc = (store or STORE).get(scenario_id)
-    a = sc.asset(asset_id)
-    dec = a.get("decision")
-    if not dec:
-        return {"asset_id": asset_id, "decision": None, "error": "no decision attached"}
-    out = trim_decision(dec)
-    out["tier"] = a["tier"]
-    out["occupancy"] = a.get("occupancy")
-    return out
+def get_asset(asset_id: str, workbench: Workbench) -> dict:
+    """Trimmed scored record for one asset (numbers rounded), plus open tasks, confirmed overrides
+    and the count of proposals still pending."""
+    a = workbench.asset(asset_id)
+    out = {k: a.get(k) for k in _ASSET_FIELDS}
+    out["review_reasons"] = list(a.get("review_reasons") or [])
+    out["distance_to_fire_m"] = _round(a.get("distance_to_fire_m"))
+    out["priority_score"] = _round(a.get("priority_score"), 2)
+    out["priority_rank"] = a.get("priority_rank")
+    out["open_tasks"] = []
+    out["confirmed_overrides"] = []
+    tasks = workbench.tasks
+    if tasks is not None:
+        try:
+            for t in tasks.tasks(asset_id=asset_id):
+                if t.get("status") != "done":
+                    out["open_tasks"].append({"task_id": t.get("task_id"), "action": t.get("action"),
+                                              "status": t.get("status")})
+        except AttributeError:
+            pass
+        try:
+            for o in tasks.overrides(asset_id=asset_id):
+                out["confirmed_overrides"].append({"field": o.get("field"), "value": o.get("value"),
+                                                   "source": o.get("source")})
+        except AttributeError:
+            pass
+    out["pending_proposals"] = sum(1 for p in workbench.proposals
+                                   if p["asset_id"] == asset_id and p["status"] == "pending")
+    return jsonable(out)
 
 
-def get_route(scenario_id: str, asset_id: str, store: ScenarioStore | None = None) -> dict | None:
-    sc = (store or STORE).get(scenario_id)
-    route = sc.asset(asset_id).get("route")
-    return trim_route(route) if route else None
-
-
-def lookup_facility(query: str, limit: int = 20) -> list[dict]:
-    """Candidate register rows matching `query` by name (case/accent-insensitive substring or token
-    overlap). Each candidate: register, name, municipality, capacity (int|None), score, fields."""
+def lookup_facility(query: str, municipality: str | None = None, limit: int = 20) -> list[dict]:
+    """Candidates matching `query` by name (case/accent-insensitive substring or token overlap) from
+    fixtures/evidence.json, fixtures/registers.json and data/registers/*.json. Optional municipality
+    filter. Each candidate: evidence_id, name, municipality, register|url, capacity, asset_type,
+    snippet, observed_at, fetched_at, source, score, fields."""
     q = (query or "").strip()
     if not q:
         return []
     out = []
-    for reg, row in _load_registers():
-        name = _first(row, _NAME_KEYS)
-        if not name:
-            continue
-        s = _score(q, str(name))
+    for cand in _load_evidence() + _load_registers():
+        s = _score(q, cand["name"])
         if s <= 0:
             continue
-        out.append({
-            "register": reg,
-            "name": str(name),
-            "municipality": str(_first(row, _MUNI_KEYS) or ""),
-            "capacity": _capacity(row),
-            "score": s,
-            "fields": jsonable(row),
-        })
-    out.sort(key=lambda c: (-c["score"], c["capacity"] is None, c["register"], c["name"]))
+        if municipality and not _muni_matches(municipality, cand["municipality"]):
+            continue
+        c = dict(cand)
+        c["score"] = s
+        out.append(c)
+    out.sort(key=lambda c: (-c["score"], c["capacity"] is None, c["url"] is None, c["evidence_id"]))
     return out[:limit]
 
 
-def sample_raster(scenario_id: str, layer: str, lon: float, lat: float,
-                  store: ScenarioStore | None = None) -> float | str | None:
-    sc = (store or STORE).get(scenario_id)
-    if layer not in ("arrival_p10", "arrival_p50", "burn_prob"):
-        raise ValueError(f"unknown layer {layer!r}")
-    if sc.arrival is None:
-        raise ValueError("scenario has no arrival raster")
-    v = float(sc.arrival.sample(layer, float(lon), float(lat)))
-    if math.isnan(v):
-        return None
-    if math.isinf(v):
-        return "inf"
-    return round(v, 2) if layer == "burn_prob" else round(v)
+def _mentions(text: str, words) -> bool:
+    t = _fold(text)
+    return any(_fold(w) in t for w in words)
 
 
-def add_override(scenario_id: str, asset_id: str, field: str, value, source: str, quoted_snippet: str,
-                 confidence: str = "low", store: ScenarioStore | None = None) -> dict:
-    """Pessimistic-only override with evidence. Raises OptimisticMoveError on an optimistic move."""
-    sc = (store or STORE).get(scenario_id)
-    asset = sc.asset(asset_id)
-    before = {"tier": asset["tier"], "decision": (asset.get("decision") or {}).get("decision"),
-              "value": asset.get(field)}
-    apply_override(asset, {"field": field, "value": value, "source": source,
-                           "quoted_snippet": quoted_snippet, "confidence": confidence})
-    record = asset["overrides"][-1]  # direction "pessimistic" or "same", set by apply_override
-    if hasattr(sc, "_redecide"):
-        sc._redecide(asset, f"agent override {field}={value} ({source})")
-    sc.change_log.append(f"{asset_id}: agent override {field} {before['value']} -> {asset.get(field)} "
-                         f"from {source} ({confidence})")
-    return {
-        "ok": True,
+def _check_value(field_name: str, value):
+    """Validate and normalise a proposed value. Raises ValueError."""
+    if field_name not in PROPOSAL_FIELDS:
+        raise ValueError(f"field must be one of {list(PROPOSAL_FIELDS)}, got {field_name!r}")
+    if field_name in OCCUPANCY_FIELDS:
+        if isinstance(value, bool) or value is None:
+            raise ValueError(f"{field_name} must be an integer >= 0, got {value!r}")
+        if isinstance(value, float):
+            if not value.is_integer():
+                raise ValueError(f"{field_name} must be an integer >= 0, got {value!r}")
+            value = int(value)
+        if isinstance(value, str):
+            v = _as_int(value)
+            if v is None or str(v) != value.strip():
+                raise ValueError(f"{field_name} must be an integer >= 0, got {value!r}")
+            value = v
+        if not isinstance(value, int) or value < 0:
+            raise ValueError(f"{field_name} must be an integer >= 0, got {value!r}")
+        return value
+    allowed = list(config.VALUE_POLICY["by_type"]) + ["unknown"]
+    if not isinstance(value, str) or value not in allowed:
+        raise ValueError(f"asset_type must be one of {allowed}, got {value!r}")
+    return value
+
+
+def propose_update(asset_id: str, field: str, value, source: str, quoted_snippet: str, confidence: str,
+                   url: str | None = None, observed_at: str | None = None,
+                   workbench: Workbench | None = None) -> dict:
+    """Record a sourced field update as a pending proposal. Nothing is applied to the asset."""
+    if workbench is None:
+        raise TypeError("propose_update needs a workbench")
+    asset = workbench.asset(asset_id)
+    value = _check_value(field, value)
+    if confidence not in CONFIDENCE_LEVELS:
+        raise ValueError(f"confidence must be one of {list(CONFIDENCE_LEVELS)}, got {confidence!r}")
+    if not (quoted_snippet or "").strip():
+        raise ValueError("quoted_snippet must quote the evidence verbatim (it is empty)")
+    if not (source or "").strip():
+        raise ValueError("source must name the register or page the snippet comes from")
+    if field == "estimated_occupancy":
+        text = f"{quoted_snippet} {source}"
+        if _mentions(text, _CAPACITY_WORDS) and not _mentions(text, _HEADCOUNT_WORDS):
+            raise CapacityAsOccupancyError(
+                "the evidence states a capacity (places), not a headcount; capacity must not become a "
+                "claim about actual occupancy. Propose field='capacity' with this snippet instead, and "
+                "escalate the question of how many people are present today.")
+    proposal = {
+        "proposal_id": f"prop-{len(workbench.proposals) + 1:03d}-{asset_id.split(':')[-1]}",
         "asset_id": asset_id,
         "field": field,
-        "value": asset.get(field),
-        "previous": before["value"],
-        "direction": record["direction"],
-        "tier": asset["tier"],
-        "decision": (asset.get("decision") or {}).get("decision"),
-        "tier_before": before["tier"],
-        "decision_before": before["decision"],
-        "needs_review": list(asset.get("needs_review", [])),
+        "value": value,
+        "previous": asset.get(field),
+        "source": source,
+        "quoted_snippet": quoted_snippet,
+        "url": url,
+        "observed_at": observed_at,
+        "confidence": confidence,
+        "status": "pending",
+        "created_at": _now(),
     }
+    workbench.proposals.append(proposal)
+    workbench.change_log.append(f"{asset_id}: proposal {proposal['proposal_id']} {field} "
+                                f"{proposal['previous']!r} -> {value!r} from {source} ({confidence}), pending")
+    return dict(proposal)
 
 
-def escalate(scenario_id: str, asset_id: str, question: str, options: list[str], default: str,
-             field: str | None = None, default_value=None, store: ScenarioStore | None = None) -> dict:
-    """One question for the coordinator with a pessimistic default applied now (scenario.add_escalation)."""
-    sc = (store or STORE).get(scenario_id)
-    esc = sc.add_escalation(asset_id, question, list(options), default, field=field, default_value=default_value)
-    asset = sc.asset(asset_id)
-    return {
-        "ok": True,
-        "escalation_id": esc["escalation_id"],
+def escalate(asset_id: str, question: str, options: list[str], default: str,
+             workbench: Workbench | None = None) -> dict:
+    """Record one concrete question for the analyst with options and a default. Nothing is applied."""
+    if workbench is None:
+        raise TypeError("escalate needs a workbench")
+    workbench.asset(asset_id)
+    options = [str(o) for o in (options or [])]
+    if len(options) < 2:
+        raise ValueError("options must list at least two answers")
+    if default not in options:
+        raise ValueError(f"default {default!r} must be one of options {options}")
+    if not (question or "").strip():
+        raise ValueError("question is empty")
+    record = {
+        "question_id": f"q-{len(workbench.questions) + 1:03d}-{asset_id.split(':')[-1]}",
         "asset_id": asset_id,
         "question": question,
-        "options": list(options),
+        "options": options,
         "default": default,
-        "status": esc["status"],
-        "field": field,
-        "default_value": default_value,
-        "tier": asset["tier"],
-        "decision": (asset.get("decision") or {}).get("decision"),
+        "status": "open",
+        "answer": None,
+        "created_at": _now(),
     }
+    workbench.questions.append(record)
+    workbench.change_log.append(f"{asset_id}: question {record['question_id']} open: {question!r} "
+                                f"options {options} default {default!r}")
+    return dict(record)
 
 
 TOOL_FUNCTIONS = {
-    "get_assets": get_assets,
-    "get_decision": get_decision,
-    "get_route": get_route,
+    "get_asset": get_asset,
     "lookup_facility": lookup_facility,
-    "sample_raster": sample_raster,
-    "add_override": add_override,
+    "propose_update": propose_update,
     "escalate": escalate,
 }
 
-_SID = {"type": "string", "description": "Scenario id (given in the task)."}
-_AID = {"type": "string", "description": "Asset id, e.g. 'fixture:can_xic'."}
+_AID = {"type": "string", "description": "Asset id, e.g. 'fixture:pou_del_glac'."}
 
 TOOLS: list[dict] = [
     {
-        "name": "get_assets",
-        "description": "List assets of the scenario (trimmed rows), optionally filtered by tier and by "
-                       "whether they need review. Numbers here are the engine's; quote them verbatim.",
+        "name": "get_asset",
+        "description": "The scored record of one asset: type, municipality, capacity, estimated occupancy "
+                       "and its basis, distance to fire, priority score and queue, review reasons, open "
+                       "tasks, confirmed overrides and pending proposals. Numbers here are the engine's; "
+                       "quote them verbatim.",
         "input_schema": {
             "type": "object",
-            "properties": {
-                "scenario_id": _SID,
-                "tier": {"type": ["string", "null"], "enum": ["act_now", "prepare", "monitor", None]},
-                "needs_review": {"type": ["boolean", "null"]},
-            },
-            "required": ["scenario_id"],
-        },
-    },
-    {
-        "name": "get_decision",
-        "description": "The confine/evacuate decision for one asset with its checks, exit window, "
-                       "latest departure, reception centre, medical destination and route summary.",
-        "input_schema": {
-            "type": "object",
-            "properties": {"scenario_id": _SID, "asset_id": _AID},
-            "required": ["scenario_id", "asset_id"],
-        },
-    },
-    {
-        "name": "get_route",
-        "description": "Best exit route for one asset (destination, travel minutes, first road cut and "
-                       "when), or null when no route exists.",
-        "input_schema": {
-            "type": "object",
-            "properties": {"scenario_id": _SID, "asset_id": _AID},
-            "required": ["scenario_id", "asset_id"],
+            "properties": {"asset_id": _AID},
+            "required": ["asset_id"],
         },
     },
     {
         "name": "lookup_facility",
-        "description": "Search the facility registers (Equipaments, care homes, campsites, schools) by "
-                       "name. Returns candidate rows with register, name, municipality, capacity (or "
-                       "null) and all raw fields. Check municipality before trusting a match.",
+        "description": "Search the cached evidence (facility pages with URL, snippet and dates; Gencat "
+                       "register rows) by facility name, optionally restricted to a municipality. Returns "
+                       "candidates with evidence_id, name, municipality, register or url, capacity, "
+                       "asset_type when stated, snippet, observed_at, fetched_at and score. Check the "
+                       "municipality before trusting a match; a capacity is a ceiling, not a headcount.",
         "input_schema": {
             "type": "object",
-            "properties": {"query": {"type": "string", "description": "Facility name or part of it."}},
+            "properties": {
+                "query": {"type": "string", "description": "Facility name or part of it."},
+                "municipality": {"type": ["string", "null"],
+                                 "description": "Restrict candidates to this municipality."},
+            },
             "required": ["query"],
         },
     },
     {
-        "name": "sample_raster",
-        "description": "Sample the fire forecast at a point: minutes to arrival (p10 or p50; 'inf' if "
-                       "never) or burn probability 0..1. Null outside the modelled grid.",
+        "name": "propose_update",
+        "description": "Propose a sourced update of one field for the analyst to confirm. Nothing is "
+                       "applied until confirmed. Fields: capacity (an integer from evidence stating "
+                       "places/capacity), estimated_occupancy (an integer ONLY from evidence stating an "
+                       "actual headcount today), asset_type (a class the evidence states). quoted_snippet "
+                       "must quote the evidence verbatim; pass its url and observed_at when known.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "scenario_id": _SID,
-                "layer": {"type": "string", "enum": ["arrival_p10", "arrival_p50", "burn_prob"]},
-                "lon": {"type": "number"},
-                "lat": {"type": "number"},
-            },
-            "required": ["scenario_id", "layer", "lon", "lat"],
-        },
-    },
-    {
-        "name": "add_override",
-        "description": "Record a pessimistic-only override with evidence: occupancy may only go up, tier "
-                       "only towards act_now, shelter_viable only to false. Anything optimistic is refused; "
-                       "use escalate for that. quoted_snippet must quote the source verbatim.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "scenario_id": _SID,
                 "asset_id": _AID,
-                "field": {"type": "string", "enum": ["occupancy", "tier", "shelter_viable"]},
-                "value": {"type": ["integer", "string", "boolean"],
-                          "description": "New value: integer occupancy, tier name, or false."},
-                "source": {"type": "string", "description": "Where the evidence comes from (register name, page)."},
-                "quoted_snippet": {"type": "string", "description": "Verbatim snippet from the source."},
-                "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
+                "field": {"type": "string", "enum": list(PROPOSAL_FIELDS)},
+                "value": {"type": ["integer", "string"],
+                          "description": "Integer >= 0 for capacity/estimated_occupancy; class name for asset_type."},
+                "source": {"type": "string", "description": "Register name or page the snippet comes from."},
+                "quoted_snippet": {"type": "string", "description": "Verbatim snippet from the evidence."},
+                "confidence": {"type": "string", "enum": list(CONFIDENCE_LEVELS)},
+                "url": {"type": ["string", "null"]},
+                "observed_at": {"type": ["string", "null"], "description": "When the evidence was observed (ISO date)."},
             },
-            "required": ["scenario_id", "asset_id", "field", "value", "source", "quoted_snippet", "confidence"],
+            "required": ["asset_id", "field", "value", "source", "quoted_snippet", "confidence"],
         },
     },
     {
         "name": "escalate",
-        "description": "Put one question in the coordinator queue with options and a pessimistic default "
-                       "that is applied now. Optional field/default_value apply the default to the asset "
-                       "(pessimistic direction only) until the coordinator answers.",
+        "description": "Put one concrete question for the analyst on record, with options and a default. "
+                       "Nothing is applied; the question stays open until the analyst answers.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "scenario_id": _SID,
                 "asset_id": _AID,
-                "question": {"type": "string", "description": "One specific question the coordinator can answer in one click."},
+                "question": {"type": "string", "description": "One specific question an analyst can answer in one click."},
                 "options": {"type": "array", "items": {"type": "string"}, "minItems": 2},
-                "default": {"type": "string", "description": "The pessimistic option, must be one of options."},
-                "field": {"type": ["string", "null"], "enum": ["occupancy", "tier", "shelter_viable", None]},
-                "default_value": {"type": ["integer", "string", "boolean", "null"]},
+                "default": {"type": "string", "description": "The cautious option; must be one of options."},
             },
-            "required": ["scenario_id", "asset_id", "question", "options", "default"],
+            "required": ["asset_id", "question", "options", "default"],
         },
     },
 ]
 
 
-def dispatch(name: str, tool_input: dict, store: ScenarioStore | None = None):
+def dispatch(name: str, tool_input: dict, workbench: Workbench | None = None):
     """Run a tool by name and return a JSON-serialisable result. Errors come back as
-    {"error": ..., "hint": ...} so the model can recover; optimistic moves point at `escalate`."""
+    {"error": ..., "hint": ...} so the model can recover."""
     fn = TOOL_FUNCTIONS.get(name)
     if fn is None:
         return {"error": f"unknown tool {name!r}", "hint": f"available: {sorted(TOOL_FUNCTIONS)}"}
     kwargs = dict(tool_input or {})
     if name != "lookup_facility":
-        kwargs["store"] = store or STORE
+        kwargs["workbench"] = workbench
     try:
         return jsonable(fn(**kwargs))
-    except OptimisticMoveError as e:
-        return {"error": f"optimistic move refused: {e}",
-                "hint": "The agent may only move pessimistically. Use `escalate` with a question, options "
-                        "and the pessimistic default; a coordinator can apply the optimistic answer."}
+    except CapacityAsOccupancyError as e:
+        return {"error": f"refused: {e}",
+                "hint": "Call propose_update again with field='capacity' and the same snippet, then "
+                        "escalate 'how many people are present today?' if no headcount evidence exists."}
     except KeyError as e:
-        return {"error": f"not found: {e}", "hint": "check scenario_id and asset_id"}
+        return {"error": f"not found: {e}", "hint": "check the asset_id given in the task"}
     except (TypeError, ValueError) as e:
         return {"error": f"{type(e).__name__}: {e}", "hint": "check the tool's input schema"}
+
+
+# ---------------------------------------------------------------------------
+# Analyst side: confirm / reject / answer
+# ---------------------------------------------------------------------------
+def confirm_proposal(workbench: Workbench, proposal_id: str, rescore=None) -> dict:
+    """Analyst confirmation: persist through `workbench.tasks.confirm_override` when a store is attached,
+    update the in-memory asset, mark the proposal confirmed and log it. `rescore(workbench)` is called
+    afterwards when given (typically re-runs priority.score_snapshot with the store's overrides)."""
+    p = workbench.proposal(proposal_id)
+    if p["status"] != "pending":
+        raise ValueError(f"proposal {proposal_id} is {p['status']}, not pending")
+    asset = workbench.asset(p["asset_id"])
+    override = None
+    if workbench.tasks is not None:
+        override = workbench.tasks.confirm_override(
+            p["asset_id"], p["field"], p["value"], source=p["source"], snippet=p["quoted_snippet"],
+            url=p.get("url"), observed_at=p.get("observed_at"), confidence=p["confidence"],
+            proposal_id=proposal_id)
+    previous = asset.get(p["field"])
+    asset[p["field"]] = p["value"]
+    if p["field"] in OCCUPANCY_FIELDS:
+        asset["occupancy_basis"] = "analyst override"
+    elif p["field"] == "asset_type":
+        asset["value_score"] = config.VALUE_POLICY["by_type"].get(p["value"])
+        asset["value_basis"] = config.VALUE_POLICY["version"] if asset["value_score"] is not None else None
+    p["status"] = "confirmed"
+    p["confirmed_at"] = _now()
+    if override is not None:
+        p["override_id"] = override.get("override_id") if isinstance(override, dict) else None
+    workbench.change_log.append(f"{p['asset_id']}: proposal {proposal_id} confirmed: {p['field']} "
+                                f"{previous!r} -> {p['value']!r} from {p['source']}"
+                                f"{' (persisted)' if override is not None else ' (in-memory only)'}")
+    if rescore is not None:
+        rescore(workbench)
+    return dict(p)
+
+
+def reject_proposal(workbench: Workbench, proposal_id: str, note: str = "") -> dict:
+    p = workbench.proposal(proposal_id)
+    if p["status"] != "pending":
+        raise ValueError(f"proposal {proposal_id} is {p['status']}, not pending")
+    p["status"] = "rejected"
+    p["rejected_at"] = _now()
+    p["note"] = note
+    workbench.change_log.append(f"{p['asset_id']}: proposal {proposal_id} rejected"
+                                f"{': ' + note if note else ''}")
+    return dict(p)
+
+
+def answer_question(workbench: Workbench, question_id: str, answer: str) -> dict:
+    q = workbench.question(question_id)
+    q["answer"] = answer
+    q["status"] = "answered"
+    q["answered_at"] = _now()
+    workbench.change_log.append(f"{q['asset_id']}: question {question_id} answered {answer!r}")
+    return dict(q)
 
 
 # ---------------------------------------------------------------------------
@@ -500,28 +639,26 @@ def postcheck_numbers(final_text: str, tool_results: list[str], asset_id: str = 
 
 
 # ---------------------------------------------------------------------------
-# Triage loop
+# Investigation loop
 # ---------------------------------------------------------------------------
-SYSTEM_PROMPT = """You are the edge-case triage agent of FireLine, a wildfire values-at-risk decision layer for the INFOCAT director and the municipal coordinator. A deterministic engine has already tiered every asset and decided confine/evacuate. You handle only the assets it flagged as needs_review, one at a time, with the tools provided.
+SYSTEM_PROMPT = """You are the investigation agent of FireLine, a wildfire values-at-risk coordination layer for the analyst on duty. Code has already scored every asset by proximity, size and value. You handle one flagged asset at a time with four tools: get_asset, lookup_facility, propose_update, escalate.
 
 Rules (binding):
-1. Tool results only. Every number you state must come verbatim from a tool result in this conversation. Call get_decision before quoting anything. Never estimate, round differently, or recall a figure from memory. If you have no tool result for a number, do not state it.
-2. Autonomy is asymmetric. You may move an asset only in the pessimistic direction on your own with add_override: occupancy up, tier towards act_now, shelter_viable to false. Every override carries a source and a verbatim quoted_snippet. Any optimistic move (lower occupancy, "not in session", "track is passable", "bungalows so shelter is viable") must go through escalate: one specific question the coordinator can answer in one click, with options and the pessimistic default, which is applied until answered.
-3. Never issue an order. Start your final message with "Recommendation, not an order." Keep it to a few lines: what you found, what you overrode with what evidence, what you escalated with which default.
-4. Stay within the step budget. Do the minimum investigation that resolves or escalates the reason codes, then stop.
+1. Tool results only. Every number you state must come verbatim from a tool result in this conversation. Call get_asset first. Never estimate, round differently, or recall a figure from memory. If you have no tool result for a number, do not state it.
+2. You change nothing. Every field update is a proposal (propose_update) that the analyst confirms or rejects; every open point is a question (escalate) with options and a cautious default. You never assign teams, never change the scoring policy and never claim an update is applied.
+3. Capacity is not occupancy. A register or page stating places, capacity, capacitat or total_places is evidence for the field `capacity`. It is never evidence for `estimated_occupancy`, which needs a source stating how many people are actually present (a headcount). If you only have a capacity, propose capacity and escalate the headcount question.
+4. Match before you trust. Use lookup_facility with the asset's name and municipality; accept a candidate only when name and municipality both match. Quote the evidence verbatim in quoted_snippet and pass its url and observed_at when the candidate has them.
+5. Never issue an order. Start your final message with "Recommendation, not an order." Keep it to a few lines: what you found, what you proposed with what evidence (pending confirmation), what you escalated with which default.
+6. Stay within the step budget. Do the minimum that resolves or escalates each review reason, then stop. Leave what you cannot support unresolved rather than guessing.
 
-Reason-code playbook:
-- occupancy_unknown: lookup_facility(name). If a register row matches by name AND municipality and has a capacity, add_override occupancy = that capacity, source = the register, quoted_snippet = the row's name, municipality and capacity. If no capacity is found anywhere, escalate "occupied today?" default yes (fold into the seasonal question if occupancy_seasonal is also present). Do not invent a capacity.
-- occupancy_seasonal (camp, school, second homes): escalate "in session / people on site today?" options yes/no, default yes. If a register or page states a capacity, add_override occupancy to it first (pessimistic).
-- class_ambiguous (campsite tents vs bungalows): escalate with the two readings, default the pessimistic one (tents: shelter not viable; field shelter_viable, default_value false).
-- no_exit: escalate "only exit is a track, passable by car?" options yes/no, default no. If the asset is a masia or campsite, add_override shelter_viable = false (source: routing) so the decision is confine and request protection.
+Review-reason playbook:
+- occupancy_unknown: lookup_facility(name, municipality). If a candidate matches by name and municipality and states a capacity, propose_update field=capacity with the snippet (not estimated_occupancy). Then escalate "how many people are present today?" unless the evidence states a headcount, in which case propose estimated_occupancy from that headcount. If nothing matches, escalate whether the site is occupied today; do not invent a capacity.
+- occupancy_seasonal (camp, school, second homes): escalate "in session / people on site today?" options yes/no, default yes. Fold the headcount question into it when both reasons are present.
+- class_ambiguous: if the evidence states the class (e.g. the page says the places are bungalows, or the register lists the type), propose_update field=asset_type with the snippet; otherwise escalate with the two readings as options and the more cautious one as default.
+- location_unknown: lookup_facility; escalate "confirm address / coordinates" quoting the address found in the evidence if any. Do not propose coordinates.
+- value_unknown: propose asset_type when the evidence resolves the class; otherwise escalate which class applies.
+- exposure_unknown: escalate; there is no fire geometry or location to compute exposure from and you cannot supply one.
 """
-
-
-def _asset_ids_in_tier_order(scenario) -> list[str]:
-    rows = [a for a in scenario.assets if a.get("needs_review")]
-    rows.sort(key=lambda a: (TIER_RANK.get(a["tier"], 99), a.get("lead_adjusted_p10_min", math.inf), a["asset_id"]))
-    return [a["asset_id"] for a in rows]
 
 
 def _block_to_dict(block) -> dict:
@@ -534,22 +671,40 @@ def _block_to_dict(block) -> dict:
     return {"type": block.type}
 
 
-def _first_message(scenario, asset: dict) -> str:
-    payload = {"scenario_id": scenario.id, "reason_codes": list(asset["needs_review"]), "asset": trim_asset(asset)}
-    return ("Triage this needs_review asset. Reason codes and the engine's row follow as JSON. "
-            "Resolve pessimistically with evidence or escalate, then give your short final message.\n"
-            + json.dumps(payload, ensure_ascii=False))
+def _first_message(asset: dict) -> str:
+    payload = {"asset_id": asset["asset_id"], "name": asset.get("name"), "municipality": asset.get("municipality"),
+               "asset_type": asset.get("asset_type"), "review_reasons": list(asset.get("review_reasons") or [])}
+    return ("Investigate this flagged asset. Its id, name and review reasons follow as JSON. Call get_asset "
+            "first, look up evidence, then propose sourced updates or escalate questions, and give your short "
+            "final message.\n" + json.dumps(payload, ensure_ascii=False))
 
 
-def triage_asset(scenario, asset_id: str, llm, max_steps: int = 6, store: ScenarioStore | None = None) -> dict:
-    """Run one investigate-resolve-or-escalate loop for a single asset."""
-    store = store or STORE
-    asset = scenario.asset(asset_id)
-    reason_codes = list(asset["needs_review"])
-    n_over0 = len(asset.get("overrides") or [])
-    n_esc0 = sum(1 for e in scenario.queue if e["asset_id"] == asset_id)
+def llm_mode(llm) -> str:
+    """'fake' for FakeLLM (or None), 'live' for AnthropicLLM, else 'custom'."""
+    from .llm import AnthropicLLM, FakeLLM
 
-    messages: list[dict] = [{"role": "user", "content": _first_message(scenario, asset)}]
+    if llm is None or isinstance(llm, FakeLLM):
+        return "fake"
+    if isinstance(llm, AnthropicLLM):
+        return "live"
+    return "custom"
+
+
+def investigate(workbench: Workbench, asset_id: str, llm=None, max_steps: int = 6) -> dict:
+    """One bounded investigate-propose-or-escalate loop for a single asset. Returns the record
+    described in CONTRACTS 6: tool_calls, final_text, proposals_added, questions_added, postcheck_ok,
+    llm_mode (+ asset_id, name, review_reasons, steps)."""
+    if llm is None:
+        from .llm import FakeLLM
+
+        llm = FakeLLM()
+    mode = llm_mode(llm)
+    asset = workbench.asset(asset_id)
+    review_reasons = list(asset.get("review_reasons") or [])
+    n_prop0 = len(workbench.proposals)
+    n_q0 = len(workbench.questions)
+
+    messages: list[dict] = [{"role": "user", "content": _first_message(asset)}]
     tool_result_strings: list[str] = []
     tool_calls: list[dict] = []
     final_text = ""
@@ -571,7 +726,7 @@ def triage_asset(scenario, asset_id: str, llm, max_steps: int = 6, store: Scenar
             break
         results = []
         for u in uses:
-            result = dispatch(u["name"], u["input"], store=store)
+            result = dispatch(u["name"], u["input"], workbench=workbench)
             result_str = json.dumps(result, ensure_ascii=False)
             tool_result_strings.append(result_str)
             tool_calls.append({"name": u["name"], "input": u["input"], "result": result})
@@ -581,49 +736,53 @@ def triage_asset(scenario, asset_id: str, llm, max_steps: int = 6, store: Scenar
 
     if hit_cap and not final_text:
         final_text = STEP_CAP_TEXT
-        scenario.change_log.append(f"{asset_id}: step cap ({max_steps}) hit, loop stopped")
+        workbench.change_log.append(f"{asset_id}: step cap ({max_steps}) hit, loop stopped")
 
     ok, bad = postcheck_numbers(final_text, tool_result_strings, asset_id)
     if not ok:
-        scenario.change_log.append(
+        workbench.change_log.append(
             f"{asset_id}: agent message withheld, number post-check failed on {bad}: {final_text[:160]!r}")
         final_text = POSTCHECK_FAILED_TEXT
     if final_text and not final_text.lower().startswith("recommendation, not an order"):
         final_text = "Recommendation, not an order. " + final_text
 
-    asset = scenario.asset(asset_id)  # re-fetch: overrides may have re-sorted the table
-    overrides_added = (asset.get("overrides") or [])[n_over0:]
-    escalations_added = [e for e in scenario.queue if e["asset_id"] == asset_id][n_esc0:]
+    proposals_added = [dict(p) for p in workbench.proposals[n_prop0:] if p["asset_id"] == asset_id]
+    questions_added = [dict(q) for q in workbench.questions[n_q0:] if q["asset_id"] == asset_id]
     record = {
         "asset_id": asset_id,
-        "name": asset["name"],
-        "reason_codes": reason_codes,
+        "name": asset.get("name"),
+        "review_reasons": review_reasons,
         "steps": steps,
         "tool_calls": tool_calls,
         "final_text": final_text,
-        "overrides_added": overrides_added,
-        "escalations_added": escalations_added,
+        "proposals_added": proposals_added,
+        "questions_added": questions_added,
         "postcheck_ok": ok,
-        "tier": asset["tier"],
-        "decision": (asset.get("decision") or {}).get("decision"),
+        "llm_mode": mode,
     }
-    scenario.change_log.append(
-        f"{asset_id}: triage {','.join(reason_codes)} in {steps} steps: {len(overrides_added)} override(s), "
-        f"{len(escalations_added)} escalation(s), postcheck {'ok' if ok else 'FAILED'}; tier {asset['tier']}, "
-        f"decision {record['decision']}")
+    workbench.change_log.append(
+        f"{asset_id}: investigation ({mode}) {','.join(review_reasons)} in {steps} steps: "
+        f"{len(proposals_added)} proposal(s) pending, {len(questions_added)} question(s) open, "
+        f"postcheck {'ok' if ok else 'FAILED'}")
     return record
 
 
-def triage(scenario, llm=None, max_steps_per_asset: int = 6, store: ScenarioStore | None = None) -> list[dict]:
-    """Edge-case triage over every needs_review asset, in tier order (act_now, prepare, monitor).
-    Returns one record per asset; appends a one-line summary per asset to scenario.change_log."""
+def flagged_asset_ids(workbench: Workbench) -> list[str]:
+    """Assets with review reasons in queue order: needs_review queue first (in the order given, which
+    is the priority module's), then flagged ranked assets by priority rank / score."""
+    flagged = [a for a in workbench.assets.values() if a.get("review_reasons")]
+    review = [a for a in flagged if a.get("queue") == "needs_review" or a.get("priority_score") is None]
+    ranked = [a for a in flagged if a not in review]
+    ranked.sort(key=lambda a: (a.get("priority_rank") if a.get("priority_rank") is not None else math.inf,
+                               -(a.get("priority_score") or 0.0), a["asset_id"]))
+    return [a["asset_id"] for a in review + ranked]
+
+
+def investigate_all(workbench: Workbench, llm=None, max_steps: int = 6) -> list[dict]:
+    """Investigate every asset with review reasons, needs_review queue first, then flagged ranked
+    assets by priority. One record per asset."""
     if llm is None:
         from .llm import FakeLLM
 
         llm = FakeLLM()
-    store = store or STORE
-    store.register(scenario)
-    records = []
-    for asset_id in _asset_ids_in_tier_order(scenario):
-        records.append(triage_asset(scenario, asset_id, llm, max_steps=max_steps_per_asset, store=store))
-    return records
+    return [investigate(workbench, aid, llm=llm, max_steps=max_steps) for aid in flagged_asset_ids(workbench)]

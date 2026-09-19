@@ -1,0 +1,44 @@
+{
+ "collection": "clusters",
+ "received_at": "2026-07-03T09:15:30+00:00",
+ "body": {
+  "type": "FeatureCollection",
+  "features": [
+   {
+    "type": "Feature",
+    "id": "synthetic-gavarres",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.031384,
+      41.947503
+     ]
+    },
+    "properties": {
+     "id": "synthetic-gavarres",
+     "first_observed": "2026-07-03T07:20:00Z",
+     "last_observed": "2026-07-03T09:10:00Z",
+     "active": true,
+     "hotspot_count": 11,
+     "fire_radiative_power": 38.5,
+     "sources": [
+      "MTG_I1"
+     ],
+     "country": "ES",
+     "admin1": "Catalunya"
+    }
+   }
+  ],
+  "numberMatched": 1,
+  "numberReturned": 1,
+  "timeStamp": "2026-07-03T09:15:20Z",
+  "links": [
+   {
+    "rel": "self",
+    "type": "application/geo+json",
+    "href": "https://api.deepfire.co/ogc/features/v1/collections/deepfire:clusters/items"
+   }
+  ]
+ },
+ "note": "SYNTHETIC recorded response built to the documented Deepfire OGC API Features schema (docs.deepfire.co read 2026-09-19). No token was available, so this is not a real provider response; see fixtures/fire/deepfire/README.md."
+}

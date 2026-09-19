@@ -10,6 +10,32 @@ The colleague builds **risk assessment**, which consumes fire updates, discovers
 
 Use [Superpowers](https://github.com/obra/superpowers) for development. Work in a dedicated branch and worktree under this repository's `.worktrees/` directory, publish every task branch to `origin`, and push progress so colleagues can review it. See [AGENTS.md](AGENTS.md) for the persistent workflow.
 
+## 0. Quickstart and repository layout
+
+```sh
+make setup        # uv venv + uv pip install -e ".[dev]"
+make test         # pytest, no network, no LLM key
+make snapshots    # rebuild fixtures/snapshots/ (synthetic fire; real-area facilities) with scripts/make_snapshots.py
+make demo         # streamlit run fireline/app.py: map, ranked table, review queue, tasks, change log
+make investigate  # one agent investigation; live with ANTHROPIC_API_KEY, else a labelled prerecorded replay
+make fetch        # pull real Gencat registers and Open-Meteo wind into data/ (network)
+make precompute   # v0 engine demo (spread CA, routing, decisions); labelled enrichment behind config.FEATURES
+```
+
+`CONTRACTS.md` holds the module APIs that implement section 5 and the coordination side. `fireline/`
+has `snapshot.py` (producer), `fire_input.py` (Deepfire poll or recorded responses, stale status,
+latency), `priority.py` and `tasks.py` (consumer: scoring, SQLite tasks, roster, confirmed overrides),
+`agent.py` and `llm.py` (four-tool investigation), `app.py` (Streamlit) and `config.py` (policies and
+feature flags). The v0 engine (`spread.py`, `routing.py`, `decide.py`, `scenario.py`, `grid.py`,
+`fire_state.py`) stays in the tree behind `config.FEATURES`, off by default.
+
+What is real and what is synthetic: the facilities in `fixtures/real_area/` are a real Gencat
+Equipaments and schools extract for the Gavarres area (2026-09-19); care homes and campsites carry no
+coordinates in their registers and are listed with `location_unknown`. The fire in every committed
+snapshot and recorded provider response is **synthetic** (built to the Deepfire schema; live
+authentication has not been verified because no token was available). `fixtures/evidence.json` is
+labelled manual enrichment. Tasks and overrides persist in `data/fireline.sqlite` (`FIRELINE_DB`).
+
 ## 1. Product and first milestone
 
 "A fire update arrives. These locations need attention first, here is why, and here is what each team needs to investigate or confirm."

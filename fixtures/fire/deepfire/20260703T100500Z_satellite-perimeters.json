@@ -1,0 +1,123 @@
+{
+ "collection": "satellite-perimeters",
+ "received_at": "2026-07-03T10:05:00+00:00",
+ "body": {
+  "type": "FeatureCollection",
+  "features": [
+   {
+    "type": "Feature",
+    "id": "synthetic-gavarres-perim-2",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        3.036915,
+        41.931212
+       ],
+       [
+        3.034464,
+        41.931484
+       ],
+       [
+        3.032225,
+        41.932275
+       ],
+       [
+        3.029896,
+        41.934016
+       ],
+       [
+        3.028837,
+        41.935688
+       ],
+       [
+        3.02638,
+        41.950001
+       ],
+       [
+        3.026991,
+        41.951502
+       ],
+       [
+        3.02799,
+        41.952247
+       ],
+       [
+        3.02895,
+        41.952586
+       ],
+       [
+        3.031052,
+        41.952585
+       ],
+       [
+        3.032799,
+        41.951713
+       ],
+       [
+        3.043942,
+        41.941016
+       ],
+       [
+        3.045,
+        41.939344
+       ],
+       [
+        3.045322,
+        41.936895
+       ],
+       [
+        3.044718,
+        41.935101
+       ],
+       [
+        3.043937,
+        41.934011
+       ],
+       [
+        3.042886,
+        41.933056
+       ],
+       [
+        3.040896,
+        41.931955
+       ],
+       [
+        3.038562,
+        41.931332
+       ],
+       [
+        3.036915,
+        41.931212
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "id": "synthetic-gavarres-perim-2",
+     "cluster_id": "synthetic-gavarres",
+     "computed_at": "2026-07-03T10:00:00Z",
+     "observed_watermark": null,
+     "area_ha": 243.5,
+     "sources": [
+      "MTG_I1",
+      "VIIRS"
+     ],
+     "hotspot_count": 19
+    }
+   }
+  ],
+  "numberMatched": 1,
+  "numberReturned": 1,
+  "timeStamp": "2026-07-03T10:04:30Z",
+  "links": [
+   {
+    "rel": "self",
+    "type": "application/geo+json",
+    "href": "https://api.deepfire.co/ogc/features/v1/collections/deepfire:satellite-perimeters/items"
+   }
+  ]
+ },
+ "note": "SYNTHETIC recorded response built to the documented Deepfire OGC API Features schema (docs.deepfire.co read 2026-09-19). No token was available, so this is not a real provider response; see fixtures/fire/deepfire/README.md."
+}
