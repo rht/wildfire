@@ -1,0 +1,1402 @@
+{
+  "schema_version": "mock-neighbourhood-1",
+  "description": "All buildings, people, calls, timings, values, routes and capacities are synthetic. All destination allocations remain uncommunicated proposals.",
+  "scenario": {
+    "schema_version": "static-priority-1",
+    "scenario_id": "six_building_village",
+    "description": "Synthetic local-metre village; one crew and declared directed travel times. No GPS-derived routing.",
+    "start_id": "START",
+    "horizon_min": 22,
+    "buffer_min": 0,
+    "capabilities": [
+      "assisted_evacuation",
+      "evacuation_transport"
+    ],
+    "locations": [
+      {
+        "asset_id": "CARE",
+        "name": "Pine care home",
+        "x_m": 0,
+        "y_m": 300,
+        "distance_m": 300.0,
+        "people": 20,
+        "assisted": 12,
+        "value": 100,
+        "deadline_min": 26,
+        "fire_arrival_min": 26,
+        "evacuation_min": 18,
+        "forecast_source": "Synthetic village forecast; independent of the diagram",
+        "evacuation_source": "Synthetic whole-building preparation and movement estimate"
+      },
+      {
+        "asset_id": "SCHOOL",
+        "name": "Village primary school",
+        "x_m": 200,
+        "y_m": 250,
+        "distance_m": 320.156,
+        "people": 12,
+        "assisted": 0,
+        "value": 70,
+        "deadline_min": 30,
+        "fire_arrival_min": 30,
+        "evacuation_min": 16,
+        "forecast_source": "Synthetic village forecast; independent of the diagram",
+        "evacuation_source": "Synthetic whole-building preparation and movement estimate"
+      },
+      {
+        "asset_id": "H1",
+        "name": "Oak apartments",
+        "x_m": 100,
+        "y_m": 100,
+        "distance_m": 141.421,
+        "people": 6,
+        "assisted": 0,
+        "value": 20,
+        "deadline_min": 25,
+        "fire_arrival_min": 25,
+        "evacuation_min": 6,
+        "forecast_source": "Synthetic village forecast; independent of the diagram",
+        "evacuation_source": "Synthetic whole-building preparation and movement estimate"
+      },
+      {
+        "asset_id": "H2",
+        "name": "Mill house",
+        "x_m": 350,
+        "y_m": 150,
+        "distance_m": 380.789,
+        "people": 5,
+        "assisted": 0,
+        "value": 25,
+        "deadline_min": 28,
+        "fire_arrival_min": 28,
+        "evacuation_min": 7,
+        "forecast_source": "Synthetic village forecast; independent of the diagram",
+        "evacuation_source": "Synthetic whole-building preparation and movement estimate"
+      },
+      {
+        "asset_id": "H3",
+        "name": "Hill cottages",
+        "x_m": 450,
+        "y_m": 350,
+        "distance_m": 570.088,
+        "people": 4,
+        "assisted": 0,
+        "value": 15,
+        "deadline_min": 32,
+        "fire_arrival_min": 32,
+        "evacuation_min": 6,
+        "forecast_source": "Synthetic village forecast; independent of the diagram",
+        "evacuation_source": "Synthetic whole-building preparation and movement estimate"
+      },
+      {
+        "asset_id": "DEPOT",
+        "name": "Equipment depot",
+        "x_m": 600,
+        "y_m": 200,
+        "distance_m": 632.456,
+        "people": 2,
+        "assisted": 0,
+        "value": 250,
+        "deadline_min": 40,
+        "fire_arrival_min": 40,
+        "evacuation_min": 5,
+        "forecast_source": "Synthetic village forecast; independent of the diagram",
+        "evacuation_source": "Synthetic whole-building preparation and movement estimate"
+      }
+    ],
+    "actions": [
+      {
+        "action_id": "act_CARE",
+        "site_id": "CARE",
+        "duration_min": 8,
+        "deadline_min": 26,
+        "capabilities": [
+          "assisted_evacuation"
+        ],
+        "benefits": [
+          {
+            "asset_id": "CARE",
+            "coverage": 1,
+            "confirmed": true,
+            "evidence": "Synthetic declared action effect at CARE"
+          }
+        ]
+      },
+      {
+        "action_id": "act_SCHOOL",
+        "site_id": "SCHOOL",
+        "duration_min": 6,
+        "deadline_min": 30,
+        "capabilities": [
+          "evacuation_transport"
+        ],
+        "benefits": [
+          {
+            "asset_id": "SCHOOL",
+            "coverage": 1,
+            "confirmed": true,
+            "evidence": "Synthetic declared action effect at SCHOOL"
+          }
+        ]
+      },
+      {
+        "action_id": "act_H1",
+        "site_id": "H1",
+        "duration_min": 2,
+        "deadline_min": 25,
+        "capabilities": [],
+        "benefits": [
+          {
+            "asset_id": "H1",
+            "coverage": 1,
+            "confirmed": true,
+            "evidence": "Synthetic declared action effect at H1"
+          }
+        ]
+      },
+      {
+        "action_id": "act_H2",
+        "site_id": "H2",
+        "duration_min": 2,
+        "deadline_min": 28,
+        "capabilities": [],
+        "benefits": [
+          {
+            "asset_id": "H2",
+            "coverage": 1,
+            "confirmed": true,
+            "evidence": "Synthetic declared action effect at H2"
+          }
+        ]
+      },
+      {
+        "action_id": "act_H3",
+        "site_id": "H3",
+        "duration_min": 2,
+        "deadline_min": 32,
+        "capabilities": [],
+        "benefits": [
+          {
+            "asset_id": "H3",
+            "coverage": 1,
+            "confirmed": true,
+            "evidence": "Synthetic declared action effect at H3"
+          }
+        ]
+      },
+      {
+        "action_id": "act_DEPOT",
+        "site_id": "DEPOT",
+        "duration_min": 2,
+        "deadline_min": 40,
+        "capabilities": [],
+        "benefits": [
+          {
+            "asset_id": "DEPOT",
+            "coverage": 1,
+            "confirmed": true,
+            "evidence": "Synthetic declared action effect at DEPOT"
+          }
+        ]
+      }
+    ],
+    "travel": [
+      {
+        "from": "START",
+        "to": "CARE",
+        "minutes": 1
+      },
+      {
+        "from": "START",
+        "to": "SCHOOL",
+        "minutes": 1
+      },
+      {
+        "from": "START",
+        "to": "H1",
+        "minutes": 1
+      },
+      {
+        "from": "START",
+        "to": "H2",
+        "minutes": 1
+      },
+      {
+        "from": "START",
+        "to": "H3",
+        "minutes": 1
+      },
+      {
+        "from": "START",
+        "to": "DEPOT",
+        "minutes": 1
+      },
+      {
+        "from": "CARE",
+        "to": "SCHOOL",
+        "minutes": 3
+      },
+      {
+        "from": "CARE",
+        "to": "H1",
+        "minutes": 3
+      },
+      {
+        "from": "CARE",
+        "to": "H2",
+        "minutes": 3
+      },
+      {
+        "from": "CARE",
+        "to": "H3",
+        "minutes": 3
+      },
+      {
+        "from": "CARE",
+        "to": "DEPOT",
+        "minutes": 3
+      },
+      {
+        "from": "SCHOOL",
+        "to": "CARE",
+        "minutes": 3
+      },
+      {
+        "from": "SCHOOL",
+        "to": "H1",
+        "minutes": 3
+      },
+      {
+        "from": "SCHOOL",
+        "to": "H2",
+        "minutes": 3
+      },
+      {
+        "from": "SCHOOL",
+        "to": "H3",
+        "minutes": 3
+      },
+      {
+        "from": "SCHOOL",
+        "to": "DEPOT",
+        "minutes": 3
+      },
+      {
+        "from": "H1",
+        "to": "CARE",
+        "minutes": 3
+      },
+      {
+        "from": "H1",
+        "to": "SCHOOL",
+        "minutes": 3
+      },
+      {
+        "from": "H1",
+        "to": "H2",
+        "minutes": 3
+      },
+      {
+        "from": "H1",
+        "to": "H3",
+        "minutes": 3
+      },
+      {
+        "from": "H1",
+        "to": "DEPOT",
+        "minutes": 3
+      },
+      {
+        "from": "H2",
+        "to": "CARE",
+        "minutes": 3
+      },
+      {
+        "from": "H2",
+        "to": "SCHOOL",
+        "minutes": 3
+      },
+      {
+        "from": "H2",
+        "to": "H1",
+        "minutes": 3
+      },
+      {
+        "from": "H2",
+        "to": "H3",
+        "minutes": 3
+      },
+      {
+        "from": "H2",
+        "to": "DEPOT",
+        "minutes": 3
+      },
+      {
+        "from": "H3",
+        "to": "CARE",
+        "minutes": 3
+      },
+      {
+        "from": "H3",
+        "to": "SCHOOL",
+        "minutes": 3
+      },
+      {
+        "from": "H3",
+        "to": "H1",
+        "minutes": 3
+      },
+      {
+        "from": "H3",
+        "to": "H2",
+        "minutes": 3
+      },
+      {
+        "from": "H3",
+        "to": "DEPOT",
+        "minutes": 3
+      },
+      {
+        "from": "DEPOT",
+        "to": "CARE",
+        "minutes": 3
+      },
+      {
+        "from": "DEPOT",
+        "to": "SCHOOL",
+        "minutes": 3
+      },
+      {
+        "from": "DEPOT",
+        "to": "H1",
+        "minutes": 3
+      },
+      {
+        "from": "DEPOT",
+        "to": "H2",
+        "minutes": 3
+      },
+      {
+        "from": "DEPOT",
+        "to": "H3",
+        "minutes": 3
+      }
+    ]
+  },
+  "readiness": {
+    "centres": [
+      {
+        "centre_id": "HALL",
+        "name": "Approved village hall",
+        "remaining_places": 10,
+        "approved": true,
+        "available_until_min": 60,
+        "source": "Synthetic reception approval and capacity"
+      },
+      {
+        "centre_id": "ANNEX",
+        "name": "Approved sports annex",
+        "remaining_places": 5,
+        "approved": true,
+        "available_until_min": 60,
+        "source": "Synthetic reception approval and capacity"
+      }
+    ],
+    "routes": [
+      {
+        "asset_id": "CARE",
+        "centre_id": "HALL",
+        "travel_min": 2,
+        "evacuation_min": 18,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "river-road"
+        ]
+      },
+      {
+        "asset_id": "CARE",
+        "centre_id": "ANNEX",
+        "travel_min": 3,
+        "evacuation_min": 18,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "ridge-road"
+        ]
+      },
+      {
+        "asset_id": "SCHOOL",
+        "centre_id": "HALL",
+        "travel_min": 2,
+        "evacuation_min": 16,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "river-road"
+        ]
+      },
+      {
+        "asset_id": "SCHOOL",
+        "centre_id": "ANNEX",
+        "travel_min": 3,
+        "evacuation_min": 16,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "ridge-road"
+        ]
+      },
+      {
+        "asset_id": "H1",
+        "centre_id": "HALL",
+        "travel_min": 2,
+        "evacuation_min": 6,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "oak-lane"
+        ]
+      },
+      {
+        "asset_id": "H1",
+        "centre_id": "ANNEX",
+        "travel_min": 3,
+        "evacuation_min": 6,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "oak-lane"
+        ]
+      },
+      {
+        "asset_id": "H2",
+        "centre_id": "HALL",
+        "travel_min": 2,
+        "evacuation_min": 7,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "mill-road"
+        ]
+      },
+      {
+        "asset_id": "H2",
+        "centre_id": "ANNEX",
+        "travel_min": 3,
+        "evacuation_min": 7,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "ridge-road"
+        ]
+      },
+      {
+        "asset_id": "H3",
+        "centre_id": "HALL",
+        "travel_min": 2,
+        "evacuation_min": 6,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "river-road"
+        ]
+      },
+      {
+        "asset_id": "H3",
+        "centre_id": "ANNEX",
+        "travel_min": 3,
+        "evacuation_min": 6,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "ridge-road"
+        ]
+      },
+      {
+        "asset_id": "DEPOT",
+        "centre_id": "HALL",
+        "travel_min": 2,
+        "evacuation_min": 5,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "river-road"
+        ]
+      },
+      {
+        "asset_id": "DEPOT",
+        "centre_id": "ANNEX",
+        "travel_min": 3,
+        "evacuation_min": 5,
+        "confirmed": true,
+        "available_until_min": 50,
+        "source": "Synthetic checked route; not derived from straight-line geometry",
+        "road_ids": [
+          "ridge-road"
+        ]
+      }
+    ]
+  },
+  "centre_layout": [
+    {
+      "asset_id": "HALL",
+      "name": "Village hall",
+      "x_m": 700,
+      "y_m": 700
+    },
+    {
+      "asset_id": "ANNEX",
+      "name": "Sports annex",
+      "x_m": 900,
+      "y_m": 600
+    }
+  ],
+  "call_sets": {
+    "shared": [
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "CARE",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": false,
+            "transport_available": false,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Pine care home.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "We need assistance to move people out.",
+              "transport_available": "We need transport arranged.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "SCHOOL",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": false,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Village primary school.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We need transport arranged.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H3",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Hill cottages.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H2",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Mill house.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H1",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Oak apartments.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "DEPOT",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Equipment depot.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      }
+    ],
+    "mixed": [
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "CARE",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": false,
+            "transport_available": false,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.35,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Pine care home.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "We need assistance to move people out.",
+              "transport_available": "We need transport arranged.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "SCHOOL",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": false,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Village primary school.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We need transport arranged.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H1",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Oak apartments.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H2",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": true,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Mill house.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "Please have a person call me.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H3",
+          "status": "no_answer",
+          "answers": {}
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "DEPOT",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Equipment depot.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said."
+            }
+          }
+        }
+      }
+    ],
+    "warnings_acknowledged": [
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "CARE",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": false,
+            "transport_available": false,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Pine care home.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "We need assistance to move people out.",
+              "transport_available": "We need transport arranged.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "SCHOOL",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": false,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Village primary school.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We need transport arranged.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H3",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Hill cottages.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H2",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Mill house.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H1",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Oak apartments.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "DEPOT",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Equipment depot.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      }
+    ],
+    "warning_unconfirmed": [
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "CARE",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": false,
+            "transport_available": false,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Pine care home.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "We need assistance to move people out.",
+              "transport_available": "We need transport arranged.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "SCHOOL",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": false,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Village primary school.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We need transport arranged.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H3",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Hill cottages.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H2",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Mill house.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I did not understand which road."
+            },
+            "road_warning_acknowledged": false
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "H1",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Oak apartments.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      },
+      {
+        "kind": "call_result",
+        "interview": {
+          "asset_id": "DEPOT",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is Equipment depot.",
+              "whole_household_confirmed": "I can answer for everyone currently in this building.",
+              "can_self_evacuate": "Everyone here can leave without physical assistance.",
+              "transport_available": "We have suitable transport for everyone.",
+              "wants_human": "No human callback requested.",
+              "acknowledged": "Your readback matches what I said.",
+              "road_warning_acknowledged": "I understand: I must avoid Mill Road."
+            },
+            "road_warning_acknowledged": true
+          }
+        }
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "village_shared_capacity",
+      "profile": "neighbourhood",
+      "title": "Village: six buildings share two reception centres",
+      "description": "Six buildings contain 49 people. The care home needs physical assistance and the school needs transport. Three households compete for 15 reception places; the equipment depot also needs reception. Lower-priority households answer before Oak apartments, changing provisional allocations.",
+      "call_set": "shared",
+      "events": [],
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "undetermined"
+      }
+    },
+    {
+      "name": "village_mixed_escalations",
+      "profile": "neighbourhood",
+      "title": "Village: simultaneous help and human requests",
+      "description": "Low-confidence assistance at the care home, a school without transport, a human request at Mill house, unanswered Hill cottages, and two supported self-evacuation reports must remain separate.",
+      "call_set": "mixed",
+      "events": [],
+      "expected_modes": {
+        "CARE": "undetermined",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "undetermined",
+        "H3": "undetermined",
+        "DEPOT": "self_evacuate"
+      }
+    },
+    {
+      "name": "village_road_closure",
+      "profile": "neighbourhood",
+      "title": "Village: Oak apartments loses both exit routes",
+      "description": "After all six calls, Oak Lane closes and both supplied routes from Oak apartments become unavailable. The incident-wide warning requires fresh acknowledgement from all buildings; previous interviews remain in history.",
+      "call_set": "shared",
+      "events": [
+        {
+          "kind": "route_update",
+          "asset_id": "H1",
+          "confirmed": false,
+          "road_warnings": [
+            {
+              "road_id": "oak-lane",
+              "road_name": "Oak Lane",
+              "reason": "fire and smoke reported on the road",
+              "source": "Synthetic incident command update"
+            }
+          ]
+        }
+      ],
+      "expected_modes": {
+        "CARE": "undetermined",
+        "SCHOOL": "undetermined",
+        "H1": "undetermined",
+        "H2": "undetermined",
+        "H3": "undetermined",
+        "DEPOT": "undetermined"
+      }
+    },
+    {
+      "name": "village_centre_closes",
+      "profile": "neighbourhood",
+      "title": "Village: the reception hall closes",
+      "description": "After initial allocations, the 10-place hall loses approval. The 5-place annex cannot accommodate all households. Existing follow-up tasks remain open.",
+      "call_set": "shared",
+      "events": [
+        {
+          "kind": "centre_update",
+          "centre_id": "HALL",
+          "approved": false
+        }
+      ],
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "undetermined",
+        "H2": "self_evacuate",
+        "H3": "undetermined",
+        "DEPOT": "undetermined"
+      }
+    },
+    {
+      "name": "village_fire_turns",
+      "profile": "neighbourhood",
+      "title": "Village: fire reaches Mill house sooner",
+      "description": "A revised forecast puts Mill house inside its evacuation window. It becomes the first contact and loses its self-evacuation proposal; no automatic evacuation order is issued.",
+      "call_set": "shared",
+      "events": [
+        {
+          "kind": "forecast_update",
+          "asset_id": "H2",
+          "fire_arrival_min": 6
+        }
+      ],
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "undetermined",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      }
+    },
+    {
+      "name": "village_new_help_report",
+      "profile": "neighbourhood",
+      "title": "Village: a household calls back needing help",
+      "description": "Oak apartments initially reports it can leave. A second evidenced interview says it now needs assistance. Keep both call records, use the latest assessment and add assistance work.",
+      "call_set": "shared",
+      "events": [
+        {
+          "kind": "call_result",
+          "interview": {
+            "asset_id": "H1",
+            "status": "completed",
+            "answers": {
+              "identity_confirmed": true,
+              "whole_household_confirmed": true,
+              "can_self_evacuate": false,
+              "transport_available": false,
+              "wants_human": false,
+              "acknowledged": true,
+              "confidence": 0.95,
+              "confidence_basis": "synthetic_review",
+              "evidence": {
+                "identity_confirmed": "Yes, this is Oak apartments.",
+                "whole_household_confirmed": "I can answer for everyone currently in this building.",
+                "can_self_evacuate": "We need assistance to move people out.",
+                "transport_available": "We need transport arranged.",
+                "wants_human": "No human callback requested.",
+                "acknowledged": "Your readback matches what I said."
+              }
+            }
+          }
+        }
+      ],
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "assisted_evacuation",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      }
+    },
+    {
+      "name": "village_resource_loss",
+      "profile": "neighbourhood",
+      "title": "Village: specialist capability is lost",
+      "description": "The single crew loses its assisted-evacuation and evacuation-transport capabilities. Care-home and school actions become blocked; their assistance tasks remain.",
+      "call_set": "shared",
+      "events": [
+        {
+          "kind": "resource_update",
+          "capabilities": []
+        }
+      ],
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "undetermined"
+      }
+    },
+    {
+      "name": "village_road_warning",
+      "profile": "neighbourhood",
+      "title": "Village: dangerous road and acknowledged warning",
+      "description": "Mill Road is reported dangerous. Routes using it are excluded, each call receives the named warning, and residents must acknowledge it. Mill house uses the annex route.",
+      "call_set": "warnings_acknowledged",
+      "road_warnings": [
+        {
+          "road_id": "mill-road",
+          "road_name": "Mill Road",
+          "reason": "fire reported beside the bridge",
+          "source": "Synthetic incident command update"
+        }
+      ],
+      "events": [],
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "self_evacuate",
+        "H3": "self_evacuate",
+        "DEPOT": "undetermined"
+      }
+    },
+    {
+      "name": "village_road_warning_unconfirmed",
+      "profile": "neighbourhood",
+      "title": "Village: dangerous road and unconfirmed warning",
+      "description": "Mill Road is reported dangerous. Routes using it are excluded, each call receives the named warning, and residents must acknowledge it. Mill house cannot confirm the warning and needs a human callback.",
+      "call_set": "warning_unconfirmed",
+      "road_warnings": [
+        {
+          "road_id": "mill-road",
+          "road_name": "Mill Road",
+          "reason": "fire reported beside the bridge",
+          "source": "Synthetic incident command update"
+        }
+      ],
+      "events": [],
+      "expected_modes": {
+        "CARE": "assisted_evacuation",
+        "SCHOOL": "assisted_evacuation",
+        "H1": "self_evacuate",
+        "H2": "undetermined",
+        "H3": "self_evacuate",
+        "DEPOT": "self_evacuate"
+      }
+    }
+  ]
+}

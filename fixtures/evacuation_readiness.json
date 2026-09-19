@@ -1,0 +1,48 @@
+{
+  "schema_version": "household-readiness-1",
+  "description": "Synthetic interview results for the O/B/C/A fixture. No real call was made. All confidence and timing values are illustrative.",
+  "assessments": [
+    {
+      "asset_id": "A", "call_id": "demo-A", "status": "completed", "observed_min": 0,
+      "source": "synthetic interview", "identity_confirmed": true,
+      "whole_household_confirmed": true, "can_self_evacuate": false,
+      "transport_available": false, "wants_human": false, "confidence": 0.96,
+      "evidence": "I coordinate all 80 residents at A. Sixty need assistance. We need emergency transport."
+    },
+    {
+      "asset_id": "B", "call_id": "demo-B", "status": "completed", "observed_min": 0,
+      "source": "synthetic interview", "identity_confirmed": true,
+      "whole_household_confirmed": true, "can_self_evacuate": true,
+      "transport_available": true, "wants_human": false, "confidence": 0.95,
+      "evidence": "I am speaking for all eight residents at B. Everyone can leave in our two cars. No callback needed."
+    },
+    {
+      "asset_id": "C", "call_id": "demo-C", "status": "no_answer", "observed_min": 0,
+      "source": "synthetic unanswered call", "evidence": "No response; ability and transport remain unknown."
+    }
+  ],
+  "centres": [
+    {
+      "centre_id": "community_centre", "name": "Designated community reception centre",
+      "remaining_places": 10, "approved": true, "available_until_min": 60,
+      "source": "synthetic analyst-approved reception site, capacity and availability"
+    },
+    {
+      "centre_id": "nearby_hospital", "name": "Nearby hospital, not designated for reception",
+      "remaining_places": 100, "approved": false, "available_until_min": 60,
+      "source": "synthetic site; no reception approval"
+    }
+  ],
+  "routes": [
+    {
+      "asset_id": "B", "centre_id": "community_centre", "travel_min": 2, "evacuation_min": 4,
+      "confirmed": true, "available_until_min": 30,
+      "source": "synthetic checked route and total preparation/movement estimate"
+    },
+    {
+      "asset_id": "B", "centre_id": "nearby_hospital", "travel_min": 1, "evacuation_min": 3,
+      "confirmed": true, "available_until_min": 30,
+      "source": "synthetic route only; hospital is not a designated destination"
+    }
+  ]
+}

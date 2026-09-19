@@ -19,8 +19,6 @@ import streamlit as st
 from fireline import config, priority, snapshot, tasks
 from fireline.ui_state import Session, llm_available
 
-st.set_page_config(page_title="FireLine", layout="wide", page_icon=":fire:")
-
 STATUS_COLOUR = {"current": "green", "stale": "orange", "unavailable": "red"}
 GREY = [150, 150, 150, 200]
 RED, ORANGE, YELLOW = [200, 30, 30, 230], [240, 140, 20, 230], [235, 210, 40, 230]
@@ -579,6 +577,11 @@ def render_selected(sess: Session, asset: dict) -> None:
 
 # ----------------------------------------------------------------------------- main
 def main() -> None:
+    st.set_page_config(page_title="FireLine", layout="wide", page_icon=":fire:")
+    if st.sidebar.toggle("Mock voice scenarios", value=st.query_params.get("demo") == "voice", key="mock_voice_mode"):
+        from fireline.voice_demo_panel import render_voice_demo
+        render_voice_demo()
+        return
     sess = session()
     if sess.scenario_id is None and sess.scenario_ids:
         sess.select_scenario(DEFAULT_SCENARIO if DEFAULT_SCENARIO in sess.scenario_ids else sess.scenario_ids[0])
@@ -670,4 +673,5 @@ def main() -> None:
             st.write(f"- {line}")
 
 
-main()
+if __name__ == "__main__":
+    main()
