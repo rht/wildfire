@@ -236,7 +236,8 @@ class TaskStore:
     # -- tasks -------------------------------------------------------------------------------
 
     def create_task(self, asset_id: str, action: str, reason: str, *, required_capabilities=None,
-                    snapshot_id: str | None, notes: str = "", suggested: bool = False) -> dict:
+                    snapshot_id: str | None, notes: str = "", suggested: bool = False,
+                    commit: bool = True) -> dict:
         if action not in self.cfg.TASK_ACTIONS:
             raise ValueError(f"unknown action {action!r}; expected one of {list(self.cfg.TASK_ACTIONS)}")
         caps = list(required_capabilities) if required_capabilities is not None else list(self.cfg.TASK_ACTIONS[action])
@@ -250,7 +251,8 @@ class TaskStore:
             (task_id, asset_id, action, reason, json.dumps(caps), notes, now, now, snapshot_id, int(bool(suggested))))
         self._event("task_created", f"{'suggested' if suggested else 'created'} {action} task: {reason}",
                     asset_id=asset_id, task_id=task_id)
-        self.conn.commit()
+        if commit:
+            self.conn.commit()
         return self.get(task_id)
 
     def get(self, task_id: str) -> dict:
