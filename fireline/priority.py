@@ -165,6 +165,17 @@ def _apply_one(asset: dict, override: dict, cfg) -> None:
             asset["value_score"] = None
             if "value_unknown" not in reasons:
                 reasons.append("value_unknown")
+        # The class also selects the policy evacuation duration; an analyst-confirmed duration is kept.
+        if not str(asset.get("evacuation_source") or "").startswith("analyst override"):
+            total, version, note = _policy_evacuation(value, cfg)
+            asset["evacuation_min"], asset["evacuation_source"] = total, version
+            asset["sources"].insert(len(asset["sources"]) - 1, {      # before the override's own entry
+                "fields": ["evacuation_min", "evacuation_source"], "source": "config.EVACUATION_POLICY",
+                "observed_at": None, "available_at": override.get("confirmed_at"), "fetched_at": None,
+                "notes": note or f"no evacuation policy for class {value!r} after asset_type override"})
+            reasons = [r for r in reasons if r != EVACUATION_UNKNOWN]
+            if total is None:
+                reasons.append(EVACUATION_UNKNOWN)
     elif field == "evacuation_min":
         if value is not None:
             asset["evacuation_min"] = float(value)
@@ -178,6 +189,33 @@ def _apply_one(asset: dict, override: dict, cfg) -> None:
         reasons.append(OVERRIDE_CONFLICT)
     asset["review_reasons"] = reasons
     asset["needs_review"] = bool(reasons)
+
+
+def _policy_evacuation(asset_type, cfg=config):
+    """(evacuation_min, policy version, note) from cfg.EVACUATION_POLICY for a class; (None, None, None) when
+    the class has no policy row. Mirrors the producer (snapshot._evacuation) so an asset_type override keeps
+    the duration consistent with the confirmed class."""
+    policy = cfg.EVACUATION_POLICY
+    row = policy["by_type"].get(asset_type)
+    if row is None:
+        return None, None, None
+    components = [c for c in policy["components"] if row.get(c) is not None]
+    total = float(sum(float(row[c]) for c in components))
+    breakdown = ", ".join(f"{c.removesuffix('_min')} {row[c]:g} min" for c in components)
+    note = (f"policy {policy['version']} for class {asset_type} after asset_type override: {breakdown} = {total:g} min; "
+            f"assumptions: {row.get('assumptions') or 'none stated'}; labelled prototype assumption, analyst override allowed")
+    return total, policy["version"], note
+
+
+def window_bucket(slack_min, cfg=config) -> str | None:
+    """Coarse attention bucket of a remaining window: None (unranked), "exhausted" (<= 0), "small"
+    (<= CONTACT_POLICY["attention_min"]) or "open". Task flagging and the map colour use it, so a window
+    that merely shrinks with elapsed time does not flag every open task on every update."""
+    if slack_min is None:
+        return None
+    if slack_min <= 0:
+        return "exhausted"
+    return "small" if slack_min <= cfg.CONTACT_POLICY.get("attention_min", 60) else "open"
 
 
 def apply_overrides(assets: list[dict], overrides: list[dict] | None, cfg=config) -> list[dict]:

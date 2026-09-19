@@ -21,7 +21,7 @@ st.set_page_config(page_title="FireLine", layout="wide", page_icon=":fire:")
 STATUS_COLOUR = {"current": "green", "stale": "orange", "unavailable": "red"}
 GREY = [150, 150, 150, 200]
 RED, ORANGE, YELLOW = [200, 30, 30, 230], [240, 140, 20, 230], [235, 210, 40, 230]
-SMALL_WINDOW_MIN = 60          # display threshold for the map colour only; not a policy value
+SMALL_WINDOW_MIN = config.CONTACT_POLICY["attention_min"]   # "small window" threshold shared with task flagging
 DEFAULT_SCENARIO = "synthetic_gavarres"
 
 
@@ -92,10 +92,12 @@ def try_action(label: str, fn, *args, **kwargs) -> bool:
 
 
 # ----------------------------------------------------------------------------- map
-def polygon_rows(geometry: dict) -> list[dict]:
+def polygon_rows(geometry: dict, geometry_kind: str | None = None) -> list[dict]:
     kind = geometry.get("type")
     polys = [geometry["coordinates"]] if kind == "Polygon" else geometry["coordinates"] if kind == "MultiPolygon" else []
-    return [{"polygon": rings, "tip": "fire perimeter (surveyed/synthetic footprint)"} for rings in polys]
+    tip = ("simulated burned area (fire-spread run), not an observed perimeter" if geometry_kind == "simulated"
+           else "fire perimeter (surveyed/synthetic footprint)")
+    return [{"polygon": rings, "tip": tip} for rings in polys]
 
 
 def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
@@ -103,7 +105,7 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
     layers, lons, lats = [], [], []
     geometry = snap.get("fire_geometry")
     if geometry and geometry.get("type") in ("Polygon", "MultiPolygon"):
-        rows = polygon_rows(geometry)
+        rows = polygon_rows(geometry, snap.get("fire_geometry_kind"))
         layers.append(pdk.Layer("PolygonLayer", data=rows, get_polygon="polygon", get_fill_color=[160, 20, 20, 90],
                                 get_line_color=[140, 0, 0], line_width_min_pixels=2, stroked=True, filled=True,
                                 pickable=True))

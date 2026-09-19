@@ -16,6 +16,7 @@ File format `forecast-input-1`:
       "forecast_source": str,                    # provider/method label copied to asset.forecast_source
       "input_mode": "synthetic" | "recorded" | "live",   # synthetic = hand-designed, not a provider forecast
       "issued_at": iso,                          # when the estimates were issued (asset sources.observed_at)
+      "received_at": iso | absent,               # optional: response receipt time (asset sources available_at/fetched_at)
       "forecast_horizon_at": iso,                # end of the forecast run; arrivals never exceed it
       "basis": "p10" | "p50" | <other>,          # semantics of the single `arrival_at` estimate, or the declared quantile
       "note": str,                               # method and, for synthetic files, the design reasoning
@@ -208,7 +209,8 @@ def attach_forecast(assets, forecast) -> None:
         fields = [k for k in FORECAST_FIELDS if values[k] is not None]
         rec.setdefault("sources", []).append({
             "fields": fields, "source": forecast["forecast_source"], "observed_at": issued,
-            "available_at": None, "fetched_at": None, "notes": _method_note(forecast, basis)})
+            "available_at": forecast.get("received_at"), "fetched_at": forecast.get("received_at"),
+            "notes": _method_note(forecast, basis)})
         if arrival is None:
             _mark_unavailable(rec)
 
@@ -234,7 +236,8 @@ def _spread_hours(features, min_burn_probability: float | None):
         props = ft.get("properties") or {}
         if "hour" not in props or "elapsed_seconds" not in props:
             raise ValueError("fire-spread feature without hour/elapsed_seconds")
-        bp = props.get("burn_probability", 1.0)
+        bp = props.get("burn_probability")
+        bp = 1.0 if bp is None else float(bp)      # a single-member run carries no band probability
         if min_burn_probability is not None and bp < min_burn_probability:
             continue
         per_hour.setdefault((int(props["hour"]), int(props["elapsed_seconds"])), []).append(make_valid(shape(ft["geometry"])))
@@ -305,6 +308,7 @@ def deepfire_spread_to_forecast(body: dict, received_at, asset_points: dict, *, 
         "forecast_source": f"deepfire:fire-spread/{body['model']}/{body['id']}",
         "input_mode": input_mode,
         "issued_at": created.isoformat(),
+        "received_at": _iso(received_at),          # optional: when the response was received (sources fetched_at)
         "forecast_horizon_at": horizon.isoformat(),
         "basis": basis,
         "note": note,

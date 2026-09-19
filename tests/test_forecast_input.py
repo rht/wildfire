@@ -300,3 +300,13 @@ def test_recorded_real_fire_spread_runs_parse_into_valid_forecasts(name):
     assert covered["estimates"] == {}   # about 20 ha burned, nearest facility 5.3 km away: stated in the READMEs
     with pytest.raises(ValueError, match="not a fire-spread"):
         read_recorded_spread(REAL_DIR / "20260919T131340Z_clusters.json")
+
+
+def test_adapter_null_burn_probability_is_deterministic_and_receipt_time_is_recorded():
+    body = spread_body([feat(box(3.0, 41.9, 3.01, 41.91), 1, burn_probability=None)])
+    fc = deepfire_spread_to_forecast(body, T_CREATED, {"a:p": (3.005, 41.905)})
+    assert fc["estimates"]["a:p"]["arrival_at"] == (T_CREATED + timedelta(hours=1)).isoformat()
+    assert fc["received_at"] == T_CREATED.isoformat()
+    rec = asset("a:p")
+    attach_forecast([rec], fc)
+    assert rec["sources"][-1]["fetched_at"] == T_CREATED.isoformat() and rec["sources"][-1]["available_at"] == T_CREATED.isoformat()

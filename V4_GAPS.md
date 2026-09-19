@@ -1,7 +1,7 @@
 # Gaps between the first-draft code and the v4 MVP (readme.md)
 
 Status on 2026-09-19, branches `claude/close-v4-gaps` and `claude/window-ranking`. The first draft (`13e0b74`) was built against
-PLAN.md v3; this pass closes the v4 gaps listed below against `readme.md` and `CONTRACTS.md` v1.0.
+PLAN.md v3; this pass closes the v4 gaps listed below against `readme.md` and `CONTRACTS.md` (now v1.1).
 Every row now carries a status. Recorded check outcomes are in `VALIDATION.md`
 (`scripts/validate.py --write`).
 
@@ -77,7 +77,7 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 |---|---|---|
 | Branching | Closed | this work is on `claude/close-v4-gaps` in `.worktrees/close-v4-gaps`, pushed with upstream tracking |
 | Superpowers workflow | Open | not installed in this session either; the brainstorm, plan, verify sequence was followed manually |
-| Reference document | Closed | `readme.md` owns scope; `CONTRACTS.md` v1.0 restates its section 5; AGENTS.md points at both |
+| Reference document | Closed | `readme.md` owns scope; `CONTRACTS.md` v1.1 restates its section 5; AGENTS.md points at both |
 | Two readmes | Closed | `QUICKSTART.md` merged into `readme.md` section 0 |
 
 ## Divergence from readme after merging `origin/main` (d0473c1) — resolved on `claude/window-ranking`

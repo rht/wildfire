@@ -149,7 +149,7 @@ One record represents **one facility in one scenario snapshot**. Coordinates are
 
 | Field | Type and meaning |
 |---|---|
-| `schema_version` | String; start with `1.0` for this MVP contract. |
+| `schema_version` | String; `1.1` for this MVP contract (`1.0` files still load; their timing keys read as null). |
 | `scenario_id`, `incident_id` | Strings identifying the scenario and source incident. |
 | `snapshot_id`, `sequence` | Unique snapshot string and monotonically increasing integer within the scenario. |
 | `as_of`, `computed_at` | UTC timestamps: information cutoff and calculation completion. |

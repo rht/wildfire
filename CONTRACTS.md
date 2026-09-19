@@ -108,8 +108,8 @@ Point fallback for distance is recorded in `sources` with `fields: ["distance_to
 `"point fallback: facility footprint missing"`.
 
 v1.1 timing fields (readme 5.2 and 6). `fire_arrival_at` is the producer's selected spread-predicted
-arrival for this location; `fire_arrival_basis` states its semantics (`"p10"` when the provider
-supplies quantiles, otherwise the provider's single estimate name). It is never inferred from distance:
+arrival for this location; `fire_arrival_basis` states its semantics (`"p10"`, else `"p50"`, else the
+provider's declared basis for its single estimate; section 2.5). It is never inferred from distance:
 when no forecast covers the location it is null and `review_reasons` carries `forecast_unavailable`.
 `forecast_source` and `forecast_horizon_at` are required provenance whenever `fire_arrival_at` is set,
 and a `sources` entry lists the forecast fields. `evacuation_min` is the total estimated evacuation
@@ -136,7 +136,7 @@ snapshot.write_snapshot(snap, path) / snapshot.read_snapshot(path) -> dict
 
 Fixtures: `fixtures/snapshots/synthetic_gavarres_0001.json` (sequence 1, fire at 08:00) and
 `synthetic_gavarres_0002.json` (sequence 2, fire advanced; the window order changes and some windows are
-exhausted; one asset with `location_unknown`, one with `occupancy_unknown`, one with `class_ambiguous`,
+exhausted; one asset with `location_unknown`, two with `occupancy_unknown`, one with `class_ambiguous`,
 one located asset without a forecast). Both `input_mode: "synthetic"` with the synthetic forecasts of
 `fixtures/forecast/`. `gavarres_real_0001..0003.json` are the real facilities with real recorded July
 perimeters and no forecast (every asset `forecast_unavailable`); `gavarres_real_0004.json` is the real
@@ -223,6 +223,7 @@ priority.rank_asset(asset, now_at, cfg=config) -> dict      # adds the coordinat
 priority.rank_snapshot(snap, cfg=config, overrides=None, now_at=None) -> {"ranked": [...], "needs_review": [...], "flagged": [...], "all": [...], "now_at": str, "policy": {...}}
     # now_at defaults to snap["as_of"] (CONTACT_POLICY["now"]); flagged = ranked assets that still carry review reasons
 priority.input_age(asset, now=None) -> {"oldest_observed_at", "newest_fetched_at", ...ages when now given}
+priority.window_bucket(slack_min, cfg=config) -> None | "exhausted" | "small" | "open"   # small: <= CONTACT_POLICY["attention_min"]
 ```
 
 Added keys per asset:
@@ -253,7 +254,9 @@ the readme) with timestamps converted to minutes from `now_at`; a test asserts a
 
 `apply_overrides` behaviour from v1.0 is kept (occupancy/capacity, `asset_type` re-derives
 `value_score`, `override_conflict`). v1.1 adds field `evacuation_min`: sets `evacuation_source =
-"analyst override: <source>"` and clears `evacuation_unknown`. Overrides on `fire_arrival_at` are not
+"analyst override: <source>"` and clears `evacuation_unknown`. An `asset_type` override also re-derives
+the policy evacuation duration for the confirmed class (with a `config.EVACUATION_POLICY` sources entry)
+unless an analyst-confirmed duration is already in place. Overrides on `fire_arrival_at` are not
 accepted (forecasts come from the producer).
 
 ## 5. Tasks and roster — `fireline/tasks.py` (SQLite)
@@ -280,7 +283,8 @@ class TaskStore:                       # tasks.TaskStore(path=":memory:" | Path)
     confirm_override(asset_id, field, value, *, source, snippet, url=None, observed_at=None, confidence, proposal_id=None) -> override
     overrides(asset_id=None) -> list[override]      # {override_id, asset_id, field, value, previous, source, snippet, url, observed_at, confidence, confirmed_at}
     apply_snapshot(snap) -> {"accepted": bool, "affected_task_ids": [...], "missing_asset_ids": [...], "changed": [...]}
-        # records snapshot_id; flags open tasks whose asset's distance/intersects/needs_review changed
+        # records snapshot_id; flags open tasks whose asset's distance/intersects/needs_review/fire_arrival_at/
+        # priority_status changed or whose remaining window crossed an attention bucket (priority.window_bucket)
         # ("affected_by_snapshot" = snapshot_id on the task); missing assets keep their tasks and get an event
     events(limit=None) -> list[{"at", "kind", "asset_id", "task_id", "message"}]     # the change log
 ```

@@ -44,7 +44,8 @@ CONTACT_POLICY = {
     "version": "forecast-evacuation-window-v2",
     "buffer_min": 30,              # safety margin subtracted from the latest start; shown in the UI
     "now": "snapshot as_of",       # epoch for time_to_impact / latest_start / remaining window
-    "arrival_basis": "p10 when the provider supports quantiles, else the provider's single estimate",
+    "arrival_basis": "p10, else p50, else the provider's single estimate (its declared basis)",
+    "attention_min": 60,           # windows at or below this are "small": map colour and task flagging bucket
 }
 
 # Total evacuation duration by facility class: mobilisation + preparation/loading + movement to a

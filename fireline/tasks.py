@@ -8,6 +8,7 @@ work, but never changes owners or status. Only the analyst marks a task done or 
 from __future__ import annotations
 
 import json
+import math
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -389,8 +390,8 @@ class TaskStore:
             raise ValueError(f"override field must be one of {list(priority.OVERRIDE_FIELDS)}, got {field!r}"
                              + ("; the forecast arrival comes from the producer" if field == "fire_arrival_at" else ""))
         if field == "evacuation_min":
-            if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0 or value != value:
-                raise ValueError(f"evacuation_min must be a number of minutes >= 0, got {value!r}")
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
+                raise ValueError(f"evacuation_min must be a finite number of minutes >= 0, got {value!r}")
             if not (source or "").strip():
                 raise ValueError("an evacuation duration needs a source (who confirmed it)")
             value = float(value)
@@ -451,16 +452,23 @@ class TaskStore:
             return {}
         try:
             assets = priority.apply_overrides(snap.get("assets") or [], self.overrides(), self.cfg)
-            return {a["asset_id"]: priority.rank_asset(a, snap["as_of"], self.cfg) for a in assets}
         except ValueError:
             return {}
+        out = {}
+        for a in assets:
+            try:
+                out[a["asset_id"]] = priority.rank_asset(a, snap["as_of"], self.cfg)
+            except ValueError:
+                continue     # one malformed asset (e.g. a non-numeric evacuation_min) does not blank the others
+        return out
 
     def apply_snapshot(self, snap: dict) -> dict:
         """Accept or reject a snapshot, refresh exposure bookkeeping and flag affected open tasks.
 
         Flags open tasks whose asset's distance, intersection, needs_review, forecast arrival or
-        window status (window_open / window_exhausted / needs_review) changed; the event names the
-        remaining window before and after. Never changes a task's owner or status. Assets present
+        window status (window_open / window_exhausted / needs_review) changed, or the remaining window
+        crossed an attention bucket (priority.window_bucket: open / small / exhausted, threshold
+        CONTACT_POLICY["attention_min"]); the event names the remaining window before and after. Never changes a task's owner or status. Assets present
         before and missing now keep their tasks, get an event and are flagged; their exposure row is
         kept with present = 0.
         """
@@ -499,6 +507,11 @@ class TaskStore:
             before = previous.get(asset_id)
             if before is not None:
                 diffs = {k: [before.get(k), v] for k, v in current.items() if before.get(k) != v}
+                # a window that crosses an attention bucket (open -> small -> exhausted) flags the task; one that
+                # merely shrinks with elapsed time inside the same bucket does not
+                buckets = [priority.window_bucket(before.get("slack_min"), self.cfg), priority.window_bucket(slack, self.cfg)]
+                if buckets[0] != buckets[1]:
+                    diffs["window_bucket"] = buckets
                 if not before["present"]:
                     diffs["present"] = [False, True]
                 if diffs:

@@ -13,7 +13,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 | Tasks | pass | suggestions 7 then 0; 8 tasks survive reload |
 | Agent (FakeLLM) | pass | 7 runs: 3 proposals {'capacity': 2, 'asset_type': 1}, 6 escalations, 0 occupancy-from-capacity |
 | Agent (live model) | not verified |  |
-| Latency | pass | median 0.098 s for 168 assets (target < 60 s); source age 300 s |
+| Latency | pass | median 0.164 s for 168 assets (target < 60 s); source age 300 s |
 | Stale data | pass | None->unavailable, 0->current, 3599->current, 3600->stale, 21599->stale, 21600->unavailable, -60->current |
 
 8 pass, 0 fail, 1 not verified.
@@ -47,7 +47,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 
 ### Priority: pass
 
-- policy forecast-evacuation-window-v2: buffer 30 min, now = snapshot as_of, arrival basis: p10 when the provider supports quantiles, else the provider's single estimate; evacuation durations from evacuation-proto-2026-09-19 unless overridden
+- policy forecast-evacuation-window-v2: buffer 30 min, now = snapshot as_of, arrival basis: p10, else p50, else the provider's single estimate (its declared basis); evacuation durations from evacuation-proto-2026-09-19 unless overridden
 - arithmetic (arrival +180 min, evacuation 90 min, buffer 30): time_to_impact 180.0, latest start 60.0, remaining window 60.0 (expected 60.0), status window_open; with now 30 min later the window is 30.0: True
 - farther outranks nearer: order ['far_downwind', 'near', 'slow_evac', 'quick_evac'] with windows {'far_downwind': 30.0, 'near': 180.0, 'slow_evac': 190.0, 'quick_evac': 270.0} (far_downwind at 4000 m arrives at +150 min and outranks near at 800 m arriving at +300 min; slow_evac at 1500 m with a 180 min care-home evacuation outranks quick_evac at 600 m): True
 - zero/negative windows: order ['negative', 'zero', 'open'], (window, status) {'negative': (-60.0, 'window_exhausted'), 'zero': (0.0, 'window_exhausted'), 'open': (120.0, 'window_open')}; needs_review empty: True
@@ -83,7 +83,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ### Agent (FakeLLM): pass
 
 - LLM: FakeLLM (offline, scripted; llm_mode ['fake']). A live-model run is pending an ANTHROPIC_API_KEY; scripts/investigate.py replays fixtures/agent/prerecorded_investigation.json until then
-- 7 investigations over 6 flagged fixture assets of synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou; evidence cache fixtures/evidence.json (8 entries, plus data/registers/*.json present locally); 0 assets flagged only for ('forecast_unavailable', 'evacuation_unknown') left to the review queue (no FakeLLM script; forecast is the producer's, evacuation duration is the analyst's evacuation control)
+- 7 investigations over 6 flagged fixture assets of synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou; evidence cache fixtures/evidence.json (8 entries); 0 assets flagged only for ('forecast_unavailable', 'evacuation_unknown') left to the review queue (no FakeLLM script; forecast is the producer's, evacuation duration is the analyst's evacuation control)
 - proposals 3 by field {'capacity': 2, 'asset_type': 1}; escalations 6; per asset {id: (reasons, proposals, questions)}: {'residencia_sense_coordenades': (['location_unknown', 'exposure_unknown', 'forecast_unavailable'], 0, 1), 'mas_nou': (['occupancy_unknown'], 0, 1), 'pou_del_glac': (['occupancy_unknown', 'occupancy_seasonal'], 1, 1), 'escola_cruilles': (['occupancy_seasonal'], 0, 1), 'mas_pla': (['occupancy_seasonal'], 0, 1), 'camping_gavarres': (['class_ambiguous'], 1, 0), 'residencia_la_bisbal': (['occupancy_unknown'], 1, 1)}
 - estimated_occupancy proposals: 0 (evidence carries a headcount field: False); every occupancy proposal is field 'capacity': True
 - post-check ok for all: True; steps <= 6 for all: True; max steps 5
@@ -100,10 +100,10 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ### Latency: pass
 
 - input: 168 real-area assets (fixtures/real_area/assets_gavarres.json) + recorded update 20260703T100500Z_satellite-perimeters.json (deepfire:satellite-perimeters, SYNTHETIC content, observed 2026-07-03T10:00:00+00:00, received 2026-07-03T10:05:00+00:00) through fire_input.load_recorded
-- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.079, 0.098, 0.148] s; median 0.098 s
-- stages of run 1: build 0.033 s, score 0.014 s, apply+suggest 0.032 s; validate errors 0
+- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.177, 0.162, 0.164] s; median 0.164 s
+- stages of run 1: build 0.082 s, score 0.027 s, apply+suggest 0.068 s; validate errors 0
 - result: 0 ranked, 168 needs_review; 91 assets changed vs seq 1, 0 new suggestions on the update (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry no per-location forecast arrival and every asset is a review item until a forecast covers it)
-- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.09812648501247168} (separate numbers, never combined)
+- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.16401429800316691} (separate numbers, never combined)
 - target < 60 s processing for the selected area: met on x86_64, Python 3.14.7
 
 ### Stale data: pass

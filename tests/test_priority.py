@@ -347,3 +347,22 @@ def test_input_age():
     assert age["newest_fetched_age_s"] == 15 * 60
     assert input_age(make_asset(sources=[])) == {"oldest_observed_at": None, "newest_fetched_at": None,
                                                  "oldest_observed_age_s": None, "newest_fetched_age_s": None}
+
+
+def test_apply_overrides_asset_type_rederives_policy_evacuation():
+    version = config.EVACUATION_POLICY["version"]
+    asset = timed("fixture:x", asset_type="campsite", evacuation_min=70.0, evacuation_source=version)
+    a = apply_overrides([asset], [override("fixture:x", "asset_type", "care_home")])[0]
+    assert a["evacuation_min"] == 180.0 and a["evacuation_source"] == version
+    policy_entry = next(s for s in a["sources"] if "after asset_type override" in (s["notes"] or ""))
+    assert "class care_home" in policy_entry["notes"] and policy_entry["fields"] == ["evacuation_min", "evacuation_source"]
+    assert a["sources"][-1]["source"].startswith("analyst override")           # the override entry stays last
+    assert rank_asset(a, AS_OF)["slack_min"] == 180.0 - 180.0 - BUFFER
+    # an analyst-confirmed duration is kept when the class changes
+    confirmed = timed("fixture:y", asset_type="campsite", evacuation_min=45.0, evacuation_source="analyst override: phone")
+    b = apply_overrides([confirmed], [override("fixture:y", "asset_type", "care_home")])[0]
+    assert b["evacuation_min"] == 45.0 and b["evacuation_source"] == "analyst override: phone"
+    # a class without a policy row leaves the duration unknown
+    c = apply_overrides([asset], [override("fixture:x", "asset_type", "warehouse")])[0]
+    assert c["evacuation_min"] is None and c["evacuation_source"] is None and "evacuation_unknown" in c["review_reasons"]
+    assert rank_asset(c, AS_OF)["queue"] == "needs_review"

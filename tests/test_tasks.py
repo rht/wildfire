@@ -254,7 +254,7 @@ def test_apply_snapshot_sequence_and_flagging(store):
 def test_apply_snapshot_flags_window_changes_and_names_the_window(store):
     arrive = lambda h, m=0: f"2026-07-03T{h:02d}:{m:02d}:00+00:00"  # noqa: E731
     a = timed("fixture:a", arrive(11))          # 180 - 90 - 30 = 60 min window
-    b = timed("fixture:b", arrive(12))          # unchanged in seq 2 apart from the elapsed time
+    b = timed("fixture:b", arrive(13))          # unchanged in seq 2 apart from the elapsed time (stays "open")
     c = timed("fixture:c", None)                # no forecast: needs_review
     store.apply_snapshot(make_snapshot([a, b, c], scenario_id="sc", sequence=1))
     ta = store.create_task("fixture:a", "contact_facility", "ra", snapshot_id="sc-0001")
@@ -279,7 +279,7 @@ def test_apply_snapshot_flags_window_changes_and_names_the_window(store):
     assert store.get(tb["task_id"])["affected_by_snapshot_id"] is None
     msg = next(e["message"] for e in store.events() if e["kind"] == "task_affected" and e["task_id"] == ta["task_id"])
     assert "remaining window 60 min -> -60 min" in msg and "score" not in msg
-    assert store.exposure("sc")["fixture:b"]["slack_min"] == 60.0            # bookkeeping follows the new as_of
+    assert store.exposure("sc")["fixture:b"]["slack_min"] == 120.0           # bookkeeping follows the new as_of
     assert store.exposure("sc")["fixture:c"]["priority_status"] == "window_open"
 
 
@@ -390,3 +390,27 @@ def test_store_survives_reopen(tmp_path):
     kinds = [e["kind"] for e in second.events()]
     assert "task_assigned" in kinds and "snapshot_rejected" in kinds and "snapshot_accepted" in kinds
     assert len(second.events(limit=2)) == 2 and second.events(limit=2)[-1] == second.events()[-1]
+
+
+def test_apply_snapshot_flags_when_the_window_bucket_changes(store):
+    a = timed("fixture:a", "2026-07-03T12:00:00+00:00")       # at 08:00: 240 - 90 - 30 = 120 min (open)
+    store.apply_snapshot(make_snapshot([a], scenario_id="sc", sequence=1))
+    t = store.create_task("fixture:a", "contact_facility", "r", snapshot_id="sc-0001")
+    r = store.apply_snapshot(make_snapshot([a], scenario_id="sc", sequence=2, as_of="2026-07-03T08:30:00+00:00"))
+    assert r["affected_task_ids"] == [] and r["changed"] == []            # 90 min: still open, only time elapsed
+    r = store.apply_snapshot(make_snapshot([a], scenario_id="sc", sequence=3, as_of="2026-07-03T09:30:00+00:00"))
+    assert r["affected_task_ids"] == [t["task_id"]]                       # 30 min: small window, flagged
+    assert r["changed"][0]["changes"]["window_bucket"] == ["open", "small"] and r["changed"][0]["slack_min"] == [90.0, 30.0]
+
+
+def test_confirm_override_rejects_an_infinite_evacuation_duration(store):
+    with pytest.raises(ValueError, match="finite"):
+        store.confirm_override("fixture:a", "evacuation_min", float("inf"), source="s", snippet="", confidence=0.5)
+
+
+def test_one_malformed_asset_does_not_blank_the_other_windows(store):
+    a = timed("fixture:a", "2026-07-03T11:00:00+00:00")
+    bad = timed("fixture:bad", "2026-07-03T11:00:00+00:00", evacuation_min="abc")
+    store.apply_snapshot(make_snapshot([a, bad], scenario_id="sc", sequence=1))
+    exp = store.exposure("sc")
+    assert exp["fixture:a"]["priority_status"] == "window_open" and exp["fixture:bad"]["priority_status"] is None
