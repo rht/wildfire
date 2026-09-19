@@ -1133,8 +1133,9 @@ not prove recognition, reasoning, answer persistence, or two-way phone audio.
   This does not establish whether an account-level SIP connection exists.
 - [x] Run the regression suite: **492 tests passed**, including persistence
   of live-shaped assistance reports and follow-up tasks after database restart.
-- [ ] When account/model prerequisites are met, deploy the dedicated mock
-  agent and verify a browser conversation. A Vonage test additionally requires
+- [x] Deploy the dedicated mock agent after approval. SLNG accepted agent
+  `be7b9f79-8b5c-46f0-948f-08ccc43e9397` and created a browser session.
+- [ ] Verify a spoken browser conversation. A Vonage test additionally requires
   an active Manual outbound SIP connection and an explicitly authorized test
   number. Report every unavailable prerequisite without claiming live success.
 
@@ -1163,9 +1164,19 @@ not automatically make operational readiness determined. Route, capacity and
 timing checks remain separate. The capacity validation and UTF-8 fixes from
 readiness PR #8 are included while retaining this branch's road warnings.
 
-The read-only deployment preview proposes creating
-`fireline-mock-interview-slng`. Deployment remains pending explicit approval;
-no browser session, Vonage call or real human handoff has been verified.
+On 2026-09-19, the approved deployment created `fireline-mock-interview-slng`.
+The example Gemini model failed with `AGENT_MODEL_UNAVAILABLE`; the Nemotron
+binding in SLNG's current [Think guide](https://docs.slng.ai/guides/agents/configure/think)
+was accepted. A follow-up GET verified the saved models and confirmed both SIP
+trunk fields are null. Browser-session creation succeeded with a 300-second
+limit when supplied the required JSON body (`arguments` and `participant_name`).
+This verifies session creation, not two-way speech or captured answers.
+
+To speak to it, open the [SLNG dashboard](https://app.slng.ai), select
+`fireline-mock-interview-slng`, then **Test agent → Web session**, and allow microphone
+access. Follow the smoke scripts above. No Vonage call or real human handoff has
+been verified. The SLNG API key remains in the existing shared environment;
+browser connection tokens are never committed.
 
 The carrier route is configured in SLNG's Telephony dashboard using Vonage's
 termination host and SIP credentials, not a `carrier: vonage` Unmute setting.
