@@ -34,6 +34,8 @@ def main(argv=None):
                 remaining_windows={r['asset_id']: r['slack_min'] for r in plan['contacts']['ranked']},
                 response_order=[s['site_id'] for s in plan['response']['steps']],
                 response_review_required=state['response_review_required'], modes=modes,
+                destinations={r['asset_id']: r['destination_id'] for r in plan['locations']},
+                remaining_capacity=plan['remaining_capacity'],
                 reported_help={r['asset_id']: r['reported_needs_assistance'] for r in state['calls']},
                 escalation_reasons={r['asset_id']: r['human_followup_reasons'] for r in state['calls']},
                 evacuation_status={r['asset_id']: r['evacuation_status'] for r in plan['locations']},
@@ -42,7 +44,7 @@ def main(argv=None):
                             for t in sorted(state['tasks'], key=lambda t: (t['asset_id'], t['reason'])) if t['status'] != 'done'])
             results.append(result)
             print(f"{case['name']}: {'PENDING' if passed is None else 'PASS' if passed else 'FAIL'} | "
-                  f"contacts {' -> '.join(result['contact_order'])} | crew {' -> '.join(result['response_order'])} | B {modes['B']}")
+                  f"contacts {' -> '.join(result['contact_order'])} | crew {' -> '.join(result['response_order'])} | {len(modes)} buildings")
         finally:
             session.close()
     report = dict(schema_version='mock-voice-report-1', input_mode='synthetic', dispatch=False,
