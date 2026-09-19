@@ -1515,3 +1515,21 @@ approved-route examples, preserving all seven arguments and all three IDs.
 Its branch still needs integration alongside this PR. The package retains the
 existing English speech bindings; a language argument alone does not validate
 multilingual STT/TTS support.
+
+
+# Snapshot-call-adapter implementation plan (2026-09-20)
+
+This task for @mirrdj connects validated snapshot v1.1 dictionaries to the existing
+`VoiceCallQueue` without changing admission or dispatch. Only explicit private contacts,
+exact asset/snapshot/phone approvals and trusted per-asset request data can enqueue.
+The adapter uses a supplied UTC scenario epoch, the configured 30-minute contact buffer,
+and the current evacuation-window ordering. Observed geometry distance remains separate
+from forecast arrival. Unknown inputs and their provenance remain in the report.
+
+- [ ] Add failing producer-shaped tests for ranking, epoch conversion, authorization,
+  stale/missing evidence, ambiguous contacts, replay and provider isolation.
+- [ ] Implement `fireline/snapshot_contacts.py`, stable request IDs and optional briefing
+  callback. Project supplied coordinates only; never create response actions or effects.
+- [ ] Add an enqueue-only JSON CLI and privacy/error-path tests; document exact inputs.
+- [ ] Run scoped/full offline tests, obtain scoped review and Norma checks, fix findings,
+  commit/push the task branch and open a PR to main. Keep the worktree available.
