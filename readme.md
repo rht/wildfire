@@ -1700,3 +1700,91 @@ Implementation sequence (execute locally; no additional implementation agents):
   and new incidents; add CLI and a clearly synthetic offline JSON demonstration.
 - [ ] Run scoped/full offline tests, request scoped review and scan only changed files with
   Norma when available; fix actual findings. Publish commits and a PR, retain this worktree.
+
+### Multi-crew public API and integration contract
+
+```python
+from fireline.multi_response import plan_multi_response
+proposal = plan_multi_response(data)                 # supplied directed route records
+proposal = plan_multi_response(data, graph=graph)    # supplied RoadGraph, data['routes'] == []
+```
+
+Run the clearly synthetic two-truck demonstration without network access:
+
+```bash
+PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m fireline.multi_response tests/fixtures/multi_response_demo.json
+```
+
+The JSON input uses `schema_version: "multi-response-input-1"`. Required fields:
+
+| Field | Contract |
+| --- | --- |
+| `scenario_id`, `snapshot_id` | Nonempty stable IDs; scenario owns one elapsed-time epoch. |
+| `now_min`, `horizon_min`, `buffer_min` | Finite nonnegative scenario minutes; now <= horizon. |
+| `assets` | Records with `asset_id`, explicit road `node_id`, `people`, `assisted`, `value`, `deadline_min`. Counts are nonnegative integers or null; value/deadline are finite nonnegative numbers or null. Unknown remains unknown and blocks affected benefit actions for review. |
+| `teams` | `team_id`, `start_node_id`, boolean `available`, `available_from_min`, `available_until_min`, `capabilities` string list, nonnegative integer `transport_capacity`. Starting nodes are supplied current locations. Capacity is the scenario budget including supplied historical commitments; do not also subtract those commitments upstream. |
+| `actions` | `action_id`, `asset_id`, positive `duration_min`, nullable `deadline_min`, `requires` action-ID list, `capabilities` list, integer `transport_people`, boolean `readiness_required`, and `effects`. Each effect has `asset_id`, coverage in [0,1], boolean `confirmed`, and public `source` provenance. Requirements must be acyclic; effects never propagate to nearby buildings. |
+| `routes` | Directed end-to-end records: `from_node`, `to_node`, `minutes`, booleans `confirmed` and `safe`, nullable `available_until_min`, public `source`. Missing, unsafe, unconfirmed or unknown-expiry routes are unusable. Expiry must be strictly later than arrival plus buffer. No reverse leg is inferred. Route records do not produce geometry. |
+| `readiness` | Optional latest normalized outcome per asset: `asset_id`, `status`, `observed_min`, `valid_until_min`, public `source`, `request_id`. Status is `assistance_required`, `unknown`, `no_answer`, `self_evacuating`, or `completed`. This is an adapter input, not a raw provider payload. |
+| `committed` | Optional persisted task records from an earlier result, with status explicitly changed to `informed`, `en_route`, `in_progress`, or `completed`. A proposal is never a commitment by itself. Preserve the original scenario/snapshot/action version and timings. Explicit actual completion cannot be in the future. |
+
+When `readiness_required` is true, only a supplied `assistance_required` outcome observed by
+`now_min` and valid through task completion plus buffer permits a proposal. Existing outcomes
+also constrain every action with nonzero `transport_people`; no-answer/unknown/completed or
+self-evacuating households do not acquire a new transport proposal. The caller must mark other
+assistance actions as `readiness_required` when they depend on household readiness. Call statements
+do not invent revised headcounts, deadlines, action durations or verified arrival. Upstream must
+map actual, sufficiently evidenced call/readiness results to this normalized contract. The planner
+never parses transcripts or equates `self_evacuating` with confirmed arrival.
+
+`RoadGraph` support reuses `earliest_arrival`/`path_to` on a private copy, retaining directedness.
+Every usable edge must supply finite nonnegative `travel_min` and `cut_min`, `confirmed=True`,
+`safe=True`, public `source`, and may set `closed=True`. Default infinite cuts do not establish
+safety. Only an explicit `geometry_lonlat` polyline on **every** selected edge produces
+`path_lonlat`; endpoints must match the supplied node lon/lat (reverse order is accepted).
+Unknown geometry is omitted. No nearest-node snapping, straight-line road invention, geocoder,
+provider fetch, or map download occurs. The caller owns all hazard/route freshness checks.
+
+Output is `multi-response-plan-1` with `scenario_id`, `snapshot_id`, `now_min`, `optimal=false`,
+`dispatch=false`, heuristic `method`, ordered `teams`, `coverage`, `objective`, `unassigned`,
+and `review`. Each team record contains `team_id`, ordered `tasks`, `locked`, and
+`remaining_transport_capacity`. Each task carries `action_id`, stable `asset_id`, `team_id`,
+`scenario_id`, `snapshot_id`, `action_version`, `status`, `from_node`, `to_node`, `depart_min`,
+`travel_min`, `start_min`, `finish_min`, `prerequisites`, declared `effects`, `transport_people`,
+`route_source`, and `coverage_gained`; current proposals may add normalized `readiness`,
+`path_nodes`, and grounded `path_lonlat`. Historical geometry is not reissued as current routing.
+Unassigned actions retain sorted reason codes such as `transport_capacity`, `capabilities`,
+`prerequisites`, `deadline`, `route_unavailable`, `unknown_needs`, and `readiness_review`.
+
+The heuristic selects the best assisted-person benefit, then total-person benefit, then property
+benefit among currently feasible action/team pairs. A prerequisite uses its best downstream
+benefit's priority as a hint; earlier finish and stable IDs break ties. It does not backtrack or
+prove that an entire downstream chain is feasible. Shared prerequisites finish before dependent
+work starts, and each action is assigned at most once. Coverage is the maximum declared fraction
+per asset, not the sum of overlapping effects. Objective units are declared coverage accounting,
+not predictions of lives saved. Unknown benefits are not counted as zero people.
+
+Every active commitment locks its team, reserves its action and transport places, and stays in
+output unchanged in identity/status/timing. It receives no completed benefit and satisfies no
+prerequisite. Snapshot changes, changed action definitions, missing/unavailable teams, overdue
+work and unavailable routes add explicit review reasons. No automatic cancellation, reassignment
+or completion occurs. Other teams may receive proposals for new incidents. Explicitly completed
+compatible commitments provide coverage and satisfy prerequisites; the caller supplies each team's
+current starting node for its next leg. Keep historical assets/actions until commitments are
+reconciled. Removing or changing a historical action can lock its team pending analyst review.
+
+**Live-coordination boundary:** consume this pure result as `plan.response`; expose its team rows
+under the shared envelope's `teams`, and flatten each row's `tasks` into proposed work items as
+needed. Persist informed/en-route/completed transitions outside this module and pass them back in
+`committed`. Keep `scenario_id`/`snapshot_id` aligned; use the coordinator's UTC epoch to derive
+all elapsed minutes. `as_of`, `revision`, events and durable task IDs belong to the coordinator.
+This branch does not edit `fireline.coordination` or wire a live fleet into it. Its verified export
+still needs an explicit adapter from actual snapshot needs, current fleet/route inputs and normalized
+readiness outcomes. Extra private input keys are never forwarded; callers must keep public source
+labels and IDs free of contact details and supply no raw provider payloads.
+
+**Bounded MVP:** no automatic dispatch, continuous en-route tracking, automatic commitment release,
+return trips, unloading/reusable seats, reception-place reservations, road congestion, vehicle-specific
+road restrictions, simultaneous multi-team staffing, suppression simulation, optimal fleet search,
+or automatic scenario/time conversion. Capacity is a conservative cumulative budget; transport
+counts and action effects are caller-declared assumptions. All tests and the demonstration are offline.
