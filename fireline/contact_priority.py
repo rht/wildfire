@@ -1,9 +1,17 @@
-"""Contact urgency from forecast arrival and estimated total evacuation duration."""
+"""Contact urgency from forecast arrival and estimated total evacuation duration.
+
+The window arithmetic (`window_arithmetic`), the missing-evidence rule (`missing_timing`) and the sort
+key (`contact_sort_key`) are module functions so the snapshot consumer (`fireline.priority`) ranks
+live assets with exactly the same rules as this static prototype.
+"""
 
 import math
 from dataclasses import dataclass
 
 from .priority_models import number, validate_locations
+
+TIMING_NUMBERS = ("fire_arrival_min", "evacuation_min")
+TIMING_SOURCES = ("forecast_source", "evacuation_source")
 
 
 @dataclass(frozen=True)
@@ -12,6 +20,36 @@ class ContactPolicy:
     now_min: float = 0
     buffer_min: float = 0
     version: str = "forecast-evacuation-window-v2"
+
+
+def missing_timing(fire_arrival_min, evacuation_min, forecast_source, evacuation_source):
+    """Names of the timing inputs that block ranking: null numbers and blank/missing sources."""
+    missing = [name for name, value in zip(TIMING_NUMBERS, (fire_arrival_min, evacuation_min)) if value is None]
+    missing += [name for name, value in zip(TIMING_SOURCES, (forecast_source, evacuation_source))
+                if not (value or "").strip()]
+    return missing
+
+
+def window_arithmetic(fire_arrival_min, evacuation_min, now_min, buffer_min):
+    """time_to_impact, latest_start (absolute, same epoch as the inputs), slack and status.
+
+    slack = latest_start - now is rounded to 9 decimals to remove floating-point noise only;
+    negative windows are preserved and reported as `window_exhausted` (slack <= 0).
+    """
+    time_to_impact = fire_arrival_min - now_min
+    latest_start = fire_arrival_min - evacuation_min - buffer_min
+    slack = round(latest_start - now_min, 9)
+    return {
+        "time_to_impact_min": time_to_impact,
+        "latest_start_min": latest_start,
+        "slack_min": slack,
+        "status": "window_exhausted" if slack <= 0 else "window_open",
+    }
+
+
+def contact_sort_key(slack_min, fire_arrival_min, distance_m, asset_id):
+    """Smallest window first, then earlier arrival, then nearer known distance (null last), then id."""
+    return (slack_min, fire_arrival_min, distance_m if distance_m is not None else math.inf, asset_id)
 
 
 def rank_contacts(locations, policy=None):
@@ -27,16 +65,7 @@ def rank_contacts(locations, policy=None):
     number(policy.buffer_min, "buffer_min")
     ranked, review = [], []
     for a in locations:
-        missing = [
-            field
-            for field in ("fire_arrival_min", "evacuation_min")
-            if getattr(a, field) is None
-        ]
-        missing += [
-            field
-            for field in ("forecast_source", "evacuation_source")
-            if not (getattr(a, field) or "").strip()
-        ]
+        missing = missing_timing(a.fire_arrival_min, a.evacuation_min, a.forecast_source, a.evacuation_source)
         row = {
             "asset_id": a.asset_id,
             "name": a.name,
@@ -60,22 +89,12 @@ def rank_contacts(locations, policy=None):
         if missing:
             review.append(row)
             continue
-        row["time_to_impact_min"] = a.fire_arrival_min - policy.now_min
-        row["latest_start_min"] = (
-            a.fire_arrival_min - a.evacuation_min - policy.buffer_min
-        )
-        # Round arithmetic noise only; preserve negative windows for urgent review.
-        row["slack_min"] = round(row["latest_start_min"] - policy.now_min, 9)
-        row["status"] = "window_exhausted" if row["slack_min"] <= 0 else "window_open"
+        window = window_arithmetic(a.fire_arrival_min, a.evacuation_min, policy.now_min, policy.buffer_min)
+        row.update(window)
         ranked.append(row)
     ranked.sort(
-        key=lambda r: (
-            r["slack_min"],
-            r["components"]["fire_arrival_min"],
-            r["components"]["distance_m"]
-            if r["components"]["distance_m"] is not None
-            else math.inf,
-            r["asset_id"],
+        key=lambda r: contact_sort_key(
+            r["slack_min"], r["components"]["fire_arrival_min"], r["components"]["distance_m"], r["asset_id"]
         )
     )
     for index, row in enumerate(ranked, 1):

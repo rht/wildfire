@@ -23,12 +23,21 @@ def _asset(**overrides) -> dict:
         "capacity": 200, "estimated_occupancy": None, "occupancy_basis": "register capacity",
         "value_score": config.VALUE_POLICY["by_type"].get(asset_type), "value_basis": config.VALUE_POLICY["version"],
         "distance_to_fire_m": 2000.4, "intersects_fire": False, "burn_probability": None,
-        "arrival_p10_at": None, "arrival_p50_at": None, "forecast_horizon_at": None, "forecast_source": None,
+        "arrival_p10_at": None, "arrival_p50_at": None, "forecast_horizon_at": "2026-07-03T20:00:00+00:00",
+        "forecast_source": "fixture:test-spread (synthetic)",
+        "fire_arrival_at": "2026-07-03T11:00:00+00:00", "fire_arrival_basis": "p10",
+        "evacuation_min": 90.0, "evacuation_source": config.EVACUATION_POLICY["version"],
         "needs_review": bool(review_reasons), "review_reasons": review_reasons, "sources": [],
         "municipality": None,
-        # scored keys (CONTRACTS 4)
-        "priority_score": 0.6543, "priority_rank": 1, "queue": "ranked", "score_components": {},
-        "priority_policy_version": config.PRIORITY_POLICY["version"], "priority_reasons": [],
+        # ranked keys (CONTRACTS 4): arrival +180 min, evacuation 90, buffer 30 -> window 60 at as_of 08:00
+        "priority_rank": 1, "queue": "ranked", "priority_status": "window_open", "time_to_impact_min": 180.0,
+        "latest_start_min": 60.0, "slack_min": 60.0,
+        "window_components": {"fire_arrival_at": "2026-07-03T11:00:00+00:00", "fire_arrival_basis": "p10",
+                              "forecast_source": "fixture:test-spread (synthetic)",
+                              "forecast_horizon_at": "2026-07-03T20:00:00+00:00", "now_at": "2026-07-03T08:00:00+00:00",
+                              "evacuation_min": 90.0, "evacuation_source": config.EVACUATION_POLICY["version"],
+                              "buffer_min": 30.0, "distance_to_fire_m": 2000.4},
+        "priority_policy_version": config.CONTACT_POLICY["version"], "priority_reasons": [],
     }
     record.update(overrides)
     if "needs_review" not in overrides:
@@ -36,28 +45,32 @@ def _asset(**overrides) -> dict:
     return record
 
 
+UNRANKED = dict(fire_arrival_at=None, fire_arrival_basis=None, forecast_source=None, forecast_horizon_at=None,
+                slack_min=None, latest_start_min=None, time_to_impact_min=None, priority_status="needs_review",
+                priority_rank=None, queue="needs_review")
 POU = dict(asset_id="fixture:pou_del_glac", name="Pou del Glaç", asset_type="camp", municipality="la Bisbal d'Empordà",
-           capacity=None, occupancy_basis=None, review_reasons=["occupancy_unknown", "occupancy_seasonal"],
-           priority_score=None, priority_rank=None, queue="needs_review")
+           capacity=None, occupancy_basis=None,
+           review_reasons=["occupancy_unknown", "occupancy_seasonal", "forecast_unavailable"], **UNRANKED)
 CAMPING = dict(asset_id="fixture:camping_gavarres", name="Càmping Gavarres", asset_type="campsite",
                municipality="Calonge i Sant Antoni", capacity=200, review_reasons=["class_ambiguous"],
-               priority_score=0.4321, priority_rank=2, queue="ranked")
+               slack_min=105.5, latest_start_min=105.5, priority_rank=2, queue="ranked")
 RESI = dict(asset_id="fixture:residencia_sense_coordenades", name="Residència sense coordenades",
             asset_type="care_home", municipality="Cruïlles, Monells i Sant Sadurní de l'Heura", latitude=None,
-            longitude=None,
-            capacity=None, distance_to_fire_m=None, intersects_fire=None,
-            review_reasons=["location_unknown", "exposure_unknown", "occupancy_unknown"],
-            priority_score=None, priority_rank=None, queue="needs_review")
+            longitude=None, capacity=None, distance_to_fire_m=None, intersects_fire=None,
+            review_reasons=["location_unknown", "exposure_unknown", "occupancy_unknown", "forecast_unavailable"],
+            **UNRANKED)
 NOWHERE = dict(asset_id="fixture:mas_nou", name="Mas Nou de Ningú", asset_type="masia", municipality="Cruïlles",
-               capacity=None, review_reasons=["occupancy_unknown"], priority_score=None, priority_rank=None,
-               queue="needs_review")
+               capacity=None, review_reasons=["occupancy_unknown", "forecast_unavailable"], **UNRANKED)
 PLAIN = dict(asset_id="fixture:sant_pol", name="Sant Pol", asset_type="nucleus", capacity=85, review_reasons=[],
-             priority_score=0.9, priority_rank=1)
+             slack_min=60.0, priority_rank=1)
+FORECAST_ONLY = dict(asset_id="fixture:no_forecast", name="No forecast", asset_type="school", capacity=50,
+                     review_reasons=["forecast_unavailable"], **UNRANKED)
 
 
 @pytest.fixture
 def wb() -> Workbench:
-    return Workbench.from_scored([_asset(**PLAIN), _asset(**CAMPING), _asset(**POU), _asset(**RESI), _asset(**NOWHERE)])
+    return Workbench.from_scored([_asset(**PLAIN), _asset(**CAMPING), _asset(**POU), _asset(**RESI), _asset(**NOWHERE),
+                                 _asset(**FORECAST_ONLY)])
 
 
 class StubTasks:
@@ -100,10 +113,15 @@ def test_dispatch_get_asset(wb):
     out = dispatch("get_asset", {"asset_id": "fixture:camping_gavarres"}, workbench=wb)
     json.dumps(out)
     assert out["asset_id"] == "fixture:camping_gavarres" and out["asset_type"] == "campsite"
-    assert out["distance_to_fire_m"] == 2000 and out["priority_score"] == 0.43
-    assert out["queue"] == "ranked" and out["review_reasons"] == ["class_ambiguous"]
+    assert out["distance_to_fire_m"] == 2000 and out["slack_min"] == 106 and out["priority_rank"] == 2
+    assert out["priority_status"] == "window_open" and out["queue"] == "ranked"
+    assert out["fire_arrival_at"] == "2026-07-03T11:00:00+00:00" and out["fire_arrival_basis"] == "p10"
+    assert out["evacuation_min"] == 90 and out["evacuation_source"] == config.EVACUATION_POLICY["version"]
+    assert out["forecast_source"] and out["review_reasons"] == ["class_ambiguous"]
     assert out["open_tasks"] == [] and out["confirmed_overrides"] == [] and out["pending_proposals"] == 0
-    assert "geometry" not in out and "score_components" not in out
+    assert "geometry" not in out and "window_components" not in out and "priority_score" not in out
+    unranked = dispatch("get_asset", {"asset_id": "fixture:pou_del_glac"}, workbench=wb)
+    assert unranked["slack_min"] is None and unranked["priority_status"] == "needs_review" and unranked["fire_arrival_at"] is None
     assert "error" in dispatch("get_asset", {"asset_id": "fixture:nope"}, workbench=wb)
     assert "error" in dispatch("nope", {}, workbench=wb)
 
@@ -180,6 +198,23 @@ def test_propose_update_validates_values(wb):
     assert wb.asset(aid)["asset_type"] == "campsite" and wb.asset(aid)["capacity"] == 200
 
 
+def test_propose_update_evacuation_min_needs_nonnegative_number_and_source(wb):
+    aid = "fixture:camping_gavarres"
+    base = {"asset_id": aid, "field": "evacuation_min", "quoted_snippet": "evacuation plan: 2 h to clear the site",
+            "confidence": "medium", "source": "facility evacuation plan"}
+    assert "error" in dispatch("propose_update", {**base, "value": -1}, workbench=wb)
+    assert "error" in dispatch("propose_update", {**base, "value": "two hours"}, workbench=wb)
+    assert "error" in dispatch("propose_update", {**base, "value": True}, workbench=wb)
+    assert "error" in dispatch("propose_update", {**base, "value": 120, "source": " "}, workbench=wb)
+    assert wb.proposals == []
+    out = dispatch("propose_update", {**base, "value": 120}, workbench=wb)
+    assert out["status"] == "pending" and out["value"] == 120.0 and out["previous"] == 90.0
+    assert dispatch("propose_update", {**base, "value": "37.5"}, workbench=wb)["value"] == 37.5
+    assert wb.asset(aid)["evacuation_min"] == 90.0                                   # nothing applied
+    assert "evacuation_min" in TOOLS[2]["input_schema"]["properties"]["field"]["enum"]
+    assert "fire_arrival_at" not in TOOLS[2]["input_schema"]["properties"]["field"]["enum"]
+
+
 def test_dispatch_escalate_applies_nothing(wb):
     before = dict(wb.asset("fixture:camping_gavarres"))
     out = dispatch("escalate", {"asset_id": "fixture:camping_gavarres", "question": "tents or bungalows?",
@@ -225,7 +260,43 @@ def test_confirm_proposal_without_tasks_updates_in_memory(wb):
     confirm_proposal(wb, p["proposal_id"])
     a = wb.asset("fixture:camping_gavarres")
     assert a["asset_type"] == "camp" and a["value_score"] == config.VALUE_POLICY["by_type"]["camp"]
-    assert wb.proposals[0]["status"] == "confirmed"
+    assert wb.proposals[0]["status"] == "confirmed" and wb.overrides[0]["field"] == "asset_type"
+    assert a["slack_min"] == 60.0 and a["priority_rank"] == 2          # window recomputed from its own now_at, rank kept
+    assert a["sources"][-1]["source"] == "analyst override: page"
+
+
+def test_confirm_evacuation_proposal_recalculates_window_in_memory(wb):
+    p = agent.propose_update("fixture:camping_gavarres", "evacuation_min", 120, "facility evacuation plan",
+                             "the site is cleared in two hours", "medium", workbench=wb)
+    confirm_proposal(wb, p["proposal_id"])
+    a = wb.asset("fixture:camping_gavarres")
+    assert a["evacuation_min"] == 120.0 and a["evacuation_source"] == "analyst override: facility evacuation plan"
+    assert a["slack_min"] == 180.0 - 120.0 - 30.0 and a["priority_status"] == "window_open"
+    assert any("window recalculated" in line for line in wb.change_log)
+
+
+def test_confirm_proposal_reranks_the_workbench_snapshot():
+    from fireline import priority
+    from tests.helpers import make_asset, make_snapshot
+
+    def timed(asset_id, evacuation_min, **kw):
+        return make_asset(asset_id=asset_id, fire_arrival_at="2026-07-03T11:00:00+00:00", fire_arrival_basis="p10",
+                          forecast_source="fixture:test-spread (synthetic)", evacuation_min=evacuation_min,
+                          evacuation_source=None if evacuation_min is None else config.EVACUATION_POLICY["version"], **kw)
+
+    snap = make_snapshot([timed("fixture:a", 90.0, name="A"),
+                          timed("fixture:b", None, name="B", review_reasons=["evacuation_unknown"])])
+    scored = priority.rank_snapshot(snap)
+    wb = Workbench.from_scored(scored, snapshot=snap)
+    assert [a["asset_id"] for a in scored["ranked"]] == ["fixture:a"] and wb.asset("fixture:b")["queue"] == "needs_review"
+    p = agent.propose_update("fixture:b", "evacuation_min", 150, "phone call with the director",
+                             "about two and a half hours to evacuate everyone", "high", workbench=wb)
+    confirm_proposal(wb, p["proposal_id"])
+    b = wb.asset("fixture:b")
+    assert b["queue"] == "ranked" and b["slack_min"] == 180.0 - 150.0 - 30.0 and b["priority_rank"] == 1
+    assert wb.asset("fixture:a")["priority_rank"] == 2 and b["review_reasons"] == []
+    assert wb.confirmed_overrides()[0]["field"] == "evacuation_min"
+    assert agent.rerank(Workbench()) is None
 
 
 def test_reject_proposal(wb):
@@ -334,6 +405,8 @@ def test_investigate_all_order_and_coverage(wb):
     records = investigate_all(wb, llm=FakeLLM())
     ids = [r["asset_id"] for r in records]
     assert "fixture:sant_pol" not in ids                                         # no review reasons
+    assert "fixture:no_forecast" not in ids                                      # producer gap only: review queue
+    assert agent.review_order(wb) == ids
     assert set(ids) == {"fixture:pou_del_glac", "fixture:residencia_sense_coordenades", "fixture:mas_nou",
                         "fixture:camping_gavarres"}
     assert ids[-1] == "fixture:camping_gavarres"                                 # ranked after needs_review
@@ -398,3 +471,6 @@ def test_system_prompt_mentions_four_tools_and_confirmation():
     assert "confirm" in agent.SYSTEM_PROMPT and "Capacity is not occupancy" in agent.SYSTEM_PROMPT
     for reason in agent.REVIEW_REASONS:
         assert reason in agent.SYSTEM_PROMPT
+    assert {"forecast_unavailable", "evacuation_unknown"} <= set(agent.REVIEW_REASONS)
+    assert "evacuation window" in agent.SYSTEM_PROMPT and "priority score" not in agent.SYSTEM_PROMPT
+    assert "never supply a forecast arrival" in agent.SYSTEM_PROMPT
