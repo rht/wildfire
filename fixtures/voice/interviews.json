@@ -1,0 +1,267 @@
+{
+  "description": "Entirely synthetic contacts and conversations. No calls made; confidence illustrates policy only.",
+  "epoch": "2026-09-19T12:00:00Z",
+  "snapshot_id": "voice-synthetic-snapshot",
+  "language": "en",
+  "incident_brief": "SIMULATION: an analyst is collecting household readiness. No evacuation order is issued in this exercise.",
+  "contact_number": "+12025550123",
+  "cases": [
+    {
+      "name": "baseline",
+      "interviews": [
+        {
+          "asset_id": "A",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": false,
+            "transport_available": false,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is synthetic location A.",
+              "whole_household_confirmed": "I coordinate all 80 residents.",
+              "can_self_evacuate": "Sixty residents need assistance.",
+              "transport_available": "We need emergency transport.",
+              "wants_human": "No, I do not need a person right now.",
+              "acknowledged": "Yes, your readback matches what I said.",
+              "preparation_remaining": "We need to collect our bags."
+            }
+          }
+        },
+        {
+          "asset_id": "B",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is the synthetic household at B.",
+              "whole_household_confirmed": "I can answer for all eight people here.",
+              "can_self_evacuate": "Everyone here can leave without emergency assistance.",
+              "transport_available": "We have seats in our two cars for all eight people.",
+              "wants_human": "No, I do not need a person right now.",
+              "acknowledged": "Yes, your readback matches what I said.",
+              "preparation_remaining": "We need to collect our bags."
+            }
+          }
+        },
+        {
+          "asset_id": "C",
+          "status": "no_answer",
+          "answers": {}
+        }
+      ]
+    },
+    {
+      "name": "human_requested",
+      "interviews": [
+        {
+          "asset_id": "B",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": true,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is the synthetic household at B.",
+              "whole_household_confirmed": "I can answer for all eight people here.",
+              "can_self_evacuate": "Everyone here can leave without emergency assistance.",
+              "transport_available": "We have seats in our two cars for all eight people.",
+              "wants_human": "Please let me speak with a person now.",
+              "acknowledged": "Yes, your readback matches what I said.",
+              "preparation_remaining": "We need to collect our bags."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "low_confidence",
+      "interviews": [
+        {
+          "asset_id": "B",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.2,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is the synthetic household at B.",
+              "whole_household_confirmed": "I can answer for all eight people here.",
+              "can_self_evacuate": "Everyone here can leave without emergency assistance.",
+              "transport_available": "We have seats in our two cars for all eight people.",
+              "wants_human": "No, I do not need a person right now.",
+              "acknowledged": "Yes, your readback matches what I said.",
+              "preparation_remaining": "We need to collect our bags."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "unknown_confidence",
+      "interviews": [
+        {
+          "asset_id": "B",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": null,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is the synthetic household at B.",
+              "whole_household_confirmed": "I can answer for all eight people here.",
+              "can_self_evacuate": "Everyone here can leave without emergency assistance.",
+              "transport_available": "We have seats in our two cars for all eight people.",
+              "wants_human": "No, I do not need a person right now.",
+              "acknowledged": "Yes, your readback matches what I said.",
+              "preparation_remaining": "We need to collect our bags."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing_evidence",
+      "interviews": [
+        {
+          "asset_id": "B",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {}
+          }
+        }
+      ]
+    },
+    {
+      "name": "contradictory",
+      "interviews": [
+        {
+          "asset_id": "B",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is the synthetic household at B.",
+              "whole_household_confirmed": "I can answer for all eight people here.",
+              "can_self_evacuate": "Everyone here can leave without emergency assistance.",
+              "transport_available": "We have seats in our two cars for all eight people.",
+              "wants_human": "No, I do not need a person right now.",
+              "acknowledged": "Yes, your readback matches what I said.",
+              "preparation_remaining": "We need to collect our bags."
+            },
+            "contradictory": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "no_answer",
+      "interviews": [
+        {
+          "asset_id": "B",
+          "status": "no_answer",
+          "answers": {}
+        }
+      ]
+    },
+    {
+      "name": "bad_audio",
+      "interviews": [
+        {
+          "asset_id": "B",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": false,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is the synthetic household at B.",
+              "whole_household_confirmed": "I can answer for all eight people here.",
+              "can_self_evacuate": "Everyone here can leave without emergency assistance.",
+              "transport_available": "We have seats in our two cars for all eight people.",
+              "wants_human": "No, I do not need a person right now.",
+              "acknowledged": "Yes, your readback matches what I said.",
+              "preparation_remaining": "We need to collect our bags."
+            },
+            "bad_audio": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "failed_transfer",
+      "interviews": [
+        {
+          "asset_id": "B",
+          "status": "completed",
+          "answers": {
+            "identity_confirmed": true,
+            "whole_household_confirmed": true,
+            "can_self_evacuate": true,
+            "transport_available": true,
+            "wants_human": true,
+            "acknowledged": true,
+            "confidence": 0.95,
+            "confidence_basis": "synthetic_review",
+            "evidence": {
+              "identity_confirmed": "Yes, this is the synthetic household at B.",
+              "whole_household_confirmed": "I can answer for all eight people here.",
+              "can_self_evacuate": "Everyone here can leave without emergency assistance.",
+              "transport_available": "We have seats in our two cars for all eight people.",
+              "wants_human": "Please connect me to a person.",
+              "acknowledged": "Yes, your readback matches what I said.",
+              "preparation_remaining": "We need to collect our bags."
+            },
+            "transfer_status": "failed"
+          }
+        }
+      ]
+    }
+  ]
+}
