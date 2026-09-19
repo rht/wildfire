@@ -879,3 +879,7 @@ xcrun clang -fsyntax-only -Werror -x objective-c data/agent-session/hfp-api-chec
 All B1–B4 research/local-verification deliverables are complete. Runtime handset compatibility,
 carrier behavior, every physical/virtual audio path and SLNG integration remain explicitly
 unverified and require the prerequisites above. Workstream A and its status are unchanged.
+
+### Feature-branch Norma verification — 2026-09-19
+
+Rebased onto main `587f5bd`. The two changed Python files returned clean from Norma Livecheck with full reported coverage. All 312 tests passed with dev and report dependencies. Rebase preserved both the calling-feasibility prose and main remediation prose; no phone, Bluetooth, audio or credential operations were performed. This feature branch remains for review, not automatic merge. Branch inventory, original backup heads and scan evidence are collected on `codex/norma-feature-rollup`.
