@@ -2127,12 +2127,12 @@ Implementation plan (Python/SQLite; all documentation stays here):
   concurrent refresh and atomic rollback tests; implement the projection boundary.
 - [x] Add an offline `python -m fireline.coordination tick` CLI with explicit
   database, epoch, snapshot, scenario and readiness JSON files, and test it.
-- [ ] Consume verified sibling interfaces when available, review changed files,
+- [x] Consume verified sibling interfaces when available, review changed files,
   run Norma on changed files only, run relevant/full tests, commit, push and PR.
 
 Destination capacity remains a proposal within one refresh. A durable allocation
 ledger from evacuation-plans requires an explicit adapter before reservation or
-arrival claims; multi-crew response proposals likewise require a verified export.
+arrival claims; multi-crew proposals use the optional export adapter described below.
 Actual telephone transfer and real evacuation completion remain unverified.
 
 The optional `response_plan` accepts `multi-response-plan-1` from the verified
@@ -2169,3 +2169,19 @@ is not known to coordination. Such call facts stay excluded with a structured
 `call_snapshot_not_accepted` error until snapshot history has an accepted association.
 Unresolved assistance tasks retain human review even when a delayed negative result
 was deliberately not substituted for a newer stored answer.
+
+Validation at handoff: 645 tests passed, 1 skipped, including 38 coordination
+behavior tests and the restored primitive-capacity cases. Independent scoped review
+reproduced and verified fixes for task visibility, metadata privacy, fractional
+epoch timing, delayed assistance, accepted snapshot history, initial-tick idempotency
+and retained missing-asset commitments. Norma scanned only changed Python/test files
+and readme.md: tests were clean; Markdown had no applicable rules. Retained findings
+are intentional primitive-type checks (including @mirrdj's exact remaining_places
+contract and the revision cursor contract) and JSON CLI output on stdout, which is
+program output rather than diagnostic logging. No operational call/transfer,
+provider deployment, durable destination reservation or evacuation was verified.
+The allocation sibling's public_plan/wrapper is still under integration review;
+it is not called by this projection. Integrate that ledger separately before treating
+proposed centre capacity as a durable reservation. All writers to that ledger must
+share its database; every automated call worker must share the voice queue database
+and identical configured limits.
