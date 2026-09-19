@@ -2528,3 +2528,8 @@ to supply the call-briefing callback to snapshot enqueueing, connect the
 allocation ledger to coordination, provide current fleet/route inputs and
 refresh the shared coordination database. Dynamic provider deployment and
 authorized end-to-end phone testing remain separate from these offline checks.
+
+
+### Historical architecture-branch Norma verification — 2026-09-19
+
+Rebased onto main `587f5bd`. Only readme.md differs from merged main. Documentation has no applicable deterministic file rules in the available Norma catalog, so it was not marked clean or sent as code. Rebase preserved the original patch exactly; git diff --check passed. No runtime code changed; no application test rerun was needed. That verification predates the authorized integration into main on 2026-09-20. Branch inventory, original backup heads and scan evidence are collected on `codex/norma-feature-rollup`.
