@@ -1,7 +1,7 @@
 """Session glue between the Streamlit page and the coordination modules (no Streamlit imports).
 
 One `Session` owns the discovered snapshot files, the current scenario/sequence position, the
-`tasks.TaskStore`, the scored queues and the agent `Workbench`. `app.py` keeps one instance in
+`tasks.TaskStore`, the ranked queues (remaining evacuation window) and the agent `Workbench`. `app.py` keeps one instance in
 `st.session_state` and only renders what these methods return, so the workflow is testable here.
 """
 
@@ -56,7 +56,7 @@ def llm_available() -> bool:
 
 
 class Session:
-    """Analyst session: scenario position, store, scored queues and workbench (readme 9, CONTRACTS 7)."""
+    """Analyst session: scenario position, store, ranked queues and workbench (readme 9, CONTRACTS 7)."""
 
     def __init__(self, db_path=None, snapshot_dirs=SNAPSHOT_DIRS, roster_path=ROSTER_PATH, clock=None):
         self.clock = clock or (lambda: datetime.now(timezone.utc))
@@ -159,14 +159,18 @@ class Session:
     # -- scoring, suggestions, workbench ---------------------------------------------------
 
     def rescore(self) -> dict:
-        """Re-run priority over the current snapshot with the store's confirmed overrides; keeps the
-        workbench's pending proposals and open questions while replacing its asset records."""
-        self.scored = priority.score_snapshot(self.snapshot, overrides=self.store.overrides())
+        """Re-rank the current snapshot by remaining evacuation window with the store's confirmed
+        overrides; keeps the workbench's pending proposals and open questions while replacing its
+        asset records."""
+        self.scored = priority.rank_snapshot(self.snapshot, overrides=self.store.overrides())
         if self.workbench is None:
-            self.workbench = agent.Workbench.from_scored(self.scored, tasks=self.store)
+            self.workbench = agent.Workbench.from_scored(self.scored, tasks=self.store, snapshot=self.snapshot)
         else:
+            self.workbench.snapshot = self.snapshot
             self.workbench.assets = {a["asset_id"]: a for a in self.scored["all"]}
         return self.scored
+
+    rerank = rescore
 
     def suggest(self) -> list[dict]:
         return self.store.suggest_tasks(self.scored["all"], self.snapshot["snapshot_id"])
@@ -210,6 +214,28 @@ class Session:
     def answer(self, question_id: str, answer: str) -> dict:
         return agent.answer_question(self.workbench, question_id, answer)
 
+    def set_evacuation(self, asset_id: str, minutes, source: str, snippet: str = "", confidence="medium") -> dict:
+        """Analyst-entered total evacuation duration: persist it as a confirmed `evacuation_min` override
+        (needs a source), re-rank and attach it as evidence to the asset's open tasks."""
+        asset = self.asset(asset_id)
+        if not (source or "").strip():
+            raise ValueError("an evacuation duration needs a source (who confirmed it and how)")
+        try:
+            value = float(minutes)
+        except (TypeError, ValueError):
+            raise ValueError(f"evacuation duration must be a number of minutes, got {minutes!r}") from None
+        override = self.store.confirm_override(
+            asset_id, "evacuation_min", value, source=source.strip(),
+            snippet=(snippet or "").strip() or f"analyst entered {value:g} min total evacuation duration",
+            confidence=confidence, previous=asset.get("evacuation_min"))
+        self.rescore()
+        evidence = {"override_id": override["override_id"], "field": "evacuation_min", "value": value,
+                    "source": override["source"]}
+        for t in self.store.tasks(asset_id=asset_id):
+            if t["status"] != "done":
+                self.store.add_evidence(t["task_id"], evidence)
+        return override
+
     def pending_proposals(self, asset_id: str | None = None) -> list[dict]:
         return [p for p in (self.workbench.proposals if self.workbench else [])
                 if p["status"] == "pending" and (asset_id is None or p["asset_id"] == asset_id)]
@@ -251,7 +277,13 @@ class Session:
             "assets": len(snap.get("assets") or []),
             "unlocated": sum(1 for a in snap.get("assets") or [] if a.get("latitude") is None or a.get("longitude") is None),
             "ranked": len(self.scored["ranked"]) if self.scored else 0,
+            "window_exhausted": sum(1 for a in self.scored["ranked"] if a["priority_status"] == "window_exhausted")
+            if self.scored else 0,
             "needs_review": len(self.scored["needs_review"]) if self.scored else 0,
+            "forecast_unavailable": sum(1 for a in self.scored["needs_review"]
+                                        if "forecast_unavailable" in a["review_reasons"]) if self.scored else 0,
+            "evacuation_unknown": sum(1 for a in self.scored["needs_review"]
+                                      if "evacuation_unknown" in a["review_reasons"]) if self.scored else 0,
             "flagged": len(self.scored["flagged"]) if self.scored else 0,
             "open_tasks": len(self.open_tasks()),
             "pending_proposals": len(self.pending_proposals()),
@@ -273,7 +305,10 @@ class Session:
             "processing_s": metrics.get("processing_s"),
             "fire_geometry_kind": snap.get("fire_geometry_kind"),
             "fire_source": snap.get("fire_source"),
-            "policy_version": config.PRIORITY_POLICY["version"],
+            "policy_version": config.CONTACT_POLICY["version"],
+            "buffer_min": config.CONTACT_POLICY["buffer_min"],
+            "now_at": self.scored["now_at"] if self.scored else snap.get("as_of"),
+            "evacuation_policy_version": config.EVACUATION_POLICY["version"],
             "value_policy_version": config.VALUE_POLICY["version"],
             "db_path": str(self.db_path),
             "now": now.isoformat(timespec="seconds"),
