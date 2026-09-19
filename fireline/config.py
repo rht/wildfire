@@ -17,6 +17,7 @@ FEATURES = {
     "routing": False,             # road graph, cut times, destinations
     "decisions": False,           # confine / evacuate rule; `recommendation` stays null otherwise
     "forecast_enrichment": False, # fill burn_probability / arrival_* on snapshot assets from a raster
+    "asset_criticality": True,   # per-asset criticality tier proposed by the agent (CRITICALITY_POLICY)
     "value_at_risk": False,       # people exposed / at risk and expected loss in euros per location (assumed values)
 }
 
@@ -35,6 +36,12 @@ VALUE_POLICY = {
         "campsite": 0.6,
         "nucleus": 0.7,
         "masia": 0.4,
+        # Strategic classes (readme 4 "Value"): staffed sites with no vulnerable resident population.
+        # The score is attention weight, not irreplaceability - that is per-asset, see CRITICALITY_POLICY.
+        "fire_station": 0.9,
+        "university": 0.8,
+        "research_facility": 0.7,
+        "aerodrome": 0.7,
     },
 }
 
@@ -101,7 +108,68 @@ EVACUATION_POLICY = {
                       "assumptions": "residents mostly self-evacuating; door-to-door notification"},
         "masia":     {"mobilisation_min": 15, "preparation_min": 15, "movement_min": 30,
                       "assumptions": "single household with own vehicle"},
+        "fire_station":      {"mobilisation_min": 5, "preparation_min": 10, "movement_min": 20,
+                              "assumptions": "crews are already mobile and self-relocating; "
+                                             "this is a relocation time, not an evacuation of occupants"},
+        "university":        {"mobilisation_min": 20, "preparation_min": 30, "movement_min": 40,
+                              "assumptions": "ambulatory students and staff; own transport and buses"},
+        "research_facility": {"mobilisation_min": 20, "preparation_min": 40, "movement_min": 30,
+                              "assumptions": "ambulatory staff; preparation includes securing samples, "
+                                             "animals and hazardous stores, which can dominate"},
+        "aerodrome":         {"mobilisation_min": 15, "preparation_min": 30, "movement_min": 30,
+                              "assumptions": "ambulatory staff; preparation includes flying out or "
+                                             "towing based aircraft"},
     },
+}
+
+# Per-asset criticality (readme 4 "Value", readme 8 "Focused agent workflow"). The class tables above
+# say what an average facility of a class is worth; this says whether ONE building is more than its
+# class - a national research centre, the fire brigade's own station, the only oncology centre for a
+# province. The tier is proposed by the investigation agent from evidence it quotes, and applied only
+# after analyst confirmation; nothing here is computed from the fire, from distance, or from the
+# model's unaided opinion. Criticality never reorders the contact queue (readme 6: "Property value
+# does not override contact urgency") - it drives a separate strategic-exposure view.
+CRITICALITY_POLICY = {
+    "version": "criticality-proto-2026-09-19",
+    "default_tier": "routine",
+    # `rank` orders the strategic view, highest first. `loss_multiplier` is what the euro ledger of
+    # docs/VALUE_AT_RISK.md will multiply its per-class replacement value by; that ledger is not
+    # implemented yet, so nothing reads the multiplier today. Both are assumed values.
+    "tiers": {
+        "routine":     {"rank": 0, "loss_multiplier": 1.0,
+                        "label": "nothing beyond its class"},
+        "elevated":    {"rank": 1, "loss_multiplier": 3.0,
+                        "label": "locally significant; the disruption outlasts the building"},
+        "high":        {"rank": 2, "loss_multiplier": 10.0,
+                        "label": "regionally significant, or partly irreplaceable"},
+        "exceptional": {"rank": 3, "loss_multiplier": 30.0,
+                        "label": "national infrastructure, or holdings that cannot be rebuilt"},
+    },
+    # Closed enum: the agent may name only these, and every factor it names must be supported by a
+    # snippet quoted verbatim from its own tool results (scripts/validate.py `_supported`).
+    "factors": {
+        "irreplaceable_holdings":
+            "collections, biobanks, archives or long-running experiments that cannot be rebuilt",
+        "national_research_infrastructure":
+            "serves researchers beyond its own institution",
+        "sole_regional_service":
+            "the only provider of its service for the region; losing it displaces the service, not just the staff",
+        "emergency_response_capability":
+            "part of the response to this incident; losing it degrades the response itself",
+        "hazardous_materials":
+            "stores that make a fire here worse than a fire next door",
+        "network_single_point_of_failure":
+            "power, water, telecoms or transport that other assets depend on",
+    },
+    # Inflation guard: a tier may not be proposed with fewer named factors than this, so
+    # "exceptional" can never rest on prose alone.
+    "min_factors": {"routine": 0, "elevated": 1, "high": 1, "exceptional": 2},
+    # Classes where one building can differ enough from its class average to be worth an
+    # investigation. Assets of these classes enter the review queue as `criticality_unassessed`
+    # while FEATURES["asset_criticality"] is on. The rest keep the class answer: the registers hold
+    # hundreds of near-identical schools and campsites, and asking the model about each of them
+    # costs tokens to learn nothing. An analyst can still point the agent at any asset by hand.
+    "assess_classes": ("hospital", "research_facility", "university", "fire_station", "aerodrome"),
 }
 
 # Four analyst actions and the capability tags each needs (readme 7).
@@ -125,6 +193,10 @@ LEAD_TIME_MIN = {
     "campsite": 90,
     "nucleus": 60,
     "masia": 60,
+    "fire_station": 60,
+    "university": 120,
+    "research_facility": 90,
+    "aerodrome": 90,
 }
 
 # Minutes to load people into vehicles (PLAN 6.4 exit window).
@@ -136,6 +208,10 @@ LOAD_TIME_MIN = {
     "campsite": 20,
     "nucleus": 45,
     "masia": 15,
+    "fire_station": 15,
+    "university": 30,
+    "research_facility": 30,
+    "aerodrome": 30,
 }
 
 # Tier thresholds on lead-adjusted p10 arrival (minutes) and burn probability.

@@ -368,7 +368,7 @@ def test_recorded_real_fire_spread_runs_parse_into_valid_forecasts(name):
     covered = forecast_from_recorded_spread(REAL_DIR / name, pts, min_burn_probability=0.2 if members > 1 else None)
     # about 20 ha burned, nearest facility 5.3 km away (stated in the READMEs): no facility is reached,
     # which the run states as burn_probability 0.0 with no arrival, not as a missing estimate
-    assert len(pts) == 99 and len(covered["estimates"]) == 99
+    assert len(pts) == 111 and len(covered["estimates"]) == 111
     assert all(e["arrival_at"] is None and e["burn_probability"] == 0.0 for e in covered["estimates"].values())
     with pytest.raises(ValueError, match="not a fire-spread"):
         read_recorded_spread(REAL_DIR / "20260919T131340Z_clusters.json")

@@ -592,6 +592,15 @@ ASSET_CLASS_RULES: dict[str, list[tuple[str, str]]] = {
         ("albergs de joventut", "camp"),
         ("cases de colònies", "camp"),
         ("càmping", "campsite"),
+        # Strategic classes: sites whose loss costs the response or the region more than the
+        # building. They carry staff, not a vulnerable resident population, and they are admitted so
+        # the criticality layer can assess them per asset (config.CRITICALITY_POLICY). The register's
+        # remaining categories (Punt TIC, ITV, ports, bus stations, Cultura, Esports) stay dropped.
+        ("centres de recerca", "research_facility"),
+        ("instituts universitaris de recerca", "research_facility"),
+        ("parcs de bombers", "fire_station"),
+        ("aeroports, aeròdroms i heliports", "aerodrome"),
+        ("universitats|", "university"),
     ],
     "care_homes": [  # column ``tipologia``
         ("residència", "care_home"),

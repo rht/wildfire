@@ -231,6 +231,25 @@ def open_task_counts(sess: Session) -> dict[str, int]:
     return counts
 
 
+def criticality_label(asset: dict) -> str:
+    """"tier (factor, factor)", or "" when no tier has been confirmed. Display only: no euro figure
+    exists yet, and nothing in the ranking reads this (readme 6)."""
+    tier = asset.get("criticality_tier")
+    if not tier:
+        return ""
+    factors = asset.get("criticality_factors") or []
+    return f"{tier} ({', '.join(f.replace('_', ' ') for f in factors)})" if factors else tier
+
+
+def strategic_frame(assets: list[dict]) -> pd.DataFrame:
+    return pd.DataFrame([{
+        "criticality": criticality_label(a), "name": a["name"], "type": a["asset_type"],
+        "municipality": a.get("municipality"), "distance m": a.get("distance_to_fire_m"),
+        "predicted arrival": a.get("fire_arrival_at"), "remaining window (min)": a.get("slack_min"),
+        "basis": a.get("criticality_basis"), "asset_id": a["asset_id"],
+    } for a in assets])
+
+
 def ranked_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFrame:
     return pd.DataFrame([{
         "rank": a["priority_rank"], "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
@@ -240,6 +259,7 @@ def ranked_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFram
         "remaining window (min)": a.get("slack_min"), "status": a.get("priority_status"),
         "review flags": ", ".join(a.get("review_reasons") or []), "people": people(a),
         "people exposed": exposed(a), "people at risk p50 / p10": at_risk(a), LOSS_COLUMN: loss_eur(a),
+        "criticality": criticality_label(a),
         "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
     } for a in assets])
 
@@ -250,7 +270,7 @@ def review_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFram
         "known distance m": a.get("distance_to_fire_m"), "predicted arrival": a.get("fire_arrival_at"),
         "evacuation min": a.get("evacuation_min"), "people": people(a),
         "people exposed": exposed(a), "people at risk p50 / p10": at_risk(a), LOSS_COLUMN: loss_eur(a),
-        "reasons": ", ".join(a.get("review_reasons") or []),
+        "reasons": ", ".join(a.get("review_reasons") or []), "criticality": criticality_label(a),
         "not ranked because": next((r for r in a["priority_reasons"] if r.startswith("needs review")), ""),
         "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
     } for a in assets])
@@ -601,7 +621,7 @@ def main() -> None:
                "estimates are the producer's / policy's inputs, not validated predictions. Arrivals whose forecast "
                "source says 'labelled enrichment, not validated' come from an uncalibrated spread model seeded on the "
                "observed perimeter, not from a provider forecast. Recommendations, not orders.")
-    m = st.columns(6)
+    m = st.columns(7)
     m[0].metric("Ranked", c["ranked"])
     m[1].metric("Window exhausted", c["window_exhausted"], help="remaining window <= 0; review first")
     m[2].metric("Needs review", c["needs_review"],
@@ -609,6 +629,10 @@ def main() -> None:
     m[3].metric("Open tasks", c["open_tasks"])
     m[4].metric("Pending proposals", c["pending_proposals"])
     m[5].metric("Open questions", c["open_questions"])
+    m[6].metric("Strategic", c.get("strategic", 0),
+                help=f"assets above the default criticality tier, analyst-confirmed; "
+                     f"{c.get('criticality_unassessed', 0)} still unassessed. A separate view, never a "
+                     f"contact order.")
 
     v = s["value_at_risk"]
     if v["layer"]:
@@ -652,6 +676,17 @@ def main() -> None:
     if sess.scored["flagged"]:
         st.caption(f"Ranked assets that still carry review flags ({len(sess.scored['flagged'])}):")
         st.dataframe(ranked_frame(sess.scored["flagged"], open_counts), width="stretch", hide_index=True)
+
+    strategic = sess.scored.get("strategic") or []
+    if strategic or c.get("criticality_unassessed"):
+        st.subheader(f"Strategic exposure ({len(strategic)})")
+        st.caption("A separate view, not a contact order: property value never overrides contact urgency "
+                   "(readme 6), so nothing here changes the ranked queue above. Most critical tier first, "
+                   "then the same remaining window. Every tier is an analyst-confirmed proposal from the "
+                   f"investigation agent, quoting its evidence; {c.get('criticality_unassessed', 0)} asset(s) "
+                   f"are still unassessed. Policy {config.CRITICALITY_POLICY['version']}, assumed.")
+        if strategic:
+            st.dataframe(strategic_frame(strategic), width="stretch", hide_index=True)
 
     assets = sess.assets_in_order()
     labels = {a["asset_id"]: f"{a['name']} ({a['asset_type']}; {a['queue']})" for a in assets}

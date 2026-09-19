@@ -91,7 +91,7 @@ def test_latency_returns_a_number():
     m = r["measured"]
     assert isinstance(m["median_s"], float) and m["median_s"] >= 0.0
     assert m["source_age_s"] == 300.0        # 10:00Z observation, 10:05Z receipt of the recorded update
-    assert m["assets"] == 168
+    assert m["assets"] == 180
 
 
 def test_stale_boundaries():

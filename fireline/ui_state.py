@@ -403,6 +403,11 @@ class Session:
             "evacuation_unknown": sum(1 for a in self.scored["needs_review"]
                                       if "evacuation_unknown" in a["review_reasons"]) if self.scored else 0,
             "flagged": len(self.scored["flagged"]) if self.scored else 0,
+            # Strategic exposure: assets above the default criticality tier, and the ones still
+            # waiting on an assessment. Counts only, never a euro figure (readme 6).
+            "strategic": len(self.scored.get("strategic") or []) if self.scored else 0,
+            "criticality_unassessed": sum(1 for a in self.scored["all"]
+                                          if "criticality_unassessed" in a["review_reasons"]) if self.scored else 0,
             "open_tasks": len(self.open_tasks()),
             "pending_proposals": len(self.pending_proposals()),
             "open_questions": len(self.open_questions()),

@@ -1,7 +1,7 @@
-"""Agent layer: four tools + one bounded investigation loop (CONTRACTS section 6, readme 8).
+"""Agent layer: five tools + one bounded investigation loop (CONTRACTS section 6, readme 8).
 
 Deterministic ranking by remaining evacuation window for the common case, agent for the flagged
-cases, analyst decides. The agent only ever acts through the four tools below and never changes an
+cases, analyst decides. The agent only ever acts through the five tools below and never changes an
 asset itself:
 
 - `get_asset`        read the ranked record (numbers rounded so they can be quoted verbatim)
@@ -35,11 +35,12 @@ FIXTURE_REGISTERS = ROOT / "fixtures" / "registers.json"
 FIXTURE_EVIDENCE = ROOT / "fixtures" / "evidence.json"
 DATA_REGISTERS_DIR = ROOT / "data" / "registers"
 
-PROPOSAL_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min")
+PROPOSAL_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min", "criticality_tier")
 OCCUPANCY_FIELDS = ("estimated_occupancy", "capacity")
 CONFIDENCE_LEVELS = ("low", "medium", "high")
 REVIEW_REASONS = ("location_unknown", "occupancy_unknown", "occupancy_seasonal", "class_ambiguous",
-                  "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown")
+                  "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown",
+                  "criticality_unassessed")
 
 POSTCHECK_FAILED_TEXT = ("Recommendation, not an order. Agent message withheld: number post-check failed "
                          "(the draft quoted a number that is not in any tool result). See the proposals "
@@ -301,12 +302,12 @@ def _muni_matches(wanted: str, actual: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# The four tools
+# The five tools
 # ---------------------------------------------------------------------------
 _ASSET_FIELDS = ("asset_id", "name", "asset_type", "municipality", "latitude", "longitude", "capacity",
                  "estimated_occupancy", "occupancy_basis", "value_score", "intersects_fire", "queue",
                  "review_reasons", "fire_arrival_at", "fire_arrival_basis", "forecast_source",
-                 "evacuation_min", "evacuation_source")
+                 "evacuation_min", "evacuation_source", "criticality_tier", "criticality_factors")
 
 
 def get_asset(asset_id: str, workbench: Workbench) -> dict:
@@ -365,6 +366,18 @@ def lookup_facility(query: str, municipality: str | None = None, limit: int = 20
     return out[:limit]
 
 
+def lookup_notability(query: str, limit: int = 3) -> list[dict]:
+    """Cached encyclopaedia evidence about an institution, for the criticality question only.
+
+    Reads the committed corpus (fixtures/notability.json) built by `scripts/fetch_data.py
+    notability`; never the network. A facility with no record is not notable enough to have one,
+    which is itself the answer for most schools and campsites. Each record: query, title, lang, url,
+    summary, wikidata_id, instance_of, operator, inception, employees, fetched_at.
+    """
+    from . import notability
+    return notability.lookup(query, limit=limit)
+
+
 def _mentions(text: str, words) -> bool:
     t = _fold(text)
     return any(_fold(w) in t for w in words)
@@ -400,6 +413,12 @@ def _check_value(field_name: str, value):
         if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
             raise ValueError(f"evacuation_min must be a number of minutes >= 0, got {value!r}")
         return float(value)
+    if field_name == "criticality_tier":
+        # priority.criticality_value owns the enum, the closed factor list and the minimum factor
+        # count per tier, so the agent and an analyst confirmation cannot disagree about what a
+        # tier means.
+        tier, factors = priority.criticality_value(value, config)
+        return {"tier": tier, "factors": factors}
     allowed = list(config.VALUE_POLICY["by_type"]) + ["unknown"]
     if not isinstance(value, str) or value not in allowed:
         raise ValueError(f"asset_type must be one of {allowed}, got {value!r}")
@@ -476,9 +495,13 @@ def escalate(asset_id: str, question: str, options: list[str], default: str,
     return dict(record)
 
 
+# Read-only lookups over cached evidence: they see no workbench and cannot change anything.
+STATELESS_TOOLS = ("lookup_facility", "lookup_notability")
+
 TOOL_FUNCTIONS = {
     "get_asset": get_asset,
     "lookup_facility": lookup_facility,
+    "lookup_notability": lookup_notability,
     "propose_update": propose_update,
     "escalate": escalate,
 }
@@ -517,22 +540,44 @@ TOOLS: list[dict] = [
         },
     },
     {
+        "name": "lookup_notability",
+        "description": "Cached encyclopaedia evidence (Wikipedia intro and Wikidata claims) about an "
+                       "institution, for judging whether one building is more than its class. Search by "
+                       "the institution's name, and if nothing matches try the parent body or the acronym "
+                       "- 'IRTA Monells' is a site of 'IRTA'. Most facilities have no record at all; that "
+                       "is the expected answer for an ordinary school or campsite and means routine. "
+                       "Returns title, url, summary, instance_of, operator, inception, employees and "
+                       "fetched_at. Quote from `summary` verbatim.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string",
+                          "description": "Institution name, parent body or acronym."},
+            },
+            "required": ["query"],
+        },
+    },
+    {
         "name": "propose_update",
         "description": "Propose a sourced update of one field for the analyst to confirm. Nothing is "
                        "applied until confirmed. Fields: capacity (an integer from evidence stating "
                        "places/capacity), estimated_occupancy (an integer ONLY from evidence stating an "
                        "actual headcount today), asset_type (a class the evidence states), evacuation_min "
                        "(total evacuation duration in minutes ONLY from evidence stating how long a full "
-                       "evacuation of this facility takes, e.g. its evacuation plan or the facility itself). "
+                       "evacuation of this facility takes, e.g. its evacuation plan or the facility itself), "
+                       "criticality_tier (an object, see below). "
                        "quoted_snippet must quote the evidence verbatim; pass its url and observed_at when known.",
         "input_schema": {
             "type": "object",
             "properties": {
                 "asset_id": _AID,
                 "field": {"type": "string", "enum": list(PROPOSAL_FIELDS)},
-                "value": {"type": ["integer", "number", "string"],
+                "value": {"type": ["integer", "number", "string", "object"],
                           "description": "Integer >= 0 for capacity/estimated_occupancy; class name for asset_type; "
-                                         "minutes >= 0 for evacuation_min."},
+                                         "minutes >= 0 for evacuation_min; for criticality_tier an object "
+                                         '{"tier": one of ' + str(list(config.CRITICALITY_POLICY["tiers"])) +
+                                         ', "factors": a list from ' +
+                                         str(list(config.CRITICALITY_POLICY["factors"])) + "}."},
                 "source": {"type": "string", "description": "Register name or page the snippet comes from."},
                 "quoted_snippet": {"type": "string", "description": "Verbatim snippet from the evidence."},
                 "confidence": {"type": "string", "enum": list(CONFIDENCE_LEVELS)},
@@ -567,7 +612,7 @@ def dispatch(name: str, tool_input: dict, workbench: Workbench | None = None):
     if fn is None:
         return {"error": f"unknown tool {name!r}", "hint": f"available: {sorted(TOOL_FUNCTIONS)}"}
     kwargs = dict(tool_input or {})
-    if name != "lookup_facility":
+    if name not in STATELESS_TOOLS:
         kwargs["workbench"] = workbench
     try:
         return jsonable(fn(**kwargs))
@@ -705,7 +750,7 @@ def postcheck_numbers(final_text: str, tool_results: list[str], asset_id: str = 
 # ---------------------------------------------------------------------------
 # Investigation loop
 # ---------------------------------------------------------------------------
-SYSTEM_PROMPT = """You are the investigation agent of FireLine, a wildfire values-at-risk coordination layer for the analyst on duty. Code has already ranked every asset by its remaining evacuation window (forecast fire arrival minus the total evacuation duration and a buffer, relative to the snapshot time); assets without a forecast or an evacuation estimate sit in the review queue. You handle one flagged asset at a time with four tools: get_asset, lookup_facility, propose_update, escalate.
+SYSTEM_PROMPT = """You are the investigation agent of FireLine, a wildfire values-at-risk coordination layer for the analyst on duty. Code has already ranked every asset by its remaining evacuation window (forecast fire arrival minus the total evacuation duration and a buffer, relative to the snapshot time); assets without a forecast or an evacuation estimate sit in the review queue. You handle one flagged asset at a time with five tools: get_asset, lookup_facility, lookup_notability, propose_update, escalate.
 
 Rules (binding):
 1. Tool results only. Every number you state must come verbatim from a tool result in this conversation. Call get_asset first. Never estimate, round differently, or recall a figure from memory. If you have no tool result for a number, do not state it.
@@ -713,7 +758,8 @@ Rules (binding):
 3. Capacity is not occupancy. A register or page stating places, capacity, capacitat or total_places is evidence for the field `capacity`. It is never evidence for `estimated_occupancy`, which needs a source stating how many people are actually present (a headcount). If you only have a capacity, propose capacity and escalate the headcount question.
 4. Match before you trust. Use lookup_facility with the asset's name and municipality; accept a candidate only when name and municipality both match. Quote the evidence verbatim in quoted_snippet and pass its url and observed_at when the candidate has them.
 5. Never issue an order. Start your final message with "Recommendation, not an order." Keep it to a few lines: what you found, what you proposed with what evidence (pending confirmation), what you escalated with which default.
-6. Stay within the step budget. Do the minimum that resolves or escalates each review reason, then stop. Leave what you cannot support unresolved rather than guessing.
+6. Value never outranks people. A criticality tier describes what would be lost along with a building. It never changes who is contacted first, and you never argue from it that one site should be reached before another.
+7. Stay within the step budget. Do the minimum that resolves or escalates each review reason, then stop. Leave what you cannot support unresolved rather than guessing.
 
 Review-reason playbook:
 - occupancy_unknown: lookup_facility(name, municipality). If a candidate matches by name and municipality and states a capacity, propose_update field=capacity with the snippet (not estimated_occupancy). Then escalate "how many people are present today?" unless the evidence states a headcount, in which case propose estimated_occupancy from that headcount. If nothing matches, escalate whether the site is occupied today; do not invent a capacity.
@@ -723,6 +769,11 @@ Review-reason playbook:
 - value_unknown: propose asset_type when the evidence resolves the class; otherwise escalate which class applies.
 - exposure_unknown: escalate; there is no fire geometry or location to compute exposure from and you cannot supply one.
 - evacuation_unknown: the total evacuation duration (mobilisation, preparation/loading, movement to a receiving location) is unknown, so the asset cannot be ranked. Propose_update field=evacuation_min ONLY when the evidence states how long a full evacuation of this facility takes (an evacuation plan, the facility itself); never derive it from headcount, distance or class. Otherwise escalate "confirm the total evacuation duration with the facility" with options such as "confirmed with the facility" / "use the class default, labelled as an assumption", default "confirmed with the facility".
+- criticality_unassessed: decide whether THIS building is worth more than an average facility of its class, and nothing else. The class policy already covers the average hospital or school; you are looking only for what it misses, a facility whose loss outlasts the incident. Two kinds of evidence count, and you may use both.
+  (a) What the facility IS, from the get_asset class line. Some factors follow from the class alone and need no other source: a fire_station is emergency_response_capability. Quote the class line as the snippet.
+  (b) lookup_notability on the facility name. If nothing matches, try the parent institution or the acronym inside the name - "IRTA Monells" is a site of "IRTA". A record about the parent body IS evidence about this site when the site is plainly one of its establishments: say in your message that you are relying on the parent, and take one tier lower than the parent alone would justify. It is NOT evidence when the record describes a different place - a record about a city airport says nothing about a small heliport, and there you fall back to (a).
+  Pick the LOWEST tier the quoted text supports, and name only factors the text states: irreplaceable_holdings, national_research_infrastructure, sole_regional_service, emergency_response_capability, hazardous_materials, network_single_point_of_failure. "high" needs one factor, "exceptional" needs two and is for national infrastructure or holdings that cannot be rebuilt; a facility that is merely large, old, famous or expensive is not exceptional. Propose "routine" with no factors when neither (a) nor (b) gives you anything - that is the ordinary answer and a good one. Escalate instead of guessing only when the evidence conflicts.
+
 - forecast_unavailable: no spread forecast covers this location; the window cannot be computed. You cannot supply a forecast arrival (do not propose one). Escalate whether the analyst wants the location kept in the review queue pending a forecast, default "keep in review".
 """
 
