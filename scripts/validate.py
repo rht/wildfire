@@ -393,7 +393,9 @@ def check_updates() -> dict:
     # on the real-area snapshots the register fetched_at stays 2026-09-19 while as_of advances 2 h
     a1 = next(a for a in snap1["assets"] if a["asset_id"] == "fixture:escola_cruilles")
     a2 = next(a for a in snap2["assets"] if a["asset_id"] == "fixture:escola_cruilles")
-    non_fire = lambda a: [s for s in a["sources"] if "distance_to_fire_m" not in s["fields"]]  # noqa: E731
+    # exposure and forecast provenance legitimately follow the fire update; everything else must be identical
+    fire_dependent = {"distance_to_fire_m", "fire_arrival_at", "arrival_p10_at", "arrival_p50_at", "forecast_source"}
+    non_fire = lambda a: [s for s in a["sources"] if not fire_dependent & set(s["fields"])]  # noqa: E731
     fire_src = lambda a: next(s for s in a["sources"] if "distance_to_fire_m" in s["fields"])  # noqa: E731
     same_synth = non_fire(a1) == non_fire(a2) and a1["distance_to_fire_m"] == a2["distance_to_fire_m"]
     real1, real2 = _snap("gavarres_real_0001"), _snap("gavarres_real_0002")
@@ -426,7 +428,7 @@ def check_updates() -> dict:
         f"top-3 after (seq 2): {after}; ranked order changed: {order_changed}"
         + ("" if ranked_any else " (no asset ranked: the fixtures carry no forecast arrival / evacuation estimate yet, "
                                 "so the affected-priority check rests on the changed-asset flags above)"),
-        f"source age preserved (synthetic, escola_cruilles unchanged at {a1['distance_to_fire_m']} m): non-fire sources "
+        f"source age preserved (synthetic, escola_cruilles unchanged at {a1['distance_to_fire_m']} m): non-fire, non-forecast sources "
         f"identical {same_synth}; fire source observed_at {fire_src(a1)['observed_at']} -> {fire_src(a2)['observed_at']}",
         f"source age preserved (real-area {ra1['asset_id']}): newest_fetched_at {age1['newest_fetched_at']} and the "
         f"register provenance identical in both snapshots while as_of advances {real1['as_of']} -> {real2['as_of']}: "
@@ -672,8 +674,8 @@ def check_latency(repeats: int = 3) -> dict:
         f"apply+suggest {stages[0]['queue_s']:.3f} s; validate errors {stages[0]['errors']}",
         f"result: {n_ranked} ranked, {n_review} needs_review; {stages[0]['changed']} assets changed vs seq 1, "
         f"{stages[0]['suggested']} new suggestions on the update"
-        + (" (ranked queue empty: these inputs carry no per-location forecast arrival or evacuation estimate, so "
-           "every asset is a review item until the producer supplies fire_arrival_at / evacuation_min)"
+        + (" (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry "
+           "no per-location forecast arrival and every asset is a review item until a forecast covers it)"
            if n_ranked == 0 else ""),
         f"source age (observation -> snapshot as_of {snap['as_of']}): {age:.0f} s, data_status {snap['data_status']}; "
         f"metrics {metrics} (separate numbers, never combined)",
