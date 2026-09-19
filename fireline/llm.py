@@ -29,7 +29,14 @@ import requests
 DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5"
 DEFAULT_NEBIUS_MODEL = "deepseek-ai/DeepSeek-V4.1-Flash"
 NEBIUS_BASE_URL = "https://api.studio.nebius.com/v1"
-MAX_TOKENS = 2048
+# A reasoning model spends this budget on its own thinking before it writes anything, so the cap has
+# to clear the thinking, not the answer. Measured over 26 criticality investigations on
+# DeepSeek-V4.1-Flash (2026-09-20, the 13 assessed assets of gavarres_real_0002 twice): ordinary
+# steps use 9-20 reasoning tokens, the judgement cases 1600-2400, and the largest single turn was
+# 2899 completion tokens. At 2048 and again at 4096 the longest-thinking assets ran out mid-thought
+# and returned no text and no tool call, which the loop could only read as "the agent had nothing to
+# say". 8192 is ~3x the measured maximum; an overflow is now an error, see `finish_reason` below.
+MAX_TOKENS = 8192
 TIMEOUT_S = 180
 
 
@@ -104,10 +111,13 @@ def to_openai_messages(system: str, messages: list[dict]) -> list[dict]:
     return out
 
 
-def from_openai_message(message: dict) -> FakeResponse:
+def from_openai_message(message: dict, finish_reason: str | None = None) -> FakeResponse:
     """One OpenAI assistant message -> the block response `agent.investigate` reads. A tool call
     whose arguments are not valid JSON becomes an empty input, which the tool layer rejects as a
-    missing required argument rather than acting on a guess."""
+    missing required argument rather than acting on a guess.
+
+    `finish_reason == "length"` is kept as `stop_reason="max_tokens"`: a truncated turn must stay
+    distinguishable from a finished one, whether or not it carried any content."""
     blocks: list = []
     if message.get("content"):
         blocks.append(TextBlock(text=message["content"]))
@@ -119,7 +129,10 @@ def from_openai_message(message: dict) -> FakeResponse:
             args = {}
         blocks.append(ToolUseBlock(id=call.get("id") or "", name=fn.get("name") or "",
                                    input=args if isinstance(args, dict) else {}))
-    stop = "tool_use" if any(b.type == "tool_use" for b in blocks) else "end_turn"
+    if finish_reason == "length":
+        stop = "max_tokens"
+    else:
+        stop = "tool_use" if any(b.type == "tool_use" for b in blocks) else "end_turn"
     return FakeResponse(content=blocks, stop_reason=stop)
 
 
@@ -172,7 +185,17 @@ class NebiusLLM:
         choices = payload.get("choices") or []
         if not choices:
             raise RuntimeError(f"Nebius {self.model} returned no choices: {str(payload)[:400]}")
-        return from_openai_message(choices[0].get("message") or {})
+        choice = choices[0]
+        response = from_openai_message(choice.get("message") or {}, choice.get("finish_reason"))
+        if response.stop_reason == "max_tokens" and not response.content:
+            # All of max_tokens went on reasoning, so the turn carries neither text nor a tool call.
+            # Raising keeps a truncation from reaching the analyst as a silent "nothing to report".
+            usage = payload.get("usage") or {}
+            raise RuntimeError(
+                f"Nebius {self.model} hit max_tokens ({self.max_tokens}) before writing any text or tool "
+                f"call; usage {usage.get('completion_tokens')} completion tokens, "
+                f"{usage.get('reasoning_tokens')} of them reasoning. Raise fireline.llm.MAX_TOKENS.")
+        return response
 
 
 # ---------------------------------------------------------------------------

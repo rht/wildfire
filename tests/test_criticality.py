@@ -91,7 +91,8 @@ def test_exceptional_cannot_rest_on_prose_alone():
 # producer: the flag gates everything
 # ---------------------------------------------------------------------------
 def test_producer_never_asserts_a_tier_and_is_inert_while_the_flag_is_off():
-    off = snap_mod.asset_record(_row(), config)
+    # Both states are named explicitly: the flag is deployment policy, and this asserts the gate.
+    off = snap_mod.asset_record(_row(), _cfg(asset_criticality=False))
     assert off["criticality_tier"] is None
     assert off["criticality_factors"] is None and off["criticality_basis"] is None
     assert "criticality_unassessed" not in off["review_reasons"]

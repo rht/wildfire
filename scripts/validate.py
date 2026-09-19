@@ -676,9 +676,12 @@ def check_agent_live(live: bool = False) -> dict:
                    priority_status="needs_review", priority_rank=None, queue="needs_review",
                    review_reasons=["occupancy_unknown"], needs_review=True)
     wb.assets[nowhere["asset_id"]] = nowhere
-    timing_reasons = ("forecast_unavailable", "evacuation_unknown")
+    # Reasons this loop does not drive: the timing pair has no evidence the agent can fetch, and
+    # criticality has its own block below on the real-area snapshot. Excluded here so the general
+    # loop measures the same assets whichever way FEATURES["asset_criticality"] is set.
+    skip_reasons = ("forecast_unavailable", "evacuation_unknown", "criticality_unassessed")
     ids = [aid for aid in agent.flagged_asset_ids(wb)
-           if [r for r in wb.asset(aid).get("review_reasons") or [] if r not in timing_reasons]]
+           if [r for r in wb.asset(aid).get("review_reasons") or [] if r not in skip_reasons]]
 
     records, failures = [], []
     for aid in ids:
@@ -731,12 +734,18 @@ def check_agent_live(live: bool = False) -> dict:
                   next((p["value"] for p in r["proposals_added"] if p["field"] == "criticality_tier"), None)
                   for r in crit_records}
     crit_postcheck = [r["asset_id"] for r in crit_records if not r["postcheck_ok"]]
+    # Seen in practice against this model: a loop that reads its evidence and then returns an empty
+    # assistant message, proposing nothing. Measured here so it cannot pass as a quiet `routine`.
+    crit_silent = [r["asset_id"] for r in crit_records if not r["final_text"].strip()]
+    crit_no_proposal = [r["asset_id"] for r in crit_records
+                        if not [p for p in r["proposals_added"] if p["field"] == "criticality_tier"]]
 
     ok = (not failures and not unsupported and not occupancy_from_capacity and not postcheck_failed
           and not silent and not capped and not missing_escalation and len(records) == len(ids)
-          and not crit_failures and not crit_unsupported and not crit_invalid and not crit_postcheck)
+          and not crit_failures and not crit_unsupported and not crit_invalid and not crit_postcheck
+          and not crit_silent)
     details = [
-        f"model: {provider} `{backend.model}` at temperature 0 (fireline.llm.NebiusLLM translates the four tools "
+        f"model: {provider} `{backend.model}` at temperature 0 (fireline.llm.NebiusLLM translates the five tools "
         f"to the OpenAI-compatible schema; the loop, guards and post-check are the same code the FakeLLM runs)",
         f"{len(records)}/{len(ids)} investigations completed over the flagged fixture assets of "
         f"synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou"
@@ -759,7 +768,10 @@ def check_agent_live(live: bool = False) -> dict:
         + (f"; invalid: {crit_invalid}" if crit_invalid else "")
         + f"; supported by a verbatim snippet from their own tool results: "
           f"{len(crit_props) - len(crit_unsupported)}/{len(crit_props)}"
-        + f"; post-check failed on: {crit_postcheck or 'none'}",
+        + (f"; unsupported: {crit_unsupported}" if crit_unsupported else "")
+        + f"; post-check failed on: {crit_postcheck or 'none'}"
+        + f"; empty final message on: {crit_silent or 'none'} (a fail: the loop read its evidence and said "
+          f"nothing); no tier proposed on: {crit_no_proposal or 'none'}",
         "held-out examples: the fixture assets were used while writing the system prompt, so these are not held-out "
         "examples; this run measures whether the model obeys the evidence and escalation rules, not its accuracy on "
         "unseen facilities. The criticality tiers above are the model's judgement on real facilities and are "
@@ -805,9 +817,11 @@ def check_criticality() -> dict:
            "lat": 41.98, "lon": 2.99, "occupancy": None, "occupancy_source": "unknown",
            "municipality": "Monells", "register": "gencat:equipaments (8gmd-gz7i)", "category": None,
            "seasonal": False, "class_ambiguous": False, "address": None}
-    off = snapshot.asset_record(row, config)
-    on_cfg = SimpleNamespace(**{k: getattr(config, k) for k in dir(config) if k.isupper()})
-    on_cfg.FEATURES = dict(config.FEATURES, asset_criticality=True)
+    # Both cfgs are explicit: the check measures the gate, not whichever way the deployed flag is set.
+    consts = {k: getattr(config, k) for k in dir(config) if k.isupper()}
+    off_cfg = SimpleNamespace(**dict(consts, FEATURES=dict(config.FEATURES, asset_criticality=False)))
+    on_cfg = SimpleNamespace(**dict(consts, FEATURES=dict(config.FEATURES, asset_criticality=True)))
+    off = snapshot.asset_record(row, off_cfg)
     on = snapshot.asset_record(row, on_cfg)
     producer_ok = (off["criticality_tier"] is None and on["criticality_tier"] is None
                    and "criticality_unassessed" not in off["review_reasons"]

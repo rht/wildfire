@@ -17,7 +17,7 @@ FEATURES = {
     "routing": False,             # road graph, cut times, destinations
     "decisions": False,           # confine / evacuate rule; `recommendation` stays null otherwise
     "forecast_enrichment": False, # fill burn_probability / arrival_* on snapshot assets from a raster
-    "asset_criticality": False,   # per-asset criticality tier proposed by the agent (CRITICALITY_POLICY)
+    "asset_criticality": True,   # per-asset criticality tier proposed by the agent (CRITICALITY_POLICY)
 }
 
 # Stale-data thresholds on the fire observation age (readme 3, 5.1 data_status).

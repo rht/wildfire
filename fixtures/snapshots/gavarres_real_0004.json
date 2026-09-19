@@ -72,6 +72,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -155,6 +156,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -238,6 +240,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -321,6 +324,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -404,6 +408,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -487,6 +492,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -570,6 +576,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -653,6 +660,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -820,6 +828,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -903,6 +912,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -986,6 +996,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1069,6 +1080,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1152,6 +1164,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [

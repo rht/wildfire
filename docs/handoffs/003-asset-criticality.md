@@ -68,6 +68,58 @@ the factors that justify it. Both the tool and an analyst confirmation validate 
 **UI.** A criticality column on both tables and a Strategic exposure panel, captioned with why it is
 not a contact order and how many assets remain unassessed.
 
+## Turning the flag on (2026-09-20)
+
+`FEATURES["asset_criticality"]` is now `True`, at the user's request, and the committed snapshots
+were rebuilt with it. The only change to them is the added `criticality_unassessed` review reason on
+the 13 assessed-class assets of the real-area extract; no other field moved.
+
+Two checks had written "the flag is off" where they meant "with the flag off". Both now name each
+state explicitly (`tests/test_criticality.py` and `check_criticality`'s producer probe build an
+off-cfg the way they already built an on-cfg), so they measure the gate whichever way it is set.
+`check_agent_live`'s general loop now skips `criticality_unassessed` alongside the timing pair: it
+has its own block on the real-area snapshot, and the general loop should cover the same assets
+whichever way the flag is set.
+
+## The truncation bug the demo found
+
+Turning the flag on made the live check fail, on a real defect that had been hiding as a model
+failure. Two of four criticality investigations ended with the loop reading its evidence and then
+returning an empty assistant message, proposing nothing.
+
+The cause was `finish_reason`, which `from_openai_message` discarded. A response truncated at
+`max_tokens` became `stop_reason="end_turn"` — indistinguishable from a considered finish. And
+`MAX_TOKENS` was 2048 while DeepSeek spends its budget on reasoning before it writes anything: the
+ordinary investigation steps use 9-20 reasoning tokens, but the criticality judgement was measured at
+1226 and then at the full 2048, at which point the turn carried no text and no tool call.
+
+This is the worst shape a bug can take here. A truncation reaching the analyst as silence reads as
+"the agent found nothing to say about this hospital", which is exactly what a considered `routine`
+looks like. Both halves are fixed. A truncated turn keeps `stop_reason="max_tokens"`, and
+`NebiusLLM.create` raises when the truncation produced nothing usable. `MAX_TOKENS` is 8192, set from
+a measurement rather than a guess: over 26 criticality investigations (the 13 assessed assets of
+`gavarres_real_0002`, twice, with the cap raised out of the way) the ordinary steps used 9-20
+reasoning tokens, the two judgement cases 1600-2400, and the largest single turn 2899 completion
+tokens. 4096 was not enough — the first live run after that change failed on exactly those two
+assets, this time saying so. `check_agent_live` now also counts empty final messages and missing tiers in
+the criticality block, so the behaviour stays measured rather than disappearing with the fix.
+
+## The user's own example, probed
+
+`Barcelona Supercomputing Center` at its real address, against three peers of the same class, the
+same class `value_score` and the same 2500 m: BSC `high/national_research_infrastructure` quoting the
+ca.wikipedia intro, CEAB `high/national_research_infrastructure`, ICRA
+`high/national_research_infrastructure`, and `Escola Joan de Margarit` `routine` from its class line.
+
+The layer separates a facility with a substantive public record from one without. It did not separate
+BSC from a mid-size water-research institute, and reached for no `exceptional` tier. Read it as
+"this building is more than its class", not as a ranking among notable institutions.
+
+A first probe put BSC at a Baix Empordà village's coordinates. The model refused the record, saying
+it describes the Torre Girona installation in Barcelona, "a different place, so it is not evidence
+about this site", and returned `routine`. The geographic-consistency rule working, on a badly built
+probe.
+
 ## Two things the build changed about the design
 
 **`dispatch` had a hardcoded `name != "lookup_facility"`** deciding which tools receive a workbench.
@@ -104,7 +156,16 @@ when relying on a parent record. Second run: the fire station came back
 - **The tiers are the model's judgement, not measured accuracy.** This repo holds no ground truth
   for "how critical is IRTA Monells", and `VALIDATION.md` says so. Every tier is a proposal awaiting
   an analyst.
-- **Borderline tiers vary between runs, at temperature 0.** Over three live runs the two ends were
+- **The live check is intermittently red on this model, and both causes are the guards working.**
+  Across six `--live` runs on 2026-09-20 the committed `VALIDATION.md` run is green, but two others
+  were not: once the number post-check replaced a final message about IRTA Monells (a number in the
+  prose that was in no tool result — the analyst saw the replacement, not the number), and once a
+  criticality snippet was not verbatim in its own tool results. Neither reproduced in four repeats of
+  the same asset. Treat a red live check as a run to read, not a build to roll back: the detail lines
+  now name the asset and the failing measure in every case.
+- **Borderline tiers vary between runs, at temperature 0.** Seen again on 2026-09-20: over the two
+  seeding runs and two live validations, Hospital de Palamós came back `high/sole_regional_service`
+  three times and `routine` once. Over three live runs the two ends were
   stable — the fire station came back `high/emergency_response_capability` every time (it is derived
   from the class line, not from a record) and the Heliport `routine` every time (its only near
   record is a different airport). The judgement cases moved: IRTA Monells was `elevated` twice and

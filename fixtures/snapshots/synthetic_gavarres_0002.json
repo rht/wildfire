@@ -956,8 +956,10 @@
    "fire_arrival_basis": "p10",
    "evacuation_min": 180.0,
    "evacuation_source": "evacuation-proto-2026-09-19",
-   "needs_review": false,
-   "review_reasons": [],
+   "needs_review": true,
+   "review_reasons": [
+    "criticality_unassessed"
+   ],
    "sources": [
     {
      "fields": [

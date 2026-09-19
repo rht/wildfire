@@ -221,7 +221,7 @@ make precompute   # v0 engine demo (spread CA, routing, decisions); the same unc
 `fireline/` has `snapshot.py` (producer), `fire_input.py` (Deepfire poll or recorded responses, stale
 status, latency), `forecast_input.py` (per-location fire arrival estimates: a labelled forecast file or
 a Deepfire fire-spread run), `priority.py` and `tasks.py` (consumer: evacuation-window ranking, SQLite
-tasks, roster, confirmed overrides), `agent.py` and `llm.py` (four-tool investigation), `app.py`
+tasks, roster, confirmed overrides), `agent.py` and `llm.py` (five-tool investigation), `app.py`
 (Streamlit) and `config.py` (policies and feature flags). The v0 engine (`spread.py`, `routing.py`,
 `decide.py`, `scenario.py`, `grid.py`, `fire_state.py`) stays in the tree behind `config.FEATURES`,
 off by default.
@@ -341,7 +341,7 @@ Use a sorted asset table for ranking. A graph is deferred until route connectivi
 | Facility location/class | One Gencat Equipaments extract for the selected area. Cache it, record extraction time and preserve source IDs. |
 | Size | Estimated people present where sourced. Capacity may be a clearly labelled proxy; it is not a confirmed headcount. Missing values remain null. |
 | Value | Analyst-configured operational importance by facility class: a prototype policy, not monetary valuation or an established emergency-service rule. |
-| Criticality | Per-asset, for the classes a class average cannot describe (`CRITICALITY_POLICY["assess_classes"]`): a tier and its named factors, proposed by the investigation agent from quoted evidence and confirmed by the analyst. A separate strategic view; it never enters contact urgency. Behind `FEATURES["asset_criticality"]`, off by default. |
+| Criticality | Per-asset, for the classes a class average cannot describe (`CRITICALITY_POLICY["assess_classes"]`): a tier and its named factors, proposed by the investigation agent from quoted evidence and confirmed by the analyst. A separate strategic view; it never enters contact urgency. Behind `FEATURES["asset_criticality"]`, on since 2026-09-20. |
 | Notability evidence | Committed Wikipedia/Wikidata extract (`fixtures/notability.json`) for the criticality question only: title, url, intro summary, instance-of, operator, inception, with fetch times. Read offline; most facilities have no record, which is the answer for an ordinary school. |
 | Investigation evidence | Small cache of registry records or facility pages with URLs, snippets and dates. Label manual enrichment; avoid several ingestion pipelines. |
 | Teams | Manually entered or fixture roster with team IDs, capabilities, availability and source labels. |

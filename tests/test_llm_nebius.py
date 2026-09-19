@@ -149,6 +149,36 @@ def test_http_error_is_raised_with_the_model_and_status():
         llm.create("S", [{"role": "user", "content": "go"}], TOOLS)
 
 
+def test_truncation_that_produced_nothing_is_an_error_not_a_silent_end_turn():
+    """Measured against DeepSeek: all of max_tokens went on reasoning, so the turn carried neither
+    text nor a tool call. Read as `end_turn` it becomes "the agent had nothing to say", which is
+    indistinguishable from a considered `routine`."""
+
+    class Truncated(StubSession):
+        def post(self, url, json=None, headers=None, timeout=None):
+            self.requests.append(json)
+            return StubResponse({"choices": [{"message": {"content": None, "tool_calls": []},
+                                              "finish_reason": "length"}],
+                                 "usage": {"completion_tokens": 4096, "reasoning_tokens": 4096}})
+
+    with pytest.raises(RuntimeError, match="max_tokens"):
+        NebiusLLM(api_key="k", session=Truncated([{}])).create("S", [{"role": "user", "content": "g"}], TOOLS)
+
+
+def test_truncation_that_still_wrote_something_is_kept_and_flagged():
+    """A truncated turn that did produce content is usable, but must not be recorded as a finished
+    one: the loop and the analyst should be able to tell the difference."""
+    resp = from_openai_message({"content": "Recommendation, not an or"}, "length")
+    assert resp.stop_reason == "max_tokens"
+    assert resp.content[0].text == "Recommendation, not an or"
+
+
+def test_a_finished_turn_is_unaffected_by_the_finish_reason():
+    assert from_openai_message({"content": "done"}, "stop").stop_reason == "end_turn"
+    assert from_openai_message({"tool_calls": [_call("get_asset", {"asset_id": "a1"})]},
+                               "tool_calls").stop_reason == "tool_use"
+
+
 def test_empty_choices_is_an_error_not_a_silent_end_turn():
     class NoChoices(StubSession):
         def post(self, url, json=None, headers=None, timeout=None):

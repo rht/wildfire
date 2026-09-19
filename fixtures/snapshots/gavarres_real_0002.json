@@ -219,7 +219,8 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "criticality_unassessed"
    ],
    "sources": [
     {
@@ -317,7 +318,8 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "criticality_unassessed"
    ],
    "sources": [
     {
@@ -415,7 +417,8 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "criticality_unassessed"
    ],
    "sources": [
     {
@@ -513,7 +516,8 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "criticality_unassessed"
    ],
    "sources": [
     {
@@ -612,6 +616,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -709,6 +714,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -805,7 +811,8 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "criticality_unassessed"
    ],
    "sources": [
     {
@@ -903,7 +910,8 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "criticality_unassessed"
    ],
    "sources": [
     {
@@ -1100,7 +1108,8 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "criticality_unassessed"
    ],
    "sources": [
     {
@@ -1198,7 +1207,8 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown"
+    "occupancy_unknown",
+    "criticality_unassessed"
    ],
    "sources": [
     {
@@ -1297,6 +1307,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1394,6 +1405,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1491,6 +1503,7 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
+    "criticality_unassessed",
     "forecast_unavailable"
    ],
    "sources": [
