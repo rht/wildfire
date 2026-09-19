@@ -91,7 +91,7 @@ def _guidance(recommendation, warnings):
     return name, instructions, reasons
 
 
-def build_call_briefing(asset, recommendation, *, snapshot_id):
+def build_call_briefing(asset, recommendation, *, snapshot_id) -> CallBriefing:
     """Build private content and version metadata; missing approvals fail closed.
 
     See readme.md's Household call briefings contract. Warnings are merged by
@@ -125,8 +125,8 @@ def build_call_briefing(asset, recommendation, *, snapshot_id):
                if not reasons else None), road_warning_version=warning_version)
     version = hashlib.sha256(json.dumps(content, sort_keys=True,
         separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
-    lines = [f'Household: {name}. Snapshot: {snapshot_id}.',
-             f'Instruction version: {version}.',
+    lines = [f'Household: {name}.',
+             f'Internal reference; do not read aloud: snapshot {snapshot_id}, instruction version {version}.',
              'Ask for a new acknowledgement of this message and any approved instructions; '
              'an earlier acknowledgement does not apply.']
     if reasons:
@@ -147,7 +147,7 @@ def build_call_briefing(asset, recommendation, *, snapshot_id):
 
 
 def build_call_request(asset, recommendation, contact, *, snapshot_id, request_id,
-                       input_mode='synthetic'):
+                       input_mode='synthetic') -> CallRequest:
     """Return an existing CallRequest; caller owns approval, storage and enqueueing."""
     contact = _mapping(contact, 'contact')
     briefing = build_call_briefing(asset, recommendation, snapshot_id=snapshot_id)
@@ -160,13 +160,34 @@ def build_call_request(asset, recommendation, contact, *, snapshot_id, request_i
         road_warnings=deepcopy(briefing.road_warnings))
 
 
-def briefing_acknowledgement(briefing, request, result=None):
+def snapshot_request_data(asset, data, *, snapshot_id):
+    """Content-only callback for snapshot_contacts (bind snapshot_id with partial).
+
+    data contains optional recommendation, language and human_callback_number.
+    Queue association, target authorization and request IDs stay with the caller.
+    """
+    data = _mapping(data, 'briefing data')
+    if set(data) - {'recommendation', 'language', 'human_callback_number'}:
+        raise ValueError('invalid briefing data')
+    briefing = build_call_briefing(asset, data.get('recommendation'), snapshot_id=snapshot_id)
+    payload = dict(language=data.get('language', 'en'), incident_brief=briefing.incident_brief,
+                   road_warnings=deepcopy(briefing.road_warnings))
+    callback = data.get('human_callback_number')
+    if callback is not None:
+        payload['human_callback_number'] = callback
+    return payload
+
+
+def briefing_acknowledgement(briefing, request, result=None, *, instruction_receipt=None):
     """Return version-bound receipt facts, never readiness/departure/arrival.
 
     Use the request/result association from VoiceStore (including its provider
     binding). A changed briefing needs a new immutable request ID. Explicit
     transcript verification is required regardless of any model confidence.
-    The original request and result remain untouched.
+    instruction_receipt is a separate analyst interpretation mapping with
+    request_id, instruction_version, acknowledged (bool), and source. A verified
+    quotation alone does not establish affirmative receipt. The original request
+    and result remain untouched; no provider receipt is inferred or persisted.
     """
     from .voice_interview import normalize_result
 
@@ -177,7 +198,7 @@ def briefing_acknowledgement(briefing, request, result=None):
     state = dict(instruction_version=briefing.instruction_version,
         road_warning_version=briefing.road_warning_version, instruction_acknowledged=None,
         road_warning_acknowledged=None, requires_new_acknowledgement=True,
-        human_followup_required=True)
+        human_followup_required=True, instruction_receipt_source=None)
     if result is None or any(getattr(result, key) != getattr(request, key)
                             for key in ('request_id', 'asset_id', 'snapshot_id')):
         return state
@@ -193,11 +214,17 @@ def briefing_acknowledgement(briefing, request, result=None):
 
     # Identity, household authority and receipt all need their own verified evidence.
     reliable = reliable and verified('identity_confirmed') and verified('whole_household_confirmed')
-    if reliable and verified('acknowledged') and verified('instruction_received'):
-        state['instruction_acknowledged'] = normalized.acknowledged
+    receipt = instruction_receipt if isinstance(instruction_receipt, Mapping) else {}
+    receipt_matches = (receipt.get('request_id') == request.request_id
+        and receipt.get('instruction_version') == briefing.instruction_version
+        and isinstance(receipt.get('acknowledged'), bool) and _nonblank(receipt.get('source')))
+    if reliable and verified('instruction_received') and receipt_matches:
+        state['instruction_acknowledged'] = receipt['acknowledged']
+        state['instruction_receipt_source'] = receipt['source']
     if reliable and verified('road_warning_acknowledged'):
         state['road_warning_acknowledged'] = normalized.road_warning_acknowledged
     state['requires_new_acknowledgement'] = (state['instruction_acknowledged'] is not True
+        or normalized.acknowledged is not True or not verified('acknowledged')
         or bool(briefing.road_warnings) and state['road_warning_acknowledged'] is not True)
     state['human_followup_required'] = (normalized.human_followup_required
         or bool(briefing.human_followup_reasons) or state['requires_new_acknowledgement'])

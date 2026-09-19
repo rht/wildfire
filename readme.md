@@ -1977,11 +1977,104 @@ Implementation plan (executed inline in the existing task worktree):
   with deterministic instruction and warning versions, guidance status and reasons.
   Reject oversized content rather than silently truncating route instructions.
 - [x] Add failing version/evidence tests, then implement
-  `briefing_acknowledgement(briefing, request, result=None) -> dict` to keep receipt
+  `briefing_acknowledgement(briefing, request, result=None, *, instruction_receipt=None) -> dict` to keep receipt
   separate from departure/arrival, require fresh acknowledgements after change,
   and prevent model confidence from substituting for transcript verification.
   Test immobility, missing transport and human requests through existing consumers.
-- [ ] Read sibling export status and add an explicit adapter if a verified plan
+- [x] Read sibling export status and add an explicit adapter if a verified plan
   export exists; otherwise name that dependency. Run relevant and full offline tests,
   inspect changed-file Norma results, obtain scoped review, fix actual findings,
   commit/push `codex/call-briefings`, and create a reviewable PR to main.
+
+
+### Briefing versions, receipt and sibling adapters
+
+`CallBriefing` exposes `asset_id`, `snapshot_id`, `instruction_version`,
+`road_warning_version`, `guidance_status` (`approved_instructions` or
+`readiness_only`), `human_followup_reasons`, `incident_brief`, `road_warnings`,
+`destination`, `route_instructions`, `plan_id`, `plan_revision`, and `source`.
+Treat this as private operational content. Do not publish the dataclass or a full
+`CallRequest` in the shared live-state envelope. The version hash binds the
+household, snapshot, complete accepted instructions, route membership, approval
+revision/source and warning version; irrelevant contact or confidence attributes
+do not alter it. Internal snapshot/version references are labelled not to be read
+aloud. Unavailable guidance and provenance stay null.
+
+`briefing_acknowledgement(briefing, request, result=None, *, instruction_receipt=None)`
+returns `instruction_version`, `road_warning_version`, `instruction_acknowledged`,
+`road_warning_acknowledged`, `requires_new_acknowledgement`,
+`human_followup_required`, and `instruction_receipt_source`. A separate analyst
+interpretation is required for instruction receipt:
+
+```python
+receipt = {
+    "request_id": request.request_id,
+    "instruction_version": briefing.instruction_version,
+    "acknowledged": True,  # explicit analyst interpretation; False is also preserved
+    "source": "analyst-reviewed instruction receipt",
+}
+status = briefing_acknowledgement(
+    briefing, request, stored_result, instruction_receipt=receipt,
+)
+```
+
+A transcript-verified excerpt proves the words occurred, not that they mean yes.
+General answer readback cannot substitute for affirmative instruction receipt.
+Identity, household authority and receipt evidence must be transcript verified;
+bad audio, contradictions, incomplete calls and non-observation timestamps retain
+uncertainty. A missing/stale receipt remains unknown. Road warning acknowledgement
+uses its own boolean and verified evidence. Neither score nor transcript matching
+establishes transcript accuracy or operational readiness; the existing live human
+review gate remains in effect. Source provenance belongs to the separate receipt,
+not an inferred model confidence. The caller must obtain request/result pairs from
+the provider-bound `VoiceStore`. This helper does not persist analyst receipts.
+
+Use a new immutable request ID for revised instructions; old results and evidence
+stay available. The current snapshot enqueue adapter allows one asset request per
+snapshot, so its caller must issue a fresh snapshot identity when requeueing a
+changed instruction version. A repeated request ID with changed content is
+rejected by `VoiceStore`, rather than rewriting an old call. This library computes
+receipt status and content; it does not automatically schedule another call.
+
+For `snapshot-call-adapter`, use the explicit content-only callback:
+
+```python
+from functools import partial
+from fireline.call_briefing import snapshot_request_data
+
+# Each request_data[asset_id] contains recommendation, optional language,
+# and optional human_callback_number. Contact authorization stays upstream.
+briefing_adapter = partial(snapshot_request_data, snapshot_id=snapshot["snapshot_id"])
+# Pass briefing_adapter to enqueue_snapshot_contacts(...).
+```
+
+`snapshot_request_data(asset, data, *, snapshot_id)` returns only `language`,
+`incident_brief`, `road_warnings`, and optional `human_callback_number`. It rejects
+raw incident briefs and identity/contact overrides. An absent recommendation
+produces readiness and human-help content. No contact numbers are invented.
+
+Integration evidence: committed snapshot adapter `cd9bdab` and SLNG dispatch
+`1f72a6a` were loaded read-only for an offline contract exercise with two synthetic
+contacts. Approved and warning-conflicting plans reached their correct queue
+requests and seven template arguments; dispatch state stayed `not_started`.
+The subsequently committed evacuation adapter `f8be75d` was also consumed
+read-only: `build_approved_recommendation` produced an approved request from a
+local allocation ledger and supplied route instructions; closing that destination
+produced `None` and a readiness-only briefing. The additive adapter takes
+`(store, asset_id, *, as_of, snapshot_id, route_guidance)`; it lives on the
+`evacuation-plans` task branch, so that branch must be integrated to use it.
+Do not treat a candidate ranking or proposed allocation as analyst approval.
+Deployment of the dynamic SLNG agent,
+region/trunk attachment, actual spoken behavior and a controlled live call remain
+unperformed and outside this task's authorization.
+
+
+Verification for this task: **662 passed, 1 skipped**, including **61 briefing
+content/receipt tests**. An independent scoped reviewer reproduced a false
+instruction-acknowledgement case, the regression failed before the separate
+receipt fix, and follow-up review reported no remaining scoped findings. Norma
+changed-file checks are clean for `fireline/call_briefing.py` and its test file;
+Markdown has no applicable rules. The catalog was generic because repository
+linking was unresolved; this is not a repository-wide compliance claim. Only
+this task's new revision validator was adjusted; the separate `remaining_places`
+contract was not touched.

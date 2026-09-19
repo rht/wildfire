@@ -208,7 +208,8 @@ def test_changed_instructions_require_new_ack_without_erasing_past_call_facts(ch
                                            request_id='req-new')
         with_store.register(current)
         assert before.instruction_version != after.instruction_version
-        state = api().briefing_acknowledgement(after, current, old_result)
+        state = api().briefing_acknowledgement(after, current, old_result,
+            instruction_receipt=receipt(before))
         assert state['requires_new_acknowledgement'] is True
         assert state['instruction_acknowledged'] is None
         assert state['instruction_version'] == after.instruction_version
@@ -246,8 +247,8 @@ def test_uncertain_or_unverified_receipt_cannot_acknowledge_current_instruction(
     briefing = api().build_call_briefing(asset(), approved(), snapshot_id='snapshot-demo')
     live_result = replace(acknowledged_result(), confidence=1.0,
                           confidence_basis='llm_self_rating', **result_changes)
-    status = api().briefing_acknowledgement(briefing, build(input_mode='live'), live_result)
-    assert status['instruction_acknowledged'] is not True
+    status = api().briefing_acknowledgement(briefing, build(input_mode='live'), live_result,
+                                          instruction_receipt=receipt(briefing))
     assert status['requires_new_acknowledgement'] is True
     assert status['human_followup_required'] is True
 
@@ -257,7 +258,8 @@ def test_verified_receipt_is_independent_of_confidence_and_never_means_evacuatio
     briefing = api().build_call_briefing(row, approved(), snapshot_id='snapshot-demo')
     req = build(row, input_mode='live')
     status = api().briefing_acknowledgement(briefing, req,
-        acknowledged_result(confidence=None, confidence_basis=None))
+        acknowledged_result(confidence=None, confidence_basis=None),
+        instruction_receipt=receipt(briefing))
     assert status['instruction_acknowledged'] is True
     assert status['road_warning_acknowledged'] is True
     assert status['requires_new_acknowledgement'] is False
@@ -270,7 +272,8 @@ def test_general_readback_is_not_receipt_of_instructions_or_road_warnings():
     row = asset(road_warnings=[WARNING])
     briefing = api().build_call_briefing(row, approved(), snapshot_id='snapshot-demo')
     general = result(evidence_verification={key: 'transcript_verified' for key in result().evidence})
-    status = api().briefing_acknowledgement(briefing, build(row), general)
+    status = api().briefing_acknowledgement(briefing, build(row), general,
+                                          instruction_receipt=receipt(briefing))
     assert status['instruction_acknowledged'] is None
     assert status['road_warning_acknowledged'] is None
     assert status['requires_new_acknowledgement'] is True
@@ -315,3 +318,66 @@ def test_plan_revision_accepts_integer_subtypes_but_not_boolean_approval_version
 
     assert 'North Hall' in build(plan=approved(revision=Revision.FIRST)).incident_brief
     assert 'North Hall' not in build(plan=approved(revision=True)).incident_brief
+
+
+def test_negative_instruction_receipt_is_not_positive_readiness_readback():
+    briefing = api().build_call_briefing(asset(), approved(), snapshot_id='snapshot-demo')
+    outcome = acknowledged_result()
+    outcome.evidence['acknowledged'] = 'Yes, you read back my readiness answers correctly.'
+    outcome.evidence['instruction_received'] = 'I do not understand which destination or route you told me.'
+    state = api().briefing_acknowledgement(briefing, build(), outcome)
+    assert state['instruction_acknowledged'] is None
+    assert state['requires_new_acknowledgement'] is True
+
+
+def receipt(briefing, **changes):
+    return dict(request_id='req-B', instruction_version=briefing.instruction_version,
+                acknowledged=True, source='synthetic analyst interpretation') | changes
+
+
+@pytest.mark.parametrize('changes', [
+    {'request_id': 'old-request'}, {'instruction_version': 'old-version'},
+    {'source': ''}, {'source': None}, {'acknowledged': 'true'}, {'acknowledged': 1},
+])
+def test_instruction_receipt_needs_own_matching_version_and_explicit_interpretation(changes):
+    briefing = api().build_call_briefing(asset(), approved(), snapshot_id='snapshot-demo')
+    state = api().briefing_acknowledgement(briefing, build(), acknowledged_result(),
+                                          instruction_receipt=receipt(briefing, **changes))
+    assert state['instruction_acknowledged'] is None
+    assert state['requires_new_acknowledgement'] is True
+
+
+def test_negative_instruction_interpretation_is_preserved_separately_from_positive_general_readback():
+    briefing = api().build_call_briefing(asset(), approved(), snapshot_id='snapshot-demo')
+    state = api().briefing_acknowledgement(briefing, build(), acknowledged_result(),
+                                          instruction_receipt=receipt(briefing, acknowledged=False))
+    assert state['instruction_acknowledged'] is False
+    assert state['requires_new_acknowledgement'] is True
+
+
+def test_snapshot_callback_adapts_plan_content_without_owning_contact_or_request_identity():
+    from functools import partial
+    adapter = partial(api().snapshot_request_data, snapshot_id='snapshot-demo')
+    row, data = asset(road_warnings=[WARNING]), {'language': 'ca', 'recommendation': approved()}
+    before = deepcopy((row, data))
+    payload = adapter(row, data)
+    assert set(payload) == {'language', 'incident_brief', 'road_warnings'}
+    assert payload['language'] == 'ca'
+    assert 'North Hall' in payload['incident_brief']
+    assert payload['road_warnings'] == [WARNING]
+    assert (row, data) == before
+    payload['road_warnings'][0]['reason'] = 'changed returned data'
+    assert row['road_warnings'][0]['reason'] == WARNING['reason']
+
+
+def test_snapshot_callback_without_a_plan_requests_human_help():
+    data = api().snapshot_request_data(asset(), {}, snapshot_id='snapshot-demo')
+    assert data['language'] == 'en'
+    assert 'human help' in data['incident_brief']
+
+
+def test_snapshot_callback_rejects_fixed_mock_content_or_identity_override():
+    for override in ({'incident_brief': 'Go to Willow House.'}, {'asset_id': 'other'},
+                     {'contact_number': existing_request().contact_number}):
+        with pytest.raises(ValueError, match='invalid briefing data'):
+            api().snapshot_request_data(asset(), override, snapshot_id='snapshot-demo')
