@@ -1,0 +1,1065 @@
+{
+ "collection": "fire-spread-simulation-latlon_12h_5members",
+ "received_at": "2026-09-19T13:50:30+00:00",
+ "body": {
+  "id": "c948ef24-6434-4273-8c19-fd2b4fad7b5b",
+  "status": "COMPLETED",
+  "model": "elmfire",
+  "durationHours": 12,
+  "ensembleMembers": 5,
+  "latitude": 41.89134,
+  "longitude": 3.02283,
+  "locationName": "Cruïlles, Girona",
+  "ignitionPointCount": 1,
+  "ignition": {
+   "type": "FeatureCollection",
+   "features": [
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       3.02283,
+       41.89134
+      ]
+     },
+     "properties": {}
+    }
+   ]
+  },
+  "createdAt": "2026-09-19T13:49:59.287204Z",
+  "summary": {
+   "burnedAreaM2": 203400.0,
+   "edgeReached": false,
+   "windSpeedAvgMs": 1.2552933716546248,
+   "windDirectionAvg": 314.55708414833157
+  },
+  "result": {
+   "type": "FeatureCollection",
+   "features": [
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0224,
+          41.8909
+         ],
+         [
+          3.0223,
+          41.8917
+         ],
+         [
+          3.023,
+          41.8918
+         ],
+         [
+          3.0234,
+          41.8913
+         ],
+         [
+          3.0224,
+          41.8909
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 1,
+      "elapsed_seconds": 3600,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0216,
+          41.8912
+         ],
+         [
+          3.0222,
+          41.892
+         ],
+         [
+          3.0233,
+          41.8918
+         ],
+         [
+          3.0231,
+          41.8907
+         ],
+         [
+          3.0216,
+          41.8912
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 2,
+      "elapsed_seconds": 7200,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0213,
+          41.8909
+         ],
+         [
+          3.0215,
+          41.892
+         ],
+         [
+          3.0237,
+          41.8918
+         ],
+         [
+          3.0235,
+          41.8907
+         ],
+         [
+          3.0213,
+          41.8909
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 3,
+      "elapsed_seconds": 10800,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0209,
+          41.8908
+         ],
+         [
+          3.0215,
+          41.8922
+         ],
+         [
+          3.0237,
+          41.8921
+         ],
+         [
+          3.0235,
+          41.8905
+         ],
+         [
+          3.0217,
+          41.8903
+         ],
+         [
+          3.0209,
+          41.8908
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 4,
+      "elapsed_seconds": 14400,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0208,
+          41.8916
+         ],
+         [
+          3.0215,
+          41.8922
+         ],
+         [
+          3.0209,
+          41.8908
+         ],
+         [
+          3.0208,
+          41.8916
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 4,
+      "elapsed_seconds": 14400,
+      "burn_probability": 0.8
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.021,
+          41.8906
+         ],
+         [
+          3.0211,
+          41.8922
+         ],
+         [
+          3.0233,
+          41.8926
+         ],
+         [
+          3.024,
+          41.8921
+         ],
+         [
+          3.0239,
+          41.8905
+         ],
+         [
+          3.0221,
+          41.8901
+         ],
+         [
+          3.021,
+          41.8906
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 5,
+      "elapsed_seconds": 18000,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0206,
+          41.8908
+         ],
+         [
+          3.0211,
+          41.8925
+         ],
+         [
+          3.0236,
+          41.8927
+         ],
+         [
+          3.0244,
+          41.8919
+         ],
+         [
+          3.0239,
+          41.8902
+         ],
+         [
+          3.0214,
+          41.8901
+         ],
+         [
+          3.0206,
+          41.8908
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 6,
+      "elapsed_seconds": 21600,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0205,
+          41.8916
+         ],
+         [
+          3.0211,
+          41.8925
+         ],
+         [
+          3.0206,
+          41.8908
+         ],
+         [
+          3.0214,
+          41.8901
+         ],
+         [
+          3.0206,
+          41.8905
+         ],
+         [
+          3.0205,
+          41.8916
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 6,
+      "elapsed_seconds": 21600,
+      "burn_probability": 0.4
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0206,
+          41.8903
+         ],
+         [
+          3.0207,
+          41.8925
+         ],
+         [
+          3.0236,
+          41.8929
+         ],
+         [
+          3.0244,
+          41.8924
+         ],
+         [
+          3.0248,
+          41.8914
+         ],
+         [
+          3.0243,
+          41.8903
+         ],
+         [
+          3.0218,
+          41.8898
+         ],
+         [
+          3.0206,
+          41.8903
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 7,
+      "elapsed_seconds": 25200,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0249,
+          41.8911
+         ],
+         [
+          3.0243,
+          41.8903
+         ],
+         [
+          3.0248,
+          41.8913
+         ],
+         [
+          3.0249,
+          41.8911
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 7,
+      "elapsed_seconds": 25200,
+      "burn_probability": 0.6
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0207,
+          41.8925
+         ],
+         [
+          3.0236,
+          41.8929
+         ],
+         [
+          3.0207,
+          41.8925
+         ],
+         [
+          3.0206,
+          41.8903
+         ],
+         [
+          3.0202,
+          41.8911
+         ],
+         [
+          3.0207,
+          41.8925
+         ]
+        ]
+       ],
+       [
+        [
+         [
+          3.0236,
+          41.8899
+         ],
+         [
+          3.0218,
+          41.8898
+         ],
+         [
+          3.0238,
+          41.8902
+         ],
+         [
+          3.0236,
+          41.8899
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 7,
+      "elapsed_seconds": 25200,
+      "burn_probability": 0.2
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0202,
+          41.8905
+         ],
+         [
+          3.0201,
+          41.8919
+         ],
+         [
+          3.0207,
+          41.8927
+         ],
+         [
+          3.0236,
+          41.8932
+         ],
+         [
+          3.0247,
+          41.8925
+         ],
+         [
+          3.0249,
+          41.8908
+         ],
+         [
+          3.0239,
+          41.89
+         ],
+         [
+          3.0214,
+          41.8898
+         ],
+         [
+          3.0202,
+          41.8905
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 8,
+      "elapsed_seconds": 28800,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0249,
+          41.8908
+         ],
+         [
+          3.0239,
+          41.89
+         ],
+         [
+          3.0239,
+          41.89
+         ],
+         [
+          3.0249,
+          41.8908
+         ],
+         [
+          3.0249,
+          41.8908
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 8,
+      "elapsed_seconds": 28800,
+      "burn_probability": 0.4
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0203,
+          41.8902
+         ],
+         [
+          3.0201,
+          41.8921
+         ],
+         [
+          3.0207,
+          41.893
+         ],
+         [
+          3.0239,
+          41.8932
+         ],
+         [
+          3.0247,
+          41.8927
+         ],
+         [
+          3.0253,
+          41.8909
+         ],
+         [
+          3.0243,
+          41.89
+         ],
+         [
+          3.0218,
+          41.8895
+         ],
+         [
+          3.0203,
+          41.8902
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 9,
+      "elapsed_seconds": 32400,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0199,
+          41.8905
+         ],
+         [
+          3.0197,
+          41.8918
+         ],
+         [
+          3.0203,
+          41.893
+         ],
+         [
+          3.0239,
+          41.8935
+         ],
+         [
+          3.0255,
+          41.8917
+         ],
+         [
+          3.0253,
+          41.8906
+         ],
+         [
+          3.024,
+          41.8897
+         ],
+         [
+          3.0214,
+          41.8895
+         ],
+         [
+          3.0199,
+          41.8905
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 10,
+      "elapsed_seconds": 36000,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0255,
+          41.892
+         ],
+         [
+          3.0255,
+          41.8918
+         ],
+         [
+          3.0239,
+          41.8935
+         ],
+         [
+          3.0255,
+          41.892
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 10,
+      "elapsed_seconds": 36000,
+      "burn_probability": 0.6
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0199,
+          41.8902
+         ],
+         [
+          3.0197,
+          41.8921
+         ],
+         [
+          3.0206,
+          41.8933
+         ],
+         [
+          3.0231,
+          41.8937
+         ],
+         [
+          3.0246,
+          41.8933
+         ],
+         [
+          3.0255,
+          41.8922
+         ],
+         [
+          3.0256,
+          41.8909
+         ],
+         [
+          3.025,
+          41.89
+         ],
+         [
+          3.0236,
+          41.8894
+         ],
+         [
+          3.0218,
+          41.8893
+         ],
+         [
+          3.0199,
+          41.8902
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 11,
+      "elapsed_seconds": 39600,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0197,
+          41.8924
+         ],
+         [
+          3.0206,
+          41.8933
+         ],
+         [
+          3.0197,
+          41.8921
+         ],
+         [
+          3.0199,
+          41.8902
+         ],
+         [
+          3.0197,
+          41.8924
+         ]
+        ]
+       ],
+       [
+        [
+         [
+          3.0235,
+          41.8937
+         ],
+         [
+          3.0239,
+          41.8935
+         ],
+         [
+          3.0232,
+          41.8937
+         ],
+         [
+          3.0235,
+          41.8937
+         ]
+        ]
+       ],
+       [
+        [
+         [
+          3.0254,
+          41.8925
+         ],
+         [
+          3.0254,
+          41.8923
+         ],
+         [
+          3.025,
+          41.8928
+         ],
+         [
+          3.0254,
+          41.8925
+         ]
+        ]
+       ],
+       [
+        [
+         [
+          3.0253,
+          41.8903
+         ],
+         [
+          3.0251,
+          41.8902
+         ],
+         [
+          3.0253,
+          41.8905
+         ],
+         [
+          3.0253,
+          41.8903
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 11,
+      "elapsed_seconds": 39600,
+      "burn_probability": 0.8
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0257,
+          41.8906
+         ],
+         [
+          3.0253,
+          41.8904
+         ],
+         [
+          3.0254,
+          41.8925
+         ],
+         [
+          3.0257,
+          41.8906
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 11,
+      "elapsed_seconds": 39600,
+      "burn_probability": 0.2
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0195,
+          41.8907
+         ],
+         [
+          3.0194,
+          41.8918
+         ],
+         [
+          3.0206,
+          41.8935
+         ],
+         [
+          3.0238,
+          41.8938
+         ],
+         [
+          3.0259,
+          41.892
+         ],
+         [
+          3.0257,
+          41.8906
+         ],
+         [
+          3.024,
+          41.8894
+         ],
+         [
+          3.0207,
+          41.8895
+         ],
+         [
+          3.0195,
+          41.8907
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 12,
+      "elapsed_seconds": 43200,
+      "burn_probability": 1.0
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.0195,
+          41.8907
+         ],
+         [
+          3.0201,
+          41.8901
+         ],
+         [
+          3.0195,
+          41.8905
+         ],
+         [
+          3.0195,
+          41.8907
+         ]
+        ]
+       ],
+       [
+        [
+         [
+          3.0215,
+          41.8892
+         ],
+         [
+          3.0211,
+          41.8895
+         ],
+         [
+          3.024,
+          41.8894
+         ],
+         [
+          3.0215,
+          41.8892
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 12,
+      "elapsed_seconds": 43200,
+      "burn_probability": 0.8
+     }
+    },
+    {
+     "type": "Feature",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          3.026,
+          41.8909
+         ],
+         [
+          3.0257,
+          41.8907
+         ],
+         [
+          3.0259,
+          41.892
+         ],
+         [
+          3.026,
+          41.8909
+         ]
+        ]
+       ]
+      ]
+     },
+     "properties": {
+      "hour": 12,
+      "elapsed_seconds": 43200,
+      "burn_probability": 0.2
+     }
+    }
+   ]
+  },
+  "links": {
+   "self": "https://api.deepfire.co/v1/fire-spread/simulations/c948ef24-6434-4273-8c19-fd2b4fad7b5b"
+  }
+ },
+ "note": "GET /v1/fire-spread/simulations/c948ef24-6434-4273-8c19-fd2b4fad7b5b (run latlon_12h_5members: lat/lon 41.89134,3.02283 at July incident centroid) | http 200 | final status COMPLETED"
+}

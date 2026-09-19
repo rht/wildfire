@@ -34,12 +34,13 @@ SCHEMA_VERSION = "1.1"
 READABLE_SCHEMA_VERSIONS = ("1.0", "1.1")   # 1.0 files load and validate; their v1.1 keys are optional
 INPUT_MODES = ("live", "recorded", "synthetic")
 DATA_STATUSES = ("current", "stale", "unavailable")
-GEOMETRY_KINDS = ("perimeter", "hotspot_centre")
+GEOMETRY_KINDS = ("perimeter", "hotspot_centre", "simulated")   # simulated: model burned area, not observed
 REVIEW_REASONS = ("location_unknown", "occupancy_unknown", "occupancy_seasonal", "class_ambiguous",
                   "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown")
 EVACUATION_UNKNOWN = "evacuation_unknown"
 POINT_FALLBACK_NOTE = "point fallback: facility footprint missing"
 HOTSPOT_NOTE = "fire geometry is a hotspot centre, not a surveyed perimeter"
+SIMULATED_NOTE = "fire geometry is a simulated burned area, not an observed perimeter"
 NO_FIRE_NOTE = "fire geometry unavailable"
 NO_LOCATION_NOTE = "asset location unknown"
 
@@ -417,6 +418,8 @@ def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of
     fire_kind = fire.get("geometry_kind")
     if fire_geometry is not None and fire_kind is None:
         fire_kind = "hotspot_centre" if fire_geometry.get("type") == "Point" else "perimeter"
+    if fire_geometry is not None and fire_kind not in GEOMETRY_KINDS:
+        raise ValueError(f"geometry_kind {fire_kind!r} not in {GEOMETRY_KINDS}")
     if fire_geometry is None:
         fire_kind = None
     fire_observed_at = _iso(fire.get("observed_at"))
@@ -438,10 +441,12 @@ def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of
         distance, intersects, note = asset_exposure(rec["longitude"], rec["latitude"], rec["geometry"], fire_geometry)
         rec["distance_to_fire_m"] = distance
         rec["intersects_fire"] = intersects
+        dist_note = note if note else "minimum distance in EPSG:25831 to the fire footprint"
+        if fire_kind == "simulated" and distance is not None:
+            dist_note = f"{dist_note}; {SIMULATED_NOTE}"
         rec["sources"].append(_source_entry(["distance_to_fire_m", "intersects_fire"],
                                             fire_source or "fire geometry", observed_at=fire_observed_at,
-                                            available_at=fire.get("received_at"),
-                                            notes=note if note else "minimum distance in EPSG:25831 to the fire footprint"))
+                                            available_at=fire.get("received_at"), notes=dist_note))
         if distance is None:
             rec["review_reasons"].append("exposure_unknown")
             rec["needs_review"] = True
@@ -520,8 +525,8 @@ def validate_snapshot(snap) -> list[str]:
             errs.append(f"fire_geometry_kind {kind!r} not in {GEOMETRY_KINDS}")
         elif geom.get("type") == "Point" and kind != "hotspot_centre":
             errs.append("a Point fire_geometry must be labelled hotspot_centre")
-        elif geom.get("type") in ("Polygon", "MultiPolygon") and kind != "perimeter":
-            errs.append("a polygon fire_geometry must be labelled perimeter")
+        elif geom.get("type") in ("Polygon", "MultiPolygon") and kind not in ("perimeter", "simulated"):
+            errs.append("a polygon fire_geometry must be labelled perimeter or simulated")
     m = snap["metrics"]
     if not isinstance(m, dict) or set(m) != {"source_age_s", "processing_s"}:
         errs.append("metrics must have exactly source_age_s and processing_s")

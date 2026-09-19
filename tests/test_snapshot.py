@@ -553,3 +553,32 @@ def test_committed_real_snapshots_have_no_forecast_and_policy_evacuation():
         assert all(a["forecast_source"] is None for a in s["assets"])
         assert all(a["evacuation_min"] is not None and a["evacuation_source"] == config.EVACUATION_POLICY["version"]
                    for a in s["assets"])
+
+
+def test_simulated_fire_geometry_kind_is_labelled_and_validated():
+    fire = fire_update(fire_disc(300), kind="simulated")
+    snap = build_snapshot([row("fixture:a", lon=IGNITION[0], lat=IGNITION[1] - 0.01)], fire, **snap_kwargs())
+    assert snap["fire_geometry_kind"] == "simulated" and validate_snapshot(snap) == []
+    src = [s for s in snap["assets"][0]["sources"] if "distance_to_fire_m" in s["fields"]][0]
+    assert snapshot.SIMULATED_NOTE in src["notes"] and snapshot.POINT_FALLBACK_NOTE in src["notes"]
+    bad = dict(snap, fire_geometry_kind="perimeter", fire_geometry={"type": "Point", "coordinates": list(IGNITION)})
+    assert any("hotspot_centre" in e for e in validate_snapshot(bad))
+    with pytest.raises(ValueError):
+        build_snapshot([], fire_update(fire_disc(), kind="guess"), **snap_kwargs())
+
+
+def test_committed_real_snapshot_4_uses_the_recorded_fire_spread_run():
+    s4 = _load("gavarres_real_0004.json")
+    assert validate_snapshot(s4) == [] and s4["sequence"] == 4 and s4["snapshot_id"] == "gavarres_real-0004"
+    assert s4["input_mode"] == "recorded" and s4["as_of"] == "2026-09-19T13:49:18.165734+00:00"
+    assert s4["fire_geometry_kind"] == "simulated" and s4["fire_geometry"]["type"] in ("Polygon", "MultiPolygon")
+    assert s4["fire_source"].startswith("deepfire:fire-spread/elmfire/4bbd8e98") and "not an observed perimeter" in s4["fire_source"]
+    s3 = _load("gavarres_real_0003.json")
+    assert [a["asset_id"] for a in s4["assets"]] == [a["asset_id"] for a in s3["assets"]] and s4["as_of"] > s3["as_of"]
+    located = [a for a in s4["assets"] if a["latitude"] is not None]
+    assert len(located) == 99 and all(a["distance_to_fire_m"] is not None for a in located)
+    # honest outcome: the 12 h simulated burned area (~20 ha) covers none of the real facilities
+    assert all(a["fire_arrival_at"] is None and "forecast_unavailable" in a["review_reasons"] for a in s4["assets"])
+    assert min(a["distance_to_fire_m"] for a in located) > 5000
+    assert all(snapshot.SIMULATED_NOTE in [s for s in a["sources"] if "distance_to_fire_m" in s["fields"]][0]["notes"]
+               for a in located)
