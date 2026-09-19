@@ -71,6 +71,7 @@ def _asset(**overrides) -> dict:
         "value_score": config.VALUE_POLICY["by_type"].get(asset_type), "value_basis": config.VALUE_POLICY["version"],
         "distance_to_fire_m": 2000.0, "intersects_fire": False, "burn_probability": None,
         "arrival_p10_at": None, "arrival_p50_at": None, "forecast_horizon_at": None, "forecast_source": None,
+        "fire_arrival_at": None, "fire_arrival_basis": None, "evacuation_min": None, "evacuation_source": None,
         "needs_review": bool(reasons), "review_reasons": reasons, "sources": [], "municipality": None,
     }
     rec.update(overrides)
@@ -90,8 +91,31 @@ def _envelope(assets: list[dict], sequence: int = 1, scenario_id: str = "validat
     }
 
 
+AS_OF = "2026-07-03T08:00:00+00:00"
+FORECAST = "fixture:validate-spread (synthetic, not a validated forecast)"
+EVAC_SOURCE = config.EVACUATION_POLICY["version"]
+
+
+def _timed(asset_id: str, arrival_min: float | None, evacuation_min: float | None, **kw) -> dict:
+    """Asset with a synthetic forecast arrival `arrival_min` minutes after AS_OF and an evacuation estimate."""
+    from datetime import datetime, timedelta
+
+    arrival = None if arrival_min is None else (datetime.fromisoformat(AS_OF) + timedelta(minutes=arrival_min)).isoformat()
+    fields = {
+        "asset_id": asset_id, "fire_arrival_at": arrival, "fire_arrival_basis": None if arrival is None else "p10",
+        "forecast_source": None if arrival is None else FORECAST,
+        "forecast_horizon_at": None if arrival is None else "2026-07-03T20:00:00+00:00",
+        "evacuation_min": evacuation_min, "evacuation_source": None if evacuation_min is None else EVAC_SOURCE,
+    }
+    fields.update(kw)
+    return _asset(**fields)
+
+
 def _top(scored: dict, n: int = 3) -> list[str]:
-    return [f"{a['asset_id'].split(':', 1)[-1]} {a['priority_score']:.3f}" for a in scored["ranked"][:n]]
+    """Top-n of the ranked queue with the remaining window; falls back to the review queue when empty."""
+    if scored["ranked"]:
+        return [f"{a['asset_id'].split(':', 1)[-1]} {a['slack_min']:.0f} min" for a in scored["ranked"][:n]]
+    return [f"{a['asset_id'].split(':', 1)[-1]} unranked" for a in scored["needs_review"][:n]]
 
 
 def _square_wgs84(cx: float, cy: float, half: float) -> dict:
@@ -116,7 +140,8 @@ def check_coverage() -> dict:
     unlocated = [a for a in assets if a["latitude"] is None or a["longitude"] is None]
     ambiguous = [a for a in assets if "class_ambiguous" in a["review_reasons"]]
     unknown_class = [a for a in assets if a["asset_type"] == "unknown" or "value_unknown" in a["review_reasons"]]
-    with_capacity = [a for a in assets if a["capacity"] is not None or a["estimated_occupancy"] is not None]
+    with_capacity = [a for a in assets if a["capacity"] is not None]
+    with_headcount = [a for a in assets if a["estimated_occupancy"] is not None]
     by_register = dict(sorted(Counter(a["sources"][0]["source"] for a in assets).items()))
     munis = sorted({a["municipality"] for a in assets if a["municipality"]}, key=str.casefold)
     footprints = sum(1 for a in assets if a["geometry"] is not None)
@@ -135,7 +160,9 @@ def check_coverage() -> dict:
         f"located {len(located)}, unlocated (null coordinates, location_unknown) {len(unlocated)}, "
         f"total {len(assets)}; envelope counts consistent: {counts_ok}",
         f"class_ambiguous: {len(ambiguous)}; unresolved class (asset_type unknown / value_unknown): {len(unknown_class)}",
-        f"records with a register capacity or headcount: {len(with_capacity)} (all unlocated care homes / campsites); "
+        f"records with a register capacity: {len(with_capacity)} (unlocated care homes / campsites); "
+        f"records with a headcount (estimated_occupancy): {len(with_headcount)} "
+        f"(schools, enrolled pupils from gencat:schools_enrolment); "
         f"located rows with occupancy_unknown: {sum('occupancy_unknown' in a['review_reasons'] for a in located)}",
         f"footprint geometries: {footprints} (every distance is a labelled point fallback)",
         f"municipalities: {len(munis)}",
@@ -228,57 +255,118 @@ def check_geometry() -> dict:
 
 
 def check_priority() -> dict:
-    """Readme 11 priority: normalisation, stable ties, directional changes, unknown inputs visible."""
-    policy = config.PRIORITY_POLICY
-    weights = policy["weights"]
-    wsum = sum(weights.values())
+    """Readme 11 priority: window = arrival - now - evacuation - buffer; a farther downwind asset with an
+    earlier arrival outranks a nearer one; zero/negative windows first as window_exhausted; identical
+    timing ties by distance then asset_id; missing forecast or evacuation -> needs_review with the reason;
+    a missing distance does not block ranking. Constructed assets: the checks verify the implementation,
+    not the supplied forecasts or evacuation estimates."""
+    policy = config.CONTACT_POLICY
+    buffer_min = policy["buffer_min"]
+    # arithmetic: arrival 180 min after as_of, school evacuation 90 min, buffer 30 -> window 60
+    single = priority.rank_asset(_timed("fixture:one", 180.0, 90.0), AS_OF)
+    expected = 180.0 - 90.0 - buffer_min
+    arith_ok = single["time_to_impact_min"] == 180.0 and single["latest_start_min"] == expected and \
+        single["slack_min"] == expected and single["priority_status"] == "window_open" and single["queue"] == "ranked"
+    # now_at 30 min later shrinks the window by 30 (elapsed time counts)
+    later = priority.rank_asset(_timed("fixture:one", 180.0, 90.0), "2026-07-03T08:30:00+00:00")
+    elapsed_ok = later["slack_min"] == expected - 30.0
+    # farther downwind asset with the earlier arrival outranks the nearer one (same evacuation)
+    near = _timed("fixture:near", 300.0, 90.0, distance_to_fire_m=800.0)
+    far = _timed("fixture:far_downwind", 150.0, 90.0, distance_to_fire_m=4000.0)
+    # nearer asset with a longer evacuation (care home) ranks above a farther one with an earlier arrival
+    slow = _timed("fixture:slow_evac", 400.0, 180.0, distance_to_fire_m=1500.0, asset_type="care_home")
+    quick = _timed("fixture:quick_evac", 360.0, 60.0, distance_to_fire_m=600.0, asset_type="masia")
+    order = priority.rank_snapshot(_envelope([near, far, quick, slow]))
+    order_ids = [a["asset_id"].split(":")[-1] for a in order["ranked"]]
+    order_windows = {a["asset_id"].split(":")[-1]: a["slack_min"] for a in order["ranked"]}
+    order_ok = order_ids == ["far_downwind", "near", "slow_evac", "quick_evac"] and \
+        [a["priority_rank"] for a in order["ranked"]] == [1, 2, 3, 4]
+    # zero and negative windows rank first as window_exhausted; still ranked, not review
+    zero = _timed("fixture:zero", 120.0, 90.0)                      # 120 - 90 - 30 = 0
+    negative = _timed("fixture:negative", 60.0, 90.0)               # 60 - 90 - 30 = -60
+    open_ = _timed("fixture:open", 240.0, 90.0)
+    ex = priority.rank_snapshot(_envelope([open_, zero, negative]))
+    ex_ids = [a["asset_id"].split(":")[-1] for a in ex["ranked"]]
+    ex_status = {a["asset_id"].split(":")[-1]: (a["slack_min"], a["priority_status"]) for a in ex["ranked"]}
+    exhausted_ok = ex_ids == ["negative", "zero", "open"] and ex_status["negative"] == (-60.0, "window_exhausted") \
+        and ex_status["zero"] == (0.0, "window_exhausted") and ex_status["open"][1] == "window_open" and \
+        ex["needs_review"] == []
+    # ties: identical timing -> nearer distance first, then asset_id; null distance last
+    tie = priority.rank_snapshot(_envelope([
+        _timed("fixture:tie_c", 200.0, 60.0, distance_to_fire_m=None),
+        _timed("fixture:tie_b", 200.0, 60.0, distance_to_fire_m=900.0),
+        _timed("fixture:tie_d", 200.0, 60.0, distance_to_fire_m=900.0),
+        _timed("fixture:tie_a", 200.0, 60.0, distance_to_fire_m=2500.0)]))
+    tie_ids = [a["asset_id"].split(":")[-1] for a in tie["ranked"]]
+    tie_ok = tie_ids == ["tie_b", "tie_d", "tie_a", "tie_c"] and len({a["slack_min"] for a in tie["ranked"]}) == 1
+    # missing inputs -> needs_review with the right reason; the reasons are added to review_reasons
+    no_forecast = priority.rank_asset(_timed("fixture:no_forecast", None, 90.0), AS_OF)
+    no_evac = priority.rank_asset(_timed("fixture:no_evac", 180.0, None), AS_OF)
+    no_source = priority.rank_asset(_timed("fixture:no_source", 180.0, 90.0, forecast_source=None), AS_OF)
+    missing_ok = all(a["queue"] == "needs_review" and a["priority_status"] == "needs_review" and a["slack_min"] is None
+                     and a["priority_rank"] is None for a in (no_forecast, no_evac, no_source)) and \
+        no_forecast["review_reasons"] == ["forecast_unavailable"] and no_evac["review_reasons"] == ["evacuation_unknown"] \
+        and no_source["review_reasons"] == ["forecast_unavailable"] and \
+        "evacuation_unknown" not in no_forecast["review_reasons"]
+    # missing distance does not block ranking
+    no_distance = priority.rank_asset(_timed("fixture:no_distance", 180.0, 90.0, distance_to_fire_m=None,
+                                             intersects_fire=None, review_reasons=["exposure_unknown"]), AS_OF)
+    distance_ok = no_distance["queue"] == "ranked" and no_distance["slack_min"] == expected and \
+        "review flag: exposure_unknown" in no_distance["priority_reasons"]
+    # agreement with the static prototype (contact_priority.rank_contacts) on the same scenario
+    from fireline.contact_priority import ContactPolicy, rank_contacts
+    from fireline.priority_models import Location
+
+    def loc(a):
+        arr = None if a["fire_arrival_at"] is None else priority.minutes_between(a["fire_arrival_at"], AS_OF)
+        return Location(asset_id=a["asset_id"], name=a["name"], x_m=0.0, y_m=0.0, distance_m=a["distance_to_fire_m"],
+                        people=None, assisted=None, value=None, deadline_min=None, fire_arrival_min=arr,
+                        evacuation_min=a["evacuation_min"], forecast_source=a["forecast_source"],
+                        evacuation_source=a["evacuation_source"])
+    scenario = [near, far, quick, slow, zero, negative, open_, _timed("fixture:no_forecast", None, 90.0)]
+    static = rank_contacts([loc(a) for a in scenario], ContactPolicy(now_min=0.0, buffer_min=buffer_min))
+    live = priority.rank_snapshot(_envelope(scenario))
+    static_pairs = [(r["asset_id"], r["slack_min"]) for r in static["ranked"]]
+    live_pairs = [(a["asset_id"], a["slack_min"]) for a in live["ranked"]]
+    agree_ok = static_pairs == live_pairs and [r["asset_id"] for r in static["review"]] == \
+        [a["asset_id"] for a in live["needs_review"]]
+    # the committed fixture (whatever the producer supplies): every asset lands in one queue
     snap = _snap("synthetic_gavarres_0001")
-    scored = priority.score_snapshot(snap)
-    ranked, review = scored["ranked"], scored["needs_review"]
-    scores = [a["priority_score"] for a in ranked]
-    comps = [c["value"] for a in scored["all"] for c in a["score_components"].values() if c["value"] is not None]
-    norm_ok = abs(wsum - 1.0) < 1e-9 and all(0.0 <= s <= 1.0 for s in scores) and all(0.0 <= v <= 1.0 for v in comps)
-    rank_ok = [a["priority_rank"] for a in ranked] == list(range(1, len(ranked) + 1)) and \
-        scores == sorted(scores, reverse=True) and all(a["priority_score"] is None for a in review)
-    # stable ties: identical inputs, ids given in reverse order, sort by asset_id
-    tie = priority.score_snapshot(_envelope([_asset(asset_id="fixture:tie_b"), _asset(asset_id="fixture:tie_a")]))
-    tie_ids = [a["asset_id"] for a in tie["ranked"]]
-    tie_scores = [a["priority_score"] for a in tie["ranked"]]
-    tie_ok = tie_ids == ["fixture:tie_a", "fixture:tie_b"] and tie_scores[0] == tie_scores[1]
-    # directional changes on one asset
-    base = priority.score_asset(_asset())["priority_score"]
-    closer = priority.score_asset(_asset(distance_to_fire_m=1000.0))["priority_score"]
-    touching = priority.score_asset(_asset(distance_to_fire_m=0.0, intersects_fire=True))["priority_score"]
-    more_people = priority.score_asset(_asset(capacity=260))["priority_score"]
-    headcount = priority.score_asset(_asset(estimated_occupancy=260))["priority_score"]
-    higher_value = priority.score_asset(_asset(asset_type="hospital"))["priority_score"]
-    dir_ok = closer > base and touching > closer and more_people > base and headcount > base and higher_value > base
-    # unknown inputs visible, exposure-unknown first then ascending known distance
-    dists = [a["distance_to_fire_m"] for a in review]
-    known = [d for d in dists if d is not None]
-    unknown_first = all(d is None for d in dists[:len(dists) - len(known)])
-    review_ok = bool(review) and unknown_first and known == sorted(known) and \
-        all("needs_review" == a["queue"] for a in review)
-    proxied = [a["asset_id"].split(":")[-1] for a in ranked if a["score_components"]["size"]["proxy"]]
-    ok = norm_ok and rank_ok and tie_ok and dir_ok and review_ok
+    scored = priority.rank_snapshot(snap)
+    fx_ranked, fx_review = scored["ranked"], scored["needs_review"]
+    fx_ok = len(fx_ranked) + len(fx_review) == len(snap["assets"]) and \
+        [a["priority_rank"] for a in fx_ranked] == list(range(1, len(fx_ranked) + 1)) and \
+        [a["slack_min"] for a in fx_ranked] == sorted(a["slack_min"] for a in fx_ranked)
+    fx_reasons = Counter(r for a in fx_review for r in a["review_reasons"] if r in ("forecast_unavailable", "evacuation_unknown"))
+    ok = arith_ok and elapsed_ok and order_ok and exhausted_ok and tie_ok and missing_ok and distance_ok and agree_ok and fx_ok
     details = [
-        f"policy {policy['version']}: weights {weights} (sum {wsum}), proximity scale {policy['proximity_scale_m']} m, "
-        f"size scale {policy['size_scale_people']} people, capacity proxy {policy['size_capacity_proxy']}",
-        f"synthetic_gavarres_0001: {len(ranked)} ranked, {len(review)} needs_review, {len(scored['flagged'])} flagged-but-scored; "
-        f"scores in [{min(scores):.4f}, {max(scores):.4f}], {len(comps)} component values all in [0, 1]: {norm_ok}",
-        f"ranks 1..{len(ranked)} contiguous and scores non-increasing: {rank_ok}",
-        f"stable ties: equal inputs given as [tie_b, tie_a] rank as {tie_ids} with scores {tie_scores}",
-        f"directional: base {base:.4f}; 2000->1000 m {closer:.4f}; intersecting {touching:.4f}; capacity 200->260 "
-        f"{more_people:.4f}; headcount 260 {headcount:.4f}; school->hospital value {higher_value:.4f}",
-        f"needs-review queue: {[a['asset_id'].split(':')[-1] for a in review]} distances {dists} "
-        f"(exposure-unknown first, then ascending)",
-        f"size from capacity proxy (labelled in score_components.size.proxy) for: {proxied}",
-        "these checks verify the implementation, not the operational validity of the weights",
+        f"policy {policy['version']}: buffer {buffer_min} min, now = {policy['now']}, arrival basis: {policy['arrival_basis']}; "
+        f"evacuation durations from {config.EVACUATION_POLICY['version']} unless overridden",
+        f"arithmetic (arrival +180 min, evacuation 90 min, buffer {buffer_min}): time_to_impact {single['time_to_impact_min']}, "
+        f"latest start {single['latest_start_min']}, remaining window {single['slack_min']} (expected {expected}), "
+        f"status {single['priority_status']}; with now 30 min later the window is {later['slack_min']}: {arith_ok and elapsed_ok}",
+        f"farther outranks nearer: order {order_ids} with windows {order_windows} (far_downwind at 4000 m arrives at "
+        f"+150 min and outranks near at 800 m arriving at +300 min; slow_evac at 1500 m with a 180 min care-home "
+        f"evacuation outranks quick_evac at 600 m): {order_ok}",
+        f"zero/negative windows: order {ex_ids}, (window, status) {ex_status}; needs_review empty: {exhausted_ok}",
+        f"stable ties (identical timing): {tie_ids} = nearer distance first, then asset_id, null distance last: {tie_ok}",
+        f"missing estimates: no forecast -> {no_forecast['queue']} {no_forecast['review_reasons']}; no evacuation -> "
+        f"{no_evac['queue']} {no_evac['review_reasons']}; forecast without provenance -> {no_source['queue']} "
+        f"{no_source['review_reasons']}: {missing_ok}",
+        f"missing distance with known timing: queue {no_distance['queue']}, window {no_distance['slack_min']} "
+        f"(does not block ranking): {distance_ok}",
+        f"agreement with contact_priority.rank_contacts (readme 16) on {len(scenario)} assets: ranked (id, window) pairs "
+        f"identical {static_pairs == live_pairs}, review sets identical: {agree_ok}",
+        f"committed fixture synthetic_gavarres_0001: {len(fx_ranked)} ranked, {len(fx_review)} needs_review "
+        f"(reasons {dict(fx_reasons)}); ranks contiguous and windows non-decreasing: {fx_ok}"
+        + (" - the ranked queue is empty because these fixtures carry no fire_arrival_at / evacuation_min yet "
+           "(producer v1.1 fields pending); ranking is verified on the constructed assets above" if not fx_ranked else ""),
+        "these checks verify the implementation, not the accuracy of supplied forecasts or evacuation estimates",
     ]
     return _result("Priority", ok, details, {
-        "weights_sum": wsum, "ranked": len(ranked), "needs_review": len(review), "score_min": min(scores),
-        "score_max": max(scores), "base": base, "closer": closer, "more_people": more_people,
-        "higher_value": higher_value})
+        "buffer_min": buffer_min, "window_single": single["slack_min"], "expected_single": expected,
+        "order": order_ids, "exhausted_order": ex_ids, "ties": tie_ids, "fixture_ranked": len(fx_ranked),
+        "fixture_review": len(fx_review), "static_agreement": agree_ok})
 
 
 def check_updates() -> dict:
@@ -288,25 +376,29 @@ def check_updates() -> dict:
     store = _store()
     r1 = store.apply_snapshot(snap1)
     dup = store.apply_snapshot(snap1)
-    scored1 = priority.score_snapshot(snap1, overrides=store.overrides())
+    scored1 = priority.rank_snapshot(snap1, overrides=store.overrides())
     suggested = store.suggest_tasks(scored1["all"], snap1["snapshot_id"])
     before = _top(scored1)
     r2 = store.apply_snapshot(snap2)
-    scored2 = priority.score_snapshot(snap2, overrides=store.overrides())
+    scored2 = priority.rank_snapshot(snap2, overrides=store.overrides())
     after = _top(scored2)
+    ranked_any = bool(scored1["ranked"] or scored2["ranked"])
+    order_changed = before != after
     older = copy.deepcopy(snap1)
     older["snapshot_id"] = "synthetic_gavarres-0001-replay"
     old = store.apply_snapshot(older)
     last_after_replay = store.last_sequence(snap1["scenario_id"])
     guard_ok = r1["accepted"] and not dup["accepted"] and "duplicate" in dup["reason"] and r2["accepted"] and \
         not old["accepted"] and "sequence" in old["reason"] and last_after_replay["sequence"] == 2
-    change_ok = before != after and len(r2["changed"]) > 0 and \
+    change_ok = (order_changed or not ranked_any) and len(r2["changed"]) > 0 and \
         {a["asset_id"] for a in snap2["assets"]} == {a["asset_id"] for a in snap1["assets"]}
     # source age preserved: an asset whose exposure did not change keeps identical non-fire provenance;
     # on the real-area snapshots the register fetched_at stays 2026-09-19 while as_of advances 2 h
     a1 = next(a for a in snap1["assets"] if a["asset_id"] == "fixture:escola_cruilles")
     a2 = next(a for a in snap2["assets"] if a["asset_id"] == "fixture:escola_cruilles")
-    non_fire = lambda a: [s for s in a["sources"] if "distance_to_fire_m" not in s["fields"]]  # noqa: E731
+    # exposure and forecast provenance legitimately follow the fire update; everything else must be identical
+    fire_dependent = {"distance_to_fire_m", "fire_arrival_at", "arrival_p10_at", "arrival_p50_at", "forecast_source"}
+    non_fire = lambda a: [s for s in a["sources"] if not fire_dependent & set(s["fields"])]  # noqa: E731
     fire_src = lambda a: next(s for s in a["sources"] if "distance_to_fire_m" in s["fields"])  # noqa: E731
     same_synth = non_fire(a1) == non_fire(a2) and a1["distance_to_fire_m"] == a2["distance_to_fire_m"]
     real1, real2 = _snap("gavarres_real_0001"), _snap("gavarres_real_0002")
@@ -336,8 +428,10 @@ def check_updates() -> dict:
         f"flagged; replay of seq 1 under a new id: accepted {old['accepted']} ({old.get('reason')}); last sequence "
         f"after the replay {last_after_replay}",
         f"top-3 before (seq 1): {before}",
-        f"top-3 after (seq 2): {after}",
-        f"source age preserved (synthetic, escola_cruilles unchanged at {a1['distance_to_fire_m']} m): non-fire sources "
+        f"top-3 after (seq 2): {after}; ranked order changed: {order_changed}"
+        + ("" if ranked_any else " (no asset ranked: the fixtures carry no forecast arrival / evacuation estimate yet, "
+                                "so the affected-priority check rests on the changed-asset flags above)"),
+        f"source age preserved (synthetic, escola_cruilles unchanged at {a1['distance_to_fire_m']} m): non-fire, non-forecast sources "
         f"identical {same_synth}; fire source observed_at {fire_src(a1)['observed_at']} -> {fire_src(a2)['observed_at']}",
         f"source age preserved (real-area {ra1['asset_id']}): newest_fetched_at {age1['newest_fetched_at']} and the "
         f"register provenance identical in both snapshots while as_of advances {real1['as_of']} -> {real2['as_of']}: "
@@ -349,7 +443,7 @@ def check_updates() -> dict:
         f"{len(suggested)} tasks suggested from seq 1 review reasons",
     ]
     return _result("Updates", ok, details, {
-        "changed_assets_seq2": len(r2["changed"]), "top3_before": before, "top3_after": after,
+        "changed_assets_seq2": len(r2["changed"]), "top3_before": before, "top3_after": after, "ranked_any": ranked_any,
         "missing_asset_ids": r3["missing_asset_ids"], "tasks_kept": len(tasks_after)})
 
 
@@ -362,7 +456,7 @@ def check_tasks() -> dict:
         store = TaskStore(db)
         store.load_roster(TEAMS)
         store.apply_snapshot(snap1)
-        scored = priority.score_snapshot(snap1, overrides=store.overrides())
+        scored = priority.rank_snapshot(snap1, overrides=store.overrides())
         first = store.suggest_tasks(scored["all"], snap1["snapshot_id"])
         second = store.suggest_tasks(scored["all"], snap1["snapshot_id"])
         keys = Counter((t["asset_id"], t["action"], t["reason"]) for t in store.tasks())
@@ -432,15 +526,22 @@ def check_agent() -> dict:
     snap1 = _snap("synthetic_gavarres_0001")
     store = _store()
     store.apply_snapshot(snap1)
-    scored = priority.score_snapshot(snap1, overrides=store.overrides())
+    scored = priority.rank_snapshot(snap1, overrides=store.overrides())
     store.suggest_tasks(scored["all"], snap1["snapshot_id"])
     wb = agent.Workbench.from_scored(scored, tasks=store)
     # one extra case with no evidence entry at all (name absent from fixtures/evidence.json and registers)
     nowhere = dict(wb.asset("fixture:can_xic"), asset_id="fixture:mas_nou", name="Mas Nou de Ningú",
-                   capacity=None, estimated_occupancy=None, occupancy_basis=None, priority_score=None,
-                   priority_rank=None, queue="needs_review", review_reasons=["occupancy_unknown"], needs_review=True)
+                   capacity=None, estimated_occupancy=None, occupancy_basis=None, slack_min=None,
+                   priority_status="needs_review", priority_rank=None, queue="needs_review",
+                   review_reasons=["occupancy_unknown"], needs_review=True)
     wb.assets[nowhere["asset_id"]] = nowhere
-    ids = agent.flagged_asset_ids(wb)
+    # the scripted FakeLLM handles the occupancy / class / location / exposure reasons; forecast_unavailable is a
+    # producer gap and evacuation_unknown is the analyst's evacuation control or a contact_facility task, so assets
+    # flagged only for those are left in the review queue rather than counted as unresolved investigations
+    timing_reasons = ("forecast_unavailable", "evacuation_unknown")
+    actionable = lambda a: [r for r in a.get("review_reasons") or [] if r not in timing_reasons]  # noqa: E731
+    ids = [aid for aid in agent.flagged_asset_ids(wb) if actionable(wb.asset(aid))]
+    skipped = [aid for aid in agent.flagged_asset_ids(wb) if not actionable(wb.asset(aid))]
     records = [agent.investigate(wb, aid) for aid in ids]   # llm=None -> FakeLLM
     modes = {r["llm_mode"] for r in records}
     evidence = json.loads(EVIDENCE.read_text(encoding="utf-8"))
@@ -459,7 +560,7 @@ def check_agent() -> dict:
                  for r in records}
     # cases that must escalate: no evidence entry, seasonal only, unlocated
     must = {aid: (n_p, n_q) for aid, (_, n_p, n_q) in per_asset.items()
-            if aid == "mas_nou" or wb.asset(f"fixture:{aid}")["review_reasons"] == ["occupancy_seasonal"]}
+            if aid == "mas_nou" or actionable(wb.asset(f"fixture:{aid}")) == ["occupancy_seasonal"]}
     escalate_ok = must["mas_nou"] == (0, 1) and all(n_q >= 1 and n_p == 0 for n_p, n_q in must.values())
     resolved = {aid for aid, (_, n_p, n_q) in per_asset.items() if n_p + n_q == 0}
     # the guard itself: capacity evidence offered as estimated_occupancy is refused
@@ -470,28 +571,35 @@ def check_agent() -> dict:
     except agent.CapacityAsOccupancyError as e:
         guard = f"refused: {str(e)[:70]}..."
     guard_ok = guard.startswith("refused")
-    # analyst confirmation persists the override and rescoring moves the asset out of needs_review
+    # analyst confirmation persists the override and re-ranking (rank_snapshot) applies it; the asset leaves the
+    # review queue only when its timing (forecast arrival + evacuation estimate) is known
     cap = next(p for p in proposals if p["asset_id"] == "fixture:residencia_la_bisbal" and p["field"] == "capacity")
-    rescored = {}
-
-    def rescore(w):
-        s = priority.score_snapshot(snap1, overrides=store.overrides())
-        rescored.update({a["asset_id"]: a for a in s["all"]})
-
-    agent.confirm_proposal(wb, cap["proposal_id"], rescore=rescore)
+    agent.confirm_proposal(wb, cap["proposal_id"])          # no rescore callback: re-ranks the workbench snapshot
     ovr = store.overrides("fixture:residencia_la_bisbal")
-    rb = rescored["fixture:residencia_la_bisbal"]
+    rb = wb.asset("fixture:residencia_la_bisbal")
+    timing_known = rb.get("fire_arrival_at") is not None and rb.get("evacuation_min") is not None
     confirm_ok = len(ovr) == 1 and ovr[0]["field"] == "capacity" and ovr[0]["value"] == cap["value"] and \
-        rb["queue"] == "ranked" and rb["occupancy_basis"] == "analyst override" and rb["priority_score"] is not None
+        rb["capacity"] == cap["value"] and rb["occupancy_basis"] == "analyst override" and \
+        (rb["queue"] == "ranked") == timing_known
+    # an analyst-entered evacuation duration is an override too and recalculates the window
+    evac = agent.propose_update("fixture:residencia_la_bisbal", "evacuation_min", 150, "phone call with the director",
+                                "a full evacuation takes about two and a half hours", "medium", workbench=wb)
+    agent.confirm_proposal(wb, evac["proposal_id"])
+    rb2 = wb.asset("fixture:residencia_la_bisbal")
+    evac_ok = rb2["evacuation_min"] == 150.0 and rb2["evacuation_source"].startswith("analyst override") and \
+        "evacuation_unknown" not in rb2["review_reasons"] and \
+        (rb2["slack_min"] is not None) == (rb2.get("fire_arrival_at") is not None)
     data_regs = agent.DATA_REGISTERS_DIR.is_dir()
     ok = modes == {"fake"} and capacity_ok and postcheck_ok and steps_ok and escalate_ok and guard_ok and \
-        confirm_ok and not resolved
+        confirm_ok and evac_ok and not resolved
     details = [
         f"LLM: FakeLLM (offline, scripted; llm_mode {sorted(modes)}). A live-model run is pending an ANTHROPIC_API_KEY; "
         f"scripts/investigate.py replays fixtures/agent/prerecorded_investigation.json until then",
         f"{len(records)} investigations over {len(ids) - 1} flagged fixture assets of synthetic_gavarres_0001 plus the "
         f"no-evidence case fixture:mas_nou; evidence cache {EVIDENCE.relative_to(ROOT)} ({len(evidence)} entries"
-        f"{', plus data/registers/*.json present locally' if data_regs else ''})",
+        f"{', plus data/registers/*.json present locally' if data_regs else ''}); {len(skipped)} assets flagged only "
+        f"for {timing_reasons} left to the review queue (no FakeLLM script; forecast is the producer's, evacuation "
+        f"duration is the analyst's evacuation control)",
         f"proposals {len(proposals)} by field {by_field}; escalations {len(questions)}; per asset "
         f"{{id: (reasons, proposals, questions)}}: {per_asset}",
         f"estimated_occupancy proposals: {len(occupancy_from_capacity)} (evidence carries a headcount field: "
@@ -501,8 +609,12 @@ def check_agent() -> dict:
         f"must-escalate cases {{id: (proposals, questions)}}: {must}; assets left with neither proposal nor question: "
         f"{sorted(resolved) or 'none'}",
         f"capacity-as-occupancy guard: {guard}",
-        f"confirmation of {cap['proposal_id']} (capacity {cap['value']}): overrides persisted {len(ovr)}, rescored queue "
-        f"{rb['queue']}, occupancy_basis {rb['occupancy_basis']!r}, score {rb['priority_score']}",
+        f"confirmation of {cap['proposal_id']} (capacity {cap['value']}): overrides persisted {len(ovr)}, re-ranked queue "
+        f"{rb['queue']}, occupancy_basis {rb['occupancy_basis']!r}, remaining window {rb['slack_min']}, timing known "
+        f"{timing_known}" + ("" if timing_known else " (stays in review: the fixture carries no forecast arrival / "
+                                                    "evacuation estimate for it yet)"),
+        f"evacuation_min proposal {evac['proposal_id']} confirmed: evacuation {rb2['evacuation_min']} min from "
+        f"{rb2['evacuation_source']!r}, review_reasons {rb2['review_reasons']}, window {rb2['slack_min']}: {evac_ok}",
         "held-out examples: no investigation examples were held back from prompt development; the FakeLLM is a "
         "script, so a held-out check is only meaningful on the live model and remains not verified",
     ]
@@ -520,7 +632,7 @@ def check_agent_live() -> dict:
 
 def check_latency(repeats: int = 3) -> dict:
     """Readme 11 latency: processing time from receipt of the recorded seq-2 perimeter to snapshot built,
-    scored and suggestions queued for the 168 real-area assets; source age reported separately."""
+    ranked and suggestions queued for the 168 real-area assets; source age reported separately."""
     assets = _real_assets()
     updates = fire_input.load_recorded(RECORDED_FIRE)
     perimeters = [u for u in updates if u["geometry_kind"] == "perimeter"]
@@ -533,7 +645,7 @@ def check_latency(repeats: int = 3) -> dict:
         s1 = snapshot.build_snapshot(assets, first, scenario_id="gavarres_recorded", incident_id=first["incident_id"],
                                      sequence=1, as_of=first["received_at"], input_mode="recorded")
         store.apply_snapshot(s1)
-        store.suggest_tasks(priority.score_snapshot(s1, overrides=store.overrides())["all"], s1["snapshot_id"])
+        store.suggest_tasks(priority.rank_snapshot(s1, overrides=store.overrides())["all"], s1["snapshot_id"])
         # timed: receipt -> snapshot built -> scored -> queue updated
         sw = fire_input.Stopwatch().start()
         snap = snapshot.build_snapshot(assets, second, scenario_id="gavarres_recorded",
@@ -541,7 +653,7 @@ def check_latency(repeats: int = 3) -> dict:
                                        input_mode="recorded")
         errs = snapshot.validate_snapshot(snap)
         t_build = sw.elapsed
-        scored = priority.score_snapshot(snap, overrides=store.overrides())
+        scored = priority.rank_snapshot(snap, overrides=store.overrides())
         t_score = sw.elapsed
         applied = store.apply_snapshot(snap)
         suggested = store.suggest_tasks(scored["all"], snap["snapshot_id"])
@@ -565,8 +677,9 @@ def check_latency(repeats: int = 3) -> dict:
         f"apply+suggest {stages[0]['queue_s']:.3f} s; validate errors {stages[0]['errors']}",
         f"result: {n_ranked} ranked, {n_review} needs_review; {stages[0]['changed']} assets changed vs seq 1, "
         f"{stages[0]['suggested']} new suggestions on the update"
-        + (" (ranked queue empty on real coverage: located register rows carry no capacity, so the size component "
-           "is unknown and every asset is an investigation-queue item)" if n_ranked == 0 else ""),
+        + (" (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry "
+           "no per-location forecast arrival and every asset is a review item until a forecast covers it)"
+           if n_ranked == 0 else ""),
         f"source age (observation -> snapshot as_of {snap['as_of']}): {age:.0f} s, data_status {snap['data_status']}; "
         f"metrics {metrics} (separate numbers, never combined)",
         f"target < {LATENCY_TARGET_S:.0f} s processing for the selected area: {'met' if met else 'NOT met'} "
@@ -611,12 +724,14 @@ NOT_VERIFIED_ITEMS = [
     "Live LLM investigation: no ANTHROPIC_API_KEY; the agent check ran the scripted FakeLLM and the prerecorded "
     "fixture is a labelled FakeLLM transcript. Supported proposals, correct escalations and unsupported claims on "
     "held-out examples are unmeasured for the real model.",
-    "Forecast accuracy: no provider forecast was consumed; burn_probability and arrival fields are null in every "
-    "snapshot and distance-based exposure is not time to impact.",
+    "Forecast accuracy and evacuation estimates: no provider forecast was validated; the ranking checks use "
+    "constructed synthetic arrivals and policy evacuation durations, and distance-based exposure is not time "
+    "to impact.",
     "Evacuation decisions: nothing here validates an evacuation or confinement decision, lead time against "
     "historical response, or superiority over historical emergency response.",
-    "Operational validity of the weights: the priority checks verify normalisation, ties and direction of the "
-    "implementation, not that the prototype policy (priority-proto-2026-09-19) orders analyst attention correctly.",
+    "Operational validity of the contact policy: the priority checks verify the window arithmetic, ordering, "
+    "ties and missing-input handling of the implementation, not that forecast-evacuation-window-v2 with the "
+    "prototype evacuation durations (evacuation-proto-2026-09-19) orders contacts correctly.",
     "Historical as-of replay: the recorded-input run is a recorded-input demo with synthetic coverage; input "
     "availability times were not established for all inputs.",
 ]
@@ -643,7 +758,8 @@ def _measured_summary(r: dict) -> str:
     if n == "Geometry":
         return f"overlap {m['overlap_distance_m']} m; separated {m['separated_distance_m']} m (error {m['separated_error_m']:.2f} m)"
     if n == "Priority":
-        return f"weights sum {m['weights_sum']}, {m['ranked']} ranked / {m['needs_review']} review, scores [{m['score_min']:.3f}, {m['score_max']:.3f}]"
+        return (f"window {m['window_single']} = expected {m['expected_single']} min; order {m['order']}; exhausted first "
+                f"{m['exhausted_order']}; fixture {m['fixture_ranked']} ranked / {m['fixture_review']} review")
     if n == "Updates":
         return f"{m['changed_assets_seq2']} assets changed on seq 2; missing {m['missing_asset_ids']}, {m['tasks_kept']} tasks kept"
     if n == "Tasks":
@@ -713,7 +829,8 @@ def main(argv=None) -> int:
     print_table(results, verbose=not args.quiet)
     if args.write:
         OUTPUT.write_text(render_markdown(results), encoding="utf-8")
-        print(f"\nwrote {OUTPUT.relative_to(ROOT)}")
+        shown = OUTPUT.relative_to(ROOT) if OUTPUT.is_relative_to(ROOT) else OUTPUT
+        print(f"\nwrote {shown}")
     return 0 if all(r["outcome"] != FAIL for r in results) else 1
 
 

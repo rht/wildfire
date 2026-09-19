@@ -45,7 +45,11 @@ def cmd_registers(args) -> int:
     for name, rows in raw.items():
         _dump(out / f"{name}.json", rows)
         print(f"{name}: {len(rows)} rows -> {out / (name + '.json')}")
-    assets, unlocated = feeds.registers_to_assets(**raw)
+    # The schools directory carries no enrolment; pupils come from xvme-26kg and join on codi_centre.
+    enrolment = feeds.schools_enrolment(comarques=COMARQUES)
+    _dump(out / "schools_enrolment.json", enrolment)
+    print(f"schools_enrolment: {len(enrolment)} centres -> {out / 'schools_enrolment.json'}")
+    assets, unlocated = feeds.registers_to_assets(**raw, schools_enrolment=enrolment)
     _dump(feeds.DATA_DIR / "assets_in.json", assets)
     _dump(feeds.DATA_DIR / "unlocated.json", unlocated)
     by_class = {}
@@ -55,6 +59,11 @@ def cmd_registers(args) -> int:
     print(f"assets_in: {len(assets)} located, unlocated: {len(unlocated)}")
     for cls, (loc, unloc) in sorted(by_class.items()):
         print(f"  {cls}: {loc} located, {unloc} unlocated")
+    schools_rows = [a for a in assets + unlocated if a["register"] == "schools"]
+    with_pupils = [a for a in schools_rows if a["occupancy_source"] == "enrolment"]
+    print(f"  school enrolment: {len(with_pupils)}/{len(schools_rows)} schools matched, "
+          f"{sum(a['occupancy'] for a in with_pupils)} pupils; "
+          f"{len(schools_rows) - len(with_pupils)} left occupancy_unknown")
     return 0
 
 

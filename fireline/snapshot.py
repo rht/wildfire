@@ -2,10 +2,23 @@
 
 `build_snapshot` turns asset rows (v0 `assets_in` shape or v4 records) plus one FireUpdate-shaped
 dict into the shared snapshot envelope. Exposure is geometric only: minimum distance in EPSG:25831
-between the asset footprint (or its representative point, labelled) and the fire geometry. Forecast
-fields stay null unless `config.FEATURES["forecast_enrichment"]` is on and an arrival raster is
-passed, in which case they are labelled as unvalidated enrichment.
+between the asset footprint (or its representative point, labelled) and the fire geometry.
 
+v1.1 timing fields (CONTRACTS 2.2, readme 6): `fire_arrival_at` / `fire_arrival_basis` come only from a
+forecast passed as `forecast=` (a `forecast_input` forecast-input-1 dict) or, behind
+`config.FEATURES["forecast_enrichment"]`, from an arrival raster labelled as unvalidated enrichment.
+They are never derived from distance: an asset no forecast covers keeps them null and carries
+`forecast_unavailable`. `evacuation_min` / `evacuation_source` come from `config.EVACUATION_POLICY`
+by class (component minutes and assumptions recorded in `sources`); an unknown class gives null and
+`evacuation_unknown`.
+
+Occupancy follows the input row's `occupancy_source`: `register` fills `capacity` only (maximum
+places, never a headcount), `enrolment` (schools, from the Gencat enrolment register) and the other
+headcount sources fill `estimated_occupancy`. `occupancy_register` / `occupancy_period` /
+`occupancy_fetched_at` on the row, when the figure comes from a different register than the
+identity fields, are recorded in the `sources` entry for the occupancy fields.
+
+Schema version `1.1`; `validate_snapshot` still accepts `1.0` files, whose v1.1 keys are optional.
 This module never imports `fire_input`; the `fire` argument is a plain dict (or None).
 """
 
@@ -20,16 +33,20 @@ from shapely.geometry import Point, shape
 from shapely.ops import transform as shapely_transform
 
 from . import config
+from .forecast_input import FORECAST_UNAVAILABLE, attach_forecast
 from .grid import lonlat_to_xy
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
+READABLE_SCHEMA_VERSIONS = ("1.0", "1.1")   # 1.0 files load and validate; their v1.1 keys are optional
 INPUT_MODES = ("live", "recorded", "synthetic")
 DATA_STATUSES = ("current", "stale", "unavailable")
-GEOMETRY_KINDS = ("perimeter", "hotspot_centre")
+GEOMETRY_KINDS = ("perimeter", "hotspot_centre", "simulated")   # simulated: model burned area, not observed
 REVIEW_REASONS = ("location_unknown", "occupancy_unknown", "occupancy_seasonal", "class_ambiguous",
-                  "value_unknown", "exposure_unknown")
+                  "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown")
+EVACUATION_UNKNOWN = "evacuation_unknown"
 POINT_FALLBACK_NOTE = "point fallback: facility footprint missing"
 HOTSPOT_NOTE = "fire geometry is a hotspot centre, not a surveyed perimeter"
+SIMULATED_NOTE = "fire geometry is a simulated burned area, not an observed perimeter"
 NO_FIRE_NOTE = "fire geometry unavailable"
 NO_LOCATION_NOTE = "asset location unknown"
 
@@ -39,12 +56,15 @@ ENVELOPE_KEYS = ("schema_version", "scenario_id", "incident_id", "snapshot_id", 
 ASSET_KEYS = ("asset_id", "name", "asset_type", "latitude", "longitude", "geometry", "area_m2",
               "capacity", "estimated_occupancy", "occupancy_basis", "value_score", "value_basis",
               "distance_to_fire_m", "intersects_fire", "burn_probability", "arrival_p10_at",
-              "arrival_p50_at", "forecast_horizon_at", "forecast_source", "needs_review",
+              "arrival_p50_at", "forecast_horizon_at", "forecast_source", "fire_arrival_at",
+              "fire_arrival_basis", "evacuation_min", "evacuation_source", "needs_review",
               "review_reasons", "sources", "municipality")
+TIMING_KEYS = ("fire_arrival_at", "fire_arrival_basis", "evacuation_min", "evacuation_source")   # v1.1
 SOURCE_KEYS = ("fields", "source", "observed_at", "available_at", "fetched_at", "notes")
 _COMPUTED_FIELDS = {"value_score", "value_basis", "distance_to_fire_m", "intersects_fire",
                     "burn_probability", "arrival_p10_at", "arrival_p50_at", "forecast_horizon_at",
-                    "forecast_source"}
+                    "forecast_source", "fire_arrival_at", "fire_arrival_basis", "evacuation_min",
+                    "evacuation_source"}
 
 
 # ------------------------------------------------------------------------------------------ time
@@ -176,6 +196,7 @@ def _from_v0(row: dict) -> dict:
     occ = _int(row.get("occupancy"))
     occ_src = (row.get("occupancy_source") or ("unknown" if occ is None else "register")).lower()
     register = _register_of(row)
+    occ_register = row.get("occupancy_register") or register
     capacity = estimated = basis = None
     occ_note = None
     if occ is not None:
@@ -183,9 +204,15 @@ def _from_v0(row: dict) -> dict:
             capacity = occ
             basis = f"register capacity ({register}); maximum places, not a headcount"
             occ_note = "register capacity: not a confirmed headcount; estimated_occupancy left null"
+        elif occ_src == "enrolment":
+            estimated = occ
+            period = row.get("occupancy_period")
+            basis = f"enrolled pupils{' ' + str(period) if period else ''} ({occ_register}); staff not included"
+            occ_note = ("enrolment for the school year: not a time-of-day headcount, and staff and "
+                        "visitors are not counted")
         elif occ_src in ("allocated", "headcount", "census", "estimate"):
             estimated = occ
-            basis = f"{occ_src} headcount ({register})"
+            basis = f"{occ_src} headcount ({occ_register})"
             occ_note = f"{occ_src} estimate of people present, not a register capacity"
         elif occ_src == "override":
             estimated = occ
@@ -193,7 +220,7 @@ def _from_v0(row: dict) -> dict:
             occ_note = "analyst-confirmed value"
         else:
             estimated = occ
-            basis = f"{occ_src} ({register})"
+            basis = f"{occ_src} ({occ_register})"
     return {
         "asset_id": row["asset_id"],
         "name": row.get("name"),
@@ -209,6 +236,8 @@ def _from_v0(row: dict) -> dict:
         "_seasonal": bool(row.get("seasonal")) or "occupancy_seasonal" in review_list,
         "_class_ambiguous": bool(row.get("class_ambiguous")) or "class_ambiguous" in review_list,
         "_register": register,
+        "_occ_register": occ_register,
+        "_occ_fetched_at": row.get("occupancy_fetched_at") or row.get("fetched_at"),
         "_fetched_at": row.get("fetched_at"),
         "_observed_at": row.get("observed_at"),
         "_note": row.get("note"),
@@ -235,6 +264,8 @@ def _from_v4(row: dict) -> dict:
         "_seasonal": "occupancy_seasonal" in reasons,
         "_class_ambiguous": "class_ambiguous" in reasons,
         "_register": _register_of(row),
+        "_occ_register": _register_of(row),
+        "_occ_fetched_at": None,
         "_fetched_at": None,
         "_observed_at": None,
         "_note": None,
@@ -267,8 +298,8 @@ def asset_record(row: dict, cfg=config) -> dict:
         if p["capacity"] is not None or p["estimated_occupancy"] is not None:
             occ_fields = ["capacity"] if p["capacity"] is not None else ["estimated_occupancy"]
             occ_fields.append("occupancy_basis")
-            sources.append(_source_entry(occ_fields, p["_register"], observed_at=p["_observed_at"],
-                                         fetched_at=p["_fetched_at"], notes=p["_occ_note"]))
+            sources.append(_source_entry(occ_fields, p["_occ_register"], observed_at=p["_observed_at"],
+                                         fetched_at=p["_occ_fetched_at"], notes=p["_occ_note"]))
     if p["geometry"] is not None and p["area_m2"] is None:
         p["area_m2"] = _footprint_area_m2(p["geometry"])
 
@@ -279,6 +310,9 @@ def asset_record(row: dict, cfg=config) -> dict:
         sources.append(_source_entry(["value_score", "value_basis"], "config.VALUE_POLICY",
                                      notes=f"class-based operational importance, policy {policy['version']}; "
                                            "prototype policy, not a monetary valuation"))
+    evacuation_min, evacuation_source, evac_entry = _evacuation(p["asset_type"], cfg)
+    if evac_entry is not None:
+        sources.append(evac_entry)
     reasons = []
     if p["latitude"] is None or p["longitude"] is None:
         reasons.append("location_unknown")
@@ -290,6 +324,8 @@ def asset_record(row: dict, cfg=config) -> dict:
         reasons.append("class_ambiguous")
     if value_score is None:
         reasons.append("value_unknown")
+    if evacuation_min is None:
+        reasons.append(EVACUATION_UNKNOWN)
     return {
         "asset_id": p["asset_id"],
         "name": p["name"],
@@ -310,11 +346,36 @@ def asset_record(row: dict, cfg=config) -> dict:
         "arrival_p50_at": None,
         "forecast_horizon_at": None,
         "forecast_source": None,
+        "fire_arrival_at": None,
+        "fire_arrival_basis": None,
+        "evacuation_min": evacuation_min,
+        "evacuation_source": evacuation_source,
         "needs_review": bool(reasons),
         "review_reasons": reasons,
         "sources": sources,
         "municipality": p["municipality"],
     }
+
+
+# ------------------------------------------------------------------------------------- evacuation
+def _evacuation(asset_type: str, cfg=config):
+    """(evacuation_min, evacuation_source, sources entry) from cfg.EVACUATION_POLICY for one class.
+
+    `evacuation_min` is the sum of the policy's component minutes (mobilisation, preparation/loading,
+    movement to a receiving location); the source is the policy version. Unknown class -> (None, None, None).
+    """
+    policy = cfg.EVACUATION_POLICY
+    row = policy["by_type"].get(asset_type)
+    if row is None:
+        return None, None, None
+    components = [c for c in policy["components"] if row.get(c) is not None]
+    total = float(sum(float(row[c]) for c in components))
+    breakdown = ", ".join(f"{c.removesuffix('_min')} {row[c]:g} min" for c in components)
+    entry = _source_entry(["evacuation_min", "evacuation_source"], "config.EVACUATION_POLICY",
+                          notes=f"policy {policy['version']} for class {asset_type}: {breakdown} = {total:g} min; "
+                                f"assumptions: {row.get('assumptions') or 'none stated'}; "
+                                "labelled prototype assumption, not an emergency-service rule; analyst override allowed")
+    return total, policy["version"], entry
 
 
 # --------------------------------------------------------------------------------------- forecast
@@ -325,8 +386,9 @@ def _minutes_to_iso(base: datetime, minutes) -> str | None:
     return (base + timedelta(minutes=m)).isoformat()
 
 
-def _enrich_forecast(rec: dict, arrival, as_of: datetime) -> None:
-    """Fill burn_probability / arrival_* from an ArrivalRaster (labelled, unvalidated enrichment)."""
+def _enrich_forecast(rec: dict, arrival, as_of: datetime, note: str | None = None) -> None:
+    """Fill burn_probability / arrival_* from an ArrivalRaster (labelled, unvalidated enrichment).
+    `note` (optional) is appended to the provenance entry, e.g. the wind and run settings behind the raster."""
     if arrival is None or rec["latitude"] is None or rec["longitude"] is None:
         return
     bp = _num(arrival.sample("burn_prob", rec["longitude"], rec["latitude"]))
@@ -338,21 +400,31 @@ def _enrich_forecast(rec: dict, arrival, as_of: datetime) -> None:
     rec["arrival_p50_at"] = _minutes_to_iso(as_of, arrival.sample("arrival_p50", rec["longitude"], rec["latitude"]))
     rec["forecast_horizon_at"] = (as_of + timedelta(minutes=int(arrival.horizon_min))).isoformat()
     rec["forecast_source"] = f"{label} (labelled enrichment, not validated)"
+    fields = ["burn_probability", "arrival_p10_at", "arrival_p50_at", "forecast_horizon_at", "forecast_source"]
+    if rec["arrival_p10_at"] is not None:   # p10 selected; inf (not burned in >=10% of runs) stays null
+        rec["fire_arrival_at"] = rec["arrival_p10_at"]
+        rec["fire_arrival_basis"] = f"p10 ({label}, labelled enrichment, not validated)"
+        fields += ["fire_arrival_at", "fire_arrival_basis"]
     rec["sources"].append(_source_entry(
-        ["burn_probability", "arrival_p10_at", "arrival_p50_at", "forecast_horizon_at", "forecast_source"],
-        rec["forecast_source"], observed_at=as_of,
+        fields, rec["forecast_source"], observed_at=as_of,
         notes="nearest raster cell at the representative point; minutes after as_of; "
-              "not a provider forecast, not validated on Gavarres"))
+              "fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres"
+              + (f"; {note}" if note else "")))
 
 
 # ---------------------------------------------------------------------------------------- builder
 def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of, input_mode,
-                   computed_at=None, data_status=None, metrics=None, arrival=None, cfg=config) -> dict:
+                   computed_at=None, data_status=None, metrics=None, arrival=None, forecast=None,
+                   arrival_note=None, cfg=config) -> dict:
     """Snapshot envelope (CONTRACTS 2.1) with one record per input asset, input order preserved.
 
     `fire` is a FireUpdate-shaped dict (`observed_at`, `geometry`, `geometry_kind`, `source`,
-    `incident_id`, ...) or None. `arrival` (spread.ArrivalRaster) is used only when
-    `cfg.FEATURES["forecast_enrichment"]` is on.
+    `incident_id`, ...) or None. `forecast` is a `forecast_input` forecast-input-1 dict applied with
+    `attach_forecast` (per-location arrival estimates -> `fire_arrival_at`); when given it takes
+    precedence over `arrival` (spread.ArrivalRaster), which is used only when
+    `cfg.FEATURES["forecast_enrichment"]` is on (`arrival_note`, optional, is appended to that
+    enrichment's provenance entry). Every asset without `fire_arrival_at` afterwards carries
+    `forecast_unavailable`; nothing is inferred from distance.
     """
     if input_mode not in INPUT_MODES:
         raise ValueError(f"input_mode {input_mode!r} not in {INPUT_MODES}")
@@ -366,6 +438,8 @@ def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of
     fire_kind = fire.get("geometry_kind")
     if fire_geometry is not None and fire_kind is None:
         fire_kind = "hotspot_centre" if fire_geometry.get("type") == "Point" else "perimeter"
+    if fire_geometry is not None and fire_kind not in GEOMETRY_KINDS:
+        raise ValueError(f"geometry_kind {fire_kind!r} not in {GEOMETRY_KINDS}")
     if fire_geometry is None:
         fire_kind = None
     fire_observed_at = _iso(fire.get("observed_at"))
@@ -380,23 +454,31 @@ def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of
                    "processing_s": None}
     metrics = {"source_age_s": metrics.get("source_age_s"), "processing_s": metrics.get("processing_s")}
 
-    enrich = bool(cfg.FEATURES.get("forecast_enrichment")) and arrival is not None
+    enrich = forecast is None and bool(cfg.FEATURES.get("forecast_enrichment")) and arrival is not None
     assets = []
     for row in assets_in:
         rec = asset_record(row, cfg)
         distance, intersects, note = asset_exposure(rec["longitude"], rec["latitude"], rec["geometry"], fire_geometry)
         rec["distance_to_fire_m"] = distance
         rec["intersects_fire"] = intersects
+        dist_note = note if note else "minimum distance in EPSG:25831 to the fire footprint"
+        if fire_kind == "simulated" and distance is not None:
+            dist_note = f"{dist_note}; {SIMULATED_NOTE}"
         rec["sources"].append(_source_entry(["distance_to_fire_m", "intersects_fire"],
                                             fire_source or "fire geometry", observed_at=fire_observed_at,
-                                            available_at=fire.get("received_at"),
-                                            notes=note if note else "minimum distance in EPSG:25831 to the fire footprint"))
+                                            available_at=fire.get("received_at"), notes=dist_note))
         if distance is None:
             rec["review_reasons"].append("exposure_unknown")
             rec["needs_review"] = True
         if enrich:
-            _enrich_forecast(rec, arrival, as_of_dt)
+            _enrich_forecast(rec, arrival, as_of_dt, arrival_note)
         assets.append(rec)
+    if forecast is not None:
+        attach_forecast(assets, forecast)
+    for rec in assets:   # no forecast covers this asset: null arrival, never a distance-based guess
+        if rec["fire_arrival_at"] is None and FORECAST_UNAVAILABLE not in rec["review_reasons"]:
+            rec["review_reasons"].append(FORECAST_UNAVAILABLE)
+            rec["needs_review"] = True
 
     return {
         "schema_version": SCHEMA_VERSION,
@@ -435,8 +517,9 @@ def validate_snapshot(snap) -> list[str]:
             errs.append(f"missing envelope key {k}")
     if errs:
         return errs
-    if snap["schema_version"] != SCHEMA_VERSION:
-        errs.append(f"schema_version {snap['schema_version']!r} != {SCHEMA_VERSION!r}")
+    if snap["schema_version"] not in READABLE_SCHEMA_VERSIONS:
+        errs.append(f"schema_version {snap['schema_version']!r} not in {READABLE_SCHEMA_VERSIONS}")
+    legacy = snap["schema_version"] == "1.0"   # v1.1 timing keys optional; checked when present
     seq = snap["sequence"]
     if not isinstance(seq, int) or isinstance(seq, bool) or seq < 1:
         errs.append(f"sequence must be an int >= 1, got {seq!r}")
@@ -462,8 +545,8 @@ def validate_snapshot(snap) -> list[str]:
             errs.append(f"fire_geometry_kind {kind!r} not in {GEOMETRY_KINDS}")
         elif geom.get("type") == "Point" and kind != "hotspot_centre":
             errs.append("a Point fire_geometry must be labelled hotspot_centre")
-        elif geom.get("type") in ("Polygon", "MultiPolygon") and kind != "perimeter":
-            errs.append("a polygon fire_geometry must be labelled perimeter")
+        elif geom.get("type") in ("Polygon", "MultiPolygon") and kind not in ("perimeter", "simulated"):
+            errs.append("a polygon fire_geometry must be labelled perimeter or simulated")
     m = snap["metrics"]
     if not isinstance(m, dict) or set(m) != {"source_age_s", "processing_s"}:
         errs.append("metrics must have exactly source_age_s and processing_s")
@@ -475,10 +558,12 @@ def validate_snapshot(snap) -> list[str]:
         if not isinstance(a, dict):
             errs.append(f"{tag} is not a dict")
             continue
-        missing = [k for k in ASSET_KEYS if k not in a]
+        missing = [k for k in ASSET_KEYS if k not in a and not (legacy and k in TIMING_KEYS)]
         if missing:
             errs.append(f"{tag} missing keys {missing}")
             continue
+        if legacy:
+            a = dict(a, **{k: a.get(k) for k in TIMING_KEYS})   # 1.0: missing timing keys read as null
         tag = f"{a['asset_id']}"
         if a["asset_id"] in seen:
             errs.append(f"duplicate asset_id {tag}")
@@ -507,6 +592,28 @@ def validate_snapshot(snap) -> list[str]:
                 errs.append(f"{tag}: {k} is not an ISO timestamp")
         if a["forecast_source"] is None and any(a[k] is not None for k in ("burn_probability", "arrival_p10_at", "arrival_p50_at")):
             errs.append(f"{tag}: forecast fields need a forecast_source")
+        # v1.1 timing fields: a selected arrival needs its semantics and provenance; a duration needs a basis.
+        arr = a["fire_arrival_at"]
+        if arr is not None:
+            if not _is_time(arr):
+                errs.append(f"{tag}: fire_arrival_at is not an ISO timestamp")
+            for k in ("fire_arrival_basis", "forecast_source", "forecast_horizon_at"):
+                if a[k] is None:
+                    errs.append(f"{tag}: fire_arrival_at requires {k}")
+            if a["fire_arrival_basis"] is not None and not isinstance(a["fire_arrival_basis"], str):
+                errs.append(f"{tag}: fire_arrival_basis must be a string")
+        elif a["fire_arrival_basis"] is not None:
+            errs.append(f"{tag}: fire_arrival_basis must be null without fire_arrival_at")
+        ev = a["evacuation_min"]
+        if ev is not None:
+            if isinstance(ev, bool) or not isinstance(ev, (int, float)) or not math.isfinite(ev) or ev < 0:
+                errs.append(f"{tag}: evacuation_min must be a nonnegative finite number or null")
+            if a["evacuation_source"] is None:
+                errs.append(f"{tag}: evacuation_min requires evacuation_source")
+            elif not isinstance(a["evacuation_source"], str):
+                errs.append(f"{tag}: evacuation_source must be a string")
+        elif a["evacuation_source"] is not None:
+            errs.append(f"{tag}: evacuation_source must be null without evacuation_min")
         reasons = a["review_reasons"]
         if not isinstance(reasons, list) or any(r not in REVIEW_REASONS for r in reasons):
             errs.append(f"{tag}: review_reasons must be a list from {REVIEW_REASONS}")
@@ -519,6 +626,11 @@ def validate_snapshot(snap) -> list[str]:
                 errs.append(f"{tag}: null coordinates require location_unknown")
             if a["value_score"] is None and "value_unknown" not in reasons:
                 errs.append(f"{tag}: null value_score requires value_unknown")
+            if not legacy:
+                if (arr is None) != (FORECAST_UNAVAILABLE in reasons):
+                    errs.append(f"{tag}: forecast_unavailable must be present iff fire_arrival_at is null")
+                if (ev is None) != (EVACUATION_UNKNOWN in reasons):
+                    errs.append(f"{tag}: evacuation_unknown must be present iff evacuation_min is null")
         if not isinstance(a["sources"], list):
             errs.append(f"{tag}: sources must be a list")
         else:

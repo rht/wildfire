@@ -37,13 +37,39 @@ VALUE_POLICY = {
     },
 }
 
-# Explainable priority (readme 6): weights sum to one; components normalised to [0, 1] with fixed scales.
-PRIORITY_POLICY = {
-    "version": "priority-proto-2026-09-19",
-    "weights": {"proximity": 0.5, "size": 0.3, "value": 0.2},
-    "proximity_scale_m": 5000,     # proximity = clip(1 - distance / scale, 0, 1); 1 on intersection
-    "size_scale_people": 300,      # size = clip(people / scale, 0, 1)
-    "size_capacity_proxy": True,   # use capacity as a labelled proxy when estimated_occupancy is null
+# Contact priority from the remaining evacuation window (readme 6). Times are converted to minutes
+# from one epoch: the snapshot `as_of` ("current time" for that snapshot, live or recorded). The
+# weighted proximity/size/value score of the earlier draft is gone; this replaces it.
+CONTACT_POLICY = {
+    "version": "forecast-evacuation-window-v2",
+    "buffer_min": 30,              # safety margin subtracted from the latest start; shown in the UI
+    "now": "snapshot as_of",       # epoch for time_to_impact / latest_start / remaining window
+    "arrival_basis": "p10, else p50, else the provider's single estimate (its declared basis)",
+    "attention_min": 60,           # windows at or below this are "small": map colour and task flagging bucket
+}
+
+# Total evacuation duration by facility class: mobilisation + preparation/loading + movement to a
+# receiving location (readme 4 "Evacuation duration"). A versioned prototype assumption that the
+# analyst can override per asset; it is not derived from headcount and is not an emergency-service rule.
+EVACUATION_POLICY = {
+    "version": "evacuation-proto-2026-09-19",
+    "components": ["mobilisation_min", "preparation_min", "movement_min"],
+    "by_type": {
+        "hospital":  {"mobilisation_min": 30, "preparation_min": 90, "movement_min": 60,
+                      "assumptions": "assisted patients; ambulances and staff assumed available"},
+        "care_home": {"mobilisation_min": 30, "preparation_min": 90, "movement_min": 60,
+                      "assumptions": "assisted residents; bus and ambulance transport assumed available"},
+        "school":    {"mobilisation_min": 20, "preparation_min": 30, "movement_min": 40,
+                      "assumptions": "ambulatory pupils with staff; buses assumed available"},
+        "camp":      {"mobilisation_min": 20, "preparation_min": 30, "movement_min": 40,
+                      "assumptions": "ambulatory children with staff; buses assumed available"},
+        "campsite":  {"mobilisation_min": 20, "preparation_min": 20, "movement_min": 30,
+                      "assumptions": "self-evacuating guests with own vehicles"},
+        "nucleus":   {"mobilisation_min": 30, "preparation_min": 45, "movement_min": 30,
+                      "assumptions": "residents mostly self-evacuating; door-to-door notification"},
+        "masia":     {"mobilisation_min": 15, "preparation_min": 15, "movement_min": 30,
+                      "assumptions": "single household with own vehicle"},
+    },
 }
 
 # Four analyst actions and the capability tags each needs (readme 7).

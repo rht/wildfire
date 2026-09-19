@@ -26,6 +26,42 @@ def test_check_passes(fn):
     assert r["outcome"] == validate.PASS, "\n".join(r["details"])
 
 
+def test_priority_check_measures_the_window_and_ordering():
+    r = _run(validate.check_priority)
+    assert r["outcome"] == validate.PASS, "\n".join(r["details"])
+    m = r["measured"]
+    assert m["window_single"] == m["expected_single"] == 180.0 - 90.0 - validate.config.CONTACT_POLICY["buffer_min"]
+    assert m["order"][0] == "far_downwind" and m["exhausted_order"][:2] == ["negative", "zero"]
+    assert m["ties"] == ["tie_b", "tie_d", "tie_a", "tie_c"] and m["static_agreement"] is True
+    assert m["fixture_ranked"] + m["fixture_review"] == 13
+    assert any("farther outranks nearer" in d for d in r["details"])
+    assert not any("score" in d.split("forecast")[0].lower() and "weights" in d for d in r["details"])
+
+
+def test_updates_check_tolerates_an_unranked_fixture():
+    r = _run(validate.check_updates)
+    assert r["outcome"] == validate.PASS, "\n".join(r["details"])
+    m = r["measured"]
+    assert m["changed_assets_seq2"] > 0 and "ranked_any" in m
+    if not m["ranked_any"]:
+        assert any("no asset ranked" in d for d in r["details"])
+
+
+def test_agent_check_confirms_an_evacuation_duration():
+    r = _run(validate.check_agent)
+    assert any("evacuation_min proposal" in d and "confirmed" in d for d in r["details"])
+    assert not any("priority_score" in d or " score " in d for d in r["details"])
+
+
+def test_write_regenerates_validation_markdown(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(validate, "OUTPUT", tmp_path / "VALIDATION.md")
+    monkeypatch.setattr(validate, "CHECKS", [validate.check_stale, validate.check_agent_live])
+    assert validate.main(["--write", "--quiet"]) == 0
+    text = (tmp_path / "VALIDATION.md").read_text(encoding="utf-8")
+    assert "## Not verified" in text and "forecast-evacuation-window-v2" in text
+    assert "priority-proto" not in text and "weights" not in text.split("## Not verified")[0]
+
+
 def test_geometry_numbers():
     m = _run(validate.check_geometry)["measured"]
     assert m["overlap_distance_m"] == 0.0

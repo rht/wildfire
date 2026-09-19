@@ -6,9 +6,21 @@ from pathlib import Path
 import pytest
 
 from fireline import config
-from fireline.priority import score_snapshot
-from fireline.tasks import AssignmentError, TaskStore
-from tests.helpers import make_asset, make_snapshot
+from fireline.priority import rank_snapshot
+from fireline.tasks import EVACUATION_TASK_REASON, AssignmentError, TaskStore
+from tests.helpers import AS_OF, make_asset, make_snapshot
+
+FORECAST = "fixture:test-spread (synthetic)"
+EVAC = config.EVACUATION_POLICY["version"]
+
+
+def timed(asset_id, arrival_at, evacuation_min=90.0, **kw):
+    """Asset with the v1.1 timing fields (arrival ISO timestamp or None)."""
+    fields = dict(asset_id=asset_id, fire_arrival_at=arrival_at, fire_arrival_basis="p10" if arrival_at else None,
+                  forecast_source=FORECAST if arrival_at else None, evacuation_min=evacuation_min,
+                  evacuation_source=EVAC if evacuation_min is not None else None)
+    fields.update(kw)
+    return make_asset(**fields)
 
 ROSTER = Path(__file__).resolve().parents[1] / "fixtures" / "teams.json"
 OUTREACH = "team_bisbal_1"          # occupancy_check, facility_contact
@@ -26,7 +38,7 @@ def store():
 
 
 def scored_assets(assets):
-    return score_snapshot(make_snapshot(assets))["all"]
+    return rank_snapshot(make_snapshot(assets))["all"]
 
 
 # -- roster ------------------------------------------------------------------------------------
@@ -47,22 +59,35 @@ def test_roster_fixture_shape():
 # -- suggestions -------------------------------------------------------------------------------
 
 def test_suggestions_from_review_reasons_and_dedupe(store):
+    arrival = "2026-07-03T11:00:00+00:00"
     assets = [
-        make_asset(asset_id="fixture:occ", capacity=None, review_reasons=["occupancy_unknown"]),
-        make_asset(asset_id="fixture:cls", asset_type="unknown", value_score=None,
-                   review_reasons=["class_ambiguous", "value_unknown"]),
-        make_asset(asset_id="fixture:loc", latitude=None, longitude=None, distance_to_fire_m=None,
-                   intersects_fire=None, review_reasons=["location_unknown", "exposure_unknown"]),
-        make_asset(asset_id="fixture:exp", distance_to_fire_m=None, intersects_fire=None,
-                   review_reasons=["exposure_unknown"]),
-        make_asset(asset_id="fixture:hot", distance_to_fire_m=0.0, intersects_fire=True),
-        make_asset(asset_id="fixture:fine"),
+        timed("fixture:occ", arrival, capacity=None, review_reasons=["occupancy_unknown"]),
+        timed("fixture:cls", arrival, asset_type="unknown", value_score=None,
+              review_reasons=["class_ambiguous", "value_unknown"]),
+        timed("fixture:loc", arrival, latitude=None, longitude=None, distance_to_fire_m=None,
+              intersects_fire=None, review_reasons=["location_unknown", "exposure_unknown"]),
+        timed("fixture:exp", arrival, distance_to_fire_m=None, intersects_fire=None, review_reasons=["exposure_unknown"]),
+        timed("fixture:hot", arrival, distance_to_fire_m=0.0, intersects_fire=True),
+        timed("fixture:fine", arrival),
+        timed("fixture:noevac", arrival, evacuation_min=None, review_reasons=["evacuation_unknown"]),
+        timed("fixture:nofc", None),                     # forecast_unavailable added by the ranking: no task
     ]
-    created = store.suggest_tasks(scored_assets(assets), "test-0001")
+    scored = scored_assets(assets)
+    assert next(a for a in scored if a["asset_id"] == "fixture:nofc")["review_reasons"] == ["forecast_unavailable"]
+    created = store.suggest_tasks(scored, "test-0001")
     by_asset = {(t["asset_id"], t["action"]): t for t in created}
     assert set(by_asset) == {
         ("fixture:occ", "confirm_occupancy"), ("fixture:cls", "contact_facility"),
-        ("fixture:loc", "contact_facility"), ("fixture:exp", "contact_facility"), ("fixture:hot", "check_access")}
+        ("fixture:loc", "contact_facility"), ("fixture:exp", "contact_facility"), ("fixture:hot", "check_access"),
+        ("fixture:noevac", "contact_facility")}
+    assert by_asset[("fixture:noevac", "contact_facility")]["reason"] == EVACUATION_TASK_REASON
+    assert "confirmed with the facility" in EVACUATION_TASK_REASON
+    assert not any("forecast" in t["reason"] for t in created)
+    # an untimed asset (no evacuation estimate at all) gets the same contact_facility suggestion
+    plain = store.suggest_tasks(scored_assets([make_asset(asset_id="fixture:plain")]), "test-0001")
+    assert [(t["asset_id"], t["action"], t["reason"]) for t in plain] == \
+        [("fixture:plain", "contact_facility", EVACUATION_TASK_REASON)]
+    store.set_status(plain[0]["task_id"], "done")
     assert by_asset[("fixture:occ", "confirm_occupancy")]["reason"] == "occupancy unknown"
     assert by_asset[("fixture:cls", "contact_facility")]["reason"].startswith("class ambiguous: ")
     assert by_asset[("fixture:loc", "contact_facility")]["reason"] == "location unknown"
@@ -75,7 +100,7 @@ def test_suggestions_from_review_reasons_and_dedupe(store):
     # second call and a later snapshot create nothing new
     assert store.suggest_tasks(scored_assets(assets), "test-0001") == []
     assert store.suggest_tasks(scored_assets(assets), "test-0002") == []
-    assert len(store.tasks()) == 5
+    assert len(store.tasks()) == 7
     # once done, a persisting gap is suggested again (analyst closed it; new snapshot still flags it)
     store.set_status(by_asset[("fixture:occ", "confirm_occupancy")]["task_id"], "done")
     again = store.suggest_tasks(scored_assets(assets), "test-0003")
@@ -226,6 +251,48 @@ def test_apply_snapshot_sequence_and_flagging(store):
     assert len(store.snapshots("sc")) == 2
 
 
+def test_apply_snapshot_flags_window_changes_and_names_the_window(store):
+    arrive = lambda h, m=0: f"2026-07-03T{h:02d}:{m:02d}:00+00:00"  # noqa: E731
+    a = timed("fixture:a", arrive(11))          # 180 - 90 - 30 = 60 min window
+    b = timed("fixture:b", arrive(13))          # unchanged in seq 2 apart from the elapsed time (stays "open")
+    c = timed("fixture:c", None)                # no forecast: needs_review
+    store.apply_snapshot(make_snapshot([a, b, c], scenario_id="sc", sequence=1))
+    ta = store.create_task("fixture:a", "contact_facility", "ra", snapshot_id="sc-0001")
+    tb = store.create_task("fixture:b", "contact_facility", "rb", snapshot_id="sc-0001")
+    tc = store.create_task("fixture:c", "contact_facility", "rc", snapshot_id="sc-0001")
+    exp = store.exposure("sc")
+    assert exp["fixture:a"]["priority_status"] == "window_open" and exp["fixture:a"]["slack_min"] == 60.0
+    assert exp["fixture:c"]["priority_status"] == "needs_review" and exp["fixture:c"]["slack_min"] is None
+    # seq 2, one hour later: a's arrival moves earlier (window exhausted); b only loses elapsed time (not a
+    # flagged change, the window shrinks for everyone); c gains a forecast (needs_review -> ranked)
+    a2 = timed("fixture:a", arrive(10))         # at 09:00: 60 - 90 - 30 = -60
+    c2 = timed("fixture:c", arrive(14))
+    r = store.apply_snapshot(make_snapshot([a2, b, c2], scenario_id="sc", sequence=2, as_of=arrive(9)))
+    changes = {ch["asset_id"]: ch for ch in r["changed"]}
+    assert set(changes) == {"fixture:a", "fixture:c"}
+    assert changes["fixture:a"]["changes"]["fire_arrival_at"] == [arrive(11), arrive(10)]
+    assert changes["fixture:a"]["changes"]["priority_status"] == ["window_open", "window_exhausted"]
+    assert changes["fixture:a"]["slack_min"] == [60.0, -60.0]
+    assert changes["fixture:c"]["changes"]["priority_status"] == ["needs_review", "window_open"]
+    assert changes["fixture:c"]["slack_min"] == [None, 180.0]                     # 14:00 at 09:00: 300 - 90 - 30
+    assert set(r["affected_task_ids"]) == {ta["task_id"], tc["task_id"]}
+    assert store.get(tb["task_id"])["affected_by_snapshot_id"] is None
+    msg = next(e["message"] for e in store.events() if e["kind"] == "task_affected" and e["task_id"] == ta["task_id"])
+    assert "remaining window 60 min -> -60 min" in msg and "score" not in msg
+    assert store.exposure("sc")["fixture:b"]["slack_min"] == 120.0           # bookkeeping follows the new as_of
+    assert store.exposure("sc")["fixture:c"]["priority_status"] == "window_open"
+
+
+def test_apply_snapshot_status_uses_confirmed_evacuation_override(store):
+    a = timed("fixture:a", "2026-07-03T11:00:00+00:00", evacuation_min=None)
+    store.apply_snapshot(make_snapshot([a], scenario_id="sc", sequence=1))
+    assert store.exposure("sc")["fixture:a"]["priority_status"] == "needs_review"
+    store.confirm_override("fixture:a", "evacuation_min", 100, source="phone call", snippet="100 min", confidence=0.7)
+    store.apply_snapshot(make_snapshot([a], scenario_id="sc", sequence=2))
+    row = store.exposure("sc")["fixture:a"]
+    assert row["priority_status"] == "window_open" and row["slack_min"] == 180.0 - 100.0 - 30.0
+
+
 def test_apply_snapshot_flags_needs_review_and_intersection_changes(store):
     a = make_asset(asset_id="fixture:a")
     store.apply_snapshot(make_snapshot([a], scenario_id="sc", sequence=1))
@@ -234,7 +301,7 @@ def test_apply_snapshot_flags_needs_review_and_intersection_changes(store):
                     review_reasons=["occupancy_seasonal"])
     r = store.apply_snapshot(make_snapshot([a2], scenario_id="sc", sequence=2))
     changes = r["changed"][0]["changes"]
-    assert set(changes) == {"distance_to_fire_m", "intersects_fire", "needs_review"}
+    assert set(changes) == {"distance_to_fire_m", "intersects_fire", "needs_review"}   # status stays needs_review
     assert r["affected_task_ids"] == [t["task_id"]]
     # a done task is not flagged
     store.set_status(t["task_id"], "done")
@@ -254,13 +321,42 @@ def test_confirm_override_persisted_and_returned(store):
     assert o["value"] == 40 and o["confidence"] == 0.8 and o["confirmed_at"]
     o2 = store.confirm_override("fixture:a", "asset_type", "care_home", source="register", snippet="residència",
                                 confidence=0.9, previous="unknown")
-    assert [x["override_id"] for x in store.overrides("fixture:a")] == [o["override_id"], o2["override_id"]]
+    o3 = store.confirm_override("fixture:a", "evacuation_min", 150, source="phone call with director",
+                                snippet="about two and a half hours", confidence=0.8, previous=None)
+    assert o3["value"] == 150.0 and o3["field"] == "evacuation_min"
+    assert [x["override_id"] for x in store.overrides("fixture:a")] == [o["override_id"], o2["override_id"], o3["override_id"]]
     assert store.overrides("fixture:zzz") == []
-    assert len(store.overrides()) == 2
+    assert len(store.overrides()) == 3
+    with pytest.raises(ValueError, match="fire_arrival_at"):
+        store.confirm_override("fixture:a", "fire_arrival_at", "2026-07-03T12:00:00+00:00", source="guess",
+                               snippet="", confidence=0.1)
+    with pytest.raises(ValueError):
+        store.confirm_override("fixture:a", "evacuation_min", -5, source="s", snippet="", confidence=0.1)
+    with pytest.raises(ValueError):
+        store.confirm_override("fixture:a", "evacuation_min", 30, source="", snippet="", confidence=0.1)
+    assert len(store.overrides()) == 3
     assert any(e["kind"] == "override_confirmed" and e["asset_id"] == "fixture:a" for e in store.events())
 
 
 # -- persistence ---------------------------------------------------------------------------------
+
+def test_store_migrates_an_older_exposure_table(tmp_path):
+    import sqlite3
+
+    db = tmp_path / "old.sqlite"
+    conn = sqlite3.connect(db)
+    conn.execute("CREATE TABLE asset_exposure (scenario_id TEXT NOT NULL, asset_id TEXT NOT NULL, distance_to_fire_m REAL, "
+                 "intersects_fire INTEGER, needs_review INTEGER, review_reasons TEXT NOT NULL, snapshot_id TEXT, "
+                 "present INTEGER NOT NULL DEFAULT 1, PRIMARY KEY (scenario_id, asset_id))")
+    conn.execute("INSERT INTO asset_exposure VALUES ('sc', 'fixture:a', 100.0, 0, 0, '[]', 'sc-0000', 1)")
+    conn.commit()
+    conn.close()
+    store = TaskStore(db)
+    row = store.exposure("sc")["fixture:a"]
+    assert row["priority_status"] is None and row["slack_min"] is None and row["fire_arrival_at"] is None
+    r = store.apply_snapshot(make_snapshot([timed("fixture:a", "2026-07-03T11:00:00+00:00")], scenario_id="sc", sequence=1))
+    assert r["accepted"] and r["changed"][0]["changes"]["priority_status"] == [None, "window_open"]
+
 
 def test_store_survives_reopen(tmp_path):
     db = tmp_path / "fireline.sqlite"
@@ -273,6 +369,7 @@ def test_store_survives_reopen(tmp_path):
     t = first.create_task("fixture:a", "confirm_occupancy", "r", snapshot_id="sc-0001")
     first.assign(t["task_id"], OUTREACH)
     first.confirm_override("fixture:a", "capacity", 120, source="register", snippet="120 places", confidence=0.7)
+    first.confirm_override("fixture:a", "evacuation_min", 75, source="director", snippet="75 min", confidence=0.7)
     assert first.apply_snapshot(s2)["accepted"] is True
     first.close()
 
@@ -285,7 +382,7 @@ def test_store_survives_reopen(tmp_path):
     assert second.apply_snapshot(s1)["accepted"] is False
     assert second.apply_snapshot(make_snapshot([make_asset(asset_id="fixture:a")],
                                                scenario_id="sc", sequence=3))["accepted"] is True
-    assert [o["value"] for o in second.overrides("fixture:a")] == [120]
+    assert [o["value"] for o in second.overrides("fixture:a")] == [120, 75.0]
     assert [tm["team_id"] for tm in second.teams()]                              # roster persisted
     with pytest.raises(AssignmentError, match="team busy"):
         second.assign(second.create_task("fixture:b", "confirm_occupancy", "r", snapshot_id="sc-0003")["task_id"],
@@ -293,3 +390,27 @@ def test_store_survives_reopen(tmp_path):
     kinds = [e["kind"] for e in second.events()]
     assert "task_assigned" in kinds and "snapshot_rejected" in kinds and "snapshot_accepted" in kinds
     assert len(second.events(limit=2)) == 2 and second.events(limit=2)[-1] == second.events()[-1]
+
+
+def test_apply_snapshot_flags_when_the_window_bucket_changes(store):
+    a = timed("fixture:a", "2026-07-03T12:00:00+00:00")       # at 08:00: 240 - 90 - 30 = 120 min (open)
+    store.apply_snapshot(make_snapshot([a], scenario_id="sc", sequence=1))
+    t = store.create_task("fixture:a", "contact_facility", "r", snapshot_id="sc-0001")
+    r = store.apply_snapshot(make_snapshot([a], scenario_id="sc", sequence=2, as_of="2026-07-03T08:30:00+00:00"))
+    assert r["affected_task_ids"] == [] and r["changed"] == []            # 90 min: still open, only time elapsed
+    r = store.apply_snapshot(make_snapshot([a], scenario_id="sc", sequence=3, as_of="2026-07-03T09:30:00+00:00"))
+    assert r["affected_task_ids"] == [t["task_id"]]                       # 30 min: small window, flagged
+    assert r["changed"][0]["changes"]["window_bucket"] == ["open", "small"] and r["changed"][0]["slack_min"] == [90.0, 30.0]
+
+
+def test_confirm_override_rejects_an_infinite_evacuation_duration(store):
+    with pytest.raises(ValueError, match="finite"):
+        store.confirm_override("fixture:a", "evacuation_min", float("inf"), source="s", snippet="", confidence=0.5)
+
+
+def test_one_malformed_asset_does_not_blank_the_other_windows(store):
+    a = timed("fixture:a", "2026-07-03T11:00:00+00:00")
+    bad = timed("fixture:bad", "2026-07-03T11:00:00+00:00", evacuation_min="abc")
+    store.apply_snapshot(make_snapshot([a, bad], scenario_id="sc", sequence=1))
+    exp = store.exposure("sc")
+    assert exp["fixture:a"]["priority_status"] == "window_open" and exp["fixture:bad"]["priority_status"] is None

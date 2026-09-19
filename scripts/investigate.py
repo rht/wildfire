@@ -5,9 +5,9 @@ otherwise a clearly labelled replay of fixtures/agent/prerecorded_investigation.
     .venv/bin/python scripts/investigate.py [snapshot.json] [--asset ASSET_ID] [--asset-json asset.json]
                                             [--fake] [--record] [--max-steps N]
 
-Loads a snapshot (default fixtures/snapshots/synthetic_gavarres_0001.json), scores it with
-fireline.priority.score_snapshot when importable, picks the asset (--asset or the first needs_review
-asset) and runs fireline.agent.investigate. `--record` writes the record to the prerecorded fixture
+Loads a snapshot (default fixtures/snapshots/synthetic_gavarres_0001.json), ranks it by remaining
+evacuation window with fireline.priority.rank_snapshot when importable, picks the asset (--asset or
+the first needs_review asset) and runs fireline.agent.investigate. `--record` writes the record to the prerecorded fixture
 path; `--fake` forces the offline FakeLLM (used to generate a labelled fixture when no key exists).
 """
 
@@ -37,6 +37,7 @@ INLINE_ASSET = {
     "value_score": 0.8, "value_basis": "value-proto-2026-09-19",
     "distance_to_fire_m": 2134.6, "intersects_fire": False, "burn_probability": None,
     "arrival_p10_at": None, "arrival_p50_at": None, "forecast_horizon_at": None, "forecast_source": None,
+    "fire_arrival_at": None, "fire_arrival_basis": None, "evacuation_min": None, "evacuation_source": None,
     "needs_review": True, "review_reasons": ["occupancy_unknown", "occupancy_seasonal"],
     "sources": [{"fields": ["name", "asset_type"], "source": "fixture:assets", "observed_at": None,
                  "available_at": None, "fetched_at": None, "notes": "inline smoke-test asset"}],
@@ -64,21 +65,24 @@ def load_assets(snapshot_path: Path | None, asset_json: Path | None) -> tuple[li
 
 
 def score(assets: list[dict], snap: dict | None) -> list[dict]:
-    """Score through fireline.priority when available; else raw assets flagged needs_review."""
+    """Rank through fireline.priority when available; else raw assets flagged needs_review.
+    Without a snapshot as_of the current UTC time is the window epoch (printed as such)."""
     try:
-        from fireline.priority import score_snapshot
+        from fireline.priority import rank_snapshot
     except ImportError:
         out = []
         for a in assets:
             a = dict(a)
-            a.setdefault("priority_score", None)
+            a.setdefault("slack_min", None)
+            a.setdefault("priority_status", "needs_review")
             a.setdefault("priority_rank", None)
             a.setdefault("queue", "needs_review")
             out.append(a)
         return out
     envelope = dict(snap) if snap else {"assets": assets}
     envelope["assets"] = assets
-    scored = score_snapshot(envelope)
+    now_at = envelope.get("as_of") or datetime.now(timezone.utc).isoformat(timespec="seconds")
+    scored = rank_snapshot(envelope, now_at=now_at)
     return scored["all"] if isinstance(scored, dict) else list(scored)
 
 
@@ -156,7 +160,7 @@ def main(argv=None) -> int:
 
     assets, where = load_assets(Path(args.snapshot) if args.snapshot else None,
                                 Path(args.asset_json) if args.asset_json else None)
-    wb = agent.Workbench.from_scored(assets)
+    wb = agent.Workbench.from_scored(assets)   # no snapshot attached: a confirmation refreshes the record in place
     asset = pick_asset(assets, args.asset)
 
     if args.fake or not have_key:

@@ -24,14 +24,20 @@
     "occupancy_basis": null,
     "value_score": 0.8,
     "intersects_fire": false,
-    "queue": "needs_review",
+    "queue": "ranked",
     "review_reasons": [
      "occupancy_unknown",
      "occupancy_seasonal"
     ],
+    "fire_arrival_at": "2026-07-03T11:00:00+00:00",
+    "fire_arrival_basis": "p10",
+    "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+    "evacuation_min": 90,
+    "evacuation_source": "evacuation-proto-2026-09-19",
     "distance_to_fire_m": 1762,
-    "priority_score": null,
-    "priority_rank": null,
+    "slack_min": 60,
+    "priority_status": "window_open",
+    "priority_rank": 2,
     "open_tasks": [],
     "confirmed_overrides": [],
     "pending_proposals": 0
@@ -139,7 +145,7 @@
     "observed_at": "2026-06-15",
     "confidence": "medium",
     "status": "pending",
-    "created_at": "2026-09-19T12:56:25+00:00"
+    "created_at": "2026-09-19T14:10:47+00:00"
    }
   },
   {
@@ -164,11 +170,11 @@
     "default": "yes",
     "status": "open",
     "answer": null,
-    "created_at": "2026-09-19T12:56:25+00:00"
+    "created_at": "2026-09-19T14:10:47+00:00"
    }
   }
  ],
- "final_text": "Recommendation, not an order. Pou del Glaç: 1762 m from the fire, queue needs_review; proposed capacity=120 from manual enrichment (pending analyst confirmation); escalated 'Pou del Glaç: in session today (people on site)? If yes, how many are present?' default 'yes'.",
+ "final_text": "Recommendation, not an order. Pou del Glaç: 1762 m from the fire, queue ranked; proposed capacity=120 from manual enrichment (pending analyst confirmation); escalated 'Pou del Glaç: in session today (people on site)? If yes, how many are present?' default 'yes'.",
  "proposals_added": [
   {
    "proposal_id": "prop-001-pou_del_glac",
@@ -182,7 +188,7 @@
    "observed_at": "2026-06-15",
    "confidence": "medium",
    "status": "pending",
-   "created_at": "2026-09-19T12:56:25+00:00"
+   "created_at": "2026-09-19T14:10:47+00:00"
   }
  ],
  "questions_added": [
@@ -197,12 +203,12 @@
    "default": "yes",
    "status": "open",
    "answer": null,
-   "created_at": "2026-09-19T12:56:25+00:00"
+   "created_at": "2026-09-19T14:10:47+00:00"
   }
  ],
  "postcheck_ok": true,
  "llm_mode": "fake",
  "label": "prerecorded with FakeLLM (no API key available on 2026-09-19); rerun scripts/investigate.py --record with ANTHROPIC_API_KEY to replace with a live transcript",
- "recorded_at": "2026-09-19T12:56:25+00:00",
+ "recorded_at": "2026-09-19T14:10:47+00:00",
  "input": "snapshot fixtures/snapshots/synthetic_gavarres_0001.json (synthetic_gavarres-0001)"
 }

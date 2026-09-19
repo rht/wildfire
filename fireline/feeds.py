@@ -11,7 +11,8 @@ Sources (PLAN.md section 5 and appendix, field names checked live on 2026-09-19,
 
 * Deepfire OGC API Features (clusters, hotspots, satellite perimeters) and fire-spread simulations.
 * Open-Meteo forecast API (live) and Previous Runs API (replay).
-* Gencat Socrata registers: equipaments, care homes, tourism (campsites), schools.
+* Gencat Socrata registers: equipaments, care homes, tourism (campsites), schools and school
+  enrolment (the schools directory carries no occupancy column).
 * Bombers "actuacions urgents" and Pla Alfa ArcGIS FeatureServers.
 """
 
@@ -51,8 +52,13 @@ SOCRATA_DATASETS = {
     "care_homes": "ivft-vegh",
     "campsites": "t2h3-cgys",
     "schools": "kvmv-ahh4",
+    "schools_enrolment": "xvme-26kg",
 }
 SCHOOLS_CURS = "2025/2026"
+# Enrolment years tried in order; the first that lists a centre wins. The current year is published
+# progressively (35,640 rows statewide on 2026-09-19 against about 44,500 for a complete year), so the
+# previous one fills the centres it does not cover yet (data/README.md).
+SCHOOLS_ENROLMENT_CURS = (SCHOOLS_CURS, "2024/2025")
 
 OPEN_METEO_LIVE = "https://api.open-meteo.com/v1/forecast"
 OPEN_METEO_PREVIOUS = "https://previous-runs-api.open-meteo.com/v1/forecast"
@@ -550,6 +556,33 @@ def schools(municipalities: Iterable[str] | None = None, comarques: Iterable[str
     return socrata(SOCRATA_DATASETS["schools"], {"$where": " AND ".join(clauses)})
 
 
+def schools_enrolment(municipalities: Iterable[str] | None = None, comarques: Iterable[str] | None = None,
+                      curs: str | Iterable[str] = SCHOOLS_ENROLMENT_CURS) -> dict[str, dict]:
+    """Enrolled pupils per school centre (``xvme-26kg``), keyed by ``codi_centre``.
+
+    The schools directory (``kvmv-ahh4``) carries no enrolment or capacity column, so school
+    occupancy comes from this register and is joined on ``codi_centre``. It holds one row per
+    ensenyament (infantil, primària, ESO, batxillerat, FP ...), so the sum is done server-side.
+    ``curs`` is one school year or several tried in order, the first that lists a centre winning.
+
+    Returns ``{codi_centre: {"pupils": int, "curs": str}}``. Pupils only: staff are not in the
+    register, and an enrolment is not a time-of-day headcount.
+    """
+    years = [curs] if isinstance(curs, str) else list(curs)
+    out: dict[str, dict] = {}
+    for year in years:
+        clauses = [f"curs = '{year}'"] + _where("nom_municipi", municipalities, "nom_comarca", comarques)
+        rows = socrata(SOCRATA_DATASETS["schools_enrolment"],
+                       {"$select": "codi_centre, sum(matr_cules_total) as pupils",
+                        "$where": " AND ".join(clauses), "$group": "codi_centre", "$order": "codi_centre"})
+        for row in rows:
+            code = str(row.get("codi_centre") or "")
+            pupils = _int(row.get("pupils"))
+            if code and pupils is not None and code not in out:
+                out[code] = {"pupils": pupils, "curs": year}
+    return out
+
+
 # Ordered (substring, asset_class) rules per register, matched case-insensitively against the
 # register's category column. First match wins; rows with no match are dropped (not assets).
 # Extend here. ``class_ambiguous`` marks classes the exposure layer should flag for review.
@@ -625,13 +658,22 @@ def _address(row: dict) -> str:
     return ", ".join(str(p).strip() for p in parts if p and str(p).strip())
 
 
-def _asset_row(register: str, row: dict) -> dict | None:
+def _asset_row(register: str, row: dict, enrolment: dict[str, dict] | None = None) -> dict | None:
     cls = classify(register, row)
     if cls is None:
         return None
     row_id = row.get(REGISTER_ID_COLUMN[register])
     occ_col = REGISTER_OCCUPANCY_COLUMN.get(register)
     occupancy = _int(row.get(occ_col)) if occ_col else None
+    occupancy_source = "register" if occupancy is not None else "unknown"
+    occupancy_extra: dict = {}
+    if register == "schools" and enrolment:
+        enrolled = enrolment.get(str(row_id))
+        if enrolled is not None:
+            occupancy = enrolled["pupils"]
+            occupancy_source = "enrolment"          # a headcount of pupils, not a register capacity
+            occupancy_extra = {"occupancy_register": "schools_enrolment",
+                               "occupancy_period": enrolled["curs"]}
     lon, lat = _lonlat(row)
     return {
         "asset_id": f"{register}:{row_id}",
@@ -640,7 +682,8 @@ def _asset_row(register: str, row: dict) -> dict | None:
         "lon": lon, "lat": lat,
         "municipality": row.get(REGISTER_MUNICIPALITY_COLUMN[register]) or "",
         "occupancy": occupancy,
-        "occupancy_source": "register" if occupancy is not None else "unknown",
+        "occupancy_source": occupancy_source,
+        **occupancy_extra,
         "seasonal": cls == "campsite",
         "class_ambiguous": (register, cls) in CLASS_AMBIGUOUS,
         "register": register,
@@ -650,18 +693,23 @@ def _asset_row(register: str, row: dict) -> dict | None:
 
 
 def registers_to_assets(equipaments: Iterable[dict] = (), care_homes: Iterable[dict] = (),
-                        campsites: Iterable[dict] = (), schools: Iterable[dict] = ()) -> tuple[list[dict], list[dict]]:
+                        campsites: Iterable[dict] = (), schools: Iterable[dict] = (),
+                        schools_enrolment: dict[str, dict] | None = None) -> tuple[list[dict], list[dict]]:
     """Raw register rows -> (assets_in rows with coordinates, unlocated rows needing geocoding).
 
     Both lists hold CONTRACTS ``assets_in`` rows (``asset_id, name, asset_class, lon, lat, municipality``
     plus ``occupancy, occupancy_source, seasonal, class_ambiguous``); ``unlocated`` rows have
     ``lon``/``lat`` None and an ``address`` string for the geocoder.
+
+    ``schools_enrolment`` is the mapping returned by :func:`schools_enrolment`; school rows it covers
+    get ``occupancy`` (enrolled pupils), ``occupancy_source="enrolment"`` and the ``occupancy_register``
+    / ``occupancy_period`` the figure came from. Schools it does not cover keep ``occupancy`` null.
     """
     assets, unlocated = [], []
     for register, rows in (("equipaments", equipaments), ("care_homes", care_homes),
                            ("campsites", campsites), ("schools", schools)):
         for row in rows:
-            a = _asset_row(register, row)
+            a = _asset_row(register, row, schools_enrolment)
             if a is None:
                 continue
             (assets if a["lon"] is not None else unlocated).append(a)

@@ -1,6 +1,6 @@
-"""FireLine analyst screen (readme 9, CONTRACTS 7): map, ranked table, review queue, selected asset
-with score breakdown and agent proposals, task controls, change log. One screen; "Next update" walks
-the snapshot sequence through the store.
+"""FireLine analyst screen (readme 9, CONTRACTS 7): map, ranked table (remaining evacuation window),
+review queue, selected asset with the timing breakdown and agent proposals, task controls, change log.
+One screen; "Next update" walks the snapshot sequence through the store.
 
     FIRELINE_DB=data/fireline.sqlite .venv/bin/streamlit run fireline/app.py
 
@@ -20,7 +20,9 @@ st.set_page_config(page_title="FireLine", layout="wide", page_icon=":fire:")
 
 STATUS_COLOUR = {"current": "green", "stale": "orange", "unavailable": "red"}
 GREY = [150, 150, 150, 200]
-DEFAULT_SCENARIO = "synthetic_gavarres"
+RED, ORANGE, YELLOW = [200, 30, 30, 230], [240, 140, 20, 230], [235, 210, 40, 230]
+SMALL_WINDOW_MIN = config.CONTACT_POLICY["attention_min"]   # "small window" threshold shared with task flagging
+DEFAULT_SCENARIO = "gavarres_real"      # the real-area scenario opens first; the synthetic one stays selectable
 
 
 # ----------------------------------------------------------------------------- helpers
@@ -58,12 +60,22 @@ def people(asset: dict) -> str:
     return "unknown"
 
 
-def score_colour(score: float | None) -> list[int]:
-    """Yellow (0) -> red (1) ramp; grey when the asset is not scored."""
-    if score is None:
+def window_colour(asset: dict) -> list[int]:
+    """Red = window exhausted, orange = small remaining window (< SMALL_WINDOW_MIN), yellow = larger
+    window, grey = unranked (needs review: no forecast or evacuation estimate)."""
+    slack = asset.get("slack_min")
+    if slack is None or asset.get("queue") != "ranked":
         return GREY
-    s = max(0.0, min(1.0, float(score)))
-    return [220, int(200 * (1 - s)), 30, 230]
+    if asset.get("priority_status") == "window_exhausted":
+        return RED
+    return ORANGE if float(slack) < SMALL_WINDOW_MIN else YELLOW
+
+
+def fmt_window(asset: dict) -> str:
+    slack = asset.get("slack_min")
+    if slack is None:
+        return "unranked (needs review)"
+    return f"rank {asset['priority_rank']}, remaining window {slack:.0f} min ({asset['priority_status']})"
 
 
 def try_action(label: str, fn, *args, **kwargs) -> bool:
@@ -80,10 +92,12 @@ def try_action(label: str, fn, *args, **kwargs) -> bool:
 
 
 # ----------------------------------------------------------------------------- map
-def polygon_rows(geometry: dict) -> list[dict]:
+def polygon_rows(geometry: dict, geometry_kind: str | None = None) -> list[dict]:
     kind = geometry.get("type")
     polys = [geometry["coordinates"]] if kind == "Polygon" else geometry["coordinates"] if kind == "MultiPolygon" else []
-    return [{"polygon": rings, "tip": "fire perimeter (surveyed/synthetic footprint)"} for rings in polys]
+    tip = ("simulated burned area (fire-spread run), not an observed perimeter" if geometry_kind == "simulated"
+           else "fire perimeter (surveyed/synthetic footprint)")
+    return [{"polygon": rings, "tip": tip} for rings in polys]
 
 
 def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
@@ -91,16 +105,18 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
     layers, lons, lats = [], [], []
     geometry = snap.get("fire_geometry")
     if geometry and geometry.get("type") in ("Polygon", "MultiPolygon"):
-        rows = polygon_rows(geometry)
+        rows = polygon_rows(geometry, snap.get("fire_geometry_kind"))
         layers.append(pdk.Layer("PolygonLayer", data=rows, get_polygon="polygon", get_fill_color=[160, 20, 20, 90],
                                 get_line_color=[140, 0, 0], line_width_min_pixels=2, stroked=True, filled=True,
                                 pickable=True))
         for rings in (r["polygon"] for r in rows):
             for x, y in rings[0]:
-                lons.append(x), lats.append(y)
+                lons.append(x)
+                lats.append(y)
     elif geometry and geometry.get("type") == "Point":
         x, y = geometry["coordinates"][:2]
-        lons.append(x), lats.append(y)
+        lons.append(x)
+        lats.append(y)
         layers.append(pdk.Layer("ScatterplotLayer",
                                 data=[{"lon": x, "lat": y, "tip": "hotspot centre, not a surveyed perimeter"}],
                                 get_position=["lon", "lat"], get_radius=600, radius_min_pixels=14, filled=False,
@@ -109,12 +125,12 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
     for a in sess.assets_in_order():
         if a.get("latitude") is None or a.get("longitude") is None:
             continue
-        lons.append(a["longitude"]), lats.append(a["latitude"])
-        rank = f"rank {a['priority_rank']}, score {a['priority_score']:.3f}" if a["priority_score"] is not None \
-            else "needs review (not scored)"
-        points.append({"lon": a["longitude"], "lat": a["latitude"], "color": score_colour(a["priority_score"]),
-                       "tip": f"<b>{a['name']}</b> ({a['asset_type']})<br/>{rank}<br/>distance "
-                              f"{fmt(a.get('distance_to_fire_m'))} m; people {people(a)}<br/>"
+        lons.append(a["longitude"])
+        lats.append(a["latitude"])
+        points.append({"lon": a["longitude"], "lat": a["latitude"], "color": window_colour(a),
+                       "tip": f"<b>{a['name']}</b> ({a['asset_type']})<br/>{fmt_window(a)}<br/>arrival "
+                              f"{a.get('fire_arrival_at') or 'no forecast'}; evacuation {fmt(a.get('evacuation_min'))} min"
+                              f"<br/>distance {fmt(a.get('distance_to_fire_m'))} m; people {people(a)}<br/>"
                               f"{', '.join(a.get('review_reasons') or []) or 'no review flags'}"})
     layers.append(pdk.Layer("ScatterplotLayer", data=points, get_position=["lon", "lat"], get_fill_color="color",
                             get_radius=150, radius_min_pixels=6, pickable=True, stroked=True,
@@ -137,28 +153,45 @@ def open_task_counts(sess: Session) -> dict[str, int]:
 def ranked_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFrame:
     return pd.DataFrame([{
         "rank": a["priority_rank"], "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
-        "distance m": a.get("distance_to_fire_m"), "intersects": a.get("intersects_fire"), "people": people(a),
-        "value": a.get("value_score"), "score": a["priority_score"],
-        "review reasons": ", ".join(a.get("review_reasons") or []), "open tasks": open_counts.get(a["asset_id"], 0),
-        "asset_id": a["asset_id"],
+        "distance m": a.get("distance_to_fire_m"), "predicted arrival": a.get("fire_arrival_at"),
+        "forecast source": a.get("forecast_source"),
+        "evacuation min": a.get("evacuation_min"), "latest start (min from now)": a.get("latest_start_min"),
+        "remaining window (min)": a.get("slack_min"), "status": a.get("priority_status"),
+        "review flags": ", ".join(a.get("review_reasons") or []), "people": people(a),
+        "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
     } for a in assets])
 
 
 def review_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFrame:
     return pd.DataFrame([{
         "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
-        "known distance m": a.get("distance_to_fire_m"), "people": people(a),
+        "known distance m": a.get("distance_to_fire_m"), "predicted arrival": a.get("fire_arrival_at"),
+        "evacuation min": a.get("evacuation_min"), "people": people(a),
         "reasons": ", ".join(a.get("review_reasons") or []),
-        "not scored because": next((r for r in a["priority_reasons"] if r.startswith("needs review")), ""),
+        "not ranked because": next((r for r in a["priority_reasons"] if r.startswith("needs review")), ""),
         "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
     } for a in assets])
 
 
 def components_frame(asset: dict) -> pd.DataFrame:
-    rows = []
-    for name, c in asset["score_components"].items():
-        rows.append({"component": name, "value": c["value"], "weight": c["weight"],
-                     "input": ", ".join(f"{k}={v}" for k, v in c["input"].items()), "proxy": c["proxy"] or ""})
+    """Timing breakdown: arrival (+ basis, forecast source, horizon), evacuation (+ source), buffer, now."""
+    c = asset.get("window_components") or {}
+    rows = [
+        {"component": "predicted fire arrival", "value": c.get("fire_arrival_at") or "unknown",
+         "basis / source": f"{c.get('fire_arrival_basis') or 'basis unstated'}; forecast {c.get('forecast_source') or 'none'}"
+                           + (f", horizon {c['forecast_horizon_at']}" if c.get("forecast_horizon_at") else ""),
+         "minutes from now": asset.get("time_to_impact_min")},
+        {"component": "total evacuation duration", "value": fmt(c.get("evacuation_min")) + " min" if c.get("evacuation_min") is not None else "unknown",
+         "basis / source": c.get("evacuation_source") or "none", "minutes from now": None},
+        {"component": "buffer", "value": f"{fmt(c.get('buffer_min'))} min",
+         "basis / source": asset.get("priority_policy_version"), "minutes from now": None},
+        {"component": "now (window epoch)", "value": c.get("now_at"), "basis / source": config.CONTACT_POLICY["now"],
+         "minutes from now": 0.0},
+        {"component": "latest start", "value": fmt(asset.get("latest_start_min")) + " min" if asset.get("latest_start_min") is not None else "-",
+         "basis / source": "arrival - evacuation - buffer", "minutes from now": asset.get("latest_start_min")},
+        {"component": "remaining window", "value": fmt(asset.get("slack_min")) + " min" if asset.get("slack_min") is not None else "-",
+         "basis / source": asset.get("priority_status"), "minutes from now": asset.get("slack_min")},
+    ]
     return pd.DataFrame(rows)
 
 
@@ -217,9 +250,9 @@ def sidebar(sess: Session) -> None:
         f"data status now :{colour}[**{s['data_status_now']}**] (recorded in snapshot: {s['data_status_recorded']})  \n"
         f"source age: {fmt_age(s['source_age_s'])} at computation, {fmt_age(s['source_age_now_s'])} now  \n"
         f"processing time {fmt(s['processing_s'], 1)} s (receipt to snapshot)")
-    with st.sidebar.expander("Priority and value policy"):
-        st.json({"PRIORITY_POLICY": config.PRIORITY_POLICY, "VALUE_POLICY": config.VALUE_POLICY,
-                 "FRESHNESS": config.FRESHNESS})
+    with st.sidebar.expander("Contact, evacuation and value policy"):
+        st.json({"CONTACT_POLICY": config.CONTACT_POLICY, "EVACUATION_POLICY": config.EVACUATION_POLICY,
+                 "VALUE_POLICY": config.VALUE_POLICY, "FRESHNESS": config.FRESHNESS})
     with st.sidebar.expander("Team roster"):
         busy = {t["assigned_team_id"] for t in sess.open_tasks() if t["assigned_team_id"]}
         st.dataframe(pd.DataFrame([{"team": t["team_id"], "name": t["name"], "capabilities": ", ".join(t["capabilities"]),
@@ -318,21 +351,36 @@ def render_task(sess: Session, t: dict, team_ids: list[str], team_names: dict[st
             st.rerun()
 
 
+def render_evacuation_control(sess: Session, asset: dict) -> None:
+    """Analyst-entered total evacuation duration with its source: persisted as a confirmed override."""
+    aid = asset["asset_id"]
+    with st.form(f"evac-{aid}", clear_on_submit=False):
+        st.markdown("**Set evacuation duration (min) + source**")
+        c1, c2 = st.columns([1, 2])
+        current = asset.get("evacuation_min")
+        minutes = c1.number_input("Total evacuation duration (min)", min_value=0.0, step=5.0,
+                                  value=float(current) if current is not None else 0.0)
+        source = c2.text_input("Source (who confirmed it, how)", placeholder="phone call with the director, evacuation plan ...")
+        snippet = st.text_input("Quoted evidence (optional)", placeholder="'the full evacuation takes about two hours'")
+        confidence = st.selectbox("Confidence", ["low", "medium", "high"], index=1)
+        if st.form_submit_button("Confirm evacuation duration and re-rank") and try_action(
+                "evacuation override", sess.set_evacuation, aid, minutes, source, snippet, confidence):
+            st.rerun()
+
+
 def render_selected(sess: Session, asset: dict) -> None:
     aid = asset["asset_id"]
-    rank = f"rank {asset['priority_rank']}, score {asset['priority_score']:.4f}" if asset["priority_score"] is not None \
-        else "needs review, not scored"
-    st.subheader(f"{asset['name']} - {asset['asset_type']} - {rank}")
+    st.subheader(f"{asset['name']} - {asset['asset_type']} - {fmt_window(asset)}")
     st.caption(f"`{aid}` - {asset.get('municipality') or 'municipality unknown'} - distance "
                f"{fmt(asset.get('distance_to_fire_m'))} m - intersects {asset.get('intersects_fire')} - people {people(asset)}"
                f" ({asset.get('occupancy_basis') or 'no basis'}) - policy {asset['priority_policy_version']}")
     left, right = st.columns(2)
     with left:
-        st.markdown("**Score components**")
-        st.dataframe(components_frame(asset), width="stretch", hide_index=True)
-        st.markdown("**Priority reasons**")
+        st.markdown("**Timing breakdown** (window = arrival - evacuation - buffer, relative to now)")
         for r in asset["priority_reasons"]:
             st.write(f"- {r}")
+        st.dataframe(components_frame(asset), width="stretch", hide_index=True)
+        render_evacuation_control(sess, asset)
         age = priority.input_age(asset, sess.clock())
         st.markdown(f"**Input age**: oldest observed `{age['oldest_observed_at'] or 'unknown'}` "
                     f"({fmt_age(age['oldest_observed_age_s'])}); newest fetched `{age['newest_fetched_at'] or 'unknown'}` "
@@ -373,26 +421,37 @@ def main() -> None:
     s = sess.status()
     c = s["counts"]
     st.title(f"FireLine - {s['scenario_id']} - {s['as_of']}")
-    st.caption("Priority is for analyst attention, not physical risk. Distance-based exposure is not burn "
-               "probability or time to impact. Recommendations, not orders.")
-    m = st.columns(5)
+    st.caption(f"Contact priority is the remaining evacuation window: forecast arrival - total evacuation duration "
+               f"- buffer ({s['buffer_min']} min), relative to the snapshot time {s['now_at']}. A zero or negative "
+               "window means immediate analyst review, not an evacuation instruction. Forecast and evacuation "
+               "estimates are the producer's / policy's inputs, not validated predictions. Arrivals whose forecast "
+               "source says 'labelled enrichment, not validated' come from an uncalibrated spread model seeded on the "
+               "observed perimeter, not from a provider forecast. Recommendations, not orders.")
+    m = st.columns(6)
     m[0].metric("Ranked", c["ranked"])
-    m[1].metric("Needs review", c["needs_review"], help="unknown required input; investigation queue")
-    m[2].metric("Open tasks", c["open_tasks"])
-    m[3].metric("Pending proposals", c["pending_proposals"])
-    m[4].metric("Open questions", c["open_questions"])
+    m[1].metric("Window exhausted", c["window_exhausted"], help="remaining window <= 0; review first")
+    m[2].metric("Needs review", c["needs_review"],
+                help=f"unranked: {c['forecast_unavailable']} without forecast, {c['evacuation_unknown']} without evacuation estimate")
+    m[3].metric("Open tasks", c["open_tasks"])
+    m[4].metric("Pending proposals", c["pending_proposals"])
+    m[5].metric("Open questions", c["open_questions"])
 
     deck, unlocated = build_deck(sess)
     st.pydeck_chart(deck, width="stretch")
     st.caption(f"{c['assets'] - unlocated} located assets shown; {unlocated} unlocated assets are not on the map "
-               f"(see needs-review queue). Colour: yellow (low) to red (high) priority score; grey = not scored. "
-               f"Fire: {s['fire_geometry_kind']} from {s['fire_source']}.")
+               f"(see needs-review queue). Colour by remaining window: red = exhausted (<= 0 min), orange = under "
+               f"{SMALL_WINDOW_MIN} min, yellow = {SMALL_WINDOW_MIN} min or more, grey = unranked (no forecast or "
+               f"evacuation estimate). Fire: {s['fire_geometry_kind']} from {s['fire_source']}.")
 
     open_counts = open_task_counts(sess)
     st.subheader(f"Ranked assets ({c['ranked']})")
+    st.caption("Smallest remaining window first, then earlier predicted arrival, nearer distance, asset id. "
+               "A farther asset can rank higher when the fire reaches it sooner or its evacuation takes longer.")
     st.dataframe(ranked_frame(sess.scored["ranked"], open_counts), width="stretch", hide_index=True)
     st.subheader(f"Needs-review queue ({c['needs_review']})")
-    st.caption("Unknown exposure first, then by known distance. An investigation queue, not an assertion of highest risk.")
+    st.caption("Unranked: no forecast arrival (forecast_unavailable, a producer gap) or no evacuation estimate "
+               "(evacuation_unknown, confirm with the facility or set it on the selected asset). Unknown exposure "
+               "first, then by known distance. An investigation queue, not an assertion of highest risk.")
     st.dataframe(review_frame(sess.scored["needs_review"], open_counts), width="stretch", hide_index=True)
     if sess.scored["flagged"]:
         st.caption(f"Ranked assets that still carry review flags ({len(sess.scored['flagged'])}):")

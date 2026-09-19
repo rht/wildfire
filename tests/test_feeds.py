@@ -169,14 +169,18 @@ def test_registers_to_assets_maps_each_register():
     camps = [{"n_mero_inscripci": "KG-000123", "r_tol": "Càmping Pins", "total_places": "600",
               "tipus_establiment": "Càmpings", "municipi": "Calonge i Sant Antoni", "nom_de_la_via": "Ctra. X"}]
     schools = [{"codi_centre": "17000001", "denominaci_completa": "Escola Gavarres", "curs": "2025/2026",
-                "nom_municipi": "Cassà de la Selva", "coordenades_geo_x": "2.8741", "coordenades_geo_y": "41.8895"}]
+                "nom_municipi": "Cassà de la Selva", "coordenades_geo_x": "2.8741", "coordenades_geo_y": "41.8895"},
+               {"codi_centre": "17000002", "denominaci_completa": "Esc. de Música Municipal", "curs": "2025/2026",
+                "nom_municipi": "Cassà de la Selva", "coordenades_geo_x": "2.87", "coordenades_geo_y": "41.89"}]
     equip = [{"idequipament": "1", "nom": "Hospital de Palamós", "categoria": "Salut|Centres sanitaris|3. Hospitals|",
               "poblacio": "Palamós", "longitud": "3.13", "latitud": "41.85"},
              {"idequipament": "2", "nom": "CAP", "categoria": "Salut|Centres sanitaris|1. Centres d'atenció primària (CAP)|",
               "poblacio": "Palamós", "longitud": "3.13", "latitud": "41.85"}]
-    assets, unlocated = feeds.registers_to_assets(equip, care, camps, schools)
+    assets, unlocated = feeds.registers_to_assets(equip, care, camps, schools,
+                                                  {"17000001": {"pupils": 312, "curs": "2024/2025"}})
     by_id = {a["asset_id"]: a for a in assets + unlocated}
-    assert set(by_id) == {"care_homes:S01", "campsites:KG-000123", "schools:17000001", "equipaments:1"}
+    assert set(by_id) == {"care_homes:S01", "campsites:KG-000123", "schools:17000001", "schools:17000002",
+                          "equipaments:1"}
     care_home = by_id["care_homes:S01"]
     assert care_home["asset_class"] == "care_home" and care_home["occupancy"] == 48
     assert care_home["occupancy_source"] == "register" and care_home["lon"] is None
@@ -185,13 +189,46 @@ def test_registers_to_assets_maps_each_register():
     assert campsite["asset_class"] == "campsite" and campsite["occupancy"] == 600 and campsite["seasonal"]
     assert campsite in unlocated
     school = by_id["schools:17000001"]
-    assert school["asset_class"] == "school" and school["occupancy"] is None
-    assert school["occupancy_source"] == "unknown" and (school["lon"], school["lat"]) == (2.8741, 41.8895)
+    assert school["asset_class"] == "school" and (school["lon"], school["lat"]) == (2.8741, 41.8895)
     assert school in assets and school["municipality"] == "Cassà de la Selva"
+    # the schools directory has no occupancy column: pupils come from the enrolment register
+    assert school["occupancy"] == 312 and school["occupancy_source"] == "enrolment"
+    assert school["occupancy_register"] == "schools_enrolment" and school["occupancy_period"] == "2024/2025"
+    unmatched = by_id["schools:17000002"]
+    assert unmatched["occupancy"] is None and unmatched["occupancy_source"] == "unknown"
+    assert "occupancy_register" not in unmatched
     hospital = by_id["equipaments:1"]
     assert hospital["asset_class"] == "hospital" and hospital in assets
     for a in assets + unlocated:
         assert {"asset_id", "name", "asset_class", "lon", "lat", "municipality"} <= set(a)
+
+
+def test_schools_enrolment_sums_per_centre_and_falls_back_a_year(cache_dir, fake_get):
+    by_year = {"2025/2026": [{"codi_centre": "17000001", "pupils": "635"}],
+               "2024/2025": [{"codi_centre": "17000001", "pupils": "600"},
+                             {"codi_centre": "17000009", "pupils": "84"}]}
+
+    def handler(url, params):
+        year = params["$where"].split("'")[1]
+        return FakeResponse(by_year[year] if params["$offset"] == 0 else [])
+
+    fake_get["handler"] = handler
+    out = feeds.schools_enrolment(comarques=["Gironès"])
+    # the current year wins where it lists the centre; the previous one only fills what it misses
+    assert out == {"17000001": {"pupils": 635, "curs": "2025/2026"},
+                   "17000009": {"pupils": 84, "curs": "2024/2025"}}
+    url, params = fake_get["calls"][0]
+    assert url.endswith("xvme-26kg.json")
+    assert params["$group"] == "codi_centre" and params["$order"] == "codi_centre"
+    assert params["$select"] == "codi_centre, sum(matr_cules_total) as pupils"
+    assert "nom_comarca in ('Gironès')" in params["$where"]
+
+
+def test_schools_enrolment_accepts_a_single_year(cache_dir, fake_get):
+    fake_get["handler"] = lambda url, params: FakeResponse(
+        [{"codi_centre": "17000001", "pupils": "12"}] if params["$offset"] == 0 else [])
+    assert feeds.schools_enrolment(curs="2019/2020") == {"17000001": {"pupils": 12, "curs": "2019/2020"}}
+    assert len(fake_get["calls"]) == 1   # a single year is a single query
 
 
 # --------------------------------------------------------------------------- Open-Meteo

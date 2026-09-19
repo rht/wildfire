@@ -1,7 +1,7 @@
 # Gaps between the first-draft code and the v4 MVP (readme.md)
 
-Status on 2026-09-19, branch `claude/close-v4-gaps`. The first draft (`13e0b74`) was built against
-PLAN.md v3; this pass closes the v4 gaps listed below against `readme.md` and `CONTRACTS.md` v1.0.
+Status on 2026-09-19, branches `claude/close-v4-gaps` and `claude/window-ranking`. The first draft (`13e0b74`) was built against
+PLAN.md v3; this pass closes the v4 gaps listed below against `readme.md` and `CONTRACTS.md` (now v1.1).
 Every row now carries a status. Recorded check outcomes are in `VALIDATION.md`
 (`scripts/validate.py --write`).
 
@@ -20,7 +20,8 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 | `capacity`, `estimated_occupancy`, `occupancy_basis` | Closed | register occupancy becomes capacity; allocated headcounts become estimates |
 | `value_score`, `value_basis` | Closed | `config.VALUE_POLICY` (versioned prototype policy) |
 | `distance_to_fire_m`, `intersects_fire` | Closed | shapely in EPSG:25831, overlap gives 0, fallback labelled |
-| `burn_probability`, `arrival_*_at`, `forecast_*` | Closed | null by default; CA enrichment only behind `FEATURES["forecast_enrichment"]` and labelled |
+| `burn_probability`, `arrival_*_at`, `forecast_*` | Closed | filled from a `forecast-input-1` file or a Deepfire fire-spread run by `forecast_input.attach_forecast`; null with `forecast_unavailable` otherwise; CA enrichment only behind `FEATURES["forecast_enrichment"]` and labelled |
+| `fire_arrival_at`, `fire_arrival_basis`, `evacuation_min`, `evacuation_source` (v1.1) | Closed | `snapshot.asset_record` + `forecast_input`; evacuation from `config.EVACUATION_POLICY` by class with component minutes and assumptions in `sources`; unknown class -> `evacuation_unknown` |
 | `needs_review`, `review_reasons` | Closed | boolean plus reasons incl. `location_unknown`, `value_unknown`, `exposure_unknown` |
 | `sources` | Closed | field-level provenance with observed/available/fetched times |
 | Complete asset set | Closed | `fixtures/real_area/assets_gavarres.json`: 168 facilities (99 located, 69 unlocated) in the Gavarres bbox |
@@ -29,8 +30,8 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 
 | Item | Status | Where |
 |---|---|---|
-| Priority score | Closed, then superseded by `readme.md` | `priority.score_snapshot`, `config.PRIORITY_POLICY`, components shown in the UI. Implements the weighted proximity–size–value score of the pre-merge readme section 6; the merged readme (`origin/main` d0473c1) now specifies ranking by remaining evacuation window. See "Divergence from readme" below. |
-| Needs-review queue ordering | Closed | exposure unknown first, then known distance |
+| Contact priority by remaining evacuation window | Closed | `priority.rank_snapshot` / `rank_asset`, `config.CONTACT_POLICY` (now = snapshot `as_of`, buffer 30 min); shares arithmetic and ordering with `contact_priority.rank_contacts`; timing breakdown in the UI. The weighted proximity–size–value score and `PRIORITY_POLICY` are removed. |
+| Needs-review queue ordering | Closed | exposure unknown first, then known distance; missing forecast or evacuation estimate keeps an asset here |
 | Tasks | Closed | `tasks.TaskStore`, four actions, task fields per readme 7, suggestions deduplicated |
 | Team roster and availability checks | Closed | `fixtures/teams.json`; busy, capability and availability checks with explanations |
 | Persistence | Closed | SQLite (`data/fireline.sqlite`, `FIRELINE_DB`), separate from snapshots |
@@ -54,7 +55,8 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 | Fire footprint | Closed | GeoJSON `fire_geometry` with `fire_observed_at`, `fire_source`, `fire_geometry_kind`; a cluster is always a hotspot centre |
 | Stale-data status | Closed | `fire_input.data_status`, `config.FRESHNESS`; shown recorded and recomputed in the UI |
 | Latency measurement | Closed | `fire_input.measure_update`; source age and processing time reported separately (VALIDATION.md) |
-| CA spread ensemble | Deferred | `FEATURES["spread_ca"]`, `["forecast_enrichment"]` off |
+| Deepfire fire-spread | Partial | `forecast_input.deepfire_spread_to_forecast` verified on two real recorded runs (2026-09-19). Runs are seeded from current hotspots only: the July incident cannot be re-run (422), so no provider forecast covers the recorded July snapshots (they use the labelled CA enrichment, next row). `gavarres_real_0004` uses a real run seeded at the July centroid; it reaches no facility in 12 h. |
+| CA spread ensemble | Partial (labelled enrichment) | Global `FEATURES["spread_ca"]`, `["forecast_enrichment"]` stay off. `scripts/make_snapshots.py` runs the v0 `spread.run_ca` ensemble (uncalibrated `config.CA`, no fuel/slope, 100 m cells, 20 runs, 12 h, seed 0) seeded from each real July perimeter with the real recorded Open-Meteo previous-runs wind in `fixtures/wind/` (one sample per snapshot) and attaches it through `snapshot._enrich_forecast` with a cfg shim for `gavarres_real_0001..0003` only. Reached assets (18 / 65 / 94 of 99 located) get `fire_arrival_at = arrival_p10_at` with `forecast_source = "ca_ensemble (labelled enrichment, not validated)"`; the rest stay `forecast_unavailable`. Known bias: the CA spreads much faster than the real fire (p50 ~10,000 ha at 12 h vs real 1,263 -> 3,867 ha over ~17 h). Not a provider forecast, not validated. |
 | Routing, cut roads, destinations | Deferred | `FEATURES["routing"]` off |
 | Confine / evacuate rule | Deferred | `FEATURES["decisions"]` off |
 | Wind what-if | Deferred | only in the v0 `scripts/precompute.py` demo |
@@ -64,7 +66,7 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 
 | Item | Status | Where |
 |---|---|---|
-| Score breakdown panel | Closed | selected-asset components, reasons, input age, sources |
+| Timing breakdown panel | Closed | selected-asset arrival, evacuation duration, buffer, latest start, remaining window, reasons, input age, sources; analyst evacuation-duration override |
 | Team and task controls | Closed | create, assign with roster checks, progress, block, deadline, release |
 | Input mode and timestamps | Closed | sidebar: mode, `as_of`, `computed_at`, status badge, source age, processing time |
 | Map, ranked table, review queue, change log | Closed | `fireline/app.py`, logic in `fireline/ui_state.py` |
@@ -75,30 +77,27 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 |---|---|---|
 | Branching | Closed | this work is on `claude/close-v4-gaps` in `.worktrees/close-v4-gaps`, pushed with upstream tracking |
 | Superpowers workflow | Open | not installed in this session either; the brainstorm, plan, verify sequence was followed manually |
-| Reference document | Closed | `readme.md` owns scope; `CONTRACTS.md` v1.0 restates its section 5; AGENTS.md points at both |
+| Reference document | Closed | `readme.md` owns scope; `CONTRACTS.md` v1.1 restates its section 5; AGENTS.md points at both |
 | Two readmes | Closed | `QUICKSTART.md` merged into `readme.md` section 0 |
 
-## Divergence from readme after merging `origin/main` (d0473c1, 2026-09-19)
+## Divergence from readme after merging `origin/main` (d0473c1) — resolved on `claude/window-ranking`
 
-Marked here rather than silently reconciled. `readme.md` owns scope; the code on this branch has not
-been changed to match the new scope yet.
-
-| readme (main) now says | Code on this branch still does |
-|---|---|
-| Section 6: contact order by `remaining_window = (predicted_fire_arrival - total_evacuation_duration - buffer) - now`, smallest first; a forecast is **required**; missing forecast/evacuation duration -> unranked review; "this replaces the weighted contact score". | `priority.score_snapshot` ranks by `w_proximity * proximity + w_size * size + w_value * value` (`config.PRIORITY_POLICY`), review queue when a component is unknown. |
-| Section 5: asset keys `fire_arrival_at`, `fire_arrival_basis`, `evacuation_min`, `evacuation_source`; `forecast_horizon_at`/`forecast_source` are required provenance for ranking. | `CONTRACTS.md` v1.0 and `snapshot.asset_record` carry none of these four keys; forecast fields are null unless `FEATURES["forecast_enrichment"]` is on. |
-| Sections 8–9, 11–12: "recalculate the remaining evacuation window", "timing breakdown", validate "forecast arrival minus elapsed time". | Overrides recalculate the score; the UI shows the score breakdown; `scripts/validate.py` / `VALIDATION.md` "Priority" checks weight normalisation and monotonicity. |
-| Section 16: `forecast-evacuation-window-v2` is implemented in `fireline/contact_priority.py` (`rank_contacts`, `ContactPolicy`) over `priority_models.Location` in minutes from a scenario epoch. | That module is a standalone API/CLI prototype (`scripts/static_priorities.py`, `fixtures/static_priority.json`); it is not wired to snapshots, `tasks.py`, `agent.py` or `app.py`, as section 16 itself states. |
+The merged readme section 6 (contact order by remaining evacuation window) is now what the snapshot
+pipeline implements. Decisions taken on 2026-09-19: forecast from Deepfire fire-spread where a run
+exists, else a labelled recorded/synthetic forecast file; evacuation duration from a class-based,
+analyst-overridable prototype policy; "now" = snapshot `as_of` with a 30 min buffer; the weighted
+score removed rather than kept behind a flag. `CONTRACTS.md` is v1.1; `scripts/validate.py` Priority
+checks the window arithmetic; `VALIDATION.md` is regenerated.
 
 ## Still open after this pass
 
 1. Run one live investigation (`scripts/investigate.py --record --asset fixture:pou_del_glac`) and
    replace the FakeLLM fixture; hold out examples before tuning the prompt.
-2. Real-area ranking is empty: no located register row carries a capacity, so every real asset sits
-   in the review queue until capacities are sourced or confirmed. Disclosed in `VALIDATION.md`.
+2. Real-area occupancy: no located register row carries a capacity or headcount, so occupancy stays
+   an investigation item even where a forecast exists. Disclosed in `VALIDATION.md`.
 3. Install Superpowers for the next session.
-4. Bring the snapshot pipeline onto the merged readme section 6: extend the contract (v1.1) with
-   `fire_arrival_at`, `fire_arrival_basis`, `evacuation_min`, `evacuation_source` and their sources;
-   port `contact_priority.rank_contacts` onto snapshot assets (timestamps converted to one epoch);
-   replace the weighted ranking in `priority.score_snapshot`, the UI breakdown and the `validate.py`
-   Priority check; keep the review queue for missing forecast or evacuation estimates.
+4. Real-area ranking currently comes from the labelled, uncalibrated CA enrichment on
+   `gavarres_real_0001..0003` (section 4), which over-predicts spread. The preferred closure is still a
+   Deepfire fire-spread run: a live run on a current cluster in the bbox (or Deepfire's own `auto` runs,
+   listed every few hours) fed through `forecast_input.deepfire_spread_to_forecast`, or a recorded run
+   that actually reaches facilities; the only recorded runs seeded at the July centroid reach none.

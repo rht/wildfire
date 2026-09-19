@@ -1,5 +1,5 @@
 {
- "schema_version": "1.0",
+ "schema_version": "1.1",
  "scenario_id": "synthetic_gavarres",
  "incident_id": "synthetic-bisbal-2026-07-03",
  "snapshot_id": "synthetic_gavarres-0002",
@@ -118,11 +118,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 0.0,
    "intersects_fire": true,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 1.0,
+   "arrival_p10_at": "2026-07-03T10:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T10:00:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T10:00:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
@@ -156,6 +160,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class camp: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory children with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -164,6 +179,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "la Bisbal d'Empordà"
@@ -183,11 +214,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 0.0,
    "intersects_fire": true,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 1.0,
+   "arrival_p10_at": "2026-07-03T10:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T10:00:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T10:00:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 105.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": false,
    "review_reasons": [],
    "sources": [
@@ -229,6 +264,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class nucleus: mobilisation 30 min, preparation 45 min, movement 30 min = 105 min; assumptions: residents mostly self-evacuating; door-to-door notification; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -237,6 +283,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "la Bisbal d'Empordà"
@@ -256,11 +318,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 676.8,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 0.95,
+   "arrival_p10_at": "2026-07-03T10:45:00+00:00",
+   "arrival_p50_at": "2026-07-03T11:10:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T10:45:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 60.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": false,
    "review_reasons": [],
    "sources": [
@@ -302,6 +368,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class masia: mobilisation 15 min, preparation 15 min, movement 30 min = 60 min; assumptions: single household with own vehicle; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -310,6 +387,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
@@ -329,11 +422,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 5639.8,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 0.85,
+   "arrival_p10_at": "2026-07-03T12:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T12:45:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T12:00:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 70.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "class_ambiguous"
@@ -377,6 +474,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class campsite: mobilisation 20 min, preparation 20 min, movement 30 min = 70 min; assumptions: self-evacuating guests with own vehicles; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -385,6 +493,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -404,11 +528,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7807.6,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 0.7,
+   "arrival_p10_at": "2026-07-03T13:30:00+00:00",
+   "arrival_p50_at": "2026-07-03T14:40:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T13:30:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 105.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": false,
    "review_reasons": [],
    "sources": [
@@ -450,6 +578,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class nucleus: mobilisation 30 min, preparation 45 min, movement 30 min = 105 min; assumptions: residents mostly self-evacuating; door-to-door notification; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -458,6 +597,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -482,8 +637,14 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
-   "needs_review": false,
-   "review_reasons": [],
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "forecast_unavailable"
+   ],
    "sources": [
     {
      "fields": [
@@ -523,6 +684,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -550,11 +722,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 1196.9,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 0.4,
+   "arrival_p10_at": "2026-07-03T15:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T17:00:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T15:00:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown"
@@ -587,6 +763,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -595,6 +782,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "la Bisbal d'Empordà"
@@ -614,11 +817,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 1228.7,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 0.65,
+   "arrival_p10_at": "2026-07-03T12:30:00+00:00",
+   "arrival_p50_at": "2026-07-03T13:30:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T12:30:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_seasonal"
@@ -662,6 +869,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class school: mobilisation 20 min, preparation 30 min, movement 40 min = 90 min; assumptions: ambulatory pupils with staff; buses assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -670,6 +888,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
@@ -689,11 +923,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11449.4,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 0.5,
+   "arrival_p10_at": "2026-07-03T16:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T17:30:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T16:00:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": false,
    "review_reasons": [],
    "sources": [
@@ -735,6 +973,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class hospital: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted patients; ambulances and staff assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -743,6 +992,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "Palamós"
@@ -762,11 +1027,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 4292.0,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 0.25,
+   "arrival_p10_at": "2026-07-03T18:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T20:00:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T18:00:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 105.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": false,
    "review_reasons": [],
    "sources": [
@@ -808,6 +1077,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class nucleus: mobilisation 30 min, preparation 45 min, movement 30 min = 105 min; assumptions: residents mostly self-evacuating; door-to-door notification; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -816,6 +1096,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
@@ -835,11 +1131,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 4225.1,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 0.25,
+   "arrival_p10_at": "2026-07-03T18:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T20:00:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T18:00:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 105.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": false,
    "review_reasons": [],
    "sources": [
@@ -881,6 +1181,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class nucleus: mobilisation 30 min, preparation 45 min, movement 30 min = 105 min; assumptions: residents mostly self-evacuating; door-to-door notification; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -889,6 +1200,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
@@ -908,11 +1235,15 @@
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 6670.6,
    "intersects_fire": false,
-   "burn_probability": null,
-   "arrival_p10_at": null,
-   "arrival_p50_at": null,
-   "forecast_horizon_at": null,
-   "forecast_source": null,
+   "burn_probability": 0.8,
+   "arrival_p10_at": "2026-07-03T13:00:00+00:00",
+   "arrival_p50_at": "2026-07-03T14:00:00+00:00",
+   "forecast_horizon_at": "2026-07-03T22:00:00+00:00",
+   "forecast_source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+   "fire_arrival_at": "2026-07-03T13:00:00+00:00",
+   "fire_arrival_basis": "p10",
+   "evacuation_min": 105.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "occupancy_seasonal"
@@ -956,6 +1287,17 @@
     },
     {
      "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class nucleus: mobilisation 30 min, preparation 45 min, movement 30 min = 105 min; assumptions: residents mostly self-evacuating; door-to-door notification; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
       "distance_to_fire_m",
       "intersects_fire"
      ],
@@ -964,6 +1306,22 @@
      "available_at": "2026-07-03T10:00:00+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "fixture:synthetic_forecast (hand-designed per-asset arrival times)",
+     "observed_at": "2026-07-03T10:00:00+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
    "municipality": "Calonge i Sant Antoni"
@@ -988,10 +1346,15 @@
    "arrival_p50_at": null,
    "forecast_horizon_at": null,
    "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 180.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
     "location_unknown",
-    "exposure_unknown"
+    "exposure_unknown",
+    "forecast_unavailable"
    ],
    "sources": [
     {
@@ -1027,6 +1390,17 @@
      "available_at": null,
      "fetched_at": null,
      "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class care_home: mobilisation 30 min, preparation 90 min, movement 60 min = 180 min; assumptions: assisted residents; bus and ambulance transport assumed available; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
     },
     {
      "fields": [

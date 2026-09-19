@@ -8,14 +8,18 @@ work, but never changes owners or status. Only the analyst marks a task done or 
 from __future__ import annotations
 
 import json
+import math
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fireline import config
+from fireline import config, priority
 from fireline.priority import SnapshotSequence
 
 STATUSES = ("open", "assigned", "in_progress", "blocked", "done")
+EVACUATION_UNKNOWN = priority.EVACUATION_UNKNOWN
+EVACUATION_TASK_REASON = ("evacuation duration unknown: the total evacuation duration must be confirmed with the "
+                          "facility (mobilisation, preparation/loading, movement)")
 ACTIVE_STATUSES = ("assigned", "in_progress", "blocked")   # a team holding one of these is busy
 ACTIONS = tuple(config.TASK_ACTIONS)
 
@@ -96,6 +100,9 @@ CREATE TABLE IF NOT EXISTS asset_exposure (
     intersects_fire INTEGER,
     needs_review INTEGER,
     review_reasons TEXT NOT NULL,
+    fire_arrival_at TEXT,
+    priority_status TEXT,
+    slack_min REAL,
     snapshot_id TEXT,
     present INTEGER NOT NULL DEFAULT 1,
     PRIMARY KEY (scenario_id, asset_id)
@@ -125,6 +132,10 @@ def _iso(value) -> str | None:
     if isinstance(value, datetime):
         return (value if value.tzinfo else value.replace(tzinfo=timezone.utc)).isoformat()
     return str(value)
+
+
+def _fmt_window(value) -> str:
+    return "unranked" if value is None else f"{float(value):.0f} min"
 
 
 def _row_to_task(row: sqlite3.Row) -> dict:
@@ -158,6 +169,7 @@ class TaskStore:
         self.conn = sqlite3.connect(self.path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
+        self._migrate()
         self.conn.commit()
         self.sequence = SnapshotSequence()
         for row in self.conn.execute("SELECT scenario_id, last_sequence, last_snapshot_id FROM scenario_sequence"):
@@ -168,6 +180,13 @@ class TaskStore:
 
     def close(self) -> None:
         self.conn.close()
+
+    def _migrate(self) -> None:
+        """Add the v1.1 window columns to an asset_exposure table created by an earlier version."""
+        have = {row["name"] for row in self.conn.execute("PRAGMA table_info(asset_exposure)")}
+        for column, kind in (("fire_arrival_at", "TEXT"), ("priority_status", "TEXT"), ("slack_min", "REAL")):
+            if column not in have:
+                self.conn.execute(f"ALTER TABLE asset_exposure ADD COLUMN {column} {kind}")
 
     # -- internals ---------------------------------------------------------------------------
 
@@ -269,6 +288,9 @@ class TaskStore:
                 wanted.append(("contact_facility", "location unknown"))
             elif "exposure_unknown" in reasons and asset.get("latitude") is not None:
                 wanted.append(("contact_facility", "exposure unknown"))
+            if EVACUATION_UNKNOWN in reasons:
+                wanted.append(("contact_facility", EVACUATION_TASK_REASON))
+            # forecast_unavailable is a producer gap shown in the review queue; no team task can resolve it
             if asset.get("intersects_fire") is True:
                 wanted.append(("check_access", "facility intersects fire footprint"))
             for action, reason in wanted:
@@ -364,6 +386,15 @@ class TaskStore:
 
     def confirm_override(self, asset_id: str, field: str, value, *, source: str, snippet: str, url=None,
                          observed_at=None, confidence, proposal_id=None, previous=None) -> dict:
+        if field not in priority.OVERRIDE_FIELDS:
+            raise ValueError(f"override field must be one of {list(priority.OVERRIDE_FIELDS)}, got {field!r}"
+                             + ("; the forecast arrival comes from the producer" if field == "fire_arrival_at" else ""))
+        if field == "evacuation_min":
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
+                raise ValueError(f"evacuation_min must be a finite number of minutes >= 0, got {value!r}")
+            if not (source or "").strip():
+                raise ValueError("an evacuation duration needs a source (who confirmed it)")
+            value = float(value)
         override_id = self._next_id("overrides", "ovr")
         confirmed_at = self._now()
         self.conn.execute(
@@ -414,11 +445,32 @@ class TaskStore:
             out[d["asset_id"]] = d
         return out
 
+    def _windows(self, snap: dict) -> dict[str, dict]:
+        """priority_status and slack_min per asset for the snapshot with this store's confirmed overrides
+        applied (the same view the UI ranks); empty when the snapshot carries no usable as_of."""
+        if not snap.get("as_of"):
+            return {}
+        try:
+            assets = priority.apply_overrides(snap.get("assets") or [], self.overrides(), self.cfg)
+        except ValueError:
+            return {}
+        out = {}
+        for a in assets:
+            try:
+                out[a["asset_id"]] = priority.rank_asset(a, snap["as_of"], self.cfg)
+            except ValueError:
+                continue     # one malformed asset (e.g. a non-numeric evacuation_min) does not blank the others
+        return out
+
     def apply_snapshot(self, snap: dict) -> dict:
         """Accept or reject a snapshot, refresh exposure bookkeeping and flag affected open tasks.
 
-        Never changes a task's owner or status. Assets present before and missing now keep their
-        tasks, get an event and are flagged; their exposure row is kept with present = 0.
+        Flags open tasks whose asset's distance, intersection, needs_review, forecast arrival or
+        window status (window_open / window_exhausted / needs_review) changed, or the remaining window
+        crossed an attention bucket (priority.window_bucket: open / small / exhausted, threshold
+        CONTACT_POLICY["attention_min"]); the event names the remaining window before and after. Never changes a task's owner or status. Assets present
+        before and missing now keep their tasks, get an event and are flagged; their exposure row is
+        kept with present = 0.
         """
         scenario_id, snapshot_id, sequence = snap["scenario_id"], snap["snapshot_id"], snap["sequence"]
         reason = self.sequence.reject_reason(snap)
@@ -439,35 +491,52 @@ class TaskStore:
         previous = self.exposure(scenario_id)
         changed, affected, missing = [], [], []
         seen = set()
+        windows = self._windows(snap)
         for asset in snap.get("assets") or []:
             asset_id = asset["asset_id"]
             seen.add(asset_id)
+            window = windows.get(asset_id) or {}
             current = {
                 "distance_to_fire_m": asset.get("distance_to_fire_m"),
                 "intersects_fire": asset.get("intersects_fire"),
                 "needs_review": bool(asset.get("needs_review")),
+                "fire_arrival_at": asset.get("fire_arrival_at"),
+                "priority_status": window.get("priority_status"),
             }
+            slack = window.get("slack_min")
             before = previous.get(asset_id)
             if before is not None:
-                diffs = {k: [before[k], v] for k, v in current.items() if before[k] != v}
+                diffs = {k: [before.get(k), v] for k, v in current.items() if before.get(k) != v}
+                # a window that crosses an attention bucket (open -> small -> exhausted) flags the task; one that
+                # merely shrinks with elapsed time inside the same bucket does not
+                buckets = [priority.window_bucket(before.get("slack_min"), self.cfg), priority.window_bucket(slack, self.cfg)]
+                if buckets[0] != buckets[1]:
+                    diffs["window_bucket"] = buckets
                 if not before["present"]:
                     diffs["present"] = [False, True]
                 if diffs:
-                    changed.append({"asset_id": asset_id, "changes": diffs})
+                    entry = {"asset_id": asset_id, "changes": diffs}
+                    if "fire_arrival_at" in diffs or "priority_status" in diffs or before.get("slack_min") != slack:
+                        entry["slack_min"] = [before.get("slack_min"), slack]
+                    changed.append(entry)
+                    message = f"exposure changed in {snapshot_id}: " + ", ".join(
+                        f"{k} {a!r} -> {b!r}" for k, (a, b) in diffs.items())
+                    if "slack_min" in entry:
+                        message += (f"; remaining window {_fmt_window(before.get('slack_min'))} -> "
+                                    f"{_fmt_window(slack)}")
                     for t in self.tasks(asset_id=asset_id):
                         if t["status"] != "done":
                             self._update_task(t["task_id"], affected_by_snapshot_id=snapshot_id)
                             affected.append(t["task_id"])
-                            self._event("task_affected",
-                                        f"exposure changed in {snapshot_id}: " + ", ".join(
-                                            f"{k} {a!r} -> {b!r}" for k, (a, b) in diffs.items()),
-                                        asset_id=asset_id, task_id=t["task_id"])
+                            self._event("task_affected", message, asset_id=asset_id, task_id=t["task_id"])
             self.conn.execute(
                 "INSERT OR REPLACE INTO asset_exposure (scenario_id, asset_id, distance_to_fire_m, intersects_fire, "
-                "needs_review, review_reasons, snapshot_id, present) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
+                "needs_review, review_reasons, fire_arrival_at, priority_status, slack_min, snapshot_id, present) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)",
                 (scenario_id, asset_id, current["distance_to_fire_m"],
                  None if current["intersects_fire"] is None else int(current["intersects_fire"]),
-                 int(current["needs_review"]), json.dumps(list(asset.get("review_reasons") or [])), snapshot_id))
+                 int(current["needs_review"]), json.dumps(list(asset.get("review_reasons") or [])),
+                 current["fire_arrival_at"], current["priority_status"], slack, snapshot_id))
         for asset_id, before in previous.items():
             if asset_id in seen or not before["present"]:
                 continue
