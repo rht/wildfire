@@ -146,6 +146,23 @@ def test_occupancy_mapping_keeps_capacity_and_headcount_apart():
     assert r["review_reasons"] == ["forecast_unavailable"] and r["needs_review"] is True   # no forecast given
 
 
+def test_school_enrolment_is_a_headcount_from_its_own_register():
+    r = row("schools:17000001", lon=3.0, lat=41.9, occupancy=312, occupancy_source="enrolment",
+            occupancy_register="gencat:schools_enrolment (xvme-26kg)", occupancy_period="2025/2026",
+            register="gencat:schools (kvmv-ahh4)", fetched_at="2026-09-19T11:46:37+00:00",
+            occupancy_fetched_at="2026-09-19T15:01:28+00:00")
+    a = build_snapshot([r], fire_update(fire_disc()), **snap_kwargs())["assets"][0]
+    assert a["capacity"] is None and a["estimated_occupancy"] == 312   # pupils, never a capacity
+    assert "enrolled pupils 2025/2026" in a["occupancy_basis"] and "staff not included" in a["occupancy_basis"]
+    assert "occupancy_unknown" not in a["review_reasons"]
+    occ = [s for s in a["sources"] if "occupancy_basis" in s["fields"]]
+    loc = [s for s in a["sources"] if "latitude" in s["fields"]]
+    assert occ[0]["source"] == "gencat:schools_enrolment (xvme-26kg)"     # not the identity register
+    assert occ[0]["fetched_at"] == "2026-09-19T15:01:28+00:00"
+    assert loc[0]["source"] == "gencat:schools (kvmv-ahh4)"
+    assert loc[0]["fetched_at"] == "2026-09-19T11:46:37+00:00"
+
+
 def test_v4_records_accepted_and_recomputed():
     first = build_snapshot([row("fixture:v", lon=3.0, lat=41.9, occupancy=30, occupancy_source="register")],
                            fire_update(fire_disc()), **snap_kwargs())

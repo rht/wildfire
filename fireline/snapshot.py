@@ -12,6 +12,12 @@ They are never derived from distance: an asset no forecast covers keeps them nul
 by class (component minutes and assumptions recorded in `sources`); an unknown class gives null and
 `evacuation_unknown`.
 
+Occupancy follows the input row's `occupancy_source`: `register` fills `capacity` only (maximum
+places, never a headcount), `enrolment` (schools, from the Gencat enrolment register) and the other
+headcount sources fill `estimated_occupancy`. `occupancy_register` / `occupancy_period` /
+`occupancy_fetched_at` on the row, when the figure comes from a different register than the
+identity fields, are recorded in the `sources` entry for the occupancy fields.
+
 Schema version `1.1`; `validate_snapshot` still accepts `1.0` files, whose v1.1 keys are optional.
 This module never imports `fire_input`; the `fire` argument is a plain dict (or None).
 """
@@ -190,6 +196,7 @@ def _from_v0(row: dict) -> dict:
     occ = _int(row.get("occupancy"))
     occ_src = (row.get("occupancy_source") or ("unknown" if occ is None else "register")).lower()
     register = _register_of(row)
+    occ_register = row.get("occupancy_register") or register
     capacity = estimated = basis = None
     occ_note = None
     if occ is not None:
@@ -197,9 +204,15 @@ def _from_v0(row: dict) -> dict:
             capacity = occ
             basis = f"register capacity ({register}); maximum places, not a headcount"
             occ_note = "register capacity: not a confirmed headcount; estimated_occupancy left null"
+        elif occ_src == "enrolment":
+            estimated = occ
+            period = row.get("occupancy_period")
+            basis = f"enrolled pupils{' ' + str(period) if period else ''} ({occ_register}); staff not included"
+            occ_note = ("enrolment for the school year: not a time-of-day headcount, and staff and "
+                        "visitors are not counted")
         elif occ_src in ("allocated", "headcount", "census", "estimate"):
             estimated = occ
-            basis = f"{occ_src} headcount ({register})"
+            basis = f"{occ_src} headcount ({occ_register})"
             occ_note = f"{occ_src} estimate of people present, not a register capacity"
         elif occ_src == "override":
             estimated = occ
@@ -207,7 +220,7 @@ def _from_v0(row: dict) -> dict:
             occ_note = "analyst-confirmed value"
         else:
             estimated = occ
-            basis = f"{occ_src} ({register})"
+            basis = f"{occ_src} ({occ_register})"
     return {
         "asset_id": row["asset_id"],
         "name": row.get("name"),
@@ -223,6 +236,8 @@ def _from_v0(row: dict) -> dict:
         "_seasonal": bool(row.get("seasonal")) or "occupancy_seasonal" in review_list,
         "_class_ambiguous": bool(row.get("class_ambiguous")) or "class_ambiguous" in review_list,
         "_register": register,
+        "_occ_register": occ_register,
+        "_occ_fetched_at": row.get("occupancy_fetched_at") or row.get("fetched_at"),
         "_fetched_at": row.get("fetched_at"),
         "_observed_at": row.get("observed_at"),
         "_note": row.get("note"),
@@ -249,6 +264,8 @@ def _from_v4(row: dict) -> dict:
         "_seasonal": "occupancy_seasonal" in reasons,
         "_class_ambiguous": "class_ambiguous" in reasons,
         "_register": _register_of(row),
+        "_occ_register": _register_of(row),
+        "_occ_fetched_at": None,
         "_fetched_at": None,
         "_observed_at": None,
         "_note": None,
@@ -281,8 +298,8 @@ def asset_record(row: dict, cfg=config) -> dict:
         if p["capacity"] is not None or p["estimated_occupancy"] is not None:
             occ_fields = ["capacity"] if p["capacity"] is not None else ["estimated_occupancy"]
             occ_fields.append("occupancy_basis")
-            sources.append(_source_entry(occ_fields, p["_register"], observed_at=p["_observed_at"],
-                                         fetched_at=p["_fetched_at"], notes=p["_occ_note"]))
+            sources.append(_source_entry(occ_fields, p["_occ_register"], observed_at=p["_observed_at"],
+                                         fetched_at=p["_occ_fetched_at"], notes=p["_occ_note"]))
     if p["geometry"] is not None and p["area_m2"] is None:
         p["area_m2"] = _footprint_area_m2(p["geometry"])
 

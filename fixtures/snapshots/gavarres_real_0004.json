@@ -215,8 +215,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 320,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7396.2,
@@ -232,7 +232,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -249,6 +248,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -295,8 +305,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 317,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7579.4,
@@ -312,7 +322,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -329,6 +338,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -375,8 +395,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 198,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18719.2,
@@ -392,7 +412,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -409,6 +428,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -455,8 +485,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 295,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 5901.3,
@@ -472,7 +502,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -489,6 +518,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -535,8 +575,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 478,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8051.7,
@@ -552,7 +592,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -569,6 +608,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -615,8 +665,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 200,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8153.0,
@@ -632,7 +682,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -649,6 +698,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -695,8 +755,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 394,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12074.0,
@@ -712,7 +772,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -729,6 +788,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -775,8 +845,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 635,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12339.2,
@@ -792,7 +862,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -809,6 +878,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -855,8 +935,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 219,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9012.3,
@@ -872,7 +952,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -889,6 +968,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -935,8 +1025,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 391,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9086.6,
@@ -952,7 +1042,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -969,6 +1058,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1015,8 +1115,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 217,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18884.1,
@@ -1032,7 +1132,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1049,6 +1148,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1095,8 +1205,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 126,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10751.8,
@@ -1112,7 +1222,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1129,6 +1238,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1175,8 +1295,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 45,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7109.5,
@@ -1192,7 +1312,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1209,6 +1328,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1255,8 +1385,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 17,
+   "occupancy_basis": "enrolled pupils 2024/2025 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9631.2,
@@ -1272,7 +1402,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1289,6 +1418,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1335,8 +1475,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 130,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18101.4,
@@ -1352,7 +1492,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1369,6 +1508,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1415,8 +1565,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 403,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12613.0,
@@ -1432,7 +1582,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1449,6 +1598,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1495,8 +1655,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 158,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10369.3,
@@ -1512,7 +1672,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1529,6 +1688,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1575,8 +1745,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 359,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12163.9,
@@ -1592,7 +1762,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1609,6 +1778,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1655,8 +1835,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 334,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11895.7,
@@ -1672,7 +1852,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1689,6 +1868,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1735,8 +1925,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 241,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11685.1,
@@ -1752,7 +1942,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1769,6 +1958,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1815,8 +2015,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 455,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12451.0,
@@ -1832,7 +2032,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1849,6 +2048,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1895,8 +2105,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 326,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12339.6,
@@ -1912,7 +2122,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -1929,6 +2138,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -1975,8 +2195,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 18,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11866.6,
@@ -1992,7 +2212,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2009,6 +2228,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2055,8 +2285,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 541,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11960.3,
@@ -2072,7 +2302,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2089,6 +2318,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2135,8 +2375,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 612,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12035.0,
@@ -2152,7 +2392,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2169,6 +2408,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2215,8 +2465,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 344,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10175.3,
@@ -2232,7 +2482,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2249,6 +2498,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2295,8 +2555,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 330,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10043.3,
@@ -2312,7 +2572,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2329,6 +2588,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2375,8 +2645,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 920,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10312.3,
@@ -2392,7 +2662,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2409,6 +2678,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2455,8 +2735,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 128,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 13897.5,
@@ -2472,7 +2752,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2489,6 +2768,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2535,8 +2825,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 36,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14464.8,
@@ -2552,7 +2842,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2569,6 +2858,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2615,8 +2915,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 31,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7632.0,
@@ -2632,7 +2932,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2649,6 +2948,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2695,8 +3005,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 374,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8562.1,
@@ -2712,7 +3022,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2729,6 +3038,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2775,8 +3095,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 480,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 19001.2,
@@ -2792,7 +3112,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2809,6 +3128,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2855,8 +3185,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 718,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 19255.7,
@@ -2872,7 +3202,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2889,6 +3218,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -2935,8 +3275,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 58,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18821.0,
@@ -2952,7 +3292,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -2969,6 +3308,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3015,8 +3365,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 36,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 13003.8,
@@ -3032,7 +3382,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3049,6 +3398,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3095,8 +3455,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 87,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8759.4,
@@ -3112,7 +3472,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3129,6 +3488,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3175,8 +3545,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 96,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 13198.9,
@@ -3192,7 +3562,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3209,6 +3578,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3255,8 +3635,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 316,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8350.1,
@@ -3272,7 +3652,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3289,6 +3668,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3415,8 +3805,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 447,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9103.5,
@@ -3432,7 +3822,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3449,6 +3838,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3495,8 +3895,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 76,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7856.6,
@@ -3512,7 +3912,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3529,6 +3928,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3575,8 +3985,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 649,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12402.3,
@@ -3592,7 +4002,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3609,6 +4018,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3655,8 +4075,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 74,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11965.2,
@@ -3672,7 +4092,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3689,6 +4108,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3735,8 +4165,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 102,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8564.5,
@@ -3752,7 +4182,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3769,6 +4198,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3815,8 +4255,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 62,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12714.4,
@@ -3832,7 +4272,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3849,6 +4288,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3895,8 +4345,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 602,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 19235.0,
@@ -3912,7 +4362,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -3929,6 +4378,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -3975,8 +4435,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 59,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8528.5,
@@ -3992,7 +4452,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4009,6 +4468,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4055,8 +4525,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 23,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18738.6,
@@ -4072,7 +4542,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4089,6 +4558,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4135,8 +4615,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 671,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9013.7,
@@ -4152,7 +4632,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4169,6 +4648,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4215,8 +4705,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 634,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18908.3,
@@ -4232,7 +4722,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4249,6 +4738,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4295,8 +4795,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 561,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12834.2,
@@ -4312,7 +4812,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4329,6 +4828,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4375,8 +4885,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 342,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11179.3,
@@ -4392,7 +4902,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4409,6 +4918,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4455,8 +4975,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 100,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12678.4,
@@ -4472,7 +4992,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4489,6 +5008,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4615,8 +5145,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 219,
+   "occupancy_basis": "enrolled pupils 2024/2025 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18460.0,
@@ -4632,7 +5162,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4649,6 +5178,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4695,8 +5235,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 998,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7478.4,
@@ -4712,7 +5252,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4729,6 +5268,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4775,8 +5325,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 217,
+   "occupancy_basis": "enrolled pupils 2024/2025 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10135.5,
@@ -4792,7 +5342,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4809,6 +5358,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4855,8 +5415,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 38,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18761.3,
@@ -4872,7 +5432,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4889,6 +5448,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -4935,8 +5505,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 143,
+   "occupancy_basis": "enrolled pupils 2024/2025 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 5234.0,
@@ -4952,7 +5522,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -4969,6 +5538,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -5175,8 +5755,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 438,
+   "occupancy_basis": "enrolled pupils 2024/2025 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12629.4,
@@ -5192,7 +5772,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -5209,6 +5788,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -5255,8 +5845,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 33,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 5824.1,
@@ -5272,7 +5862,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -5289,6 +5878,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -5415,8 +6015,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 31,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10366.6,
@@ -5432,7 +6032,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -5449,6 +6048,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -5575,8 +6185,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 196,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8191.7,
@@ -5592,7 +6202,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -5609,6 +6218,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -5655,8 +6275,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 318,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18955.7,
@@ -5672,7 +6292,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -5689,6 +6308,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -5735,8 +6365,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 112,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8586.9,
@@ -5752,7 +6382,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -5769,6 +6398,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -5815,8 +6455,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 400,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12880.2,
@@ -5832,7 +6472,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -5849,6 +6488,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -5895,8 +6545,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 373,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12790.5,
@@ -5912,7 +6562,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -5929,6 +6578,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -5975,8 +6635,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 85,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 11324.6,
@@ -5992,7 +6652,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6009,6 +6668,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6055,8 +6725,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 156,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7911.5,
@@ -6072,7 +6742,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6089,6 +6758,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6135,8 +6815,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 87,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 19044.6,
@@ -6152,7 +6832,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6169,6 +6848,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6215,8 +6905,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 386,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12555.0,
@@ -6232,7 +6922,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6249,6 +6938,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6295,8 +6995,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 184,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9076.3,
@@ -6312,7 +7012,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6329,6 +7028,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6375,8 +7085,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 121,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9374.5,
@@ -6392,7 +7102,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6409,6 +7118,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6455,8 +7175,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 26,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9532.0,
@@ -6472,7 +7192,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6489,6 +7208,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6535,8 +7265,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 48,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 13109.6,
@@ -6552,7 +7282,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6569,6 +7298,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6615,8 +7355,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 29,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18699.1,
@@ -6632,7 +7372,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6649,6 +7388,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6695,8 +7445,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 188,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 6684.7,
@@ -6712,7 +7462,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6729,6 +7478,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6775,8 +7535,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 30,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 14663.7,
@@ -6792,7 +7552,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6809,6 +7568,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -6935,8 +7705,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 49,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 8287.2,
@@ -6952,7 +7722,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -6969,6 +7738,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -7015,8 +7795,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 20,
+   "occupancy_basis": "enrolled pupils 2024/2025 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 16972.2,
@@ -7032,7 +7812,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -7049,6 +7828,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -7095,8 +7885,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 58,
+   "occupancy_basis": "enrolled pupils 2024/2025 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12212.9,
@@ -7112,7 +7902,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -7129,6 +7918,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -7175,8 +7975,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 17,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 18213.6,
@@ -7192,7 +7992,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -7209,6 +8008,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -7255,8 +8065,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 31,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 10764.0,
@@ -7272,7 +8082,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -7289,6 +8098,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -7335,8 +8155,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 28,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 13649.9,
@@ -7352,7 +8172,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -7369,6 +8188,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -7495,8 +8325,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 31,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9779.5,
@@ -7512,7 +8342,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -7529,6 +8358,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -7575,8 +8415,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 598,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 9468.7,
@@ -7592,7 +8432,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -7609,6 +8448,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -7655,8 +8505,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 284,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 12028.0,
@@ -7672,7 +8522,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -7689,6 +8538,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [
@@ -7895,8 +8755,8 @@
    "geometry": null,
    "area_m2": null,
    "capacity": null,
-   "estimated_occupancy": null,
-   "occupancy_basis": null,
+   "estimated_occupancy": 23,
+   "occupancy_basis": "enrolled pupils 2025/2026 (gencat:schools_enrolment (xvme-26kg)); staff not included",
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
    "distance_to_fire_m": 7183.7,
@@ -7912,7 +8772,6 @@
    "evacuation_source": "evacuation-proto-2026-09-19",
    "needs_review": true,
    "review_reasons": [
-    "occupancy_unknown",
     "forecast_unavailable"
    ],
    "sources": [
@@ -7929,6 +8788,17 @@
      "available_at": null,
      "fetched_at": "2026-09-19T11:46:37+00:00",
      "notes": "register category: 2025/2026"
+    },
+    {
+     "fields": [
+      "estimated_occupancy",
+      "occupancy_basis"
+     ],
+     "source": "gencat:schools_enrolment (xvme-26kg)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T15:01:28+00:00",
+     "notes": "enrolment for the school year: not a time-of-day headcount, and staff and visitors are not counted"
     },
     {
      "fields": [

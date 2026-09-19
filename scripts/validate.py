@@ -140,7 +140,8 @@ def check_coverage() -> dict:
     unlocated = [a for a in assets if a["latitude"] is None or a["longitude"] is None]
     ambiguous = [a for a in assets if "class_ambiguous" in a["review_reasons"]]
     unknown_class = [a for a in assets if a["asset_type"] == "unknown" or "value_unknown" in a["review_reasons"]]
-    with_capacity = [a for a in assets if a["capacity"] is not None or a["estimated_occupancy"] is not None]
+    with_capacity = [a for a in assets if a["capacity"] is not None]
+    with_headcount = [a for a in assets if a["estimated_occupancy"] is not None]
     by_register = dict(sorted(Counter(a["sources"][0]["source"] for a in assets).items()))
     munis = sorted({a["municipality"] for a in assets if a["municipality"]}, key=str.casefold)
     footprints = sum(1 for a in assets if a["geometry"] is not None)
@@ -159,7 +160,9 @@ def check_coverage() -> dict:
         f"located {len(located)}, unlocated (null coordinates, location_unknown) {len(unlocated)}, "
         f"total {len(assets)}; envelope counts consistent: {counts_ok}",
         f"class_ambiguous: {len(ambiguous)}; unresolved class (asset_type unknown / value_unknown): {len(unknown_class)}",
-        f"records with a register capacity or headcount: {len(with_capacity)} (all unlocated care homes / campsites); "
+        f"records with a register capacity: {len(with_capacity)} (unlocated care homes / campsites); "
+        f"records with a headcount (estimated_occupancy): {len(with_headcount)} "
+        f"(schools, enrolled pupils from gencat:schools_enrolment); "
         f"located rows with occupancy_unknown: {sum('occupancy_unknown' in a['review_reasons'] for a in located)}",
         f"footprint geometries: {footprints} (every distance is a labelled point fallback)",
         f"municipalities: {len(munis)}",

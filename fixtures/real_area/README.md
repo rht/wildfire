@@ -24,9 +24,14 @@ Municipalities with located rows (24): Begur, Bordils, Calonge i Sant Antoni, Ca
   long names (`Cruïlles, Monells i Sant Sadurní de l'He`), so unlocated rows of that municipality would not
   match; none exist in the 2026-09-19 extract.
 - Located rows are almost all schools (`kvmv-ahh4`, school year 2025/2026); Equipaments contributes the
-  hospital and sociosanitari rows only (`class_ambiguous` for the latter). No located row has a register
-  capacity, so every located asset carries `occupancy_unknown`; unlocated care homes and campsites carry the
-  register capacity (`capacity`, not `estimated_occupancy`).
+  hospital and sociosanitari rows only (`class_ambiguous` for the latter).
+- Occupancy: 87 of 97 schools carry `estimated_occupancy` = enrolled pupils joined on
+  `codi_centre` from the enrolment register `xvme-26kg` (current school year, previous year where the
+  current one is not published yet); pupils only, staff not counted, and an enrolment is not a
+  time-of-day headcount. The rest are music, dance and adult-education centres, which that register does
+  not list, and they keep `occupancy_unknown` (12 assets in all, including the hospital and the
+  Equipaments sociosanitari). Unlocated care homes and campsites carry the register capacity
+  (`capacity`, not `estimated_occupancy`); no located row has a register capacity.
 - No footprints: every distance in a snapshot built from this file is a labelled point fallback.
 - `fixtures/snapshots/gavarres_real_0001..0003.json` combine **these real facilities with three real
   recorded Deepfire satellite perimeters** (`fixtures/fire/deepfire/real/`, `input_mode: recorded`);

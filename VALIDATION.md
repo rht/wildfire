@@ -13,7 +13,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 | Tasks | pass | suggestions 7 then 0; 8 tasks survive reload |
 | Agent (FakeLLM) | pass | 7 runs: 3 proposals {'capacity': 2, 'asset_type': 1}, 6 escalations, 0 occupancy-from-capacity |
 | Agent (live model) | not verified |  |
-| Latency | pass | median 0.164 s for 168 assets (target < 60 s); source age 300 s |
+| Latency | pass | median 0.156 s for 168 assets (target < 60 s); source age 300 s |
 | Stale data | pass | None->unavailable, 0->current, 3599->current, 3600->stale, 21599->stale, 21600->unavailable, -60->current |
 
 8 pass, 0 fail, 1 not verified.
@@ -27,7 +27,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 - by register: {'gencat:campsites (t2h3-cgys)': 42, 'gencat:care_homes (ivft-vegh)': 27, 'gencat:equipaments (8gmd-gz7i)': 2, 'gencat:schools (kvmv-ahh4)': 97}
 - located 99, unlocated (null coordinates, location_unknown) 69, total 168; envelope counts consistent: True
 - class_ambiguous: 1; unresolved class (asset_type unknown / value_unknown): 0
-- records with a register capacity or headcount: 69 (all unlocated care homes / campsites); located rows with occupancy_unknown: 99
+- records with a register capacity: 69 (unlocated care homes / campsites); records with a headcount (estimated_occupancy): 87 (schools, enrolled pupils from gencat:schools_enrolment); located rows with occupancy_unknown: 12
 - footprint geometries: 0 (every distance is a labelled point fallback)
 - municipalities: 26
 - sample of 5 located names: Hospital de Palamós (hospital, PALAMÓS); Escola Torres Jonama (school, Palafrugell); CEE Els Àngels (school, Palamós); CFA Torroella de Montgrí (school, Torroella de Montgrí); Escola Bressol El Petit Montgrí (school, Torroella de Montgrí)
@@ -83,7 +83,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ### Agent (FakeLLM): pass
 
 - LLM: FakeLLM (offline, scripted; llm_mode ['fake']). A live-model run is pending an ANTHROPIC_API_KEY; scripts/investigate.py replays fixtures/agent/prerecorded_investigation.json until then
-- 7 investigations over 6 flagged fixture assets of synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou; evidence cache fixtures/evidence.json (8 entries); 0 assets flagged only for ('forecast_unavailable', 'evacuation_unknown') left to the review queue (no FakeLLM script; forecast is the producer's, evacuation duration is the analyst's evacuation control)
+- 7 investigations over 6 flagged fixture assets of synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou; evidence cache fixtures/evidence.json (8 entries, plus data/registers/*.json present locally); 0 assets flagged only for ('forecast_unavailable', 'evacuation_unknown') left to the review queue (no FakeLLM script; forecast is the producer's, evacuation duration is the analyst's evacuation control)
 - proposals 3 by field {'capacity': 2, 'asset_type': 1}; escalations 6; per asset {id: (reasons, proposals, questions)}: {'residencia_sense_coordenades': (['location_unknown', 'exposure_unknown', 'forecast_unavailable'], 0, 1), 'mas_nou': (['occupancy_unknown'], 0, 1), 'pou_del_glac': (['occupancy_unknown', 'occupancy_seasonal'], 1, 1), 'escola_cruilles': (['occupancy_seasonal'], 0, 1), 'mas_pla': (['occupancy_seasonal'], 0, 1), 'camping_gavarres': (['class_ambiguous'], 1, 0), 'residencia_la_bisbal': (['occupancy_unknown'], 1, 1)}
 - estimated_occupancy proposals: 0 (evidence carries a headcount field: False); every occupancy proposal is field 'capacity': True
 - post-check ok for all: True; steps <= 6 for all: True; max steps 5
@@ -100,10 +100,10 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ### Latency: pass
 
 - input: 168 real-area assets (fixtures/real_area/assets_gavarres.json) + recorded update 20260703T100500Z_satellite-perimeters.json (deepfire:satellite-perimeters, SYNTHETIC content, observed 2026-07-03T10:00:00+00:00, received 2026-07-03T10:05:00+00:00) through fire_input.load_recorded
-- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.177, 0.162, 0.164] s; median 0.164 s
-- stages of run 1: build 0.082 s, score 0.027 s, apply+suggest 0.068 s; validate errors 0
+- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.156, 0.156, 0.162] s; median 0.156 s
+- stages of run 1: build 0.084 s, score 0.026 s, apply+suggest 0.046 s; validate errors 0
 - result: 0 ranked, 168 needs_review; 91 assets changed vs seq 1, 0 new suggestions on the update (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry no per-location forecast arrival and every asset is a review item until a forecast covers it)
-- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.16401429800316691} (separate numbers, never combined)
+- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.15641179401427507} (separate numbers, never combined)
 - target < 60 s processing for the selected area: met on x86_64, Python 3.14.7
 
 ### Stale data: pass

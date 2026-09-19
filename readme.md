@@ -45,7 +45,8 @@ unranked review item (`forecast_unavailable`). `gavarres_real_0004` holds a real
 run seeded at the July centroid; its 12 h burned area reaches no facility.
 
 What is real and what is synthetic: the facilities in `fixtures/real_area/` are a real Gencat
-Equipaments and schools extract for the Gavarres area (2026-09-19); care homes and campsites carry no
+Equipaments and schools extract for the Gavarres area (2026-09-19), with real enrolled-pupil counts
+for the schools from the Gencat enrolment register; care homes and campsites carry no
 coordinates in their registers and are listed with `location_unknown`. The `gavarres_real` snapshots
 use **real recorded Deepfire satellite perimeters** of the July 2026 incident in the bbox
 (`fixtures/fire/deepfire/real/`, pulled on 2026-09-19 with the credentials in `.env`, loaded by
@@ -314,6 +315,7 @@ Primary integration references; verify access and response semantics during impl
 
 - [Deepfire clusters](https://docs.deepfire.co/api/clusters), [satellite perimeters](https://docs.deepfire.co/api/satellite-perimeters), [authentication](https://docs.deepfire.co/guides/authentication) and [optional fire spread](https://docs.deepfire.co/api/fire-spread).
 - [Gencat Equipaments](https://analisi.transparenciacatalunya.cat/resource/8gmd-gz7i.geojson) for the initial facility extract.
+- [Gencat schools directory](https://analisi.transparenciacatalunya.cat/resource/kvmv-ahh4.json) for school locations and [enrolled pupils per centre](https://analisi.transparenciacatalunya.cat/resource/xvme-26kg.json) for their occupancy (the directory carries none).
 - [Catalan geographic resources provided by the challenge](https://interior.gencat.cat/ca/serveis/informacio-geografica/).
 - [Superpowers](https://github.com/obra/superpowers) and [project workflow](AGENTS.md).
 

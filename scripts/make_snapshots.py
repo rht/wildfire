@@ -68,10 +68,12 @@ REGISTER_FETCHED_AT = {
     "schools": "2026-09-19T11:46:37+00:00",
     "care_homes": "2026-09-19T11:46:36+00:00",
     "campsites": "2026-09-19T11:46:37+00:00",
+    "schools_enrolment": "2026-09-19T15:01:28+00:00",   # the enrolment pull, later than the register pulls
 }
 REGISTER_LABEL = {
     "equipaments": "gencat:equipaments (8gmd-gz7i)",
     "schools": "gencat:schools (kvmv-ahh4)",
+    "schools_enrolment": "gencat:schools_enrolment (xvme-26kg)",
     "care_homes": "gencat:care_homes (ivft-vegh)",
     "campsites": "gencat:campsites (t2h3-cgys)",
 }
@@ -262,6 +264,10 @@ def real_asset_record(row: dict) -> dict:
     reg = row.get("register") or row["asset_id"].split(":")[0]
     prepared = dict(row, register=REGISTER_LABEL.get(reg, reg), fetched_at=REGISTER_FETCHED_AT.get(reg))
     prepared["note"] = f"register category: {row.get('category')}" if row.get("category") else None
+    occ_reg = row.get("occupancy_register")   # schools: occupancy comes from the enrolment register
+    if occ_reg:
+        prepared["occupancy_register"] = REGISTER_LABEL.get(occ_reg, occ_reg)
+        prepared["occupancy_fetched_at"] = REGISTER_FETCHED_AT.get(occ_reg)
     return asset_record(prepared, config)
 
 
@@ -284,6 +290,10 @@ def write_real_area(located, unlocated) -> list[dict]:
             out[r[key]] = out.get(r[key], 0) + 1
         return dict(sorted(out.items()))
 
+    school_rows = [r for r in located + unlocated if r.get("register") == "schools"]
+    n_school_rows = len(school_rows)
+    n_pupils_rows = sum(1 for r in school_rows if r.get("occupancy_source") == "enrolment")
+    n_unknown = sum(1 for r in records if "occupancy_unknown" in r["review_reasons"])
     loc_by_class, unl_by_class = count(located, "asset_class"), count(unlocated, "asset_class")
     loc_by_reg, unl_by_reg = count(located, "register"), count(unlocated, "register")
     by_key = {}
@@ -317,9 +327,14 @@ def write_real_area(located, unlocated) -> list[dict]:
         "  long names (`Cruïlles, Monells i Sant Sadurní de l'He`), so unlocated rows of that municipality would not",
         "  match; none exist in the 2026-09-19 extract.",
         "- Located rows are almost all schools (`kvmv-ahh4`, school year 2025/2026); Equipaments contributes the",
-        "  hospital and sociosanitari rows only (`class_ambiguous` for the latter). No located row has a register",
-        "  capacity, so every located asset carries `occupancy_unknown`; unlocated care homes and campsites carry the",
-        "  register capacity (`capacity`, not `estimated_occupancy`).",
+        "  hospital and sociosanitari rows only (`class_ambiguous` for the latter).",
+        f"- Occupancy: {n_pupils_rows} of {n_school_rows} schools carry `estimated_occupancy` = enrolled pupils joined on",
+        "  `codi_centre` from the enrolment register `xvme-26kg` (current school year, previous year where the",
+        "  current one is not published yet); pupils only, staff not counted, and an enrolment is not a",
+        "  time-of-day headcount. The rest are music, dance and adult-education centres, which that register does",
+        f"  not list, and they keep `occupancy_unknown` ({n_unknown} assets in all, including the hospital and the",
+        "  Equipaments sociosanitari). Unlocated care homes and campsites carry the register capacity",
+        "  (`capacity`, not `estimated_occupancy`); no located row has a register capacity.",
         "- No footprints: every distance in a snapshot built from this file is a labelled point fallback.",
         "- `fixtures/snapshots/gavarres_real_0001..0003.json` combine **these real facilities with three real",
         "  recorded Deepfire satellite perimeters** (`fixtures/fire/deepfire/real/`, `input_mode: recorded`);",

@@ -79,7 +79,9 @@ tests/                      pytest, no network, no LLM
   "latitude": float | None, "longitude": float | None,  # both null when unresolved
   "geometry": GeoJSON | None, "area_m2": float | None,
   "capacity": int | None, "estimated_occupancy": int | None,
-  "occupancy_basis": str | None,           # "register capacity as proxy", "register headcount", "analyst override", ...
+  "occupancy_basis": str | None,           # "register capacity as proxy", "register headcount",
+                                           # "enrolled pupils <curs> (<register>); staff not included",
+                                           # "analyst override", ...
   "value_score": float | None, "value_basis": str | None,   # from config.VALUE_POLICY; basis = policy version string
   "distance_to_fire_m": float | None, "intersects_fire": bool | None,   # min distance to fire_geometry; 0 on overlap
   "burn_probability": float | None,
@@ -100,7 +102,11 @@ Rules: `needs_review` is true iff `review_reasons` is non-empty. `exposure_unkno
 `distance_to_fire_m` is null (no location or no fire geometry). `value_unknown` when `asset_type` is not
 in the value policy. `estimated_occupancy` null with `capacity` set is allowed; the basis string then
 says capacity is a proxy only where the producer chose to fill `estimated_occupancy` from it (it does
-not by default). Forecast fields are filled by `forecast_input.attach_forecast` when `build_snapshot` is
+not by default). School occupancy is the Gencat enrolment register joined on `codi_centre`
+(`occupancy_source: "enrolment"` on the input row): pupils are a headcount, so they fill
+`estimated_occupancy`, and the `sources` entry for the occupancy fields names that register
+(`occupancy_register` / `occupancy_period` / `occupancy_fetched_at` on the input row) rather than the
+register the identity fields came from. Forecast fields are filled by `forecast_input.attach_forecast` when `build_snapshot` is
 given a `forecast=` (section 2.5), or by the CA raster when `config.FEATURES["forecast_enrichment"]` is on
 (`forecast_source` then names the method, e.g. `"ca_ensemble (labelled enrichment, not validated)"`);
 otherwise they are null.
@@ -175,7 +181,10 @@ the request time, so they exist only for current fires; the July incident cannot
 `fixtures/real_area/assets_gavarres.json`: envelope `{area, bbox, extracted_on, registers, counts, assets}` whose
 `assets` hold every `data/assets_in.json` row (Gencat Equipaments +
 schools extract, 2026-09-19) inside `feeds.GAVARRES_BBOX`, in v4 asset-record shape with `sources`
-carrying `fetched_at` = extraction time and `source` = the register. Unlocated care homes and
+carrying `fetched_at` = extraction time and `source` = the register. Schools carry
+`estimated_occupancy` = enrolled pupils from the Gencat enrolment register (`xvme-26kg`, sourced
+separately in `sources`); the music, dance and adult-education centres it does not list keep
+`occupancy_unknown`. Unlocated care homes and
 campsites from `data/unlocated.json` inside the area's municipalities are included with null
 coordinates and `location_unknown`. `fixtures/real_area/README.md` records counts and the limitation
 (care homes and campsites carry no coordinates in the registers).

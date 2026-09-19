@@ -98,6 +98,9 @@ def build_asset_table(assets_in: list[dict], arrival, cfg=config) -> list[dict]:
             "municipality": a.get("municipality", ""),
             "occupancy": occupancy,
             "occupancy_source": occ_source,
+            # provenance of the occupancy figure when it does not come from the identity register
+            # (schools: the enrolment register); absent for the usual same-register case
+            **{k: a[k] for k in ("occupancy_register", "occupancy_period") if a.get(k) is not None},
             "shelter_viable": a.get("shelter_viable"),   # None -> decide.py applies the class default
             "burn_prob": s["burn_prob"],
             "arrival_p10_min": s["arrival_p10_min"],
