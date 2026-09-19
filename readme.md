@@ -10,6 +10,200 @@ The colleague builds **risk assessment**, which consumes fire updates, discovers
 
 Use [Superpowers](https://github.com/obra/superpowers) for development. Work in a dedicated branch and worktree under this repository's `.worktrees/` directory, publish every task branch to `origin`, and push progress so colleagues can review it. See [AGENTS.md](AGENTS.md) for the persistent workflow.
 
+## Voice-agent delivery plan
+
+**Owner:** [@mirrdj](https://github.com/mirrdj). **Status:** planned; implementation and calling
+feasibility proceed in separate branches below. The SLNG API key will be supplied later. This
+section is the shared plan; adding it to main does not mean a live voice agent is deployed.
+
+**Goal:** contact a household in priority order, collect evidenced evacuation-readiness answers,
+offer a person, and return a structured result to analyst coordination. Every household remains
+visible until its outcome is confirmed, including households the firefighter sequence cannot visit.
+
+The household-readiness prototype already exists on `codex/evacuation-readiness` at `5652c90`
+(`fireline/evacuation_readiness.py`, `fixtures/evacuation_readiness.json`). It proposes
+`self_evacuate`, `assisted_evacuation` or `undetermined`; it does not place calls. The SLNG branch
+will include that dependency. @rht's window producer/consumer/ranking branches own the separate
+snapshot/UI timing integration; avoid duplicating those changes.
+
+### Parallel work and ownership
+
+| Work | Branch | Worktree | tmux session |
+|---|---|---|---|
+| SLNG interview implementation | `codex/slng-voice-agent` | `.worktrees/slng-voice-agent` | `wildfire-slng` |
+| Calling feasibility, macOS first | `codex/calling-research` | `.worktrees/calling-research` | `wildfire-calling` |
+
+Use Superpowers, test behavior before implementation, keep all project documentation in this
+README, and push each branch at meaningful checkpoints. Only this plan is authorized for main in
+this step; workers retain their implementation/research on their own branches. Missing credentials
+must not block local implementation, fixtures, tests or documentation. Session logs are local and
+ignored; they are not project documentation or a place to store credentials.
+
+### Shared flow and boundaries
+
+```text
+ranked location + analyst-supplied incident brief + approved contact
+        -> voice interview (SLNG or later an alternative audio transport)
+        -> structured call evidence and lifecycle events
+        -> deterministic readiness checks
+        -> proposed self evacuation / assistance / human follow-up
+        -> analyst task state, with departure and arrival tracked separately
+```
+
+The existing risk/contact algorithms remain deterministic. The agent collects information; it
+cannot change the fire forecast, choose an arbitrary nearby building, invent a safe route, issue an
+evacuation order, or mark somebody evacuated from a completed call. A reception site must be
+explicitly designated and have capacity and a usable route. A hospital qualifies only when it has
+been designated for that purpose. The readiness module provides the existing static checks.
+
+### Interview and result contract
+
+Use a brief, explicit AI introduction and a clearly labelled simulated scenario in the first demo.
+Relay only the incident brief supplied by the analyst. Ask one question at a time:
+
+1. Confirm the intended location and whether the respondent can answer for everyone there.
+2. Ask whether everyone can leave without emergency assistance; capture mobility or other help
+   needs without inferring ability from age, property value or facility class.
+3. Ask whether suitable transport is available for everyone and what preparation remains.
+4. Ask whether they want to speak with a person. Honour that request immediately rather than
+   requiring a low-confidence score first.
+5. Read back the critical answers and obtain acknowledgement. If an approved instruction exists,
+   confirm its receipt separately; do not equate acknowledgement with departure or arrival.
+
+Proposed transport-neutral records (stable IDs link the call to the asset and snapshot):
+
+```python
+CallRequest = {
+    "request_id": str, "asset_id": str, "snapshot_id": str,
+    "contact_number": str,                 # E.164; local/private storage only
+    "language": str, "incident_brief": str,
+    "human_callback_number": str | None,
+    "input_mode": "synthetic" | "recorded" | "live",
+}
+CallResult = {
+    "request_id": str, "asset_id": str, "snapshot_id": str,
+    "provider_call_id": str, "status": str,
+    # queued, ringing, in_progress, completed, no_answer, failed, declined
+    "observed_at": str,                    # UTC ISO timestamp; preserve original evidence time
+    "identity_confirmed": bool | None,
+    "whole_household_confirmed": bool | None,
+    "can_self_evacuate": bool | None,
+    "transport_available": bool | None,
+    "wants_human": bool | None,
+    "acknowledged": bool | None,
+    "confidence": float | None,            # review signal, NOT probability of safety
+    "confidence_basis": str | None,
+    "evidence": dict,                      # answer field -> supporting transcript excerpt
+    "contradictory": bool,
+    "source": str,
+    "human_followup_required": bool,
+    "human_followup_reasons": list[str],
+    "transfer_status": str | None,         # requested/connected/failed; not merely tool-called
+}
+```
+
+Unknown answers remain null. A transport adapter maps this record into `CallAssessment` using a
+common scenario epoch; it must reject wrong asset/call associations and future evidence. Persist
+provider lifecycle facts separately from extracted answers. Duplicate callbacks must not create
+repeated tasks or repeat a call; later-arriving old events must not downgrade a terminal state.
+Store credentials only in the ignored `.env`; use the existing `fireline.env.load_env()` loader.
+Do not write numbers, transcripts or credentials to public fixtures or logs; fixtures use synthetic
+contacts and conversations. Retain only evidence needed for the analyst workflow in local storage.
+
+### Workstream A: SLNG implementation
+
+**Suggested files:** `fireline/voice_models.py` (request/result validation),
+`fireline/voice_interview.py` (prompt and result normalization), `fireline/slng_voice.py` (provider
+adapter), `fireline/voice_store.py` (call lifecycle persistence and task linkage),
+`scripts/voice_demo.py` (offline and explicit live modes), `tests/test_voice_*.py`, synthetic JSON
+under `fixtures/voice/`. Keep provider details outside the readiness algorithm.
+
+- [ ] **A1 — Contract and offline interview.** Read the existing readiness module. Write failing
+  tests for a confirmed self-evacuating household, assistance needed, requested person, low/unknown
+  confidence, missing evidence, contradictory answers and no answer. Implement validation and
+  normalization; demonstrate all outcomes without an API key. Assert that no-answer/low-confidence
+  results cannot become `self_evacuate` and that every location retains a follow-up path.
+- [ ] **A2 — SLNG adapter.** Verify current official API schemas before writing the client.
+  Implement explicit configuration, HTTP timeouts, sanitized errors, agent configuration and
+  browser-session creation; separate outbound dispatch from both. Validate `SLNG_API_KEY`, agent ID
+  and outbound-connection requirements. Use injectable HTTP transport in unit tests. Do not blindly
+  retry an ambiguous call-creation timeout, since that may dial twice. A missing key produces a clear
+  not-configured result while the offline demo continues to work.
+- [ ] **A3 — Results and human handoff.** Add authenticated result ingestion or a verified polling
+  path (choose based on current SLNG support). Persist requests/results, enforce idempotency and
+  ordering, and map only evidenced answers to the readiness input. Add a human callback task for a
+  requested person, low/unknown confidence, incomplete interview, bad audio, no answer or failed
+  transfer. Do not label a transfer successful before the provider confirms connection. Extend
+  `TaskStore` only where needed, preserving assigned work across snapshots and restarts.
+- [ ] **A4 — Demonstrable local flow.** Provide an offline command that consumes the same location
+  fixture and prints the call result, proposed mode and remaining tasks. Test restart/replay, wrong
+  call identity, timeout, duplicate event and failed transfer. Keep any UI adapter separate from
+  @rht's ongoing priority/UI work. Run the full Python suite, request code review, document exact
+  commands and limitations here, commit and push the branch.
+- [ ] **A5 — Credentialed verification, later.** After the API key and test destination are supplied,
+  test one browser conversation, then one explicitly requested phone call to a consenting teammate,
+  then human transfer. Record actual outcomes without publishing personal data. Credentials alone
+  do not imply telephony is configured or authorize calling arbitrary asset contacts. Live behavior
+  stays marked unverified until these checks have run.
+
+**Acceptance:** an offline demonstration and tests work without credentials; provider code is ready
+for a supplied key; structured answers reach the readiness checks; uncertain or requested human
+contact creates a durable task; no household is silently treated as evacuated. Report live versus
+simulated behavior explicitly. The initial demo language is configurable English; Spanish/Catalan
+model availability and quality require explicit provider selection and a later spoken test.
+
+### Workstream B: calling from macOS, Raspberry Pi fallback
+
+**Priority:** reuse the available Mac and a regular mobile phone/SIM if feasible. A Pi is useful
+only if Linux supplies a required bridge that macOS cannot provide. Existing modem: Huawei
+E3372-325 HiLink. Its documented data/SMS support does not establish voice/audio support.
+
+- [ ] **B1 — Verify macOS paths.** Research official Apple/CoreBluetooth/audio documentation and
+  maintained primary-source projects. Distinguish initiating a call (including iPhone Continuity)
+  from programmatically capturing AND injecting call audio. Check Android/iPhone Bluetooth HFP,
+  USB or wired audio alternatives and whether human handoff is possible. Mark each claim as
+  documented, locally tested, hardware-dependent or unsupported; no claim that pairing alone is
+  sufficient. Inventory relevant local software read-only without probing personal communications.
+- [ ] **B2 — Evaluate Linux/Pi fallback.** Check Asterisk `chan_mobile`/BlueZ requirements for the
+  actual phone and current Linux setup. Separately assess a voice-capable modem with accessible
+  audio. Do not assume E3372-325 compatibility from a different Huawei model, flash firmware, or
+  modify the existing Vibecat dongle fleet. Read only narrowly relevant local model notes; never copy
+  private fleet numbers, SIM identities, PINs or credentials into this repository.
+- [ ] **B3 — Produce a concrete recommendation.** Update this README's calling-feasibility findings
+  with a comparison of hardware, software, call control, two-way audio, expected setup effort,
+  concurrency limits and still-needed tests. Prefer a runnable local diagnostic script such as
+  `scripts/check_calling_host.py` if it helps establish capability without calling anyone. Explain
+  how audio would reach SLNG (managed telephony/SIP versus a custom STT/LLM/TTS bridge); those are
+  different integrations. Include exact next steps for the strongest macOS path and the Pi fallback.
+- [ ] **B4 — Verify and publish.** Test any added script, attach direct primary-source links to the
+  findings, record blockers requiring a phone/Pi/carrier detail, commit and push. Do not buy hardware,
+  pair a personal phone, record conversations, place calls or change system services as part of this
+  research task. Hardware-dependent validation is a subsequent explicitly targeted test.
+
+**Acceptance:** a defensible macOS-first answer with a reproducible path or a specific blocker; a
+Pi/Linux fallback that addresses both dialling and audio; a clear separation between SIM voice and
+using a SIM only for internet. A documented negative result is useful; an untested workaround must
+not be presented as working.
+
+### Integration and verification checkpoints
+
+Run focused tests after each component and the full suite before each handoff. Useful commands:
+`uv venv`, `uv pip install -e ".[dev]"`, `.venv/bin/python -m pytest -q`, `git diff --check`.
+The readiness dependency has 253 passing tests at its own commit; establish a fresh baseline in
+whichever combined tree is used. Public documentation remains this README only. Both workers push
+without merging to main; review the combined result before integration. Neither worker should wait
+idle for an API key while offline work remains.
+
+Sources checked on 19 September 2026:
+[SLNG managed agents](https://docs.slng.ai/voice-agents),
+[SLNG configuration](https://docs.slng.ai/examples/agents-config),
+[SLNG API examples](https://docs.slng.ai/examples/agents-api),
+[event challenges](https://www.hackbcn.com/en/events/aisummit26),
+[Asterisk mobile-channel features](https://docs.asterisk.org/Configuration/Channel-Drivers/Mobile-Channel/Mobile-Channel-Features/),
+[Asterisk requirements](https://docs.asterisk.org/Configuration/Channel-Drivers/Mobile-Channel/Mobile-Channel-Requirements/),
+[E3372-325 specifications](https://brovi-tech.com/productshow.php?cid=2&id=248),
+[SIM7600 voice/audio example](https://www.waveshare.com/wiki/SIM7600X_Raspberry_Pi_Raspbian_Voice_Call).
+
 ## 0. Quickstart and repository layout
 
 ```sh
