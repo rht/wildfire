@@ -491,6 +491,203 @@ def test_schema_1_0_files_still_load_and_validate(tmp_path):
     assert any("schema_version" in e for e in validate_snapshot(unknown))
 
 
+# ------------------------------------------------------------------------------ value at risk
+VAR_KEYS = snapshot.VALUE_AT_RISK_KEYS
+EVAC = {"hospital": 180.0, "school": 90.0, "campsite": 70.0, "nucleus": 105.0}   # config.EVACUATION_POLICY sums
+BUFFER = config.CONTACT_POLICY["buffer_min"]
+
+
+def var_on(monkeypatch):
+    monkeypatch.setitem(config.FEATURES, "value_at_risk", True)
+
+
+def var_snapshot(rows, estimates, **kw):
+    """A snapshot whose located assets carry the forecast fields the layer reads."""
+    return build_snapshot(rows, fire_update(fire_disc()), forecast=_forecast(estimates), **snap_kwargs(**kw))
+
+
+def var_estimate(p10=None, p50=None, burn_probability=None):
+    return {"arrival_p10_at": None if p10 is None else _min(p10),
+            "arrival_p50_at": None if p50 is None else _min(p50), "burn_probability": burn_probability}
+
+
+def test_value_at_risk_keys_absent_unless_flag(monkeypatch):
+    rows = [row("fixture:h", cls="hospital", lon=3.0, lat=41.9, occupancy=120, occupancy_source="headcount")]
+    est = {"fixture:h": var_estimate(p10=60, p50=400, burn_probability=0.5)}
+    off = var_snapshot(rows, est)["assets"][0]
+    assert not any(k in off for k in VAR_KEYS)
+    assert not any("people_exposed" in s["fields"] for s in off["sources"])
+    var_on(monkeypatch)
+    on = var_snapshot(rows, est)["assets"][0]
+    assert all(k in on for k in VAR_KEYS)
+    # the layer only adds: strip its keys and its one provenance entry and the record is the flag-off record
+    stripped = {k: v for k, v in on.items() if k not in VAR_KEYS}
+    stripped["sources"] = [s for s in on["sources"] if not (set(s["fields"]) & set(VAR_KEYS))]
+    assert stripped == off
+
+
+def test_value_at_risk_worked_examples(monkeypatch):
+    var_on(monkeypatch)
+    rows = [row("fixture:h", cls="hospital", lon=3.0, lat=41.9, occupancy=120, occupancy_source="headcount"),
+            row("fixture:s", cls="school", lon=3.01, lat=41.9, occupancy=312, occupancy_source="enrolment"),
+            row("fixture:c", cls="campsite", lon=3.02, lat=41.9, occupancy=40, occupancy_source="allocated")]
+    snap = var_snapshot(rows, {"fixture:h": var_estimate(p10=60, p50=400, burn_probability=0.5),
+                               "fixture:s": var_estimate(p10=300, p50=400, burn_probability=0.25),
+                               "fixture:c": var_estimate(p10=30, p50=45, burn_probability=0.8)})
+    h, s, c = snap["assets"]
+    assert h["replacement_value_eur"] == 25_000_000 and "assumed" in h["replacement_value_basis"]
+    assert config.VALUE_AT_RISK_POLICY["version"] in h["replacement_value_basis"]
+    assert h["people_exposed"] == 60.0                                   # 120 x 0.5
+    assert (h["expected_loss_eur_low"], h["expected_loss_eur_mid"], h["expected_loss_eur_high"]) == \
+           (1_250_000, 3_125_000, 6_250_000)                             # 0.5 x (0.10, 0.25, 0.50) x 25 M
+    assert h["people_at_risk_p10"] == 120 and h["people_at_risk_p50"] == 0   # p10 60 min < 180 + 30 evacuation
+    assert s["people_exposed"] == 78.0 and s["replacement_value_eur"] == 4_000_000
+    assert (s["expected_loss_eur_low"], s["expected_loss_eur_mid"], s["expected_loss_eur_high"]) == \
+           (150_000, 400_000, 800_000)
+    assert s["people_at_risk_p10"] == 0 and s["people_at_risk_p50"] == 0      # 300 min > 90 + 30
+    assert c["people_exposed"] == 32.0 and c["replacement_value_eur"] == 3_000_000
+    assert (c["expected_loss_eur_low"], c["expected_loss_eur_mid"], c["expected_loss_eur_high"]) == \
+           (720_000, 1_440_000, 2_160_000)
+    assert c["people_at_risk_p10"] == 40 and c["people_at_risk_p50"] == 40    # both inside 70 + 30
+    for a in (h, s, c):
+        assert a["expected_loss_eur_low"] <= a["expected_loss_eur_mid"] <= a["expected_loss_eur_high"]
+        src = [x for x in a["sources"] if "people_exposed" in x["fields"]]
+        assert len(src) == 1 and src[0]["source"] == "config.VALUE_AT_RISK_POLICY"
+        assert src[0]["fields"] == list(VAR_KEYS)
+        note = src[0]["notes"]
+        assert "never capacity" in note and "assumed per-class placeholder" in note
+        assert "not an insurer's figure" in note and "never enter the ranking" in note
+    assert validate_snapshot(snap) == []
+
+
+def test_value_at_risk_zero_burn_probability_is_a_value_not_a_gap(monkeypatch):
+    var_on(monkeypatch)
+    rows = [row("fixture:h", cls="hospital", lon=3.0, lat=41.9, occupancy=120, occupancy_source="headcount")]
+    a = var_snapshot(rows, {"fixture:h": var_estimate(burn_probability=0.0)})["assets"][0]
+    assert a["burn_probability"] == 0.0 and a["fire_arrival_at"] is None
+    assert a["people_exposed"] == 0.0
+    assert (a["expected_loss_eur_low"], a["expected_loss_eur_mid"], a["expected_loss_eur_high"]) == (0, 0, 0)
+    assert a["people_at_risk_p10"] == 0 and a["people_at_risk_p50"] == 0   # covered, not reached in the horizon
+
+
+def test_value_at_risk_not_reached_in_horizon_is_zero_not_null(monkeypatch):
+    var_on(monkeypatch)
+    rows = [row("fixture:h", cls="hospital", lon=3.0, lat=41.9, occupancy=120, occupancy_source="headcount")]
+    a = var_snapshot(rows, {"fixture:h": var_estimate(burn_probability=0.3)})["assets"][0]
+    assert a["arrival_p10_at"] is None and a["arrival_p50_at"] is None and a["forecast_source"] is not None
+    assert a["people_at_risk_p10"] == 0 and a["people_at_risk_p50"] == 0
+    assert a["people_exposed"] == 36.0                                   # exposure still comes from the probability
+
+
+def test_value_at_risk_is_null_not_zero_when_an_input_is_missing(monkeypatch):
+    var_on(monkeypatch)
+    rows = [row("fixture:cap", cls="school", lon=3.0, lat=41.9, occupancy=200, occupancy_source="register"),
+            row("fixture:nofc", cls="school", lon=3.01, lat=41.9, occupancy=50, occupancy_source="allocated"),
+            row("fixture:unlocated", cls="school", occupancy=50, occupancy_source="allocated"),
+            row("fixture:unknown", cls="bunker", lon=3.02, lat=41.9, occupancy=50, occupancy_source="allocated"),
+            row("fixture:nucleus", cls="nucleus", lon=3.03, lat=41.9, occupancy=300, occupancy_source="census")]
+    est = {"fixture:cap": var_estimate(p10=10, burn_probability=0.4),
+           "fixture:unknown": var_estimate(p10=10, burn_probability=0.4),
+           "fixture:nucleus": var_estimate(p10=10, p50=20, burn_probability=0.4)}
+    cap, nofc, unl, unknown, nucleus = var_snapshot(rows, est)["assets"]
+    # capacity is a maximum, never a headcount: the people fields stay null
+    assert cap["capacity"] == 200 and cap["estimated_occupancy"] is None
+    assert cap["people_exposed"] is None and cap["people_at_risk_p10"] is None and cap["people_at_risk_p50"] is None
+    assert cap["replacement_value_eur"] == 4_000_000                     # the class value is still known
+    assert cap["expected_loss_eur_mid"] == 640_000                       # 0.4 x 0.40 x 4 M, independent of headcount
+    # no forecast covers this asset: no probability, no euros, no people at risk
+    assert nofc["burn_probability"] is None and nofc["forecast_source"] is None
+    assert all(nofc[k] is None for k in VAR_KEYS if k not in ("replacement_value_eur", "replacement_value_basis"))
+    # unlocated: nothing but the class value
+    assert unl["people_exposed"] is None and unl["people_at_risk_p50"] is None and unl["expected_loss_eur_mid"] is None
+    # a class outside the policy has no value and no evacuation duration
+    assert unknown["replacement_value_eur"] is None and unknown["replacement_value_basis"] is None
+    assert unknown["expected_loss_eur_mid"] is None and unknown["evacuation_min"] is None
+    assert unknown["people_exposed"] == 20.0                             # 50 x 0.4 needs no class value
+    assert unknown["people_at_risk_p10"] is None                         # ... but the window does need one
+    # nucleus: not valued, people still counted
+    assert nucleus["replacement_value_eur"] is None and nucleus["expected_loss_eur_mid"] is None
+    assert nucleus["people_exposed"] == 120.0 and nucleus["people_at_risk_p10"] == 300
+    assert "value_unknown" not in nucleus["review_reasons"]              # the review queue is unchanged
+    assert [s for s in nucleus["sources"] if "people_exposed" in s["fields"]][0]["notes"].endswith(
+        "no dwelling count in the data: not valued")
+
+
+def test_value_at_risk_window_boundary_per_quantile(monkeypatch):
+    var_on(monkeypatch)
+    rows = [row("fixture:h", cls="hospital", lon=3.0, lat=41.9, occupancy=120, occupancy_source="headcount")]
+    edge = EVAC["hospital"] + BUFFER                                     # slack exactly 0: window_exhausted
+    a = var_snapshot(rows, {"fixture:h": var_estimate(p10=edge, p50=edge + 1, burn_probability=0.5)})["assets"][0]
+    assert a["people_at_risk_p10"] == 120 and a["people_at_risk_p50"] == 0
+    b = var_snapshot(rows, {"fixture:h": var_estimate(p10=edge + 1, p50=edge + 2, burn_probability=0.5)})["assets"][0]
+    assert b["people_at_risk_p10"] == 0 and b["people_at_risk_p50"] == 0
+
+
+def test_value_at_risk_evacuation_unknown_leaves_people_at_risk_null(monkeypatch):
+    var_on(monkeypatch)
+    rows = [row("fixture:h", cls="hospital", lon=3.0, lat=41.9, occupancy=120, occupancy_source="headcount")]
+    a = var_snapshot(rows, {"fixture:h": var_estimate(p10=10, p50=20, burn_probability=0.5)})["assets"][0]
+    a["evacuation_min"], a["evacuation_source"] = None, None
+    snapshot.derive_value_at_risk(a, T0)
+    assert a["people_at_risk_p10"] is None and a["people_at_risk_p50"] is None
+    assert a["people_exposed"] == 60.0 and a["expected_loss_eur_mid"] == 3_125_000
+    # an unusable timestamp is a gap, not a "not reached"
+    a["evacuation_min"], a["evacuation_source"] = 180.0, "fixture"
+    a["arrival_p10_at"] = "soon"
+    snapshot.derive_value_at_risk(a, T0)
+    assert a["people_at_risk_p10"] is None and a["people_at_risk_p50"] == 120   # p50 is usable and exhausted
+
+
+def test_value_at_risk_re_derivation_replaces_its_provenance(monkeypatch):
+    var_on(monkeypatch)
+    rows = [row("fixture:h", cls="hospital", lon=3.0, lat=41.9, occupancy=120, occupancy_source="headcount")]
+    a = var_snapshot(rows, {"fixture:h": var_estimate(p10=10, burn_probability=0.5)})["assets"][0]
+    a["estimated_occupancy"] = 200
+    snapshot.derive_value_at_risk(a, T0)
+    assert a["people_exposed"] == 100.0 and a["people_at_risk_p10"] == 200
+    assert sum("people_exposed" in s["fields"] for s in a["sources"]) == 1
+    # without an epoch only the time-independent fields move
+    a["estimated_occupancy"] = 10
+    snapshot.derive_value_at_risk(a, None)
+    assert a["people_exposed"] == 5.0 and a["people_at_risk_p10"] == 200
+
+
+def test_validate_value_at_risk_rules(monkeypatch):
+    var_on(monkeypatch)
+    rows = [row("fixture:h", cls="hospital", lon=3.0, lat=41.9, occupancy=120, occupancy_source="headcount")]
+    snap = var_snapshot(rows, {"fixture:h": var_estimate(p10=10, p50=20, burn_probability=0.5)})
+    assert validate_snapshot(snap) == []
+
+    def broken(**changes):
+        b = json.loads(json.dumps(snap))
+        b["assets"][0].update(changes)
+        return validate_snapshot(b)
+
+    partial = json.loads(json.dumps(snap))
+    del partial["assets"][0]["people_exposed"]
+    assert any("all present or all absent" in e for e in validate_snapshot(partial))
+    assert any("null together" in e for e in broken(replacement_value_basis=None))
+    assert any("replacement_value_eur must be a nonnegative" in e for e in broken(replacement_value_eur=-1))
+    assert any("people_exposed must be a nonnegative" in e for e in broken(people_exposed=-1.0))
+    assert any("people_exposed must be null iff" in e for e in broken(people_exposed=None))
+    assert any("people_at_risk_p10 must be a nonnegative int" in e for e in broken(people_at_risk_p10=1.5))
+    assert any("no partial clearance" in e for e in broken(people_at_risk_p10=60))
+    assert any("people_at_risk_p50 requires" in e for e in broken(evacuation_min=None, evacuation_source=None,
+                                                                  review_reasons=["evacuation_unknown"]))
+    assert any("expected_loss_eur_mid must be null iff" in e
+               for e in broken(burn_probability=None, people_exposed=None, arrival_p10_at=None, arrival_p50_at=None))
+    assert any("expected_loss_eur_low <= _mid <= _high" in e for e in broken(expected_loss_eur_low=9_999_999))
+    for bad in (float("inf"), float("nan")):
+        assert any("expected_loss_eur_mid must be a nonnegative finite" in e for e in broken(expected_loss_eur_mid=bad))
+    # a record without the keys stays valid (schema 1.1 files written before the layer)
+    without = json.loads(json.dumps(snap))
+    for k in VAR_KEYS:
+        del without["assets"][0][k]
+    without["assets"][0]["sources"] = [s for s in without["assets"][0]["sources"]
+                                       if not (set(s["fields"]) & set(VAR_KEYS))]
+    assert validate_snapshot(without) == []
+
+
 # ---------------------------------------------------------------- committed forecast fixtures
 def _slack_min(asset, now):
     """Consumer arithmetic (readme 6) on the committed data: arrival - evacuation - buffer - now, in minutes."""
