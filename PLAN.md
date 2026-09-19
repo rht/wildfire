@@ -4,6 +4,10 @@ Track 4, "Values at risk": Norrsken x Deepfire "AI for Wildfire" challenge, Hack
 
 Working name: **FireLine** (rename freely).
 
+Implementation split: **risk assessment** discovers and evaluates affected locations from incoming fire updates; **analyst coordination** turns those assessments into an ordered work queue, recommended actions and proposed team assignments. The shared location contract is in section 6.3.1; ownership is in section 11.
+
+Development workflow: use [Superpowers](https://github.com/obra/superpowers), with each task in its own branch and worktree under this repository's `.worktrees/` directory. Publish every task branch to `origin` and push progress so colleagues can review it. See [AGENTS.md](AGENTS.md) for the persistent project instructions.
+
 v3 changes versus v2, from a four-way review on 2026-09-19: the confine-versus-evacuate rule is rewritten to match INFOCAT practice (evacuate early while a road is open, confine when the window has closed, care homes moved last); receiving facilities split into reception centres and medical destinations; deterministic edge cases moved out of the agent into the engine, and the agent given asymmetric autonomy (pessimistic moves alone, optimistic moves only via escalation); the timeline turned from a 24-hour serial chain into four parallel lanes with phase 0 budgeted; ELMFIRE, Cell2Fire, cadastre and INE dropped from day one; validation made leak-free (as-of-t replay, honest baselines, impact-relative lead time as the headline); Gavarres facts and data-source details corrected after checking the sources. Anything still marked *unverified* needs a human with an account.
 
 ## 1. One-line pitch
@@ -88,17 +92,20 @@ MTG FRP pixels (10 min) ─┘   (Deepfire perimeter + hotspots; MTG as layer) �
 Deepfire fire-spread sim ──> spread.py ──> arrival-time rasters ───────────┤
 own CA (what-if only)        (p10/p50/p90, burn probability)               │
 Open-Meteo wind ─────────────┘                                             v
-                                                          exposure.py ──> asset table
-Equipaments, care homes,  ───────────────────────────────>  (class, occupancy, t_impact, tier,
-campsites, schools, OSM                                      deterministic edge cases resolved
-buildings, INFOCAT vuln.                                     pessimistically, needs_review flags)
-                                                                           v
-                                                          decide.py ──> evacuate | confine |
-                                                            (window-based rule)  confine+protect | monitor
+                                                          exposure.py ──> location assessments
+Equipaments, care homes,  ───────────────────────────────>  (identity, geometry, size, value,
+campsites, schools, OSM                                      exposure, sources, needs_review)
+buildings, INFOCAT vuln.                                     CONTRACT: section 6.3.1
                                                                            │
-osmnx graph + SCT closures ─────────────────────────────> routing.py ──> reception centre, medical
-Equipaments (pavellons, albergs, residències, hospitals)      destination, route, cut times,
-                                                              latest departure
+                                              ANALYST COORDINATION         v
+osmnx graph + SCT closures ─────────────────────────────> routing.py ──> route feasibility,
+Equipaments (receiving facilities)                          destinations, exit deadlines
+                                                                           v
+                                                          decide.py ──> recommendations
+                                                                           v
+                                                          prioritisation ──> ranked assets,
+Team availability + analyst input ──────────────────────> coordination       tasks, dependencies,
+                                                                             proposed assignments
                                                                            v
                                               agent.py: tools over all of the above + Deepfire MCP
                                               - watch loop: on new/changed fire, run, summarise diff
@@ -133,9 +140,9 @@ Two sources, both normalised to an arrival-time raster on the common grid:
 ### 6.3 Exposure
 
 - Sample arrival rasters at every building, facility and road segment; aggregate buildings into nuclei (OSM place polygons, else DBSCAN on building centroids).
-- Per asset: class, occupancy (care-home `capacitat`, campsite `total_places`, school enrolment if available, allocated population for nuclei), burn probability, p10 and p50 arrival, INFOCAT municipal vulnerability level, Pla Alfa level today.
-- Ranking: p10 arrival minus a class-specific lead time (care home and hospital longest, campsite and school next, residential nuclei shortest). The lead-time table is a config file shown in the UI.
-- Tiers: **act now**, **prepare**, **monitor**, from thresholds on lead-adjusted p10 and burn probability. Config values, shown in the UI.
+- Per asset: the location assessment in section 6.3.1, including class, size, capacity and estimated occupancy, value and its basis, proximity, burn probability, forecast arrival, INFOCAT municipal vulnerability and Pla Alfa level.
+- Risk assessment produces exposure measurements; analyst coordination owns the final ranking. Ranking incorporates proximity, size and value, with forecast arrival and class-specific preparation time informing urgency. Section 6.3.2 defines the proposed scoring approach.
+- Coordination assigns tiers **act now**, **prepare**, **monitor** using configured thresholds on lead-adjusted p10 and burn probability, then ranks within tiers. The lead-time table and thresholds are shown in the UI.
 - **Deterministic edge cases, resolved in code with the pessimistic answer and a note on the asset:**
   - straddling nucleus: sample per building, cluster buildings by tier, report the nucleus as sub-nuclei.
   - location conflict between Gencat coordinates and OSM: use the location with the earlier arrival.
@@ -148,6 +155,65 @@ Two sources, both normalised to an arrival-time raster on the common grid:
   - `no_exit`: routing found no road, or only a track OSM classifies inconsistently.
   - Later: `not_in_any_dataset` (large building beside a sports field, a masia used as a casa de colònies).
 - Unmatched geocodes and joins are edge cases, not blockers; the ingestion owner writes each one down as it happens (section 10, edge-case set).
+
+### 6.3.1 Shared location assessment contract
+
+One record represents **one asset in one scenario snapshot**, not an arbitrary GPS point. An asset can be a facility, campsite, building or residential nucleus. Use a stable `asset_id`; coordinates are attributes, not identity.
+
+The colleague's risk-assessment algorithm consumes incoming fire and weather updates plus preloaded asset datasets, discovers candidate locations in the scenario area, calculates their exposure, and emits these records. The initial stream is implemented by polling APIs. The coordination algorithm consumes the resulting snapshots; it does not need to parse the raw satellite feeds.
+
+Each snapshot has `schema_version` (string), `scenario_id` (string), `snapshot_id` (string), `as_of` (UTC timestamp: information cutoff), `computed_at` (UTC timestamp: output creation), and `assets` (array). For the MVP, each snapshot is a complete replacement for that scenario's current asset set, including assets whose exposure decreased; absence is not an explicit all-clear. Preserve snapshots for replay. Reject older snapshots for the same scenario and ignore duplicate snapshot IDs.
+
+Each item in `assets` has the following fields. All keys are present; unavailable measurements are `null`, never silently zero. Times are ISO 8601 UTC timestamps, distances are metres, and probabilities and normalised scores are in [0, 1].
+
+| Fields | Type | Meaning |
+|---|---|---|
+| `asset_id`, `name`, `asset_type` | string | Stable identity, display name and class; use `unknown` when the class is unresolved. |
+| `latitude`, `longitude` | number or null | Representative location in WGS84; both null if unresolved. |
+| `geometry` | GeoJSON geometry or null | Footprint where available; GeoJSON coordinates are longitude, latitude. |
+| `area_m2` | nonnegative number or null | Physical footprint area. |
+| `capacity`, `estimated_occupancy` | nonnegative integer or null | Maximum people versus estimated people present; capacity is not measured occupancy. |
+| `occupancy_basis` | string or null | How occupancy was obtained, such as observed count, capacity used as a proxy, or allocated population. |
+| `value_score`, `value_basis` | number or null; string or null | Normalised value and the versioned policy used to derive it. Economic value, vulnerability and critical-service importance must be distinguished in that policy. Until agreed, leave these null and flag review. |
+| `distance_to_fire_m` | nonnegative number or null | Minimum distance between asset footprint and the scenario's current fire footprint; zero for overlap. Use the representative point if no footprint exists and record that approximation. |
+| `burn_probability` | number or null | Estimated probability of asset exposure over the stated forecast horizon. |
+| `arrival_p10_at`, `arrival_p50_at` | timestamp or null | Forecast arrival quantiles, when supported by the model. A null arrival does not establish safety. |
+| `forecast_horizon_at`, `forecast_source` | timestamp or null; string or null | End of the forecast horizon and model/source identifier. |
+| `infocat_vulnerability`, `pla_alfa_level` | string or null; integer 0–4 or null | Municipal context, with its source and timestamp recorded below. |
+| `needs_review`, `review_reasons` | boolean; array of strings | Unresolved data issues using the reason codes in 6.3, plus `location_unknown` and `value_unknown`. Coordination may append routing issues such as `no_exit`. |
+| `sources` | array of objects | Field-level provenance: each entry includes `fields`, `source`, `observed_at`, `available_at`, `fetched_at` and `notes`; unknown source times are null. Notes identify estimates and fallback geometry. |
+
+The producer uses one documented asset-sampling policy for arrival and probability (including footprints and sub-nuclei), records it with the forecast source, and flags unsupported outputs. `as_of` is the information cutoff, distinct from the future forecast horizon. Replay must exclude evidence unavailable at `as_of`; a missing availability timestamp cannot establish historical availability.
+
+### 6.3.2 Priority and analyst coordination output
+
+[@mirrdj](https://github.com/mirrdj)'s coordination algorithm consumes the location assessments and adds routing constraints, analyst input and available team resources. Its output answers: **what needs attention, why, by when, which team could handle it, and what information or action is blocking progress?**
+
+Start with an asset table and a sorted work queue. A graph is used for road connectivity and shared exits; traversal alone does not define priority. Road nodes have stable IDs and coordinates, and edges represent actual traversable road segments. Attach assets through their access points. Route feasibility and deadlines feed the decision and final ranking, rather than being calculated after a final decision has already been made.
+
+Proposed within-tier scoring:
+
+```text
+priority_score = w_proximity * proximity_score
+               + w_size      * size_score
+               + w_value     * value_score
+```
+
+All component scores are normalised to [0, 1], higher means more priority, and nonnegative weights sum to one. Use fixed, versioned normalisation scales so scores remain comparable across updates. The proximity component initially increases as distance decreases; a forecast-based policy may use time until impact when available, recording the method and fallback. Define which size measure is used (area or people), and avoid counting size twice if value already includes it. Size semantics, the value policy, weights, missing-input handling and thresholds remain kickoff decisions, not validated operational rules. Until a complete score is available, retain the asset in the queue using its urgency tier and known deadlines, with review flags; never treat unknown value as zero.
+
+Coordination enriches each assessment with:
+
+| Fields | Meaning |
+|---|---|
+| `priority_score`, `priority_rank`, `tier` | Nullable score, position within the current scenario queue, and action tier. Rank by tier, then known action deadline (earliest first), then score (highest first), with `asset_id` as a stable tie-breaker. Unknown deadlines require review. |
+| `score_components`, `priority_policy_version` | Component values, weights, input fields and fallback/missing-data notes, so the analyst can inspect the ranking. |
+| `recommendation`, `decision_reasons` | Output of 6.4 and its supporting checks; unresolved checks remain visible. |
+| `destination_id`, `route_id`, `latest_departure_at`, `route_status` | Nullable routing results from 6.5; distinguish feasible, infeasible and unknown routes. |
+| `tasks` | Analyst work items: `task_id`, `action`, `status`, `deadline_at`, `required_capabilities`, `proposed_team_id`, `depends_on`, `blocking_questions`, and `evidence`. A proposal is not a dispatch order. |
+
+For the MVP, team availability and capabilities are analyst-entered or fixture data with their source labelled. If no suitable team is known, leave the proposed assignment null and surface the missing resource. Task identity and analyst-confirmed status persist across risk updates. New assessments recompute priorities and flag affected tasks for review; they do not silently replace confirmed assignments. Shared-exit capacity is checked as in 6.5; optimising multi-team schedules and staggered departures remains stretch scope. This supports analyst coordination without expanding day one into suppression tactics or traffic simulation.
+
+The two algorithms can be developed independently against a fixture snapshot using this contract. Acceptance: a new snapshot updates the ranked queue, exposes the reasons for changed priorities, and preserves task state and unresolved questions.
 
 ### 6.4 Decision rule: confine or evacuate
 
@@ -277,7 +343,16 @@ Metrics, reported honestly including misses:
 - **Edge cases:** the list from phase 0 item 6 plus cases found during lane 3, target 10 to 15, labelled by the lane-3 owner before the agent prompt is written, with half held back from the agent developer. Report on the held-out half: resolved correctly, escalated, wrong with confidence. The last number is the one we say out loud; the target is zero.
 - **Real-time claim, two clocks:** data age (MTG about 20 min, Deepfire 60 s cache, not ours) and processing latency from feed publication to updated asset table (ours, target under one minute). Lead with the Deepfire clock for live mode.
 
-## 11. Roles (team of 4; merge for fewer)
+## 11. Ownership and workstreams
+
+The current implementation is split between two owners:
+
+| Owner | Algorithm and responsibility | Handoff |
+|---|---|---|
+| Colleague — risk assessment | Consume incoming updates, maintain fire state, run spread/exposure calculations, discover affected locations, join asset attributes, and resolve deterministic data issues. Own the location assessment producer and exposure validation. | Versioned scenario snapshots from 6.3.1, including size/value inputs, exposure and provenance. |
+| [@mirrdj](https://github.com/mirrdj) — analyst coordination | Consume assessments, calculate final priority, evaluate routes and decisions, and build the analyst's practical work queue with tasks, proposed team assignments, deadlines, dependencies and escalation questions. Own coordination validation, agent integration and analyst UI. | Enriched assessments and coordination output from 6.3.2. |
+
+The four lanes below remain workstreams for planning; they do not assume four available people. The colleague owns lanes 1–2 and the asset-ingestion/exposure part of lane 3; [@mirrdj](https://github.com/mirrdj) owns decision/routing in lane 3 and lane 4. Re-estimate the section 9 schedule for two people before committing to its milestones.
 
 | Lane | Owns |
 |---|---|
@@ -286,7 +361,7 @@ Metrics, reported honestly including misses:
 | 3. Assets, decision, routing | Gencat ingestion and joins, edge-case list and labels, asset table, deterministic edge cases, decision rule, routing and destinations, ground-truth file, asset-level and decision validation |
 | 4. Agent and UI | Tool harness from hour 0, seven tools, triage loop, coordinator queue, watch loop, what-if wiring, alerts, Streamlit, demo script, video |
 
-Agree by S1 on: grid CRS (EPSG:25831) and shape, the arrival-raster contract, the asset table schema including `needs_review` and override fields, the decision output schema, the scenario id, and the seven tool signatures. Everyone works against stubs after that. Lane 4 never waits for real data before S2.
+Agree by S1 on: grid CRS (EPSG:25831) and shape, the arrival-raster contract, the shared snapshot/location schema in 6.3.1, size/value definitions and priority policy in 6.3.2, the decision/task output, and the seven tool signatures. Commit a fixture snapshot so coordination can start independently of live feeds. Everyone works against stubs after that. Lane 4 never waits for real data before S2.
 
 ## 12. Demo script (3 minutes)
 
