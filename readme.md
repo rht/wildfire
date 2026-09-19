@@ -843,6 +843,7 @@ Verification: the unchanged baseline passed 294 tests; the remediation passes 30
 XML behavior: the local stdlib parser (Expat 2.6.3) expanded a small internal entity but rejected an external entity reference with `ParseError`; external-file disclosure was not demonstrated. The report extra now includes `defusedxml>=0.7.1`, and JUnit parsing explicitly forbids DTDs as well as the library's default entity restrictions. Plain JUnit still renders and failed tests still prevent a success report. This does not replace parser updates or impose general input-size/resource limits. See [Python XML security](https://docs.python.org/3/library/xml.html#xml-security) and [defusedxml](https://github.com/tiran/defusedxml).
 
 UTF-8 is now explicit for the audited text formats. Legacy local files written in a different encoding require conversion; generated fixtures are UTF-8. The risk-assessment/location-snapshot/coordination boundary and snapshot schema remain unchanged.
+
 ## 17. Household evacuation readiness and voice contact
 
 @mirrdj owns this coordination extension. Every location stays in the output even when the
@@ -957,7 +958,7 @@ that model has not been verified. [Manufacturer specifications](https://brovi-te
 The provider transport, interview extraction, authenticated callbacks and human-transfer path are
 not implemented in this static extension; its input contract is ready to receive those outcomes.
 
-Verification: 253 tests pass, including 36 readiness cases; targeted lint and whitespace checks
+Verification: 350 tests pass, including 41 readiness cases; targeted lint and whitespace checks
 pass. Independent code review found no important issues within the static scope.
 
 ### Priority queue for outbound calls
@@ -2559,3 +2560,7 @@ committed snapshots preserved. The CLI supports a reporting `--seed` outside
 select parameters. A regression reproduces the earlier `KeyError` before the fix and
 verifies that the report is written with the requested scoring seed afterward. The
 Norma results above refer to the historical file revisions, not a rescan of this change.
+
+### Readiness branch Norma verification — 2026-09-19
+
+Rebased onto merged remediation main `587f5bd`. All four added/modified Python and JSON files pass Norma Livecheck with unreduced coverage; transient service errors were retained in the evidence and successful retries supersede them. The JSON check covers applicable Node rules, not fixture semantics. Markdown prose was not scanned. Capacity validation accepts nonnegative integers and their subclasses while explicitly rejecting booleans; readiness input uses UTF-8. The full suite passes 350 tests, including 41 readiness tests and an ASCII-locale CLI regression. Independent code review approved the remediation. Exact file hashes, outcomes and original-head backup refs are recorded on `codex/norma-feature-rollup`; the original audit is unchanged.
