@@ -1385,3 +1385,112 @@ to synchronous replay/Streamlit code and are documented as inapplicable.
 Repository-wide scan and audit registration were unavailable because repository
 linking returned `auto_import_not_available`; this is not a repository-wide
 compliance claim.
+
+## SLNG dispatch compatibility — task slng-dispatch
+
+The bounded fix preserves the fixed mock package and existing `CallRequest`,
+completed-call sync and shared SQLite queue interfaces. Read-only inspection on
+2026-09-20 confirmed that the deployed mock has empty `template_variables` and
+`template_defaults`, despite the adapter sending seven arguments. The fixed
+prompt cannot represent a different household; argument-free dispatch is not a
+supported workaround for dynamic requests.
+
+Implementation plan (authorized by @mirrdj):
+
+1. Add failing offline HTTP contract tests for all seven arguments, unsupported
+   or missing provider template metadata, required unbound variables, payload
+   limits and retained request/asset/snapshot associations.
+2. Validate the provider's advertised templates before outbound POST; reject
+   oversized arguments without truncating road restrictions. Keep target approval,
+   trunk matching, sanitized errors and ambiguous-outcome handling unchanged.
+3. Add a separate `voice-agent/dynamic/` Unmute package declaring the same seven
+   `source: call_start` variables, with no default identity bindings. Compile and
+   inspect its hosted artifact offline; keep conversation-result names compatible.
+4. Run relevant and full offline tests, scoped review and changed-file Norma
+   scans; commit, push and open a PR. Document deployment and a controlled live
+   smoke test as unperformed. No hosted configuration or live calls are changed.
+
+The accepted per-call variable names are `request_id`, `asset_id`, `snapshot_id`,
+`incident_brief`, `scenario_notice`, `language`, `road_warning_brief`. The
+call-briefings status export agrees to this existing interface; content generation
+remains in its module. SLNG limits argument values to 1,024 characters, keys to
+64 characters, 32 keys and 8,192 aggregate value characters. Oversized road
+warnings must be reviewed upstream, never silently shortened.
+
+Primary references inspected: [SLNG template arguments](https://docs.slng.ai/examples/agents-config),
+[agent metadata](https://docs.slng.ai/api-reference/agents/get-agent),
+[Unmute variable sources](https://github.com/slng-ai/unmute/blob/main/docs-site/reference/variables.mdx)
+and [hosted compilation](https://github.com/slng-ai/unmute/blob/main/docs-site/targets/slng.mdx).
+
+### Dynamic package deployment and unperformed live check
+
+`SlngClient.dispatch(request, *, approved_target=None)` keeps its signature and
+returns the provider response containing `call_id`. It now checks the GET agent
+response's `template_variables` object before POST: every sent key must be
+advertised, each metadata record must have boolean `required`, and every required
+variable must be supplied. Missing metadata fails closed. `call_arguments(request)`
+returns the same seven string fields and rejects provider-limit violations before
+HTTP. `agent_configuration(...)` now includes the request and snapshot template
+bindings even without a result-tool attachment. Completed-call fetching and the
+legacy explicit association path are unchanged. Queue workers still require one
+shared account database and identical configured rate/concurrency limits.
+
+The new package is `voice-agent/dynamic/`, named
+`fireline-dynamic-interview-slng` after compilation. It keeps the existing answer
+and evidence variable names, adds road-warning acknowledgement capture, and uses
+all seven per-call templates. Identity bindings have no defaults. The old
+`voice-agent/` mock remains available for its fixed fictional scenario. The
+package's `instructions.txt` is a deployment prompt, not a new project design doc.
+
+Offline checks (read-only reuse of installed tools; no installation required):
+
+```bash
+../slng-voice-agent/data/tools/unmute-0.5.5/unmute validate voice-agent/dynamic --target slng
+../slng-voice-agent/data/tools/unmute-0.5.5/unmute compile voice-agent/dynamic --target slng
+UNMUTE_BIN=../slng-voice-agent/data/tools/unmute-0.5.5/unmute PYTHONPATH=. \
+  ../slng-voice-agent/.venv/bin/python -m pytest -q
+```
+
+Generated files remain under ignored `voice-agent/dynamic/build/`. The package
+compile test runs both commands in a temporary copy and checks the emitted hosted
+contract; without `UNMUTE_BIN` or `unmute` on PATH that test explicitly skips.
+Unmute's SLNG target cannot initiate phone calls from package `channels`; this
+package declares the web channel only. Outbound calling is an external API
+operation against a separately attached trunk. Local package `capacity` does not
+prove or configure an account's provider concurrency.
+
+Required deployment steps for @mirrdj, **not performed by this task**:
+
+1. Review the compiled `agent.json` and `compile-report.json`. Ensure the new
+   agent name is distinct from the fixed mock. Check the selected models and
+   published `end_call` capability in the chosen organisation; compilation defers
+   those provider checks.
+2. Preview `unmute deploy voice-agent/dynamic --target slng --dry-run`, then deploy
+   this dedicated package after deployment authorization. Never point it at the
+   existing mock's agent ID. Tool references are resolved at deployment, so do not
+   POST the unresolved compiled JSON directly.
+3. Attach the approved existing outbound trunk and its compatible region to the
+   **new** agent. Unmute 0.5.5 still requires the `eu-north` compilation target;
+   the previously inspected trunk needs `eu-central`. Apply the region/trunk
+   update to the new ID together through the supported agent API/CLI and verify
+   with GET. Do not change carrier credentials or reuse the mock ID by mistake.
+4. Set private `SLNG_AGENT_ID` and `SLNG_OUTBOUND_CONNECTION_ID` for the new agent.
+   GET must advertise all seven templates. Bindings must remain per-call, with
+   no default request, asset or snapshot identity. Confirm provider account limits
+   separately; concurrency remains unverified.
+5. Only after explicit approval of a real test recipient, enqueue one controlled
+   simulation-labelled request in the shared account queue. Retain all three
+   binding IDs and call through the normal adapter with the approved target.
+   Use a fresh request ID for any subsequent approved attempt; never retry an
+   ambiguous dispatch blindly. No phone number is supplied by this document.
+6. Check correct location/brief, interruption, road readback, requests for a human,
+   and unknown answers. Fetch the completed call read-only; verify the returned
+   `arguments` match request/asset/snapshot IDs, sync it twice to prove durable
+   association and idempotence, and review captured evidence/provenance. If SLNG
+   omits these arguments or speech/memory behavior is wrong, stop and investigate;
+   do not bypass association checks or dispatch without arguments.
+
+No dynamic deployment, browser speech, live outbound smoke test, model availability
+check for this new agent, or account concurrency verification has been performed.
+Offline compilation does not establish live model quality, speech behavior,
+operational readiness, human transfer or resource dispatch.
