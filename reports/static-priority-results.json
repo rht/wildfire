@@ -1,0 +1,2980 @@
+{
+  "cases": [
+    {
+      "case_id": "access",
+      "title": "C unlocks timely assistance at A",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "access",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 6,
+        "steps": [
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          },
+          {
+            "action_id": "act_A",
+            "site_id": "A",
+            "depart_min": 3,
+            "travel_min": 1,
+            "start_min": 4,
+            "finish_min": 7,
+            "prerequisites": [
+              "act_C"
+            ],
+            "coverage_gained": {
+              "A": 1.0
+            },
+            "benefit_evidence": {
+              "A": "Synthetic fixture: assisted action covers A if completed by minute 9."
+            }
+          }
+        ],
+        "finish_min": 7,
+        "objective": {
+          "assisted_units": 60.0,
+          "people_units": 84.0,
+          "value_units": 120.0
+        },
+        "coverage": {
+          "A": 1.0,
+          "B": 0.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "B": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C",
+              "act_A"
+            ],
+            "objective": {
+              "assisted_units": 60.0,
+              "people_units": 84.0,
+              "value_units": 120.0
+            },
+            "finish_min": 7
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "access",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "protective_effect",
+      "title": "Declared C-to-A protection, no implicit propagation",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "protective_effect",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 7,
+        "steps": [
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "A": 1.0,
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "A": "synthetic protective effect",
+              "C": "synthetic own effect"
+            }
+          },
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 60.0,
+          "people_units": 92.0,
+          "value_units": 200.0
+        },
+        "coverage": {
+          "A": 1.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {},
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_A",
+            "sequence": [
+              "act_A"
+            ],
+            "objective": {
+              "assisted_units": 60.0,
+              "people_units": 80.0,
+              "value_units": 100.0
+            },
+            "finish_min": 7
+          },
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 60.0,
+              "people_units": 92.0,
+              "value_units": 200.0
+            },
+            "finish_min": 8
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C",
+              "act_B"
+            ],
+            "objective": {
+              "assisted_units": 60.0,
+              "people_units": 92.0,
+              "value_units": 200.0
+            },
+            "finish_min": 8
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "protective_effect",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 2,
+        "steps": [
+          {
+            "action_id": "act_A",
+            "site_id": "A",
+            "depart_min": 0,
+            "travel_min": 4,
+            "start_min": 4,
+            "finish_min": 7,
+            "prerequisites": [],
+            "coverage_gained": {
+              "A": 1.0
+            },
+            "benefit_evidence": {
+              "A": "Synthetic fixture: assisted action covers A if completed by minute 9."
+            }
+          }
+        ],
+        "finish_min": 7,
+        "objective": {
+          "assisted_units": 60.0,
+          "people_units": 80.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 1.0,
+          "B": 0.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "B": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "direct_access",
+      "title": "A directly accessible: bypass unnecessary C action",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "direct_access",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 8,
+        "steps": [
+          {
+            "action_id": "act_A",
+            "site_id": "A",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 4,
+            "prerequisites": [],
+            "coverage_gained": {
+              "A": 1.0
+            },
+            "benefit_evidence": {
+              "A": "Synthetic fixture: assisted action covers A if completed by minute 9."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 4,
+            "travel_min": 1,
+            "start_min": 5,
+            "finish_min": 7,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 7,
+        "objective": {
+          "assisted_units": 60.0,
+          "people_units": 84.0,
+          "value_units": 120.0
+        },
+        "coverage": {
+          "A": 1.0,
+          "B": 0.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "B": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_A",
+            "sequence": [
+              "act_A",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 60.0,
+              "people_units": 84.0,
+              "value_units": 120.0
+            },
+            "finish_min": 7
+          },
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C",
+              "act_A"
+            ],
+            "objective": {
+              "assisted_units": 60.0,
+              "people_units": 84.0,
+              "value_units": 120.0
+            },
+            "finish_min": 7
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "direct_access",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_A",
+            "site_id": "A",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 4,
+            "prerequisites": [],
+            "coverage_gained": {
+              "A": 1.0
+            },
+            "benefit_evidence": {
+              "A": "Synthetic fixture: assisted action covers A if completed by minute 9."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 4,
+            "travel_min": 1,
+            "start_min": 5,
+            "finish_min": 7,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 7,
+        "objective": {
+          "assisted_units": 60.0,
+          "people_units": 84.0,
+          "value_units": 120.0
+        },
+        "coverage": {
+          "A": 1.0,
+          "B": 0.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "B": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "urgent_b",
+      "title": "No people at A and B has a tight deadline",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "urgent_b",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 5,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C",
+              "act_A"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 4.0,
+              "value_units": 120.0
+            },
+            "finish_min": 7
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "urgent_b",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "blocked_c",
+      "title": "C unreachable; do not invent a straight-line shortcut",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "blocked_c",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 2,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          }
+        ],
+        "finish_min": 3,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 8.0,
+          "value_units": 80.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 8.0,
+              "value_units": 80.0
+            },
+            "finish_min": 3
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "blocked_c",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 2,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          }
+        ],
+        "finish_min": 3,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 8.0,
+          "value_units": 80.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "missing_capability",
+      "title": "Crew lacks assisted-evacuation capability",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "missing_capability",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 5,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [
+          {
+            "action_id": "act_A",
+            "reason": "missing capabilities: assisted_evacuation"
+          }
+        ],
+        "blocked_actions": {
+          "act_A": [
+            "missing capabilities: assisted_evacuation"
+          ]
+        },
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C",
+              "act_B"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "missing_capability",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [
+          {
+            "action_id": "act_A",
+            "reason": "missing capabilities: assisted_evacuation"
+          }
+        ],
+        "blocked_actions": {
+          "act_A": [
+            "missing capabilities: assisted_evacuation"
+          ]
+        },
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "missed_window",
+      "title": "A deadline expires before the C-to-A sequence completes",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "missed_window",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 5,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C",
+              "act_B"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "missed_window",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "unknown_people",
+      "title": "Unknown occupancy is review, not zero or credited benefit",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "unknown_people",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 6,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [
+          {
+            "action_id": "act_A",
+            "asset_id": "A",
+            "reason": "unknown people, assisted"
+          }
+        ],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C",
+              "act_B"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "unknown_people",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [
+          {
+            "action_id": "act_A",
+            "asset_id": "A",
+            "reason": "unknown people, assisted"
+          }
+        ],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "assisted_units": true,
+        "review_visible": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "unconfirmed_effect",
+      "title": "Nearby A receives no credit from an unconfirmed effect",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "unconfirmed_effect",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 5,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "fixture"
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [
+          {
+            "action_id": "act_C",
+            "asset_id": "A",
+            "reason": "unconfirmed effect"
+          }
+        ],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C",
+              "act_B"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 12.0,
+              "value_units": 100.0
+            },
+            "finish_min": 8
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "unconfirmed_effect",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "C": 1.0
+            },
+            "benefit_evidence": {
+              "C": "fixture"
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 12.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [
+          {
+            "action_id": "act_C",
+            "asset_id": "A",
+            "reason": "unconfirmed effect"
+          }
+        ],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "assisted_units": true,
+        "review_visible": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "overlap",
+      "title": "Overlapping effects use maximum coverage, not addition",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "overlap",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 5,
+        "steps": [
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "A": 0.8
+            },
+            "benefit_evidence": {
+              "A": "synthetic overlapping protection"
+            }
+          }
+        ],
+        "finish_min": 3,
+        "objective": {
+          "assisted_units": 48.0,
+          "people_units": 64.0,
+          "value_units": 80.0
+        },
+        "coverage": {
+          "A": 0.8,
+          "B": 0.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "B": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B",
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 48.0,
+              "people_units": 64.0,
+              "value_units": 80.0
+            },
+            "finish_min": 8
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 48.0,
+              "people_units": 64.0,
+              "value_units": 80.0
+            },
+            "finish_min": 3
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "overlap",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "A": 0.6
+            },
+            "benefit_evidence": {
+              "A": "synthetic overlapping protection"
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {
+              "A": 0.20000000000000007
+            },
+            "benefit_evidence": {
+              "A": "synthetic overlapping protection"
+            }
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 48.0,
+          "people_units": 64.0,
+          "value_units": 80.0
+        },
+        "coverage": {
+          "A": 0.8,
+          "B": 0.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "B": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "zero_gain_prerequisite",
+      "title": "Zero-benefit C still unlocks A",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "zero_gain_prerequisite",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 6,
+        "steps": [
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {},
+            "benefit_evidence": {}
+          },
+          {
+            "action_id": "act_A",
+            "site_id": "A",
+            "depart_min": 3,
+            "travel_min": 1,
+            "start_min": 4,
+            "finish_min": 7,
+            "prerequisites": [
+              "act_C"
+            ],
+            "coverage_gained": {
+              "A": 1.0
+            },
+            "benefit_evidence": {
+              "A": "Synthetic fixture: assisted action covers A if completed by minute 9."
+            }
+          }
+        ],
+        "finish_min": 7,
+        "objective": {
+          "assisted_units": 60.0,
+          "people_units": 80.0,
+          "value_units": 100.0
+        },
+        "coverage": {
+          "A": 1.0,
+          "B": 0.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "B": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 8.0,
+              "value_units": 80.0
+            },
+            "finish_min": 3
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C",
+              "act_A"
+            ],
+            "objective": {
+              "assisted_units": 60.0,
+              "people_units": 80.0,
+              "value_units": 100.0
+            },
+            "finish_min": 7
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "zero_gain_prerequisite",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          },
+          {
+            "action_id": "act_C",
+            "site_id": "C",
+            "depart_min": 3,
+            "travel_min": 3,
+            "start_min": 6,
+            "finish_min": 8,
+            "prerequisites": [],
+            "coverage_gained": {},
+            "benefit_evidence": {}
+          }
+        ],
+        "finish_min": 8,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 8.0,
+          "value_units": 80.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "closing_access",
+      "title": "C access closes before traversal completes",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "closing_access",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 2,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          }
+        ],
+        "finish_min": 3,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 8.0,
+          "value_units": 80.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 8.0,
+              "value_units": 80.0
+            },
+            "finish_min": 3
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "closing_access",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 2,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          }
+        ],
+        "finish_min": 3,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 8.0,
+          "value_units": 80.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "positive_buffer",
+      "title": "Three-minute buffer makes the A window infeasible",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "positive_buffer",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 3,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          }
+        ],
+        "finish_min": 3,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 8.0,
+          "value_units": 80.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": [
+          {
+            "first_action": "act_B",
+            "sequence": [
+              "act_B"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 8.0,
+              "value_units": 80.0
+            },
+            "finish_min": 3
+          },
+          {
+            "first_action": "act_C",
+            "sequence": [
+              "act_C"
+            ],
+            "objective": {
+              "assisted_units": 0.0,
+              "people_units": 4.0,
+              "value_units": 20.0
+            },
+            "finish_min": 3
+          }
+        ]
+      },
+      "greedy": {
+        "scenario_id": "positive_buffer",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 2,
+        "steps": [
+          {
+            "action_id": "act_B",
+            "site_id": "B",
+            "depart_min": 0,
+            "travel_min": 1,
+            "start_min": 1,
+            "finish_min": 3,
+            "prerequisites": [],
+            "coverage_gained": {
+              "B": 1.0
+            },
+            "benefit_evidence": {
+              "B": "Synthetic fixture: action covers B under the scenario assumptions."
+            }
+          }
+        ],
+        "finish_min": 3,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 8.0,
+          "value_units": 80.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 1.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    },
+    {
+      "case_id": "no_feasible_action",
+      "title": "All work-site deadlines expired",
+      "contacts": {
+        "ranked": [
+          {
+            "asset_id": "A",
+            "name": "A — assisted evacuation",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 1,
+            "slack_min": 2,
+            "latest_start_min": 2,
+            "time_to_impact_min": 9,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 9,
+              "now_min": 0,
+              "evacuation_min": 7,
+              "buffer_min": 0,
+              "distance_m": 316.227766
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "B",
+            "name": "B — higher direct value",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 2,
+            "slack_min": 8,
+            "latest_start_min": 8,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 4,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          },
+          {
+            "asset_id": "C",
+            "name": "C — access action",
+            "policy": "forecast-evacuation-window-v2",
+            "rank": 3,
+            "slack_min": 10,
+            "latest_start_min": 10,
+            "time_to_impact_min": 12,
+            "status": "window_open",
+            "components": {
+              "fire_arrival_min": 12,
+              "now_min": 0,
+              "evacuation_min": 2,
+              "buffer_min": 0,
+              "distance_m": 200
+            },
+            "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+            "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement.",
+            "review_reasons": []
+          }
+        ],
+        "review": [],
+        "policy": "forecast-evacuation-window-v2",
+        "ordering": "slack ascending; forecast arrival ascending; distance ascending; asset ID"
+      },
+      "response": {
+        "scenario_id": "no_feasible_action",
+        "optimal": true,
+        "method": "exact enumeration",
+        "states_evaluated": 1,
+        "steps": [],
+        "finish_min": 0,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 0.0,
+          "value_units": 0.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 0.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "B": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ],
+        "first_action_alternatives": []
+      },
+      "greedy": {
+        "scenario_id": "no_feasible_action",
+        "optimal": false,
+        "method": "direct-value greedy baseline",
+        "states_evaluated": 1,
+        "steps": [],
+        "finish_min": 0,
+        "objective": {
+          "assisted_units": 0.0,
+          "people_units": 0.0,
+          "value_units": 0.0
+        },
+        "coverage": {
+          "A": 0.0,
+          "B": 0.0,
+          "C": 0.0
+        },
+        "unserved": {
+          "A": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "B": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions",
+          "C": "not fully covered within the chosen feasible plan; review resources, deadlines and assumptions"
+        },
+        "review": [],
+        "blocked_actions": {},
+        "assumptions": [
+          "one crew; no return-to-base requirement",
+          "directed end-to-end travel times and their availability are supplied, not inferred from GPS",
+          "benefits are declared scenario assumptions; no suppression or spread simulation",
+          "coverage units are not a prediction of lives saved"
+        ]
+      },
+      "checks": {
+        "first_action": true,
+        "assisted_units": true
+      },
+      "passed": true
+    }
+  ],
+  "passed": true
+}

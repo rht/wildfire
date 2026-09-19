@@ -29,7 +29,7 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 
 | Item | Status | Where |
 |---|---|---|
-| Priority score | Closed | `priority.score_snapshot`, `config.PRIORITY_POLICY`, components shown in the UI |
+| Priority score | Closed, then superseded by `readme.md` | `priority.score_snapshot`, `config.PRIORITY_POLICY`, components shown in the UI. Implements the weighted proximity–size–value score of the pre-merge readme section 6; the merged readme (`origin/main` d0473c1) now specifies ranking by remaining evacuation window. See "Divergence from readme" below. |
 | Needs-review queue ordering | Closed | exposure unknown first, then known distance |
 | Tasks | Closed | `tasks.TaskStore`, four actions, task fields per readme 7, suggestions deduplicated |
 | Team roster and availability checks | Closed | `fixtures/teams.json`; busy, capability and availability checks with explanations |
@@ -78,6 +78,18 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 | Reference document | Closed | `readme.md` owns scope; `CONTRACTS.md` v1.0 restates its section 5; AGENTS.md points at both |
 | Two readmes | Closed | `QUICKSTART.md` merged into `readme.md` section 0 |
 
+## Divergence from readme after merging `origin/main` (d0473c1, 2026-09-19)
+
+Marked here rather than silently reconciled. `readme.md` owns scope; the code on this branch has not
+been changed to match the new scope yet.
+
+| readme (main) now says | Code on this branch still does |
+|---|---|
+| Section 6: contact order by `remaining_window = (predicted_fire_arrival - total_evacuation_duration - buffer) - now`, smallest first; a forecast is **required**; missing forecast/evacuation duration -> unranked review; "this replaces the weighted contact score". | `priority.score_snapshot` ranks by `w_proximity * proximity + w_size * size + w_value * value` (`config.PRIORITY_POLICY`), review queue when a component is unknown. |
+| Section 5: asset keys `fire_arrival_at`, `fire_arrival_basis`, `evacuation_min`, `evacuation_source`; `forecast_horizon_at`/`forecast_source` are required provenance for ranking. | `CONTRACTS.md` v1.0 and `snapshot.asset_record` carry none of these four keys; forecast fields are null unless `FEATURES["forecast_enrichment"]` is on. |
+| Sections 8–9, 11–12: "recalculate the remaining evacuation window", "timing breakdown", validate "forecast arrival minus elapsed time". | Overrides recalculate the score; the UI shows the score breakdown; `scripts/validate.py` / `VALIDATION.md` "Priority" checks weight normalisation and monotonicity. |
+| Section 16: `forecast-evacuation-window-v2` is implemented in `fireline/contact_priority.py` (`rank_contacts`, `ContactPolicy`) over `priority_models.Location` in minutes from a scenario epoch. | That module is a standalone API/CLI prototype (`scripts/static_priorities.py`, `fixtures/static_priority.json`); it is not wired to snapshots, `tasks.py`, `agent.py` or `app.py`, as section 16 itself states. |
+
 ## Still open after this pass
 
 1. Run one live investigation (`scripts/investigate.py --record --asset fixture:pou_del_glac`) and
@@ -85,3 +97,8 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 2. Real-area ranking is empty: no located register row carries a capacity, so every real asset sits
    in the review queue until capacities are sourced or confirmed. Disclosed in `VALIDATION.md`.
 3. Install Superpowers for the next session.
+4. Bring the snapshot pipeline onto the merged readme section 6: extend the contract (v1.1) with
+   `fire_arrival_at`, `fire_arrival_basis`, `evacuation_min`, `evacuation_source` and their sources;
+   port `contact_priority.rank_contacts` onto snapshot assets (timestamps converted to one epoch);
+   replace the weighted ranking in `priority.score_snapshot`, the UI breakdown and the `validate.py`
+   Priority check; keep the review queue for missing forecast or evacuation estimates.

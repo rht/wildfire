@@ -5,6 +5,13 @@ SNAPSHOTS := fixtures/snapshots/synthetic_gavarres_0001.json
 V0_SCENARIOS := data/scenarios/index.json
 
 .PHONY: setup test snapshots demo investigate fetch precompute demo-v0 clean-scenarios clean-db
+.PHONY: static-priorities priority-report
+
+static-priorities:
+	$(PY) scripts/static_priorities.py --all-cases --output reports/static-priority-results.json
+
+priority-report: static-priorities
+	$(PY) scripts/build_priority_report.py
 
 setup:
 	uv venv

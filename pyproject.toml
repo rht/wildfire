@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
+report = ["reportlab"]
 
 [build-system]
 requires = ["hatchling"]

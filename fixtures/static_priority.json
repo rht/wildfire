@@ -1,0 +1,164 @@
+{
+  "schema_version": "static-priority-1",
+  "scenario_id": "diagonal_access",
+  "description": "Synthetic O/B/C/A layout. C is a declared access prerequisite for A; all times and benefits are illustrative assumptions.",
+  "fire": {
+    "x_m": 0,
+    "y_m": 0,
+    "direction": [
+      1,
+      -1
+    ],
+    "meaning": "illustrative southeast direction only, not a spread calculation"
+  },
+  "start_id": "START",
+  "horizon_min": 9,
+  "buffer_min": 0,
+  "capabilities": [
+    "assisted_evacuation"
+  ],
+  "locations": [
+    {
+      "asset_id": "B",
+      "name": "B — higher direct value",
+      "x_m": 200,
+      "y_m": 0,
+      "distance_m": 200,
+      "people": 8,
+      "assisted": 0,
+      "value": 80,
+      "deadline_min": 12,
+      "fire_arrival_min": 12,
+      "evacuation_min": 4,
+      "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+      "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement."
+    },
+    {
+      "asset_id": "C",
+      "name": "C — access action",
+      "x_m": 0,
+      "y_m": -200,
+      "distance_m": 200,
+      "people": 4,
+      "assisted": 0,
+      "value": 20,
+      "deadline_min": 12,
+      "fire_arrival_min": 12,
+      "evacuation_min": 2,
+      "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+      "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement."
+    },
+    {
+      "asset_id": "A",
+      "name": "A — assisted evacuation",
+      "x_m": 100,
+      "y_m": -300,
+      "distance_m": 316.227766,
+      "people": 80,
+      "assisted": 60,
+      "value": 100,
+      "deadline_min": 9,
+      "fire_arrival_min": 9,
+      "evacuation_min": 7,
+      "forecast_source": "Synthetic per-location spread prediction; not derived from the arrow or distance.",
+      "evacuation_source": "Synthetic total duration including mobilisation, preparation and onward movement."
+    }
+  ],
+  "actions": [
+    {
+      "action_id": "act_B",
+      "site_id": "B",
+      "duration_min": 2,
+      "deadline_min": 12,
+      "benefits": [
+        {
+          "asset_id": "B",
+          "coverage": 1,
+          "confirmed": true,
+          "evidence": "Synthetic fixture: action covers B under the scenario assumptions."
+        }
+      ]
+    },
+    {
+      "action_id": "act_C",
+      "site_id": "C",
+      "duration_min": 2,
+      "deadline_min": 12,
+      "benefits": [
+        {
+          "asset_id": "C",
+          "coverage": 1,
+          "confirmed": true,
+          "evidence": "Synthetic fixture: action covers C and is a prerequisite for act_A."
+        }
+      ]
+    },
+    {
+      "action_id": "act_A",
+      "site_id": "A",
+      "duration_min": 3,
+      "deadline_min": 9,
+      "requires": [
+        "act_C"
+      ],
+      "capabilities": [
+        "assisted_evacuation"
+      ],
+      "benefits": [
+        {
+          "asset_id": "A",
+          "coverage": 1,
+          "confirmed": true,
+          "evidence": "Synthetic fixture: assisted action covers A if completed by minute 9."
+        }
+      ]
+    }
+  ],
+  "travel": [
+    {
+      "from": "START",
+      "to": "B",
+      "minutes": 1
+    },
+    {
+      "from": "START",
+      "to": "C",
+      "minutes": 1
+    },
+    {
+      "from": "START",
+      "to": "A",
+      "minutes": 4
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "minutes": 3
+    },
+    {
+      "from": "C",
+      "to": "B",
+      "minutes": 3
+    },
+    {
+      "from": "C",
+      "to": "A",
+      "minutes": 1
+    },
+    {
+      "from": "A",
+      "to": "C",
+      "minutes": 1
+    },
+    {
+      "from": "B",
+      "to": "A",
+      "minutes": 5
+    },
+    {
+      "from": "A",
+      "to": "B",
+      "minutes": 5
+    }
+  ]
+}
