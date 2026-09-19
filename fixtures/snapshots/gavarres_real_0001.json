@@ -218,6 +218,687 @@
  },
  "assets": [
   {
+   "asset_id": "equipaments:10213412",
+   "name": "Parc de Bombers de la Vall d'Aro",
+   "asset_type": "fire_station",
+   "latitude": 41.80871,
+   "longitude": 3.031821,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 8171.6,
+   "intersects_fire": false,
+   "burn_probability": 0.8,
+   "arrival_p10_at": "2026-07-03T18:48:01.981000+00:00",
+   "arrival_p50_at": "2026-07-03T18:58:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:48:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:10213421",
+   "name": "Parc de Bombers de la Pera",
+   "asset_type": "fire_station",
+   "latitude": 42.029748819,
+   "longitude": 2.975134402,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 11154.4,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Pera, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:25599403",
+   "name": "Parc de Bombers de Calonge i Sant Antoni",
+   "asset_type": "fire_station",
+   "latitude": 41.852481,
+   "longitude": 3.074588,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 5084.7,
+   "intersects_fire": false,
+   "burn_probability": 0.2,
+   "arrival_p10_at": "2026-07-03T16:51:13.980817+00:00",
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T16:51:13.980817+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:3041423",
+   "name": "Parc de Bombers de Cassà de la Selva",
+   "asset_type": "fire_station",
+   "latitude": 41.879694,
+   "longitude": 2.883842,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 10155.2,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:3041468",
+   "name": "Parc de Bombers de Palafrugell",
+   "asset_type": "fire_station",
+   "latitude": 41.925839,
+   "longitude": 3.155936,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 8812.9,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:3041486",
+   "name": "Parc de Bombers de Torroella de Montgrí",
+   "asset_type": "fire_station",
+   "latitude": 42.048098947,
+   "longitude": 3.167385943,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 17079.7,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:34473418",
+   "name": "IRTA Monells (IRTA-Monells)",
+   "asset_type": "research_facility",
+   "latitude": 41.9789,
+   "longitude": 2.99802,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 5216.9,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Recerca|Centres de recerca|Centres CERCA (només subseus)|"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class research_facility: mobilisation 20 min, preparation 40 min, movement 30 min = 90 min; assumptions: ambulatory staff; preparation includes securing samples, animals and hazardous stores, which can dominate; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
    "asset_id": "equipaments:3620470",
    "name": "Hospital de Palamós",
    "asset_type": "hospital",
@@ -309,7 +990,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "PALAMÓS"
+   "municipality": "PALAMÓS",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "equipaments:3620472",
@@ -404,7 +1088,496 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "PALAMÓS"
+   "municipality": "PALAMÓS",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:55419",
+   "name": "Heliport de Costa Brava Centre",
+   "asset_type": "aerodrome",
+   "latitude": 41.8064222222222,
+   "longitude": 3.03745277777778,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 8513.5,
+   "intersects_fire": false,
+   "burn_probability": 0.55,
+   "arrival_p10_at": "2026-07-03T18:56:01.981000+00:00",
+   "arrival_p50_at": "2026-07-03T19:16:01.981000+00:00",
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": "2026-07-03T18:56:01.981000+00:00",
+   "fire_arrival_basis": "p10 (ca_ensemble, labelled enrichment, not validated)",
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source",
+      "fire_arrival_at",
+      "fire_arrival_basis"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": null,
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:759234",
+   "name": "Camp d'aviació de les Serres de Foixà",
+   "asset_type": "aerodrome",
+   "latitude": 42.0295638888889,
+   "longitude": 2.99027222222222,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 10736.8,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Foixà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:759245",
+   "name": "Camp d'aviació de Llabià",
+   "asset_type": "aerodrome",
+   "latitude": 42.0116111111111,
+   "longitude": 3.08925,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 9884.4,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Fontanilles",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:759250",
+   "name": "Camp d'aviació de l'Estartit",
+   "asset_type": "aerodrome",
+   "latitude": 42.0310166666667,
+   "longitude": 3.17927222222222,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 16499.5,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:759260",
+   "name": "Camp d'aviació de l'Empordà",
+   "asset_type": "aerodrome",
+   "latitude": 42.00675,
+   "longitude": 3.15287222222222,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 13115.3,
+   "intersects_fire": false,
+   "burn_probability": 0.0,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": "2026-07-04T01:20:01.981000+00:00",
+   "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T11:47:00+00:00",
+     "available_at": "2026-07-03T13:20:01+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing"
+    },
+    {
+     "fields": [
+      "burn_probability",
+      "arrival_p10_at",
+      "arrival_p50_at",
+      "forecast_horizon_at",
+      "forecast_source"
+     ],
+     "source": "ca_ensemble (labelled enrichment, not validated)",
+     "observed_at": "2026-07-03T13:20:01.981000+00:00",
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
+    }
+   ],
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000411",
@@ -508,7 +1681,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000421",
@@ -612,7 +1788,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000561",
@@ -716,7 +1895,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Bordils"
+   "municipality": "Bordils",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000688",
@@ -820,7 +2002,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000706",
@@ -924,7 +2109,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000718",
@@ -1028,7 +2216,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000846",
@@ -1132,7 +2323,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000858",
@@ -1236,7 +2430,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000883",
@@ -1340,7 +2537,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000895",
@@ -1444,7 +2644,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000913",
@@ -1548,7 +2751,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000998",
@@ -1652,7 +2858,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Corçà"
+   "municipality": "Corçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17001024",
@@ -1756,7 +2965,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17001231",
@@ -1860,7 +3072,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17001292",
@@ -1964,7 +3179,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Flaçà"
+   "municipality": "Flaçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002031",
@@ -2068,7 +3286,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002259",
@@ -2172,7 +3393,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Mont-ras"
+   "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002481",
@@ -2276,7 +3500,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002491",
@@ -2380,7 +3607,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002508",
@@ -2484,7 +3714,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002511",
@@ -2588,7 +3821,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002521",
@@ -2692,7 +3928,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002533",
@@ -2796,7 +4035,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002545",
@@ -2900,7 +4142,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002557",
@@ -3004,7 +4249,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002569",
@@ -3108,7 +4356,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002570",
@@ -3212,7 +4463,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002594",
@@ -3316,7 +4570,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002651",
@@ -3420,7 +4677,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002715",
@@ -3524,7 +4784,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "La Pera"
+   "municipality": "La Pera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003631",
@@ -3628,7 +4891,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003689",
@@ -3732,7 +4998,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003872",
@@ -3836,7 +5105,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003896",
@@ -3940,7 +5212,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003938",
@@ -4044,7 +5319,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Ullà"
+   "municipality": "Ullà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003941",
@@ -4148,7 +5426,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Ullastret"
+   "municipality": "Ullastret",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17004736",
@@ -4252,7 +5533,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17004876",
@@ -4356,7 +5640,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Begur"
+   "municipality": "Begur",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005248",
@@ -4460,7 +5747,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005315",
@@ -4554,7 +5844,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005352",
@@ -4658,7 +5951,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005571",
@@ -4762,7 +6058,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005650",
@@ -4866,7 +6165,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005728",
@@ -4970,7 +6272,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005844",
@@ -5074,7 +6379,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005856",
@@ -5178,7 +6486,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005923",
@@ -5282,7 +6593,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006061",
@@ -5386,7 +6700,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006587",
@@ -5490,7 +6807,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006691",
@@ -5594,7 +6914,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006708",
@@ -5698,7 +7021,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006757",
@@ -5802,7 +7128,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006782",
@@ -5906,7 +7235,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006861",
@@ -6010,7 +7342,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007117",
@@ -6105,7 +7440,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007142",
@@ -6209,7 +7547,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007300",
@@ -6313,7 +7654,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007312",
@@ -6417,7 +7761,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007579",
@@ -6521,7 +7868,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007580",
@@ -6625,7 +7975,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007841",
@@ -6719,7 +8072,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007890",
@@ -6813,7 +8169,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008146",
@@ -6917,7 +8276,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008195",
@@ -7021,7 +8383,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008201",
@@ -7115,7 +8480,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Vall-llobrega"
+   "municipality": "Vall-llobrega",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008328",
@@ -7219,7 +8587,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Mont-ras"
+   "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008353",
@@ -7313,7 +8684,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Ullastret"
+   "municipality": "Ullastret",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008468",
@@ -7417,7 +8791,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008471",
@@ -7521,7 +8898,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008493",
@@ -7625,7 +9005,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Vall-llobrega"
+   "municipality": "Vall-llobrega",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008501",
@@ -7729,7 +9112,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008523",
@@ -7833,7 +9219,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008560",
@@ -7937,7 +9326,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008997",
@@ -8041,7 +9433,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Forallac"
+   "municipality": "Forallac",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009114",
@@ -8145,7 +9540,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009138",
@@ -8249,7 +9647,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009278",
@@ -8353,7 +9754,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009424",
@@ -8457,7 +9861,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009503",
@@ -8561,7 +9968,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009576",
@@ -8665,7 +10075,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009621",
@@ -8769,7 +10182,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009710",
@@ -8873,7 +10289,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009734",
@@ -8977,7 +10396,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Parlavà"
+   "municipality": "Parlavà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009862",
@@ -9072,7 +10494,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010086",
@@ -9176,7 +10601,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010372",
@@ -9280,7 +10708,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Sant Martí Vell"
+   "municipality": "Sant Martí Vell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010384",
@@ -9384,7 +10815,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010396",
@@ -9488,7 +10922,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Flaçà"
+   "municipality": "Flaçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010402",
@@ -9592,7 +11029,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Corçà"
+   "municipality": "Corçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010505",
@@ -9696,7 +11136,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010611",
@@ -9790,7 +11233,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010785",
@@ -9894,7 +11340,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010815",
@@ -9998,7 +11447,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010840",
@@ -10102,7 +11554,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010864",
@@ -10196,7 +11651,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010891",
@@ -10291,7 +11749,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010992",
@@ -10395,7 +11856,10 @@
      "notes": "nearest raster cell at the representative point; minutes after as_of; fire_arrival_at = arrival_p10_at when finite; not a provider forecast, not validated on Gavarres; CA: spread.run_ca n_runs 20, horizon_min 720, seed 0, cell 100 m, no fuel, no slope, config.CA {'p0': 0.5, 'minutes_per_step': 4, 'wind_c1': 0.045, 'wind_c2': 0.3, 'slope_a': 0.078}; wind 5.80 m/s from 15 deg valid 2026-07-03T13:00Z, fixtures/wind/41.90_3.05.json (open-meteo previous_day1 ecmwf_ifs025 (real model output, not an observation))"
     }
    ],
-   "municipality": "Forallac"
+   "municipality": "Forallac",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000001",
@@ -10486,7 +11950,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000003",
@@ -10577,7 +12044,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000007",
@@ -10668,7 +12138,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000010",
@@ -10759,7 +12232,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000015",
@@ -10850,7 +12326,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000018",
@@ -10941,7 +12420,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000020",
@@ -11032,7 +12514,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000024",
@@ -11123,7 +12608,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Begur"
+   "municipality": "Begur",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000025",
@@ -11214,7 +12702,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000026",
@@ -11305,7 +12796,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Begur"
+   "municipality": "Begur",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000027",
@@ -11396,7 +12890,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000031",
@@ -11487,7 +12984,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Vall-llobrega"
+   "municipality": "Vall-llobrega",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000032",
@@ -11578,7 +13078,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000036",
@@ -11669,7 +13172,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000037",
@@ -11760,7 +13266,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000041",
@@ -11851,7 +13360,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000054",
@@ -11942,7 +13454,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000056",
@@ -12033,7 +13548,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000057",
@@ -12124,7 +13642,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000059",
@@ -12215,7 +13736,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000064",
@@ -12306,7 +13830,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000065",
@@ -12397,7 +13924,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000066",
@@ -12488,7 +14018,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000067",
@@ -12579,7 +14112,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000072",
@@ -12670,7 +14206,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000073",
@@ -12761,7 +14300,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000074",
@@ -12852,7 +14394,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000076",
@@ -12943,7 +14488,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Mont-ras"
+   "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000080",
@@ -13034,7 +14582,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000086",
@@ -13125,7 +14676,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000087",
@@ -13216,7 +14770,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Mont-ras"
+   "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000091",
@@ -13307,7 +14864,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000101",
@@ -13398,7 +14958,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000104",
@@ -13489,7 +15052,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000106",
@@ -13580,7 +15146,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000107",
@@ -13671,7 +15240,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000108",
@@ -13762,7 +15334,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000110",
@@ -13853,7 +15428,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000111",
@@ -13944,7 +15522,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000114",
@@ -14035,7 +15616,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000142",
@@ -14126,7 +15710,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000277",
@@ -14217,7 +15804,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00170",
@@ -14307,7 +15897,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00178",
@@ -14397,7 +15990,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00183",
@@ -14487,7 +16083,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Bisbal d'Empordà, la"
+   "municipality": "Bisbal d'Empordà, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00234",
@@ -14577,7 +16176,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00304",
@@ -14667,7 +16269,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00658",
@@ -14757,7 +16362,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S04016",
@@ -14847,7 +16455,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S04307",
@@ -14937,7 +16548,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S04734",
@@ -15027,7 +16641,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S04763",
@@ -15117,7 +16734,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S05407",
@@ -15207,7 +16827,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S05481",
@@ -15297,7 +16920,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S05682",
@@ -15387,7 +17013,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S05737",
@@ -15477,7 +17106,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Bisbal d'Empordà, la"
+   "municipality": "Bisbal d'Empordà, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S06385",
@@ -15567,7 +17199,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S06518",
@@ -15657,7 +17292,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S06757",
@@ -15747,7 +17385,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S07567",
@@ -15837,7 +17478,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S07611",
@@ -15927,7 +17571,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S07920",
@@ -16017,7 +17664,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08013",
@@ -16107,7 +17757,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08573",
@@ -16197,7 +17850,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08599",
@@ -16287,7 +17943,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08609",
@@ -16377,7 +18036,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08787",
@@ -16467,7 +18129,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Bisbal d'Empordà, la"
+   "municipality": "Bisbal d'Empordà, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S10380",
@@ -16557,7 +18222,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S10722",
@@ -16647,7 +18315,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   }
  ]
 }

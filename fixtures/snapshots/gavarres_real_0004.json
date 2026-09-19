@@ -46,6 +46,587 @@
  },
  "assets": [
   {
+   "asset_id": "equipaments:10213412",
+   "name": "Parc de Bombers de la Vall d'Aro",
+   "asset_type": "fire_station",
+   "latitude": 41.80871,
+   "longitude": 3.031821,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 9158.7,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:10213421",
+   "name": "Parc de Bombers de la Pera",
+   "asset_type": "fire_station",
+   "latitude": 42.029748819,
+   "longitude": 2.975134402,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 15817.8,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Pera, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:25599403",
+   "name": "Parc de Bombers de Calonge i Sant Antoni",
+   "asset_type": "fire_station",
+   "latitude": 41.852481,
+   "longitude": 3.074588,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 6051.4,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:3041423",
+   "name": "Parc de Bombers de Cassà de la Selva",
+   "asset_type": "fire_station",
+   "latitude": 41.879694,
+   "longitude": 2.883842,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 11562.8,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:3041468",
+   "name": "Parc de Bombers de Palafrugell",
+   "asset_type": "fire_station",
+   "latitude": 41.925839,
+   "longitude": 3.155936,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 11641.7,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:3041486",
+   "name": "Parc de Bombers de Torroella de Montgrí",
+   "asset_type": "fire_station",
+   "latitude": 42.048098947,
+   "longitude": 3.167385943,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.9,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 21077.7,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 35.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Emergències. Seguretat|Parcs de Bombers||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class fire_station: mobilisation 5 min, preparation 10 min, movement 20 min = 35 min; assumptions: crews are already mobile and self-relocating; this is a relocation time, not an evacuation of occupants; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:34473418",
+   "name": "IRTA Monells (IRTA-Monells)",
+   "asset_type": "research_facility",
+   "latitude": 41.9789,
+   "longitude": 2.99802,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 9888.6,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 90.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Recerca|Centres de recerca|Centres CERCA (només subseus)|"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class research_facility: mobilisation 20 min, preparation 40 min, movement 30 min = 90 min; assumptions: ambulatory staff; preparation includes securing samples, animals and hazardous stores, which can dominate; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
    "asset_id": "equipaments:3620470",
    "name": "Hospital de Palamós",
    "asset_type": "hospital",
@@ -123,7 +704,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "PALAMÓS"
+   "municipality": "PALAMÓS",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "equipaments:3620472",
@@ -204,7 +788,425 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "PALAMÓS"
+   "municipality": "PALAMÓS",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:55419",
+   "name": "Heliport de Costa Brava Centre",
+   "asset_type": "aerodrome",
+   "latitude": 41.8064222222222,
+   "longitude": 3.03745277777778,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 9462.1,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": null,
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:759234",
+   "name": "Camp d'aviació de les Serres de Foixà",
+   "asset_type": "aerodrome",
+   "latitude": 42.0295638888889,
+   "longitude": 2.99027222222222,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 15534.2,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Foixà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:759245",
+   "name": "Camp d'aviació de Llabià",
+   "asset_type": "aerodrome",
+   "latitude": 42.0116111111111,
+   "longitude": 3.08925,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 14391.1,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Fontanilles",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:759250",
+   "name": "Camp d'aviació de l'Estartit",
+   "asset_type": "aerodrome",
+   "latitude": 42.0310166666667,
+   "longitude": 3.17927222222222,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 20164.8,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
+  },
+  {
+   "asset_id": "equipaments:759260",
+   "name": "Camp d'aviació de l'Empordà",
+   "asset_type": "aerodrome",
+   "latitude": 42.00675,
+   "longitude": 3.15287222222222,
+   "geometry": null,
+   "area_m2": null,
+   "capacity": null,
+   "estimated_occupancy": null,
+   "occupancy_basis": null,
+   "value_score": 0.7,
+   "value_basis": "value-proto-2026-09-19",
+   "distance_to_fire_m": 16695.9,
+   "intersects_fire": false,
+   "burn_probability": null,
+   "arrival_p10_at": null,
+   "arrival_p50_at": null,
+   "forecast_horizon_at": null,
+   "forecast_source": null,
+   "fire_arrival_at": null,
+   "fire_arrival_basis": null,
+   "evacuation_min": 75.0,
+   "evacuation_source": "evacuation-proto-2026-09-19",
+   "needs_review": true,
+   "review_reasons": [
+    "occupancy_unknown",
+    "forecast_unavailable"
+   ],
+   "sources": [
+    {
+     "fields": [
+      "name",
+      "asset_type",
+      "municipality",
+      "latitude",
+      "longitude"
+     ],
+     "source": "gencat:equipaments (8gmd-gz7i)",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": "2026-09-19T11:46:36+00:00",
+     "notes": "register category: Mobilitat. Transports||Aeroports, aeròdroms i heliports||"
+    },
+    {
+     "fields": [
+      "value_score",
+      "value_basis"
+     ],
+     "source": "config.VALUE_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "class-based operational importance, policy value-proto-2026-09-19; prototype policy, not a monetary valuation"
+    },
+    {
+     "fields": [
+      "evacuation_min",
+      "evacuation_source"
+     ],
+     "source": "config.EVACUATION_POLICY",
+     "observed_at": null,
+     "available_at": null,
+     "fetched_at": null,
+     "notes": "policy evacuation-proto-2026-09-19 for class aerodrome: mobilisation 15 min, preparation 30 min, movement 30 min = 75 min; assumptions: ambulatory staff; preparation includes flying out or towing based aircraft; labelled prototype assumption, not an emergency-service rule; analyst override allowed"
+    },
+    {
+     "fields": [
+      "distance_to_fire_m",
+      "intersects_fire"
+     ],
+     "source": "deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, run 2026-09-19; not an observed perimeter)",
+     "observed_at": "2026-09-19T13:49:18.165734+00:00",
+     "available_at": "2026-09-19T13:50:29+00:00",
+     "fetched_at": null,
+     "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
+    }
+   ],
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000411",
@@ -294,7 +1296,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000421",
@@ -384,7 +1389,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000561",
@@ -474,7 +1482,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Bordils"
+   "municipality": "Bordils",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000688",
@@ -564,7 +1575,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000706",
@@ -654,7 +1668,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000718",
@@ -744,7 +1761,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000846",
@@ -834,7 +1854,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000858",
@@ -924,7 +1947,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000883",
@@ -1014,7 +2040,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000895",
@@ -1104,7 +2133,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000913",
@@ -1194,7 +2226,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17000998",
@@ -1284,7 +2319,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Corçà"
+   "municipality": "Corçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17001024",
@@ -1374,7 +2412,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17001231",
@@ -1464,7 +2505,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17001292",
@@ -1554,7 +2598,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Flaçà"
+   "municipality": "Flaçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002031",
@@ -1644,7 +2691,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002259",
@@ -1734,7 +2784,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Mont-ras"
+   "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002481",
@@ -1824,7 +2877,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002491",
@@ -1914,7 +2970,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002508",
@@ -2004,7 +3063,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002511",
@@ -2094,7 +3156,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002521",
@@ -2184,7 +3249,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002533",
@@ -2274,7 +3342,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002545",
@@ -2364,7 +3435,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002557",
@@ -2454,7 +3528,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002569",
@@ -2544,7 +3621,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002570",
@@ -2634,7 +3714,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002594",
@@ -2724,7 +3807,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002651",
@@ -2814,7 +3900,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17002715",
@@ -2904,7 +3993,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "La Pera"
+   "municipality": "La Pera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003631",
@@ -2994,7 +4086,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003689",
@@ -3084,7 +4179,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003872",
@@ -3174,7 +4272,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003896",
@@ -3264,7 +4365,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003938",
@@ -3354,7 +4458,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Ullà"
+   "municipality": "Ullà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17003941",
@@ -3444,7 +4551,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Ullastret"
+   "municipality": "Ullastret",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17004736",
@@ -3534,7 +4644,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17004876",
@@ -3624,7 +4737,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Begur"
+   "municipality": "Begur",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005248",
@@ -3714,7 +4830,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005315",
@@ -3794,7 +4913,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005352",
@@ -3884,7 +5006,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005571",
@@ -3974,7 +5099,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005650",
@@ -4064,7 +5192,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005728",
@@ -4154,7 +5285,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005844",
@@ -4244,7 +5378,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005856",
@@ -4334,7 +5471,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17005923",
@@ -4424,7 +5564,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006061",
@@ -4514,7 +5657,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006587",
@@ -4604,7 +5750,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006691",
@@ -4694,7 +5843,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006708",
@@ -4784,7 +5936,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006757",
@@ -4874,7 +6029,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006782",
@@ -4964,7 +6122,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17006861",
@@ -5054,7 +6215,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007117",
@@ -5134,7 +6298,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007142",
@@ -5224,7 +6391,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007300",
@@ -5314,7 +6484,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007312",
@@ -5404,7 +6577,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007579",
@@ -5494,7 +6670,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007580",
@@ -5584,7 +6763,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007841",
@@ -5664,7 +6846,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17007890",
@@ -5744,7 +6929,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008146",
@@ -5834,7 +7022,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008195",
@@ -5924,7 +7115,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008201",
@@ -6004,7 +7198,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Vall-llobrega"
+   "municipality": "Vall-llobrega",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008328",
@@ -6094,7 +7291,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Mont-ras"
+   "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008353",
@@ -6174,7 +7374,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Ullastret"
+   "municipality": "Ullastret",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008468",
@@ -6264,7 +7467,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008471",
@@ -6354,7 +7560,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008493",
@@ -6444,7 +7653,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Vall-llobrega"
+   "municipality": "Vall-llobrega",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008501",
@@ -6534,7 +7746,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008523",
@@ -6624,7 +7839,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008560",
@@ -6714,7 +7932,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17008997",
@@ -6804,7 +8025,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Forallac"
+   "municipality": "Forallac",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009114",
@@ -6894,7 +8118,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009138",
@@ -6984,7 +8211,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009278",
@@ -7074,7 +8304,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009424",
@@ -7164,7 +8397,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009503",
@@ -7254,7 +8490,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009576",
@@ -7344,7 +8583,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009621",
@@ -7434,7 +8676,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009710",
@@ -7524,7 +8769,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009734",
@@ -7614,7 +8862,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Parlavà"
+   "municipality": "Parlavà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17009862",
@@ -7694,7 +8945,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010086",
@@ -7784,7 +9038,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010372",
@@ -7874,7 +9131,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Sant Martí Vell"
+   "municipality": "Sant Martí Vell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010384",
@@ -7964,7 +9224,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010396",
@@ -8054,7 +9317,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Flaçà"
+   "municipality": "Flaçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010402",
@@ -8144,7 +9410,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Corçà"
+   "municipality": "Corçà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010505",
@@ -8234,7 +9503,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010611",
@@ -8314,7 +9586,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010785",
@@ -8404,7 +9679,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010815",
@@ -8494,7 +9772,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010840",
@@ -8584,7 +9865,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010864",
@@ -8664,7 +9948,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "La Bisbal d'Empordà"
+   "municipality": "La Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010891",
@@ -8744,7 +10031,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "schools:17010992",
@@ -8834,7 +10124,10 @@
      "notes": "point fallback: facility footprint missing; fire geometry is a simulated burned area, not an observed perimeter"
     }
    ],
-   "municipality": "Forallac"
+   "municipality": "Forallac",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000001",
@@ -8925,7 +10218,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000003",
@@ -9016,7 +10312,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000007",
@@ -9107,7 +10406,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000010",
@@ -9198,7 +10500,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000015",
@@ -9289,7 +10594,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000018",
@@ -9380,7 +10688,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000020",
@@ -9471,7 +10782,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000024",
@@ -9562,7 +10876,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Begur"
+   "municipality": "Begur",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000025",
@@ -9653,7 +10970,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000026",
@@ -9744,7 +11064,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Begur"
+   "municipality": "Begur",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000027",
@@ -9835,7 +11158,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000031",
@@ -9926,7 +11252,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Vall-llobrega"
+   "municipality": "Vall-llobrega",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000032",
@@ -10017,7 +11346,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000036",
@@ -10108,7 +11440,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000037",
@@ -10199,7 +11534,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000041",
@@ -10290,7 +11628,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000054",
@@ -10381,7 +11722,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000056",
@@ -10472,7 +11816,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000057",
@@ -10563,7 +11910,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000059",
@@ -10654,7 +12004,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000064",
@@ -10745,7 +12098,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000065",
@@ -10836,7 +12192,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000066",
@@ -10927,7 +12286,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000067",
@@ -11018,7 +12380,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000072",
@@ -11109,7 +12474,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000073",
@@ -11200,7 +12568,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000074",
@@ -11291,7 +12662,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000076",
@@ -11382,7 +12756,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Mont-ras"
+   "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000080",
@@ -11473,7 +12850,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000086",
@@ -11564,7 +12944,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000087",
@@ -11655,7 +13038,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Mont-ras"
+   "municipality": "Mont-ras",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000091",
@@ -11746,7 +13132,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000101",
@@ -11837,7 +13226,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000104",
@@ -11928,7 +13320,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000106",
@@ -12019,7 +13414,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000107",
@@ -12110,7 +13508,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000108",
@@ -12201,7 +13602,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000110",
@@ -12292,7 +13696,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000111",
@@ -12383,7 +13790,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Pals"
+   "municipality": "Pals",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000114",
@@ -12474,7 +13884,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000142",
@@ -12565,7 +13978,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "campsites:KG-000277",
@@ -12656,7 +14072,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00170",
@@ -12746,7 +14165,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00178",
@@ -12836,7 +14258,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00183",
@@ -12926,7 +14351,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Bisbal d'Empordà, la"
+   "municipality": "Bisbal d'Empordà, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00234",
@@ -13016,7 +14444,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00304",
@@ -13106,7 +14537,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S00658",
@@ -13196,7 +14630,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S04016",
@@ -13286,7 +14723,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S04307",
@@ -13376,7 +14816,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S04734",
@@ -13466,7 +14909,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S04763",
@@ -13556,7 +15002,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S05407",
@@ -13646,7 +15095,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Llagostera"
+   "municipality": "Llagostera",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S05481",
@@ -13736,7 +15188,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Celrà"
+   "municipality": "Celrà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S05682",
@@ -13826,7 +15281,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S05737",
@@ -13916,7 +15374,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Bisbal d'Empordà, la"
+   "municipality": "Bisbal d'Empordà, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S06385",
@@ -14006,7 +15467,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S06518",
@@ -14096,7 +15560,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S06757",
@@ -14186,7 +15653,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Cassà de la Selva"
+   "municipality": "Cassà de la Selva",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S07567",
@@ -14276,7 +15746,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S07611",
@@ -14366,7 +15839,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S07920",
@@ -14456,7 +15932,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08013",
@@ -14546,7 +16025,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08573",
@@ -14636,7 +16118,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Torroella de Montgrí"
+   "municipality": "Torroella de Montgrí",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08599",
@@ -14726,7 +16211,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08609",
@@ -14816,7 +16304,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palafrugell"
+   "municipality": "Palafrugell",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S08787",
@@ -14906,7 +16397,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Bisbal d'Empordà, la"
+   "municipality": "Bisbal d'Empordà, la",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S10380",
@@ -14996,7 +16490,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró"
+   "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "care_homes:S10722",
@@ -15086,7 +16583,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   }
  ]
 }

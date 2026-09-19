@@ -42,7 +42,8 @@ INPUT_MODES = ("live", "recorded", "synthetic")
 DATA_STATUSES = ("current", "stale", "unavailable")
 GEOMETRY_KINDS = ("perimeter", "hotspot_centre", "simulated")   # simulated: model burned area, not observed
 REVIEW_REASONS = ("location_unknown", "occupancy_unknown", "occupancy_seasonal", "class_ambiguous",
-                  "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown")
+                  "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown",
+                  "criticality_unassessed")
 EVACUATION_UNKNOWN = "evacuation_unknown"
 POINT_FALLBACK_NOTE = "point fallback: facility footprint missing"
 HOTSPOT_NOTE = "fire geometry is a hotspot centre, not a surveyed perimeter"
@@ -58,13 +59,20 @@ ASSET_KEYS = ("asset_id", "name", "asset_type", "latitude", "longitude", "geomet
               "distance_to_fire_m", "intersects_fire", "burn_probability", "arrival_p10_at",
               "arrival_p50_at", "forecast_horizon_at", "forecast_source", "fire_arrival_at",
               "fire_arrival_basis", "evacuation_min", "evacuation_source", "needs_review",
-              "review_reasons", "sources", "municipality")
+              "review_reasons", "sources", "municipality", "criticality_tier", "criticality_factors",
+              "criticality_basis")
 TIMING_KEYS = ("fire_arrival_at", "fire_arrival_basis", "evacuation_min", "evacuation_source")   # v1.1
+# Per-asset criticality (config.CRITICALITY_POLICY). Optional like TIMING_KEYS: a snapshot written
+# before the layer existed stays valid without them. The producer never sets a tier - it is proposed
+# by the agent and written by an analyst-confirmed override (fireline/priority.py).
+CRITICALITY_KEYS = ("criticality_tier", "criticality_factors", "criticality_basis")
+CRITICALITY_UNASSESSED = "criticality_unassessed"
 SOURCE_KEYS = ("fields", "source", "observed_at", "available_at", "fetched_at", "notes")
 _COMPUTED_FIELDS = {"value_score", "value_basis", "distance_to_fire_m", "intersects_fire",
                     "burn_probability", "arrival_p10_at", "arrival_p50_at", "forecast_horizon_at",
                     "forecast_source", "fire_arrival_at", "fire_arrival_basis", "evacuation_min",
-                    "evacuation_source"}
+                    "evacuation_source", "criticality_tier", "criticality_factors",
+                    "criticality_basis"}
 
 
 # ------------------------------------------------------------------------------------------ time
@@ -326,6 +334,8 @@ def asset_record(row: dict, cfg=config) -> dict:
         reasons.append("value_unknown")
     if evacuation_min is None:
         reasons.append(EVACUATION_UNKNOWN)
+    if _criticality_wanted(p["asset_type"], cfg):
+        reasons.append(CRITICALITY_UNASSESSED)
     return {
         "asset_id": p["asset_id"],
         "name": p["name"],
@@ -354,7 +364,57 @@ def asset_record(row: dict, cfg=config) -> dict:
         "review_reasons": reasons,
         "sources": sources,
         "municipality": p["municipality"],
+        # Producer default. A tier only ever arrives through an analyst-confirmed override of an
+        # agent proposal (fireline/priority.py), so all three stay null here.
+        "criticality_tier": None,
+        "criticality_factors": None,
+        "criticality_basis": None,
     }
+
+
+# ------------------------------------------------------------------------------------ criticality
+def _criticality_errors(tag: str, a: dict, cfg=config) -> list[str]:
+    """Internal consistency of the three criticality keys, independent of who wrote them.
+
+    The tier must name a policy tier; the three keys are null together; the factors are a list drawn
+    from the policy enum with no repeats; and a tier may not carry fewer factors than the policy's
+    inflation guard allows. Whether the tier is *right* is the analyst's call, not a validation.
+    """
+    policy = cfg.CRITICALITY_POLICY
+    tier, factors, basis = a.get("criticality_tier"), a.get("criticality_factors"), a.get("criticality_basis")
+    if tier is None:
+        out = []
+        if factors is not None:
+            out.append(f"{tag}: criticality_factors must be null without criticality_tier")
+        if basis is not None:
+            out.append(f"{tag}: criticality_basis must be null without criticality_tier")
+        return out
+    if tier not in policy["tiers"]:
+        return [f"{tag}: criticality_tier {tier!r} not in {tuple(policy['tiers'])}"]
+    out = []
+    if not isinstance(basis, str) or not basis:
+        out.append(f"{tag}: criticality_tier requires a non-empty criticality_basis")
+    if not isinstance(factors, list) or any(not isinstance(f, str) for f in factors):
+        return out + [f"{tag}: criticality_factors must be a list of strings"]
+    unknown = [f for f in factors if f not in policy["factors"]]
+    if unknown:
+        out.append(f"{tag}: criticality_factors {unknown} not in {tuple(policy['factors'])}")
+    if len(set(factors)) != len(factors):
+        out.append(f"{tag}: criticality_factors must not repeat")
+    need = policy["min_factors"].get(tier, 0)
+    if len(factors) < need:
+        out.append(f"{tag}: criticality_tier {tier!r} needs at least {need} factor(s), got {len(factors)}")
+    return out
+
+
+def _criticality_wanted(asset_type: str, cfg=config) -> bool:
+    """True when this class should enter the review queue as `criticality_unassessed`.
+
+    Gated on FEATURES["asset_criticality"], so a snapshot built with the flag off is unchanged.
+    """
+    if not cfg.FEATURES.get("asset_criticality"):
+        return False
+    return asset_type in tuple(cfg.CRITICALITY_POLICY["assess_classes"])
 
 
 # ------------------------------------------------------------------------------------- evacuation
@@ -558,10 +618,12 @@ def validate_snapshot(snap) -> list[str]:
         if not isinstance(a, dict):
             errs.append(f"{tag} is not a dict")
             continue
-        missing = [k for k in ASSET_KEYS if k not in a and not (legacy and k in TIMING_KEYS)]
+        missing = [k for k in ASSET_KEYS
+                   if k not in a and k not in CRITICALITY_KEYS and not (legacy and k in TIMING_KEYS)]
         if missing:
             errs.append(f"{tag} missing keys {missing}")
             continue
+        a = dict(a, **{k: a.get(k) for k in CRITICALITY_KEYS})  # absent criticality keys read as null
         if legacy:
             a = dict(a, **{k: a.get(k) for k in TIMING_KEYS})   # 1.0: missing timing keys read as null
         tag = f"{a['asset_id']}"
@@ -614,6 +676,7 @@ def validate_snapshot(snap) -> list[str]:
                 errs.append(f"{tag}: evacuation_source must be a string")
         elif a["evacuation_source"] is not None:
             errs.append(f"{tag}: evacuation_source must be null without evacuation_min")
+        errs.extend(_criticality_errors(tag, a))
         reasons = a["review_reasons"]
         if not isinstance(reasons, list) or any(r not in REVIEW_REASONS for r in reasons):
             errs.append(f"{tag}: review_reasons must be a list from {REVIEW_REASONS}")
@@ -626,6 +689,8 @@ def validate_snapshot(snap) -> list[str]:
                 errs.append(f"{tag}: null coordinates require location_unknown")
             if a["value_score"] is None and "value_unknown" not in reasons:
                 errs.append(f"{tag}: null value_score requires value_unknown")
+            if a.get("criticality_tier") is not None and CRITICALITY_UNASSESSED in reasons:
+                errs.append(f"{tag}: criticality_unassessed must be absent once a tier is set")
             if not legacy:
                 if (arr is None) != (FORECAST_UNAVAILABLE in reasons):
                     errs.append(f"{tag}: forecast_unavailable must be present iff fire_arrival_at is null")

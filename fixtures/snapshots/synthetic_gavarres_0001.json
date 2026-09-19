@@ -377,7 +377,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "la Bisbal d'Empordà"
+   "municipality": "la Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:sant_pol",
@@ -481,7 +484,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "la Bisbal d'Empordà"
+   "municipality": "la Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:can_xic",
@@ -585,7 +591,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:camping_gavarres",
@@ -691,7 +700,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:les_cabanyes",
@@ -795,7 +807,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:vall_repos",
@@ -885,7 +900,10 @@
      "notes": "point fallback: facility footprint missing"
     }
    ],
-   "municipality": "Santa Cristina d'Aro"
+   "municipality": "Santa Cristina d'Aro",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:residencia_la_bisbal",
@@ -980,7 +998,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "la Bisbal d'Empordà"
+   "municipality": "la Bisbal d'Empordà",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:escola_cruilles",
@@ -1086,7 +1107,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:hospital_palamos",
@@ -1190,7 +1214,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "Palamós"
+   "municipality": "Palamós",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:sant_sadurni",
@@ -1294,7 +1321,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:monells",
@@ -1398,7 +1428,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:mas_pla",
@@ -1504,7 +1537,10 @@
      "notes": "per-location estimates from fixture:synthetic_forecast (hand-designed per-asset arrival times) (synthetic forecast-input-1 file, declared basis p10); fire_arrival_at = arrival_p10_at; synthetic, not a provider forecast"
     }
    ],
-   "municipality": "Calonge i Sant Antoni"
+   "municipality": "Calonge i Sant Antoni",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   },
   {
    "asset_id": "fixture:residencia_sense_coordenades",
@@ -1594,7 +1630,10 @@
      "notes": "asset location unknown"
     }
    ],
-   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura"
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "criticality_tier": null,
+   "criticality_factors": null,
+   "criticality_basis": null
   }
  ]
 }

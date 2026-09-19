@@ -728,7 +728,7 @@ def check_agent_live(live: bool = False) -> dict:
 
 def check_latency(repeats: int = 3) -> dict:
     """Readme 11 latency: processing time from receipt of the recorded seq-2 perimeter to snapshot built,
-    ranked and suggestions queued for the 168 real-area assets; source age reported separately."""
+    ranked and suggestions queued for the 180 real-area assets; source age reported separately."""
     assets = _real_assets()
     updates = fire_input.load_recorded(RECORDED_FIRE)
     perimeters = [u for u in updates if u["geometry_kind"] == "perimeter"]
