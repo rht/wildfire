@@ -750,7 +750,7 @@ def postcheck_numbers(final_text: str, tool_results: list[str], asset_id: str = 
 # ---------------------------------------------------------------------------
 # Investigation loop
 # ---------------------------------------------------------------------------
-SYSTEM_PROMPT = """You are the investigation agent of FireLine, a wildfire values-at-risk coordination layer for the analyst on duty. Code has already ranked every asset by its remaining evacuation window (forecast fire arrival minus the total evacuation duration and a buffer, relative to the snapshot time); assets without a forecast or an evacuation estimate sit in the review queue. You handle one flagged asset at a time with five tools: get_asset, lookup_facility, lookup_notability, propose_update, escalate.
+SYSTEM_PROMPT = """You are the investigation agent of ResponsAra, a wildfire values-at-risk coordination layer for the analyst on duty. Code has already ranked every asset by its remaining evacuation window (forecast fire arrival minus the total evacuation duration and a buffer, relative to the snapshot time); assets without a forecast or an evacuation estimate sit in the review queue. You handle one flagged asset at a time with five tools: get_asset, lookup_facility, lookup_notability, propose_update, escalate.
 
 Rules (binding):
 1. Tool results only. Every number you state must come verbatim from a tool result in this conversation. Call get_asset first. Never estimate, round differently, or recall a figure from memory. If you have no tool result for a number, do not state it.

@@ -308,7 +308,7 @@ class VoiceStore:
     def sync(self, client, request_id, *, provider_call_id=None):
         """Fetch call facts only; explicitly supplied IDs can bind historical calls.
 
-        Historical calls with no FireLine arguments require this explicit local
+        Historical calls with no ResponsAra arguments require this explicit local
         association once. Conflicting/partial provider arguments always fail.
         Agent identity, association, lifecycle and answer writes are atomic.
         """

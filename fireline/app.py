@@ -1,4 +1,4 @@
-"""FireLine analyst screen (readme 9, CONTRACTS 7): map, ranked table (remaining evacuation window),
+"""ResponsAra analyst screen (readme 9, CONTRACTS 7): map, ranked table (remaining evacuation window),
 review queue, selected asset with the timing breakdown and agent proposals, task controls, change log.
 One screen; the sequence control walks the snapshot sequence in both directions: forward through the
 store ("Next update"), back to an earlier moment as a re-ranked view that leaves the store untouched.
@@ -392,7 +392,7 @@ def sequence_controls(sess: Session, s: dict) -> None:
 
 # ----------------------------------------------------------------------------- sidebar
 def sidebar(sess: Session) -> None:
-    st.sidebar.title("FireLine")
+    st.sidebar.title("ResponsAra")
     ids = sess.scenario_ids
     if not ids:
         st.sidebar.error("No snapshots found in fixtures/snapshots or data/snapshots.")
@@ -597,7 +597,7 @@ def render_selected(sess: Session, asset: dict) -> None:
 
 # ----------------------------------------------------------------------------- main
 def main() -> None:
-    st.set_page_config(page_title="FireLine", layout="wide", page_icon=":fire:")
+    st.set_page_config(page_title="ResponsAra", layout="wide")
     if st.sidebar.toggle("Mock voice scenarios", value=st.query_params.get("demo") == "voice", key="mock_voice_mode"):
         from fireline.voice_demo_panel import render_voice_demo
         render_voice_demo()
@@ -608,7 +608,7 @@ def main() -> None:
     sidebar(sess)
     s = sess.status()
     c = s["counts"]
-    st.title(f"FireLine - {s['scenario_id']} - {s['as_of']}")
+    st.title(f"ResponsAra - {s['scenario_id']} - {s['as_of']}")
     if s["reviewing_earlier"]:
         st.warning(f"Earlier moment under review: snapshot `{s['snapshot_id']}`, sequence {s['sequence']} of "
                    f"{s['n_sequences']}, as_of {s['as_of']}. The map, ranking and review queue are recomputed for "

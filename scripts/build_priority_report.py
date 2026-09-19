@@ -28,8 +28,8 @@ SPAN = RIGHT - LEFT
 class Report:
     def __init__(self, path):
         self.canvas = Canvas(str(path), pagesize=A4, invariant=1)
-        self.canvas.setTitle("FireLine | Static contact and response priorities")
-        self.canvas.setAuthor("FireLine / @mirrdj")
+        self.canvas.setTitle("ResponsAra | Static contact and response priorities")
+        self.canvas.setAuthor("ResponsAra / @mirrdj")
         self.page = 0
 
     def start(self, kicker, title, subtitle):

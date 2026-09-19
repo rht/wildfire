@@ -68,7 +68,7 @@ WIKIPEDIA_API = "https://{lang}.wikipedia.org/w/api.php"
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 
 # Wikimedia's API etiquette asks for a descriptive User-Agent, serial requests and batching.
-USER_AGENT = "FireLine/0.4 (hackbarna2026 wildfire; contact via repo)"
+USER_AGENT = "ResponsAra/0.4 (hackbarna2026 wildfire; contact via repo)"
 REQUEST_DELAY_S = 1.0
 WIKIPEDIA_TITLES_PER_REQUEST = 20    # prop=extracts exlimit cap
 WBGETENTITIES_MAX_IDS = 50           # ``ids=``/``titles=`` cap

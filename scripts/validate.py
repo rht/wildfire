@@ -1033,7 +1033,7 @@ def print_table(results: list[dict], verbose: bool = True) -> None:
     width = max(len(r["name"]) for r in results)
     live = next((r for r in results if r["name"] == "Agent (live model)"), None)
     mode = f"live agent check on {live['measured'].get('model')}" if live and live["measured"] else "offline"
-    print(f"FireLine v4 validation ({VALIDATION_DATE}, {mode})")
+    print(f"ResponsAra v4 validation ({VALIDATION_DATE}, {mode})")
     print(f"{'check':<{width}}  {'outcome':<13} measured")
     print("-" * (width + 80))
     for r in results:
@@ -1068,7 +1068,7 @@ def not_verified_items(results: list[dict]) -> list[str]:
 
 def render_markdown(results: list[dict]) -> str:
     lines = [
-        "# FireLine v4 MVP validation (readme.md section 11)",
+        "# ResponsAra v4 MVP validation (readme.md section 11)",
         "",
         f"Validation date: {VALIDATION_DATE}. Written by `scripts/validate.py --write`; rerun it to refresh. "
         + _offline_sentence(results) +

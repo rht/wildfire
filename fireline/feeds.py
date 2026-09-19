@@ -39,7 +39,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 CACHE_DIR = DATA_DIR / "cache"
 
-USER_AGENT = "Mozilla/5.0 (compatible; FireLine/0.1; hackbarna2026)"
+USER_AGENT = "Mozilla/5.0 (compatible; ResponsAra/0.1; hackbarna2026)"
 DEFAULT_TIMEOUT_S = 60
 DEFAULT_MAX_AGE_S = 3600
 MAX_BUSY_RETRIES = 3
