@@ -1,16 +1,17 @@
 """Agent layer: four tools + one bounded investigation loop (CONTRACTS section 6, readme 8).
 
-Deterministic scoring for the common case, agent for the flagged cases, analyst decides. The agent
-only ever acts through the four tools below and never changes an asset itself:
+Deterministic ranking by remaining evacuation window for the common case, agent for the flagged
+cases, analyst decides. The agent only ever acts through the four tools below and never changes an
+asset itself:
 
-- `get_asset`        read the scored record (numbers rounded so they can be quoted verbatim)
+- `get_asset`        read the ranked record (numbers rounded so they can be quoted verbatim)
 - `lookup_facility`  search the cached evidence (facility pages, register rows) by name
 - `propose_update`   record a sourced field update as a *pending* proposal
 - `escalate`         record one concrete question for the analyst
 
 Every proposal needs analyst confirmation (`confirm_proposal`), which persists it through
-`tasks.TaskStore.confirm_override` when a store is attached, updates the in-memory asset and lets
-the caller rescore. Every number in the agent's final message must come from a tool result of the
+`tasks.TaskStore.confirm_override` when a store is attached, updates the in-memory asset and
+re-ranks the workbench's snapshot with `priority.rank_snapshot` (readme 8 step 4). Every number in the agent's final message must come from a tool result of the
 same loop (post-check); otherwise the message is replaced and the failure logged. The loop is capped
 at `max_steps` model calls. Works offline with `llm.FakeLLM` (default when `llm=None`).
 """
@@ -26,18 +27,18 @@ from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
-from . import config
+from . import config, priority
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_REGISTERS = ROOT / "fixtures" / "registers.json"
 FIXTURE_EVIDENCE = ROOT / "fixtures" / "evidence.json"
 DATA_REGISTERS_DIR = ROOT / "data" / "registers"
 
-PROPOSAL_FIELDS = ("estimated_occupancy", "capacity", "asset_type")
+PROPOSAL_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min")
 OCCUPANCY_FIELDS = ("estimated_occupancy", "capacity")
 CONFIDENCE_LEVELS = ("low", "medium", "high")
 REVIEW_REASONS = ("location_unknown", "occupancy_unknown", "occupancy_seasonal", "class_ambiguous",
-                  "value_unknown", "exposure_unknown")
+                  "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown")
 
 POSTCHECK_FAILED_TEXT = ("Recommendation, not an order. Agent message withheld: number post-check failed "
                          "(the draft quoted a number that is not in any tool result). See the proposals "
@@ -101,25 +102,34 @@ def _now() -> str:
 # ---------------------------------------------------------------------------
 @dataclass
 class Workbench:
-    """Scored assets plus the agent's pending proposals and open questions.
+    """Ranked assets plus the agent's pending proposals and open questions.
 
-    `assets` maps asset_id -> scored asset record (CONTRACTS 2.2 + 4). `tasks` is a
-    `tasks.TaskStore` or None (then confirmations only update the in-memory asset). `change_log`
-    is a list of one-line strings."""
+    `assets` maps asset_id -> ranked asset record (CONTRACTS 2.2 + 4). `tasks` is a
+    `tasks.TaskStore` or None (then confirmations are kept in `overrides` in memory). `snapshot` is
+    the snapshot the assets came from; when set, a confirmation re-ranks it with
+    `priority.rank_snapshot`. `change_log` is a list of one-line strings."""
 
     assets: dict = field(default_factory=dict)
     tasks: object | None = None
     proposals: list = field(default_factory=list)
     questions: list = field(default_factory=list)
     change_log: list = field(default_factory=list)
+    snapshot: dict | None = None
+    overrides: list = field(default_factory=list)      # in-memory confirmations when no store is attached
 
     @classmethod
-    def from_scored(cls, scored_assets, tasks=None) -> "Workbench":
-        """Build from a list of scored assets or the dict `priority.score_snapshot` returns."""
+    def from_scored(cls, scored_assets, tasks=None, snapshot=None) -> "Workbench":
+        """Build from a list of ranked assets or the dict `priority.rank_snapshot` returns."""
         if isinstance(scored_assets, dict) and "all" in scored_assets:
             scored_assets = scored_assets["all"]
         assets = {a["asset_id"]: a for a in scored_assets}
-        return cls(assets=assets, tasks=tasks)
+        return cls(assets=assets, tasks=tasks, snapshot=snapshot)
+
+    def confirmed_overrides(self) -> list[dict]:
+        """The store's confirmed overrides when attached, else the in-memory ones."""
+        if self.tasks is not None and hasattr(self.tasks, "overrides"):
+            return list(self.tasks.overrides())
+        return list(self.overrides)
 
     def asset(self, asset_id: str) -> dict:
         try:
@@ -294,17 +304,21 @@ def _muni_matches(wanted: str, actual: str) -> bool:
 # ---------------------------------------------------------------------------
 _ASSET_FIELDS = ("asset_id", "name", "asset_type", "municipality", "latitude", "longitude", "capacity",
                  "estimated_occupancy", "occupancy_basis", "value_score", "intersects_fire", "queue",
-                 "review_reasons")
+                 "review_reasons", "fire_arrival_at", "fire_arrival_basis", "forecast_source",
+                 "evacuation_min", "evacuation_source")
 
 
 def get_asset(asset_id: str, workbench: Workbench) -> dict:
-    """Trimmed scored record for one asset (numbers rounded), plus open tasks, confirmed overrides
-    and the count of proposals still pending."""
+    """Trimmed ranked record for one asset (numbers rounded): timing fields, remaining window
+    (`slack_min`), status, rank and queue, plus open tasks, confirmed overrides and the count of
+    proposals still pending."""
     a = workbench.asset(asset_id)
     out = {k: a.get(k) for k in _ASSET_FIELDS}
     out["review_reasons"] = list(a.get("review_reasons") or [])
     out["distance_to_fire_m"] = _round(a.get("distance_to_fire_m"))
-    out["priority_score"] = _round(a.get("priority_score"), 2)
+    out["evacuation_min"] = _round(a.get("evacuation_min"))
+    out["slack_min"] = _round(a.get("slack_min"))
+    out["priority_status"] = a.get("priority_status")
     out["priority_rank"] = a.get("priority_rank")
     out["open_tasks"] = []
     out["confirmed_overrides"] = []
@@ -374,6 +388,17 @@ def _check_value(field_name: str, value):
         if not isinstance(value, int) or value < 0:
             raise ValueError(f"{field_name} must be an integer >= 0, got {value!r}")
         return value
+    if field_name == "evacuation_min":
+        if isinstance(value, bool) or value is None:
+            raise ValueError(f"evacuation_min must be a number of minutes >= 0, got {value!r}")
+        if isinstance(value, str):
+            try:
+                value = float(value.strip().replace(",", "."))
+            except ValueError:
+                raise ValueError(f"evacuation_min must be a number of minutes >= 0, got {value!r}") from None
+        if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
+            raise ValueError(f"evacuation_min must be a number of minutes >= 0, got {value!r}")
+        return float(value)
     allowed = list(config.VALUE_POLICY["by_type"]) + ["unknown"]
     if not isinstance(value, str) or value not in allowed:
         raise ValueError(f"asset_type must be one of {allowed}, got {value!r}")
@@ -462,10 +487,11 @@ _AID = {"type": "string", "description": "Asset id, e.g. 'fixture:pou_del_glac'.
 TOOLS: list[dict] = [
     {
         "name": "get_asset",
-        "description": "The scored record of one asset: type, municipality, capacity, estimated occupancy "
-                       "and its basis, distance to fire, priority score and queue, review reasons, open "
-                       "tasks, confirmed overrides and pending proposals. Numbers here are the engine's; "
-                       "quote them verbatim.",
+        "description": "The ranked record of one asset: type, municipality, capacity, estimated occupancy "
+                       "and its basis, distance to fire, forecast fire arrival and its basis, evacuation "
+                       "duration and its source, remaining evacuation window (slack_min), status, rank and "
+                       "queue, review reasons, open tasks, confirmed overrides and pending proposals. Numbers "
+                       "here are the engine's; quote them verbatim.",
         "input_schema": {
             "type": "object",
             "properties": {"asset_id": _AID},
@@ -494,15 +520,18 @@ TOOLS: list[dict] = [
         "description": "Propose a sourced update of one field for the analyst to confirm. Nothing is "
                        "applied until confirmed. Fields: capacity (an integer from evidence stating "
                        "places/capacity), estimated_occupancy (an integer ONLY from evidence stating an "
-                       "actual headcount today), asset_type (a class the evidence states). quoted_snippet "
-                       "must quote the evidence verbatim; pass its url and observed_at when known.",
+                       "actual headcount today), asset_type (a class the evidence states), evacuation_min "
+                       "(total evacuation duration in minutes ONLY from evidence stating how long a full "
+                       "evacuation of this facility takes, e.g. its evacuation plan or the facility itself). "
+                       "quoted_snippet must quote the evidence verbatim; pass its url and observed_at when known.",
         "input_schema": {
             "type": "object",
             "properties": {
                 "asset_id": _AID,
                 "field": {"type": "string", "enum": list(PROPOSAL_FIELDS)},
-                "value": {"type": ["integer", "string"],
-                          "description": "Integer >= 0 for capacity/estimated_occupancy; class name for asset_type."},
+                "value": {"type": ["integer", "number", "string"],
+                          "description": "Integer >= 0 for capacity/estimated_occupancy; class name for asset_type; "
+                                         "minutes >= 0 for evacuation_min."},
                 "source": {"type": "string", "description": "Register name or page the snippet comes from."},
                 "quoted_snippet": {"type": "string", "description": "Verbatim snippet from the evidence."},
                 "confidence": {"type": "string", "enum": list(CONFIDENCE_LEVELS)},
@@ -554,36 +583,70 @@ def dispatch(name: str, tool_input: dict, workbench: Workbench | None = None):
 # ---------------------------------------------------------------------------
 # Analyst side: confirm / reject / answer
 # ---------------------------------------------------------------------------
+def rerank(workbench: Workbench) -> dict | None:
+    """Re-rank the workbench's snapshot with the confirmed overrides (`priority.rank_snapshot`) and
+    replace its asset records; None (nothing done) when the workbench has no snapshot."""
+    if workbench.snapshot is None:
+        return None
+    scored = priority.rank_snapshot(workbench.snapshot, overrides=workbench.confirmed_overrides())
+    workbench.assets = {a["asset_id"]: a for a in scored["all"]}
+    return scored
+
+
+def _refresh_in_memory(asset: dict, override: dict) -> None:
+    """Without a snapshot to re-rank: apply the override to this record and recompute its window keys
+    (rank number unchanged; the queue order is only rebuilt by rerank / rank_snapshot)."""
+    updated = priority.apply_overrides([asset], [override])[0]
+    now_at = (asset.get("window_components") or {}).get("now_at")
+    if now_at:
+        ranked = priority.rank_asset(updated, now_at)
+        ranked["priority_rank"] = asset.get("priority_rank") if ranked["queue"] == "ranked" else None
+        updated = ranked
+    asset.clear()
+    asset.update(updated)
+
+
 def confirm_proposal(workbench: Workbench, proposal_id: str, rescore=None) -> dict:
-    """Analyst confirmation: persist through `workbench.tasks.confirm_override` when a store is attached,
-    update the in-memory asset, mark the proposal confirmed and log it. `rescore(workbench)` is called
-    afterwards when given (typically re-runs priority.score_snapshot with the store's overrides)."""
+    """Analyst confirmation: persist through `workbench.tasks.confirm_override` when a store is attached
+    (else keep the override in `workbench.overrides`), mark the proposal confirmed, log it and
+    recalculate the window: the asset record is refreshed in place, then `rescore(workbench)` when
+    given, else `rerank(workbench)` when the workbench holds its snapshot."""
     p = workbench.proposal(proposal_id)
     if p["status"] != "pending":
         raise ValueError(f"proposal {proposal_id} is {p['status']}, not pending")
     asset = workbench.asset(p["asset_id"])
+    previous = asset.get(p["field"])
     override = None
     if workbench.tasks is not None:
         override = workbench.tasks.confirm_override(
             p["asset_id"], p["field"], p["value"], source=p["source"], snippet=p["quoted_snippet"],
             url=p.get("url"), observed_at=p.get("observed_at"), confidence=p["confidence"],
             proposal_id=proposal_id)
-    previous = asset.get(p["field"])
-    asset[p["field"]] = p["value"]
-    if p["field"] in OCCUPANCY_FIELDS:
-        asset["occupancy_basis"] = "analyst override"
-    elif p["field"] == "asset_type":
-        asset["value_score"] = config.VALUE_POLICY["by_type"].get(p["value"])
-        asset["value_basis"] = config.VALUE_POLICY["version"] if asset["value_score"] is not None else None
+    record = dict(override) if isinstance(override, dict) else {}
+    record.setdefault("override_id", None)
+    record.update({"asset_id": p["asset_id"], "field": p["field"], "value": p["value"], "source": p["source"],
+                   "snippet": p["quoted_snippet"], "url": p.get("url"), "observed_at": p.get("observed_at"),
+                   "confidence": p["confidence"], "proposal_id": proposal_id})
+    record.setdefault("previous", previous)
+    record.setdefault("confirmed_at", _now())
+    if workbench.tasks is None:
+        workbench.overrides.append(record)
     p["status"] = "confirmed"
-    p["confirmed_at"] = _now()
+    p["confirmed_at"] = record["confirmed_at"]
     if override is not None:
-        p["override_id"] = override.get("override_id") if isinstance(override, dict) else None
+        p["override_id"] = record.get("override_id")
     workbench.change_log.append(f"{p['asset_id']}: proposal {proposal_id} confirmed: {p['field']} "
                                 f"{previous!r} -> {p['value']!r} from {p['source']}"
                                 f"{' (persisted)' if override is not None else ' (in-memory only)'}")
+    _refresh_in_memory(asset, record)          # the record is current even before / without a re-rank
     if rescore is not None:
         rescore(workbench)
+    else:
+        rerank(workbench)
+    if p["field"] == "evacuation_min" or (asset.get("slack_min") is not None):
+        a = workbench.asset(p["asset_id"])
+        workbench.change_log.append(f"{p['asset_id']}: window recalculated: status {a.get('priority_status')}, "
+                                    f"remaining window {a.get('slack_min')} min, queue {a.get('queue')}")
     return dict(p)
 
 
@@ -641,11 +704,11 @@ def postcheck_numbers(final_text: str, tool_results: list[str], asset_id: str = 
 # ---------------------------------------------------------------------------
 # Investigation loop
 # ---------------------------------------------------------------------------
-SYSTEM_PROMPT = """You are the investigation agent of FireLine, a wildfire values-at-risk coordination layer for the analyst on duty. Code has already scored every asset by proximity, size and value. You handle one flagged asset at a time with four tools: get_asset, lookup_facility, propose_update, escalate.
+SYSTEM_PROMPT = """You are the investigation agent of FireLine, a wildfire values-at-risk coordination layer for the analyst on duty. Code has already ranked every asset by its remaining evacuation window (forecast fire arrival minus the total evacuation duration and a buffer, relative to the snapshot time); assets without a forecast or an evacuation estimate sit in the review queue. You handle one flagged asset at a time with four tools: get_asset, lookup_facility, propose_update, escalate.
 
 Rules (binding):
 1. Tool results only. Every number you state must come verbatim from a tool result in this conversation. Call get_asset first. Never estimate, round differently, or recall a figure from memory. If you have no tool result for a number, do not state it.
-2. You change nothing. Every field update is a proposal (propose_update) that the analyst confirms or rejects; every open point is a question (escalate) with options and a cautious default. You never assign teams, never change the scoring policy and never claim an update is applied.
+2. You change nothing. Every field update is a proposal (propose_update) that the analyst confirms or rejects; every open point is a question (escalate) with options and a cautious default. You never assign teams, never change the ranking policy, never supply a forecast arrival and never claim an update is applied.
 3. Capacity is not occupancy. A register or page stating places, capacity, capacitat or total_places is evidence for the field `capacity`. It is never evidence for `estimated_occupancy`, which needs a source stating how many people are actually present (a headcount). If you only have a capacity, propose capacity and escalate the headcount question.
 4. Match before you trust. Use lookup_facility with the asset's name and municipality; accept a candidate only when name and municipality both match. Quote the evidence verbatim in quoted_snippet and pass its url and observed_at when the candidate has them.
 5. Never issue an order. Start your final message with "Recommendation, not an order." Keep it to a few lines: what you found, what you proposed with what evidence (pending confirmation), what you escalated with which default.
@@ -658,6 +721,8 @@ Review-reason playbook:
 - location_unknown: lookup_facility; escalate "confirm address / coordinates" quoting the address found in the evidence if any. Do not propose coordinates.
 - value_unknown: propose asset_type when the evidence resolves the class; otherwise escalate which class applies.
 - exposure_unknown: escalate; there is no fire geometry or location to compute exposure from and you cannot supply one.
+- evacuation_unknown: the total evacuation duration (mobilisation, preparation/loading, movement to a receiving location) is unknown, so the asset cannot be ranked. Propose_update field=evacuation_min ONLY when the evidence states how long a full evacuation of this facility takes (an evacuation plan, the facility itself); never derive it from headcount, distance or class. Otherwise escalate "confirm the total evacuation duration with the facility" with options such as "confirmed with the facility" / "use the class default, labelled as an assumption", default "confirmed with the facility".
+- forecast_unavailable: no spread forecast covers this location; the window cannot be computed. You cannot supply a forecast arrival (do not propose one). Escalate whether the analyst wants the location kept in the review queue pending a forecast, default "keep in review".
 """
 
 
@@ -767,15 +832,24 @@ def investigate(workbench: Workbench, asset_id: str, llm=None, max_steps: int = 
     return record
 
 
+PRODUCER_ONLY_REASONS = ("forecast_unavailable",)   # nothing the agent can look up or propose
+
+
 def flagged_asset_ids(workbench: Workbench) -> list[str]:
-    """Assets with review reasons in queue order: needs_review queue first (in the order given, which
-    is the priority module's), then flagged ranked assets by priority rank / score."""
-    flagged = [a for a in workbench.assets.values() if a.get("review_reasons")]
-    review = [a for a in flagged if a.get("queue") == "needs_review" or a.get("priority_score") is None]
+    """Assets with review reasons the agent can act on, in queue order: needs_review queue first (in
+    the order given, which is the priority module's), then flagged ranked assets by priority rank,
+    then remaining window. Assets whose only reason is a producer gap (`forecast_unavailable`) are
+    left to the review queue."""
+    flagged = [a for a in workbench.assets.values()
+               if any(r not in PRODUCER_ONLY_REASONS for r in a.get("review_reasons") or [])]
+    review = [a for a in flagged if a.get("queue") == "needs_review" or a.get("slack_min") is None]
     ranked = [a for a in flagged if a not in review]
     ranked.sort(key=lambda a: (a.get("priority_rank") if a.get("priority_rank") is not None else math.inf,
-                               -(a.get("priority_score") or 0.0), a["asset_id"]))
+                               a.get("slack_min") if a.get("slack_min") is not None else math.inf, a["asset_id"]))
     return [a["asset_id"] for a in review + ranked]
+
+
+review_order = flagged_asset_ids
 
 
 def investigate_all(workbench: Workbench, llm=None, max_steps: int = 6) -> list[dict]:
