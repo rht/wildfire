@@ -54,7 +54,7 @@
   /* ---------- top bar ---------- */
   #topbar {
     display: flex; align-items: center; gap: 16px;
-    padding: 10px 18px; background: var(--ink); color: #fff;
+    padding: 10px 18px; background: linear-gradient(180deg, #333a3f, #282e32); color: #fff;
     flex-shrink: 0; z-index: 20;
   }
   #topbar .brand { display: inline-flex; align-items: center; font-weight: 700; font-size: 18px; letter-spacing: 0.2px; }
@@ -90,10 +90,38 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
   }
   #map {
-    position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px;
+    position: absolute; top: 14px; left: 14px; right: 14px; bottom: 74px;
     border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.25), 0 0 0 1px var(--line);
+    transition: transform 0.35s ease;
+    transform-origin: 50% 100%;
   }
-  #sideCol { flex: 1; display: flex; flex-direction: column; min-width: 440px; max-width: 500px; background: var(--panel); border-left: 1px solid var(--line); }
+  #map.tilt3d { transform: perspective(900px) rotateX(28deg) scale(1.08); }
+  .mapButtonBar {
+    position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 12;
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .mapButtonBar button {
+    flex: 1; min-width: 92px; background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 9px 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; color: var(--ink);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  }
+  .mapButtonBar button:hover { border-color: var(--accent); color: var(--accent); }
+  .mapButtonBar button.primary { background: var(--act-now); color: #fff; border-color: var(--act-now); }
+  .mapButtonBar button.primary:hover { color: #fff; filter: brightness(1.08); }
+  .mapButtonBar button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .mapButtonBar button.notified { background: var(--monitor); color: #fff; border-color: var(--monitor); cursor: default; }
+
+  /* sidebar is one scrollable column of card "widgets", each visually separated,
+     rather than one continuous flush panel */
+  #sideCol {
+    flex: 1; display: flex; flex-direction: column; min-width: 440px; max-width: 500px;
+    background: var(--paper); border-left: 1px solid var(--line); overflow-y: auto;
+  }
+  .card {
+    background: var(--panel); border-radius: 10px; margin: 10px 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 0 0 1px var(--line); overflow: hidden;
+  }
+  .card:last-child { margin-bottom: 10px; }
 
   /* ---------- escalation & notification status ---------- */
   #escalationPanel { flex-shrink: 0; border-top: 1px solid var(--line); }
@@ -129,7 +157,7 @@
     letter-spacing: 0.05em; color: var(--muted); border-top: 1px solid var(--line);
   }
 
-  #rankedList { overflow-y: auto; flex: 1 1 40%; min-height: 0; }
+  #rankedList { max-height: 240px; overflow-y: auto; }
   .row {
     display: flex; gap: 10px; align-items: center; padding: 9px 14px; border-bottom: 1px solid var(--line);
     cursor: pointer; transition: background 0.1s;
@@ -149,7 +177,7 @@
   .review-flag { font-size: 10px; background: #fbe4d5; color: var(--review); padding: 1px 6px; border-radius: 4px; font-weight: 700; }
   .task-flag { font-size: 10px; background: #e4ecf5; color: #244a75; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
 
-  #detailPanel { border-top: 2px solid var(--line); flex: 1 1 60%; min-height: 0; overflow-y: auto; padding: 14px; }
+  #detailPanel { max-height: 420px; overflow-y: auto; padding: 14px; }
   #detailPanel h3 { margin: 0 0 2px; font-size: 16px; }
   #detailPanel .kind { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
   .kv { display: grid; grid-template-columns: 130px 1fr; gap: 4px 10px; font-size: 12.5px; margin-bottom: 12px; }
@@ -187,15 +215,48 @@
   .qrow .qreason { color: var(--review); }
 
   #changeLogBtn {
-    position: absolute; bottom: 28px; left: 28px; z-index: 15; background: #fff; border: 1px solid var(--line);
-    border-radius: 6px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    position: absolute; top: 24px; right: 24px; z-index: 15; background: rgba(255,255,255,0.92); border: 1px solid var(--line);
+    border-radius: 6px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
   }
   #changeLog {
-    position: absolute; bottom: 66px; left: 28px; z-index: 15; background: #fff; border: 1px solid var(--line);
+    position: absolute; top: 62px; right: 24px; z-index: 15; background: #fff; border: 1px solid var(--line);
     border-radius: 8px; padding: 10px 12px; font-size: 11.5px; width: 300px; max-height: 220px; overflow-y: auto;
     box-shadow: 0 4px 16px rgba(0,0,0,0.16); display: none;
   }
   #changeLog.open { display: block; }
+
+  /* ---------- institutions database view ---------- */
+  #dbView { display: none; flex: 1; flex-direction: column; background: var(--paper); min-height: 0; }
+  #dbView.open { display: flex; }
+  .dbHeader {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; background: var(--panel); border-bottom: 1px solid var(--line); flex-shrink: 0;
+  }
+  .dbHeader h2 { margin: 0; font-size: 15px; }
+  .backBtn { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .backBtn:hover { border-color: var(--accent); color: var(--accent); }
+  .dbTable { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .dbTable th {
+    text-align: left; padding: 9px 14px; background: #eef1ef; color: var(--muted);
+    text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.04em; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0;
+  }
+  .dbTable td { padding: 9px 14px; border-bottom: 1px solid var(--line); }
+  .dbTable tr:hover td { background: #f7f5f0; }
+  .dbTable button {
+    font-size: 11px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--line);
+    background: #fff; cursor: pointer; font-weight: 700;
+  }
+  .dbTable button:hover { border-color: var(--accent); color: var(--accent); }
+  .dbTable button.notified { background: var(--accent); color: #fff; border-color: var(--accent); cursor: default; }
+  .stagePill {
+    font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .stagePill.act-now { background: #fbe0dd; color: var(--act-now); }
+  .stagePill.prepare { background: #fbead0; color: var(--prepare); }
+  .stagePill.monitor { background: #e7e9e8; color: var(--monitor); }
+  .stagePill.review { background: #fbe4d5; color: var(--review); }
   #changeLog .cl-entry { padding: 4px 0; border-bottom: 1px dashed var(--line); }
   #changeLog .cl-entry:last-child { border-bottom: none; }
 
@@ -222,38 +283,74 @@
   <div id="main">
     <div id="mapCol">
       <div class="mapCardHead">Response map — live exposure radius</div>
-      <div id="map"></div>
       <button id="changeLogBtn">Change log (<span id="logCount">0</span>)</button>
       <div id="changeLog"></div>
+      <div id="map"></div>
+      <div class="mapButtonBar">
+        <button id="notifyFireDeptBtn" class="primary">🚒 Notify fire dept</button>
+        <button id="notifyRadioBtn">📻 Radio</button>
+        <button id="notifyPhoneBtn">📞 Phone</button>
+        <button id="toggle3dBtn">🛰️ 3D · hotspots</button>
+        <button id="openDbBtn">📋 Institutions database →</button>
+      </div>
     </div>
 
     <div id="sideCol">
-      <div class="metrics">
-        <div class="metric act-now"><div class="n" id="mAct">0</div><div class="l">act now</div></div>
-        <div class="metric prepare"><div class="n" id="mPrep">0</div><div class="l">prepare</div></div>
-        <div class="metric review"><div class="n" id="mReview">0</div><div class="l">needs review</div></div>
-      </div>
-
-      <div id="escalationPanel">
-        <div class="panelHead">Escalation &amp; notification status</div>
-        <div class="escStats">
-          <div class="escStat confirmed"><div class="n" id="escConfirmed">0</div><div class="l">confirmed</div></div>
-          <div class="escStat open"><div class="n" id="escOpen">0</div><div class="l">no response</div></div>
-          <div class="escStat mobility"><div class="n" id="escMobility">0</div><div class="l">need mobility help</div></div>
+      <div class="card">
+        <div class="panelHead" style="border-top:none">Response priority summary</div>
+        <div class="metrics">
+          <div class="metric act-now"><div class="n" id="mAct">0</div><div class="l">act now</div></div>
+          <div class="metric prepare"><div class="n" id="mPrep">0</div><div class="l">prepare</div></div>
+          <div class="metric review"><div class="n" id="mReview">0</div><div class="l">needs review</div></div>
         </div>
-        <div class="escListLabel">Awaiting confirmation</div>
-        <div id="escOpenList" class="escList"></div>
-        <div class="escListLabel">Requested mobility assistance</div>
-        <div id="escMobilityList" class="escList"></div>
       </div>
 
-      <div class="panelHead">Ranked locations — analyst priority</div>
-      <div id="rankedList"></div>
+      <div class="card">
+        <div id="escalationPanel">
+          <div class="panelHead" style="border-top:none">Escalation &amp; notification status</div>
+          <div class="escStats">
+            <div class="escStat confirmed"><div class="n" id="escConfirmed">0</div><div class="l">confirmed</div></div>
+            <div class="escStat open"><div class="n" id="escOpen">0</div><div class="l">no response</div></div>
+            <div class="escStat mobility"><div class="n" id="escMobility">0</div><div class="l">need mobility help</div></div>
+          </div>
+          <div class="escListLabel">Awaiting confirmation</div>
+          <div id="escOpenList" class="escList"></div>
+          <div class="escListLabel">Requested mobility assistance</div>
+          <div id="escMobilityList" class="escList"></div>
+        </div>
+      </div>
 
-      <div class="panelHead" style="border-top:2px solid var(--line)">Selected location</div>
-      <div id="detailPanel"><p style="color:var(--muted);font-size:13px;padding:0 14px">Select a location from the list, or a pin on the map.</p></div>
+      <div class="card">
+        <div class="panelHead" style="border-top:none">Ranked locations — analyst priority</div>
+        <div id="rankedList"></div>
+      </div>
 
-      <div id="reviewQueue"></div>
+      <div class="card">
+        <div class="panelHead" style="border-top:none">Selected location</div>
+        <div id="detailPanel"><p style="color:var(--muted);font-size:13px;padding:0 14px">Select a location from the list, or a pin on the map.</p></div>
+      </div>
+
+      <div class="card">
+        <div id="reviewQueue"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dbView">
+    <div class="dbHeader">
+      <h2>Institutions &amp; infrastructure database</h2>
+      <button id="backToMapBtn" class="backBtn">← Back to map</button>
+    </div>
+    <div style="overflow-y:auto; flex:1;">
+      <table class="dbTable">
+        <thead>
+          <tr>
+            <th>Institution</th><th>Type</th><th>Proximity</th><th>Capacity</th>
+            <th>Size (occupancy)</th><th>Escalation stage</th><th>ES-CAT</th>
+          </tr>
+        </thead>
+        <tbody id="dbTableBody"></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -276,6 +373,19 @@ const TEAMS = [
 
 const FIRE_PERIM_1 = [[41.951,3.031],[41.957,3.045],[41.949,3.058],[41.937,3.052],[41.935,3.036],[41.943,3.026]];
 const FIRE_PERIM_2 = [[41.951,3.031],[41.962,3.052],[41.951,3.071],[41.933,3.063],[41.928,3.040],[41.940,3.024]];
+
+// Raw deepfire:hotspots detections (a different Deepfire endpoint from the
+// deepfire:satellite-perimeters hull used above) — [lat, lon, frp] with frp in MW,
+// the same field the readme's Deepfire/MTG data sources describe.
+const HOTSPOTS_1 = [
+  [41.9505,3.0350,38], [41.9490,3.0410,52], [41.9470,3.0450,61], [41.9455,3.0480,44],
+  [41.9430,3.0430,33], [41.9445,3.0380,29], [41.9415,3.0400,47],
+];
+const HOTSPOTS_2 = [
+  [41.9505,3.0350,41], [41.9490,3.0410,58], [41.9470,3.0450,70], [41.9455,3.0480,66],
+  [41.9430,3.0430,54], [41.9445,3.0380,39], [41.9415,3.0400,62], [41.9560,3.0480,35],
+  [41.9520,3.0620,45], [41.9440,3.0620,58], [41.9370,3.0550,31],
+];
 
 function asset(id, name, asset_type, lat, lon, capacity, estimated_occupancy, occupancy_basis,
                 value_score, value_basis, distance_to_fire_m, intersects, needs_review, review_reasons, sources) {
@@ -381,6 +491,8 @@ let current = SNAPSHOT_1;
 let selectedId = null;
 let changeLog = [];
 const taskState = {}; // asset_id -> { action, teamId, status }
+let dbViewOpen = false;
+const esCatNotified = new Set(); // asset_id -> notified via the official channel (simulated)
 
 function fmtTime(iso) {
   const d = new Date(iso);
@@ -518,6 +630,7 @@ function render() {
   renderEscalation();
   const detailPanel = document.getElementById("detailPanel");
   if (selectedId) renderDetail(selectedId, scored); else renderEmptyDetail(detailPanel);
+  if (dbViewOpen) renderDbTable(scored, review);
 
   document.getElementById("logCount").textContent = changeLog.length;
   renderChangeLog();
@@ -556,7 +669,8 @@ function tierColor(total) {
   return "#7a8a7d";
 }
 
-let map, fireLayer, markerLayer;
+let map, fireLayer, markerLayer, hotspotLayer;
+let show3dHotspots = false;
 function initMap() {
   map = L.map("map", { zoomControl: true }).setView([41.951, 3.038], 13);
   L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
@@ -564,14 +678,24 @@ function initMap() {
     maxZoom: 18,
   }).addTo(map);
   fireLayer = L.layerGroup().addTo(map);
+  hotspotLayer = L.layerGroup().addTo(map);
   markerLayer = L.layerGroup().addTo(map);
   // the map now sits in an inset card rather than filling its column edge-to-edge;
   // give the layout a tick to settle before Leaflet measures its container
   setTimeout(() => map.invalidateSize(), 50);
 }
 
+function toggle3dHotspots() {
+  show3dHotspots = !show3dHotspots;
+  document.getElementById("map").classList.toggle("tilt3d", show3dHotspots);
+  document.getElementById("toggle3dBtn").classList.toggle("on", show3dHotspots);
+  setTimeout(() => map.invalidateSize(), 360);
+  render();
+}
+
 function renderMap(scored, review) {
   fireLayer.clearLayers();
+  hotspotLayer.clearLayers();
   markerLayer.clearLayers();
   const perim = current.sequence === 1 ? FIRE_PERIM_1 : FIRE_PERIM_2;
   // white halo behind the perimeter line so the exposure radius reads as the primary
@@ -580,6 +704,15 @@ function renderMap(scored, review) {
   L.polygon(perim, { color: "#ff5a3c", weight: 3, fillColor: "#ff5a3c", fillOpacity: 0.22 })
     .bindTooltip("Fire perimeter (recorded satellite hull), as_of " + fmtTime(current.as_of), { className: "fire-tip" })
     .addTo(fireLayer);
+
+  if (show3dHotspots) {
+    const hotspots = current.sequence === 1 ? HOTSPOTS_1 : HOTSPOTS_2;
+    for (const [lat, lon, frp] of hotspots) {
+      L.circleMarker([lat, lon], {
+        radius: 4 + frp / 12, color: "#fff", weight: 1, fillColor: "#ff8a3c", fillOpacity: 0.9,
+      }).bindTooltip(`deepfire:hotspots · ${frp} MW`, { className: "fire-tip" }).addTo(hotspotLayer);
+    }
+  }
 
   const all = [...scored.map(x => ({ a: x.a, total: x.s.total })), ...review.map(a => ({ a, total: null }))];
   for (const { a, total } of all) {
@@ -774,6 +907,87 @@ function assignTeam(id, teamId) {
 
 function assetName(id) { return current.assets.find(a => a.asset_id === id)?.name || id; }
 
+// ---- global official-channel notify actions (simulated, logged — see design/tier2_brief.md:
+// "we do not build or simulate the actual ES-Alert broadcast", same principle applies here) ----
+function notifyChannel(channel, label) {
+  const btn = document.getElementById(channel);
+  if (btn.classList.contains("notified")) return;
+  btn.classList.add("notified");
+  btn.textContent = label + " ✓ sent";
+  changeLog.push([
+    `${fmtTime(current.as_of)} — `,
+    strongLogText(label),
+    " logged for this incident (simulated — no live dispatch integration).",
+  ]);
+  renderChangeLog();
+  document.getElementById("logCount").textContent = changeLog.length;
+}
+
+function notifyEsCat(assetId) {
+  const btn = document.querySelector(`.dbTable button[data-escat="${assetId}"]`);
+  if (esCatNotified.has(assetId)) return;
+  esCatNotified.add(assetId);
+  if (btn) { btn.textContent = "Notified ✓"; btn.classList.add("notified"); btn.disabled = true; }
+  changeLog.push([
+    `${fmtTime(current.as_of)} — `,
+    strongLogText("ES-CAT"),
+    ` (official Catalan channel) notified for ${assetName(assetId)} — simulated, not a live ES-Alert integration.`,
+  ]);
+  renderChangeLog();
+  document.getElementById("logCount").textContent = changeLog.length;
+}
+
+function stageFor(a, scoredMap) {
+  const s = scoredMap.get(a.asset_id);
+  if (a.needs_review || !s) return { label: "needs review", cls: "review" };
+  if (s.total > 0.7) return { label: "act now", cls: "act-now" };
+  if (s.total > 0.4) return { label: "prepare", cls: "prepare" };
+  return { label: "monitor", cls: "monitor" };
+}
+
+function renderDbTable(scored, review) {
+  const scoredMap = new Map(scored.map(x => [x.a.asset_id, x.s]));
+  const body = document.getElementById("dbTableBody");
+  body.replaceChildren();
+  for (const a of current.assets) {
+    const stage = stageFor(a, scoredMap);
+    const row = document.createElement("tr");
+    row.append(
+      textElement("td", a.name),
+      textElement("td", a.asset_type),
+      textElement("td", a.distance_to_fire_m != null ? Math.round(a.distance_to_fire_m) + " m" : "unknown"),
+      textElement("td", a.capacity ?? "—"),
+      textElement("td", a.estimated_occupancy ?? "unknown"),
+    );
+    const stageCell = document.createElement("td");
+    stageCell.append(textElement("span", stage.label, "stagePill " + stage.cls));
+    row.append(stageCell);
+    const escatCell = document.createElement("td");
+    const notified = esCatNotified.has(a.asset_id);
+    const btn = textElement("button", notified ? "Notified ✓" : "Notify ES-CAT");
+    btn.dataset.escat = a.asset_id;
+    if (notified) { btn.className = "notified"; btn.disabled = true; }
+    else btn.addEventListener("click", () => notifyEsCat(a.asset_id));
+    escatCell.append(btn);
+    row.append(escatCell);
+    body.append(row);
+  }
+}
+
+function showDbView() {
+  dbViewOpen = true;
+  document.getElementById("dbView").classList.add("open");
+  document.getElementById("main").style.display = "none";
+  render();
+}
+
+function hideDbView() {
+  dbViewOpen = false;
+  document.getElementById("dbView").classList.remove("open");
+  document.getElementById("main").style.display = "flex";
+  setTimeout(() => map.invalidateSize(), 50);
+}
+
 function nextUpdate() {
   if (current.sequence >= 2) return;
   current = SNAPSHOT_2;
@@ -791,6 +1005,15 @@ function toggleLog() { document.getElementById("changeLog").classList.toggle("op
 
 document.getElementById("nextUpdateBtn").addEventListener("click", nextUpdate);
 document.getElementById("changeLogBtn").addEventListener("click", toggleLog);
+document.getElementById("notifyFireDeptBtn").addEventListener("click",
+  () => notifyChannel("notifyFireDeptBtn", "🚒 Fire department notified"));
+document.getElementById("notifyRadioBtn").addEventListener("click",
+  () => notifyChannel("notifyRadioBtn", "📻 Radio notification"));
+document.getElementById("notifyPhoneBtn").addEventListener("click",
+  () => notifyChannel("notifyPhoneBtn", "📞 Phone notification"));
+document.getElementById("toggle3dBtn").addEventListener("click", toggle3dHotspots);
+document.getElementById("openDbBtn").addEventListener("click", showDbView);
+document.getElementById("backToMapBtn").addEventListener("click", hideDbView);
 initMap();
 render();
 </script>
