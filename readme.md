@@ -1211,3 +1211,29 @@ mock agent and recheck its outbound connection after deployment. References:
 [Unmute hosted target](https://github.com/slng-ai/unmute/blob/main/docs-site/targets/slng.mdx),
 [SLNG outbound setup](https://docs.slng.ai/guides/agents/telephony/outbound),
 [Vonage SIP setup](https://developer.vonage.com/en/sip/sip-dashboard).
+
+### Voice integration delivery plan
+
+Goal: merge the voice work onto current main and save completed SLNG interviews
+through FireLine's existing durable store. The user authorized implementation,
+parallel work, review fixes, PR creation and merging after verification.
+
+- [x] Rebase the voice commits onto `origin/main`, preserving upstream Norma
+  remediation and Nebius investigations. Publish `codex/slng-voice-integration`
+  without rewriting the existing published voice branch.
+- [ ] Evaluate branch-owned Python with Norma, fix actionable violations and
+  verify the fixes. Repository scan status and per-file checks remain distinct.
+- [ ] Add authenticated completed-call import/sync to the existing SLNG adapter
+  and voice CLI, with an explicit FireLine request/call association. Normalize
+  memory answers to true/false/null, retain provider evidence and redaction
+  limitations, and commit results idempotently through `VoiceStore`.
+- [ ] Cover mismatched associations, duplicate delivery, missing/unknown answers,
+  human and assistance requests, provider failures and database restart. Use a
+  sanitized provider fixture; keep phone numbers, credentials and raw reports
+  out of Git. Save the authorized mock call to an isolated local demo database.
+- [ ] Review the combined implementation, run the full suite and provider-package
+  validation, update the PR with exact results, verify GitHub checks and merge.
+
+The capture path preserves the boundary between household reports and operational
+readiness: live answers remain human-review input; this work does not declare
+evacuation complete, reserve resources, or place additional calls.
