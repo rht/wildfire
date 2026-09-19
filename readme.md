@@ -2312,3 +2312,8 @@ Norma scanned dashboard changes only; details are in
 `reports/norma-dashboard-review.json`. Remaining JS flags were reviewed as false
 positives (WebSocket handler, caller-caught fetch rejection); JS coverage was
 reduced, CJS unsupported, and the final package scan returned a tool error.
+
+Final compatibility check also passed against live-coordination PR #22 commit
+`946966190b85f942edf9204f1849b36f2cdd4133`: **15 API/integration tests** and the
+Chromium smoke passed. That export accepts `response_plan` for multi-crew proposals;
+the allocation overlay remains a producer-side integration dependency.
