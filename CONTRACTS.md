@@ -52,7 +52,7 @@ tests/                      pytest, no network, no LLM
 
 ```python
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",       # 1.0 files still load; their v1.1 keys read as null
   "scenario_id": str,          # e.g. "synthetic_gavarres", "gavarres_2026-07"
   "incident_id": str,          # provider incident/cluster id or fixture id
   "snapshot_id": str,          # f"{scenario_id}-{sequence:04d}"
@@ -63,7 +63,8 @@ tests/                      pytest, no network, no LLM
   "fire_observed_at": str | None,
   "fire_source": str | None,   # e.g. "deepfire:satellite-perimeters", "fixture:synthetic_ignition"
   "fire_geometry": GeoJSON geometry | None,   # Polygon/MultiPolygon footprint, or Point when only a hotspot centre
-  "fire_geometry_kind": "perimeter" | "hotspot_centre" | None,   # a hotspot centre is never shown as a perimeter
+  "fire_geometry_kind": "perimeter" | "hotspot_centre" | "simulated" | None,   # a hotspot centre is never shown as a
+                               # perimeter; "simulated" = a model burned area (fire-spread run), not an observed perimeter
   "data_status": "current" | "stale" | "unavailable",
   "metrics": {"source_age_s": float | None, "processing_s": float | None},   # readme 11 latency, separate numbers
   "assets": [ <asset record> ... ]           # complete matching set for the fixed area, stable across updates
@@ -99,8 +100,10 @@ Rules: `needs_review` is true iff `review_reasons` is non-empty. `exposure_unkno
 `distance_to_fire_m` is null (no location or no fire geometry). `value_unknown` when `asset_type` is not
 in the value policy. `estimated_occupancy` null with `capacity` set is allowed; the basis string then
 says capacity is a proxy only where the producer chose to fill `estimated_occupancy` from it (it does
-not by default). Forecast fields are null unless `config.FEATURES["forecast_enrichment"]` is on, in which
-case `forecast_source` names the method (e.g. `"ca_ensemble (labelled enrichment, not validated)"`).
+not by default). Forecast fields are filled by `forecast_input.attach_forecast` when `build_snapshot` is
+given a `forecast=` (section 2.5), or by the CA raster when `config.FEATURES["forecast_enrichment"]` is on
+(`forecast_source` then names the method, e.g. `"ca_ensemble (labelled enrichment, not validated)"`);
+otherwise they are null.
 Point fallback for distance is recorded in `sources` with `fields: ["distance_to_fire_m", "intersects_fire"]` and a note
 `"point fallback: facility footprint missing"`.
 
@@ -120,19 +123,52 @@ a labelled prototype assumption with its component minutes and assumptions in th
 ```python
 snapshot.asset_exposure(lon, lat, geometry, fire_geometry) -> (distance_m | None, intersects | None, note | None)
 snapshot.build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of, input_mode,
-                        computed_at=None, data_status=None, metrics=None, arrival=None, cfg=config) -> dict
+                        computed_at=None, data_status=None, metrics=None, arrival=None, forecast=None,
+                        cfg=config) -> dict
     # assets_in: v0 assets_in rows (asset_id, name, asset_class, lon, lat, municipality, occupancy, ...) or
     #            v4 records (asset_type, latitude, longitude, capacity...) — both accepted, v0 keys mapped.
     # fire: fire_input.FireUpdate dict or None (None -> fire fields null, data_status "unavailable").
     # arrival: optional spread.ArrivalRaster; used only when FEATURES["forecast_enrichment"].
+    # forecast: optional forecast-input-1 dict (section 2.5); takes precedence over `arrival`.
 snapshot.validate_snapshot(snap) -> list[str]     # [] when valid; messages otherwise
 snapshot.write_snapshot(snap, path) / snapshot.read_snapshot(path) -> dict
 ```
 
 Fixtures: `fixtures/snapshots/synthetic_gavarres_0001.json` (sequence 1, fire at 08:00) and
-`synthetic_gavarres_0002.json` (sequence 2, fire advanced, at least one asset's distance changes enough
-to change the ranking; one asset with `location_unknown`, one with `occupancy_unknown`, one with
-`class_ambiguous`). Both `input_mode: "synthetic"`.
+`synthetic_gavarres_0002.json` (sequence 2, fire advanced; the window order changes and some windows are
+exhausted; one asset with `location_unknown`, one with `occupancy_unknown`, one with `class_ambiguous`,
+one located asset without a forecast). Both `input_mode: "synthetic"` with the synthetic forecasts of
+`fixtures/forecast/`. `gavarres_real_0001..0003.json` are the real facilities with real recorded July
+perimeters and no forecast (every asset `forecast_unavailable`); `gavarres_real_0004.json` is the real
+facilities with a real recorded Deepfire fire-spread run of 2026-09-19 seeded at the July incident
+centroid (`fire_geometry_kind: "simulated"`), which covers no facility within its 12 h horizon.
+
+### 2.5 Forecast input — `fireline/forecast_input.py`
+
+Per-location fire arrival estimates in the `forecast-input-1` shape (module docstring has the full
+format): `forecast_source`, `input_mode` (`synthetic` | `recorded` | `live`), `issued_at`,
+`forecast_horizon_at`, `basis`, `note` and `estimates: {asset_id: {arrival_p10_at, arrival_p50_at,
+burn_probability, arrival_at?}}`. Synthetic files must say "synthetic, not a provider forecast" in
+their note.
+
+```python
+forecast_input.load_forecast(path) -> dict                      # validated; ValueError otherwise
+forecast_input.attach_forecast(assets, forecast) -> None        # in place: forecast fields, fire_arrival_at/basis, sources entry;
+                                                                # uncovered or unlocated assets get forecast_unavailable
+forecast_input.deepfire_spread_to_forecast(body, received_at, asset_points, *, min_burn_probability=None,
+                                           input_mode="recorded") -> dict
+    # body: a COMPLETED /v1/fire-spread/simulations/{id} response (hourly cumulative burned-area polygons;
+    # ensemble bands with burn_probability). asset_points: {asset_id: (lon, lat)}. arrival_at = createdAt +
+    # elapsed_seconds of the first hour whose polygon (union of bands >= min_burn_probability, default 1/N)
+    # covers the point; horizon = createdAt + durationHours. t0 = createdAt is an assumption (undocumented).
+forecast_input.forecast_from_recorded_spread(path, asset_points, *, min_burn_probability=None) -> dict
+```
+
+Selection order for `fire_arrival_at`: p10 (`fire_arrival_basis` `"p10"`), then p50 (`"p50"`), then
+`arrival_at` (basis = the forecast's `basis` string, e.g. the Deepfire isochrone-crossing label), else
+null. Deepfire fire-spread runs are seeded from hotspots observed within the last `lookbackHours` of
+the request time, so they exist only for current fires; the July incident cannot be re-run
+(`fixtures/fire/deepfire/README.md`).
 
 ### 2.4 Real-area assets
 
