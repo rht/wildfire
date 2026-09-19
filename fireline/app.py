@@ -111,10 +111,12 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
                                 pickable=True))
         for rings in (r["polygon"] for r in rows):
             for x, y in rings[0]:
-                lons.append(x), lats.append(y)
+                lons.append(x)
+                lats.append(y)
     elif geometry and geometry.get("type") == "Point":
         x, y = geometry["coordinates"][:2]
-        lons.append(x), lats.append(y)
+        lons.append(x)
+        lats.append(y)
         layers.append(pdk.Layer("ScatterplotLayer",
                                 data=[{"lon": x, "lat": y, "tip": "hotspot centre, not a surveyed perimeter"}],
                                 get_position=["lon", "lat"], get_radius=600, radius_min_pixels=14, filled=False,
@@ -123,7 +125,8 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
     for a in sess.assets_in_order():
         if a.get("latitude") is None or a.get("longitude") is None:
             continue
-        lons.append(a["longitude"]), lats.append(a["latitude"])
+        lons.append(a["longitude"])
+        lats.append(a["latitude"])
         points.append({"lon": a["longitude"], "lat": a["latitude"], "color": window_colour(a),
                        "tip": f"<b>{a['name']}</b> ({a['asset_type']})<br/>{fmt_window(a)}<br/>arrival "
                               f"{a.get('fire_arrival_at') or 'no forecast'}; evacuation {fmt(a.get('evacuation_min'))} min"
