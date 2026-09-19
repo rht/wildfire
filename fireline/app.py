@@ -1,258 +1,421 @@
-"""FireLine Streamlit UI (PLAN 6.7): map, asset table, coordinator queue. Reads only data/scenarios/.
+"""FireLine analyst screen (readme 9, CONTRACTS 7): map, ranked table, review queue, selected asset
+with score breakdown and agent proposals, task controls, change log. One screen; "Next update" walks
+the snapshot sequence through the store.
 
-    .venv/bin/streamlit run fireline/app.py
+    FIRELINE_DB=data/fireline.sqlite .venv/bin/streamlit run fireline/app.py
 
-Every scenario is precomputed by scripts/precompute.py and keyed by scenario id. Coordinator answers and
-override rejections live in st.session_state only; nothing is written to disk from the UI.
+All workflow logic lives in `fireline.ui_state.Session` (kept in st.session_state); this file renders.
 """
 
 from __future__ import annotations
 
-import json
-import math
-from pathlib import Path
-
-import numpy as np
 import pandas as pd
 import pydeck as pdk
 import streamlit as st
 
-from fireline import config
-from fireline.exposure import TIER_RANK
-from fireline.grid import xy_to_lonlat
-from fireline.scenario import Scenario
-
-ROOT = Path(__file__).resolve().parent.parent
-SCEN_DIR = ROOT / "data" / "scenarios"
-DIRECTOR = "Recommendation for the INFOCAT director"
-TIER_RGB = {"act_now": [220, 40, 40], "prepare": [245, 150, 20], "monitor": [130, 130, 130]}
-CUT_SOON_MIN = 120
+from fireline import config, priority, tasks
+from fireline.ui_state import Session, llm_available
 
 st.set_page_config(page_title="FireLine", layout="wide", page_icon=":fire:")
 
-
-# ----------------------------------------------------------------------------- data
-@st.cache_data(show_spinner=False)
-def load_index() -> dict:
-    return json.loads((SCEN_DIR / "index.json").read_text())
+STATUS_COLOUR = {"current": "green", "stale": "orange", "unavailable": "red"}
+GREY = [150, 150, 150, 200]
+DEFAULT_SCENARIO = "synthetic_gavarres"
 
 
-@st.cache_data(show_spinner=False)
-def load_layers(name: str) -> tuple[dict, list[dict]]:
-    """Map layers and the burn-probability cells (picklable, shared across sessions).
-
-    Cells are built from the arrival raster rather than a bitmap: Streamlit's pydeck renderer parses
-    string props as expressions and rejects a base64 data URI ("Unexpected ':' at character 4")."""
-    d = SCEN_DIR / name
-    layers = json.loads((d / "layers.json").read_text())
-    sc = Scenario.from_json(d / "scenario.json")
-    return layers, burn_cells(sc, block=2, min_prob=0.05)
+# ----------------------------------------------------------------------------- helpers
+def session() -> Session:
+    if "session" not in st.session_state:
+        st.session_state.session = Session()
+    return st.session_state.session.ensure_open()
 
 
-def burn_cells(sc: Scenario, block: int = 2, min_prob: float = 0.05) -> list[dict]:
-    """Downsample burn_prob by `block` (max pooling) and return one square polygon per cell above min_prob."""
-    if sc.arrival is None:
-        return []
-    g, bp = sc.arrival.grid, sc.arrival.burn_prob
-    nr, nc = (bp.shape[0] // block) * block, (bp.shape[1] // block) * block
-    pooled = bp[:nr, :nc].reshape(nr // block, block, nc // block, block).max(axis=(1, 3))
-    rows, cols = np.nonzero(pooled >= min_prob)
-    size = g.cell * block
-    x0 = g.xmin + cols * size
-    y1 = g.ymax - rows * size
-    lon0, lat1 = (a.tolist() for a in xy_to_lonlat(x0, y1))
-    lon1, lat0 = (a.tolist() for a in xy_to_lonlat(x0 + size, y1 - size))
-    cells = []
-    for i in range(len(rows)):
-        p = float(pooled[rows[i], cols[i]])
-        cells.append({"polygon": [[lon0[i], lat0[i]], [lon1[i], lat0[i]], [lon1[i], lat1[i]], [lon0[i], lat1[i]]],
-                      "color": [255, int(200 * (1 - p)), 0, int(40 + 160 * p)],
-                      "tip": f"burn probability {p:.2f}"})
-    return cells
+def fmt(v, nd=0) -> str:
+    if v is None:
+        return "-"
+    if isinstance(v, float):
+        return f"{v:.{nd}f}"
+    return str(v)
 
 
-def session_scenario(name: str) -> tuple[Scenario, dict, list[dict]]:
-    """Per-session mutable Scenario (answers and rejections stay in st.session_state). The Scenario
-    itself holds the config module, so it is built once per session rather than put in cache_data."""
-    layers, cells = load_layers(name)
-    store = st.session_state.setdefault("scenarios", {})
-    if name not in store:
-        store[name] = Scenario.from_json(SCEN_DIR / name / "scenario.json")
-    return store[name], layers, cells
+def fmt_age(seconds) -> str:
+    if seconds is None:
+        return "unknown"
+    s = abs(float(seconds))
+    if s < 90:
+        return f"{s:.0f} s"
+    if s < 5400:
+        return f"{s / 60:.0f} min"
+    return f"{s / 3600:.1f} h"
 
 
-def fmt_min(v) -> str:
-    if v is None or (isinstance(v, float) and (math.isinf(v) or math.isnan(v))):
-        return "never" if v is not None else "-"
-    return f"{v:.0f}"
+def people(asset: dict) -> str:
+    """Estimated occupancy, or capacity marked as a proxy (never shown as a headcount)."""
+    if asset.get("estimated_occupancy") is not None:
+        return f"{asset['estimated_occupancy']}"
+    if asset.get("capacity") is not None:
+        return f"{asset['capacity']} (capacity proxy)"
+    return "unknown"
+
+
+def score_colour(score: float | None) -> list[int]:
+    """Yellow (0) -> red (1) ramp; grey when the asset is not scored."""
+    if score is None:
+        return GREY
+    s = max(0.0, min(1.0, float(score)))
+    return [220, int(200 * (1 - s)), 30, 230]
+
+
+def try_action(label: str, fn, *args, **kwargs) -> bool:
+    """Run a store/agent action; show its error instead of crashing the page. True on success."""
+    try:
+        fn(*args, **kwargs)
+    except tasks.AssignmentError as e:
+        st.error(f"{label} rejected: {e}")
+        return False
+    except (KeyError, ValueError, RuntimeError) as e:
+        st.error(f"{label} failed: {e}")
+        return False
+    return True
 
 
 # ----------------------------------------------------------------------------- map
-def build_deck(sc: Scenario, layers: dict, cells: list[dict]) -> pdk.Deck:
-    w, s, e, n = layers["bounds_lonlat"]
-    burn = pdk.Layer("PolygonLayer", data=cells, get_polygon="polygon", get_fill_color="color", stroked=False,
-                     pickable=True)
-    perim = pdk.Layer("PolygonLayer", data=[{"polygon": ring, "tip": f"perimeter at {sc.t:%H:%M}Z, "
-                                              f"{layers['perimeter_area_ha']} ha"} for ring in layers["perimeter_lonlat"]],
-                      get_polygon="polygon", get_fill_color=[120, 0, 0, 120], get_line_color=[120, 0, 0],
-                      line_width_min_pixels=2, stroked=True, filled=True, pickable=True)
-    roads = []
-    for r in layers["roads"]:
-        cut = r["cut_min"]
-        soon = cut is not None and cut <= CUT_SOON_MIN
-        colour = [220, 30, 30] if soon else ([60, 60, 60] if r["closed"] else [150, 150, 150])
-        roads.append({"path": r["path"], "color": colour, "width": 4 if soon or r["closed"] else 2,
-                      "tip": f"{r['name'] or 'unnamed'} ({r['highway']}) cut in "
-                             f"{fmt_min(cut if cut is not None else math.inf)} min" + (" - CLOSED" if r["closed"] else "")})
-    roads_layer = pdk.Layer("PathLayer", data=roads, get_path="path", get_color="color", get_width="width",
-                            width_units="pixels", pickable=True)
-    routes, points = [], []
-    for a in sc.assets:
-        d = a.get("decision") or {}
-        p10 = a["lead_adjusted_p10_min"]
-        points.append({"lon": a["lon"], "lat": a["lat"], "color": TIER_RGB.get(a["tier"], [0, 0, 0]),
-                       "tip": f"<b>{a['name']}</b> ({a['asset_class']})<br/>tier {a['tier']} - "
-                              f"{d.get('decision', '?')}<br/>lead-adjusted p10: {fmt_min(p10)} min<br/>"
-                              f"{DIRECTOR}"})
-        rt = a.get("route")
-        if rt and rt.get("path_lonlat"):
-            routes.append({"path": [list(p) for p in rt["path_lonlat"]], "color": TIER_RGB.get(a["tier"]),
-                           "tip": f"{a['name']} -> {rt['destination_name']} ({rt['travel_min']:.0f} min, "
-                                  f"first cut {rt['first_cut_road'] or '-'} at {fmt_min(rt['first_cut_min'])} min)"})
-    routes_layer = pdk.Layer("PathLayer", data=routes, get_path="path", get_color="color", get_width=3,
-                             width_units="pixels", pickable=True)
-    assets_layer = pdk.Layer("ScatterplotLayer", data=points, get_position=["lon", "lat"], get_fill_color="color",
-                             get_radius=180, radius_min_pixels=6, pickable=True, stroked=True,
-                             get_line_color=[255, 255, 255], line_width_min_pixels=1)
-    clon, clat = layers["centre_lonlat"]
-    view = pdk.ViewState(longitude=clon, latitude=clat, zoom=11.3, pitch=0)
-    return pdk.Deck(layers=[burn, perim, roads_layer, routes_layer, assets_layer], initial_view_state=view,
-                    tooltip={"html": "{tip}"}, map_style="light")
+def polygon_rows(geometry: dict) -> list[dict]:
+    kind = geometry.get("type")
+    polys = [geometry["coordinates"]] if kind == "Polygon" else geometry["coordinates"] if kind == "MultiPolygon" else []
+    return [{"polygon": rings, "tip": "fire perimeter (surveyed/synthetic footprint)"} for rings in polys]
+
+
+def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
+    snap, status = sess.snapshot, sess.status()
+    layers, lons, lats = [], [], []
+    geometry = snap.get("fire_geometry")
+    if geometry and geometry.get("type") in ("Polygon", "MultiPolygon"):
+        rows = polygon_rows(geometry)
+        layers.append(pdk.Layer("PolygonLayer", data=rows, get_polygon="polygon", get_fill_color=[160, 20, 20, 90],
+                                get_line_color=[140, 0, 0], line_width_min_pixels=2, stroked=True, filled=True,
+                                pickable=True))
+        for rings in (r["polygon"] for r in rows):
+            for x, y in rings[0]:
+                lons.append(x), lats.append(y)
+    elif geometry and geometry.get("type") == "Point":
+        x, y = geometry["coordinates"][:2]
+        lons.append(x), lats.append(y)
+        layers.append(pdk.Layer("ScatterplotLayer",
+                                data=[{"lon": x, "lat": y, "tip": "hotspot centre, not a surveyed perimeter"}],
+                                get_position=["lon", "lat"], get_radius=600, radius_min_pixels=14, filled=False,
+                                stroked=True, get_line_color=[255, 120, 0], line_width_min_pixels=3, pickable=True))
+    points = []
+    for a in sess.assets_in_order():
+        if a.get("latitude") is None or a.get("longitude") is None:
+            continue
+        lons.append(a["longitude"]), lats.append(a["latitude"])
+        rank = f"rank {a['priority_rank']}, score {a['priority_score']:.3f}" if a["priority_score"] is not None \
+            else "needs review (not scored)"
+        points.append({"lon": a["longitude"], "lat": a["latitude"], "color": score_colour(a["priority_score"]),
+                       "tip": f"<b>{a['name']}</b> ({a['asset_type']})<br/>{rank}<br/>distance "
+                              f"{fmt(a.get('distance_to_fire_m'))} m; people {people(a)}<br/>"
+                              f"{', '.join(a.get('review_reasons') or []) or 'no review flags'}"})
+    layers.append(pdk.Layer("ScatterplotLayer", data=points, get_position=["lon", "lat"], get_fill_color="color",
+                            get_radius=150, radius_min_pixels=6, pickable=True, stroked=True,
+                            get_line_color=[40, 40, 40], line_width_min_pixels=1))
+    clon = sum(lons) / len(lons) if lons else 3.0
+    clat = sum(lats) / len(lats) if lats else 41.9
+    view = pdk.ViewState(longitude=clon, latitude=clat, zoom=10.5, pitch=0)
+    deck = pdk.Deck(layers=layers, initial_view_state=view, tooltip={"html": "{tip}"}, map_style="light")
+    return deck, status["counts"]["unlocated"]
 
 
 # ----------------------------------------------------------------------------- tables
-def asset_frame(sc: Scenario) -> pd.DataFrame:
+def open_task_counts(sess: Session) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for t in sess.open_tasks():
+        counts[t["asset_id"]] = counts.get(t["asset_id"], 0) + 1
+    return counts
+
+
+def ranked_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFrame:
+    return pd.DataFrame([{
+        "rank": a["priority_rank"], "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
+        "distance m": a.get("distance_to_fire_m"), "intersects": a.get("intersects_fire"), "people": people(a),
+        "value": a.get("value_score"), "score": a["priority_score"],
+        "review reasons": ", ".join(a.get("review_reasons") or []), "open tasks": open_counts.get(a["asset_id"], 0),
+        "asset_id": a["asset_id"],
+    } for a in assets])
+
+
+def review_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFrame:
+    return pd.DataFrame([{
+        "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
+        "known distance m": a.get("distance_to_fire_m"), "people": people(a),
+        "reasons": ", ".join(a.get("review_reasons") or []),
+        "not scored because": next((r for r in a["priority_reasons"] if r.startswith("needs review")), ""),
+        "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
+    } for a in assets])
+
+
+def components_frame(asset: dict) -> pd.DataFrame:
     rows = []
-    for a in sorted(sc.assets, key=lambda r: (TIER_RANK.get(r["tier"], 9), r["lead_adjusted_p10_min"])):
-        d = a.get("decision") or {}
-        rows.append({
-            "name": a["name"], "class": a["asset_class"], "municipality": a["municipality"],
-            "occupancy": a.get("occupancy"), "burn_prob": round(a["burn_prob"], 2),
-            "p10 min": fmt_min(a["arrival_p10_min"]), "lead-adjusted": fmt_min(a["lead_adjusted_p10_min"]),
-            "tier": a["tier"], "decision": d.get("decision"), "staged": d.get("staged"),
-            "exit window": fmt_min(d.get("exit_window_min")), "latest departure": fmt_min(d.get("latest_departure_min")),
-            "reception centre": d.get("reception_centre"), "medical destination": d.get("medical_destination"),
-            "needs_review": ", ".join(a["needs_review"]),
-        })
+    for name, c in asset["score_components"].items():
+        rows.append({"component": name, "value": c["value"], "weight": c["weight"],
+                     "input": ", ".join(f"{k}={v}" for k, v in c["input"].items()), "proxy": c["proxy"] or ""})
     return pd.DataFrame(rows)
 
 
-def tier_style(row):
-    c = {"act_now": "#f8d0d0", "prepare": "#fbe3c0", "monitor": "#e8e8e8"}.get(row["tier"], "")
-    return [f"background-color: {c}" if col == "tier" else "" for col in row.index]
+def sources_frame(asset: dict) -> pd.DataFrame:
+    return pd.DataFrame([{"fields": ", ".join(s.get("fields") or []), "source": s.get("source"),
+                          "observed_at": s.get("observed_at"), "available_at": s.get("available_at"),
+                          "fetched_at": s.get("fetched_at"), "notes": s.get("notes")} for s in asset.get("sources") or []])
+
+
+def tasks_frame(rows: list[dict], teams: dict[str, str]) -> pd.DataFrame:
+    return pd.DataFrame([{
+        "task": t["task_id"], "asset": t["asset_id"], "action": t["action"], "reason": t["reason"],
+        "status": t["status"], "team": teams.get(t["assigned_team_id"], t["assigned_team_id"]),
+        "deadline": t["deadline_at"], "affected by": t["affected_by_snapshot_id"] or "",
+        "questions": sum(1 for q in t["blocking_questions"] if q["answer"] is None), "suggested": t["suggested"],
+    } for t in rows])
 
 
 # ----------------------------------------------------------------------------- sidebar
-def sidebar(index: dict) -> str:
+def sidebar(sess: Session) -> None:
     st.sidebar.title("FireLine")
-    st.sidebar.caption(f"Mode: **{index.get('mode', 'Replay (synthetic)')}**")
-    names = [s["name"] for s in index["scenarios"]]
-    name = st.sidebar.selectbox("Scenario", names, format_func=lambda n: {
-        "synthetic_0800": "08:00 - synthetic ignition", "synthetic_1000": "10:00 - fire advanced, GI-660 closed",
-        "whatif_east_1000": "10:00 - what-if: wind from the east"}.get(n, n))
-    meta = next(s for s in index["scenarios"] if s["name"] == name)
-    st.sidebar.write(f"id `{meta['scenario_id']}` - t {meta['t']}  \nsource: {meta['source']}  \n"
-                     f"closures: {', '.join(meta['closures']) or 'none'}")
-    with st.sidebar.expander("Lead times (min before arrival)"):
-        st.table(pd.Series(config.LEAD_TIME_MIN, name="min"))
-    with st.sidebar.expander("Load times (min to board)"):
-        st.table(pd.Series(config.LOAD_TIME_MIN, name="min"))
-    with st.sidebar.expander("Thresholds and CA"):
-        st.table(pd.Series({"ACT_NOW_MIN": config.ACT_NOW_MIN, "PREPARE_MIN": config.PREPARE_MIN,
-                            "BURN_PROB_MIN": config.BURN_PROB_MIN, "BURN_PROB_HIGH": config.BURN_PROB_HIGH,
-                            "ROUTE_BUFFER_MIN": config.ROUTE_BUFFER_MIN, "DEST_BURN_PROB_MAX": config.DEST_BURN_PROB_MAX,
-                            "DEST_MARGIN_MIN": config.DEST_MARGIN_MIN, **{f"CA.{k}": v for k, v in config.CA.items()}},
-                           name="value").astype(str))
-    with st.sidebar.expander("Legend"):
-        st.markdown("Assets: red = act now, orange = prepare, grey = monitor.  \nRoads: red = cut within "
-                    f"{CUT_SOON_MIN} min, dark = closed by SCT.  \nShading: burn probability within the horizon.")
-    return name
+    ids = sess.scenario_ids
+    if not ids:
+        st.sidebar.error("No snapshots found in fixtures/snapshots or data/snapshots.")
+        st.stop()
+    current = sess.scenario_id or ids[0]
+    chosen = st.sidebar.selectbox("Scenario", ids, index=ids.index(current), key="scenario_select")
+    if chosen != sess.scenario_id:
+        sess.select_scenario(chosen)
+        st.rerun()
+    s = sess.status()
+    st.sidebar.caption(f"snapshot `{s['snapshot_id']}` - sequence {s['sequence']} of {s['n_sequences']}")
+    if st.sidebar.button("Next update", disabled=not sess.has_next, width="stretch", type="primary"):
+        sess.next_update()
+        st.rerun()
+    result = sess.last_update
+    if result:
+        if not result.get("advanced"):
+            st.sidebar.warning(result.get("reason"))
+        elif result.get("accepted"):
+            st.sidebar.success(f"{result['snapshot_id']} applied: {len(result['changed'])} assets changed, "
+                               f"{len(result['affected_task_ids'])} tasks flagged, {len(result['missing_asset_ids'])} "
+                               f"missing, {len(result['suggested_task_ids'])} tasks suggested.")
+        else:
+            st.sidebar.info(f"{result['snapshot_id']} shown; store bookkeeping unchanged: {result.get('reason')}")
+        if result.get("affected_task_ids"):
+            st.sidebar.caption("affected tasks: " + ", ".join(result["affected_task_ids"]))
+        if result.get("missing_asset_ids"):
+            st.sidebar.error("missing assets (tasks kept): " + ", ".join(result["missing_asset_ids"]))
+
+    st.sidebar.subheader("Input")
+    colour = STATUS_COLOUR.get(s["data_status_now"], "grey")
+    st.sidebar.markdown(
+        f"mode **{s['input_mode']}** - fire source `{s['fire_source']}` - geometry **{s['fire_geometry_kind']}**  \n"
+        f"as_of `{s['as_of']}`  \ncomputed_at `{s['computed_at']}`  \n"
+        f"data status now :{colour}[**{s['data_status_now']}**] (recorded in snapshot: {s['data_status_recorded']})  \n"
+        f"source age: {fmt_age(s['source_age_s'])} at computation, {fmt_age(s['source_age_now_s'])} now  \n"
+        f"processing time {fmt(s['processing_s'], 1)} s (receipt to snapshot)")
+    with st.sidebar.expander("Priority and value policy"):
+        st.json({"PRIORITY_POLICY": config.PRIORITY_POLICY, "VALUE_POLICY": config.VALUE_POLICY,
+                 "FRESHNESS": config.FRESHNESS})
+    with st.sidebar.expander("Team roster"):
+        busy = {t["assigned_team_id"] for t in sess.open_tasks() if t["assigned_team_id"]}
+        st.dataframe(pd.DataFrame([{"team": t["team_id"], "name": t["name"], "capabilities": ", ".join(t["capabilities"]),
+                                    "available": t["available"], "busy": t["team_id"] in busy}
+                                   for t in sess.store.teams()]), width="stretch", hide_index=True)
+    for w in sess.discovery_warnings:
+        st.sidebar.warning(w)
+    st.sidebar.caption(f"store `{s['db_path']}`")
+
+
+# ----------------------------------------------------------------------------- selected asset
+def render_agent(sess: Session, asset: dict) -> None:
+    aid = asset["asset_id"]
+    live = llm_available()
+    label = "Investigate (live LLM)" if live else "Investigate (FakeLLM, no ANTHROPIC_API_KEY)"
+    if st.button(label, key=f"inv-{aid}", disabled=not asset.get("review_reasons")):
+        try:
+            sess.investigate(aid, live=live)
+        except Exception as e:  # LLM/network failure leaves the question answerable manually
+            st.error(f"investigation failed ({type(e).__name__}: {e}); answer the open items manually")
+        st.rerun()
+    rec = sess.investigations.get(aid)
+    if rec:
+        st.markdown(f"**Investigation** - llm mode `{rec['llm_label']}`, {rec['steps']} steps, "
+                    f"number post-check {'ok' if rec['postcheck_ok'] else 'FAILED'}")
+        for c in rec["tool_calls"]:
+            with st.expander(f"tool {c['name']}({', '.join(f'{k}={v!r}' for k, v in c['input'].items())})"):
+                st.json(c["result"])
+        st.info(rec["final_text"])
+    for p in sess.pending_proposals(aid):
+        st.markdown(f"**Proposal `{p['proposal_id']}`**: {p['field']} {p['previous']!r} -> {p['value']!r} "
+                    f"({p['confidence']}) from {p['source']} {p.get('url') or ''}  \n> {p['quoted_snippet']}")
+        c1, c2 = st.columns(2)
+        if c1.button("Confirm", key=f"ok-{p['proposal_id']}", type="primary"):
+            if try_action("confirm", sess.confirm, p["proposal_id"]):
+                st.rerun()
+        if c2.button("Reject", key=f"no-{p['proposal_id']}"):
+            if try_action("reject", sess.reject, p["proposal_id"], "rejected by analyst"):
+                st.rerun()
+    for q in sess.open_questions(aid):
+        st.markdown(f"**Question `{q['question_id']}`**: {q['question']} (default *{q['default']}*)")
+        cols = st.columns(len(q["options"]))
+        for i, opt in enumerate(q["options"]):
+            if cols[i].button(opt, key=f"q-{q['question_id']}-{i}", type="primary" if opt == q["default"] else "secondary"):
+                if try_action("answer", sess.answer, q["question_id"], opt):
+                    st.rerun()
+
+
+def render_task(sess: Session, t: dict, team_ids: list[str], team_names: dict[str, str]) -> None:
+    flag = f" - affected by {t['affected_by_snapshot_id']}" if t["affected_by_snapshot_id"] else ""
+    head = (f"{t['task_id']} {t['action']} - **{t['status']}** - {t['reason']}"
+            f"{' (suggested)' if t['suggested'] else ''}{flag}")
+    with st.expander(head, expanded=t["status"] != "done"):
+        st.caption(f"needs {', '.join(t['required_capabilities'])}; team {team_names.get(t['assigned_team_id'], 'none')}; "
+                   f"based on {t['based_on_snapshot_id']}; updated {t['updated_at']}")
+        if t["notes"]:
+            st.text(t["notes"])
+        for e in t["evidence"]:
+            st.caption(f"evidence: {e}")
+        k = t["task_id"]
+        if t["status"] in ("open", "done"):
+            c1, c2 = st.columns([3, 1])
+            team = c1.selectbox("Assign team", team_ids, key=f"team-{k}", format_func=lambda i: f"{i} - {team_names[i]}")
+            if c2.button("Assign", key=f"assign-{k}") and try_action("assignment", sess.store.assign, k, team):
+                st.rerun()
+        cols = st.columns(4)
+        if t["assigned_team_id"] and cols[0].button("In progress", key=f"prog-{k}") \
+                and try_action("status", sess.store.set_status, k, "in_progress"):
+            st.rerun()
+        if t["status"] != "done" and cols[1].button("Done", key=f"done-{k}") \
+                and try_action("status", sess.store.set_status, k, "done"):
+            st.rerun()
+        if t["assigned_team_id"] and cols[2].button("Release team", key=f"rel-{k}") \
+                and try_action("release", sess.store.release, k):
+            st.rerun()
+        if t["status"] == "done" and cols[3].button("Reopen", key=f"reopen-{k}") \
+                and try_action("reopen", sess.store.set_status, k, "open"):
+            st.rerun()
+        c1, c2 = st.columns([3, 1])
+        question = c1.text_input("Blocking question", key=f"bq-{k}", placeholder="what is outstanding?")
+        if t["status"] != "done" and c2.button("Block", key=f"block-{k}") and try_action("block", sess.block, k, question):
+            st.rerun()
+        for i, q in enumerate(t["blocking_questions"]):
+            if q["answer"] is not None:
+                st.caption(f"Q: {q['question']} - A: {q['answer']}")
+                continue
+            a1, a2 = st.columns([3, 1])
+            answer = a1.text_input(f"Answer: {q['question']}", key=f"ans-{k}-{i}")
+            if a2.button("Answer", key=f"ansbtn-{k}-{i}") and answer.strip() \
+                    and try_action("answer", sess.store.answer_question, k, i, answer.strip()):
+                st.rerun()
+        d1, d2, d3 = st.columns([2, 2, 1])
+        deadline = d1.text_input("Deadline (ISO 8601 UTC)", value=t["deadline_at"] or "", key=f"dl-{k}")
+        basis = d2.text_input("Deadline basis", value=t["deadline_basis"] or "", key=f"dlb-{k}")
+        if d3.button("Set deadline", key=f"dlbtn-{k}") and try_action("deadline", sess.set_deadline, k, deadline, basis):
+            st.rerun()
+
+
+def render_selected(sess: Session, asset: dict) -> None:
+    aid = asset["asset_id"]
+    rank = f"rank {asset['priority_rank']}, score {asset['priority_score']:.4f}" if asset["priority_score"] is not None \
+        else "needs review, not scored"
+    st.subheader(f"{asset['name']} - {asset['asset_type']} - {rank}")
+    st.caption(f"`{aid}` - {asset.get('municipality') or 'municipality unknown'} - distance "
+               f"{fmt(asset.get('distance_to_fire_m'))} m - intersects {asset.get('intersects_fire')} - people {people(asset)}"
+               f" ({asset.get('occupancy_basis') or 'no basis'}) - policy {asset['priority_policy_version']}")
+    left, right = st.columns(2)
+    with left:
+        st.markdown("**Score components**")
+        st.dataframe(components_frame(asset), width="stretch", hide_index=True)
+        st.markdown("**Priority reasons**")
+        for r in asset["priority_reasons"]:
+            st.write(f"- {r}")
+        age = priority.input_age(asset, sess.clock())
+        st.markdown(f"**Input age**: oldest observed `{age['oldest_observed_at'] or 'unknown'}` "
+                    f"({fmt_age(age['oldest_observed_age_s'])}); newest fetched `{age['newest_fetched_at'] or 'unknown'}` "
+                    f"({fmt_age(age['newest_fetched_age_s'])}). Recalculation never makes stale data fresh.")
+        forecast = asset.get("forecast_source")
+        st.caption(f"forecast: {forecast}" if forecast else "forecast unavailable")
+        st.markdown("**Sources**")
+        st.dataframe(sources_frame(asset), width="stretch", hide_index=True)
+        overrides = sess.store.overrides(aid)
+        if overrides:
+            st.markdown("**Confirmed overrides**")
+            st.dataframe(pd.DataFrame(overrides)[["override_id", "field", "value", "previous", "source", "confidence",
+                                                  "confirmed_at", "proposal_id"]], width="stretch", hide_index=True)
+    with right:
+        st.markdown("**Agent: evidence, proposals, questions**")
+        render_agent(sess, asset)
+        st.markdown("**Tasks for this asset**")
+        with st.form(f"create-{aid}", clear_on_submit=True):
+            action = st.selectbox("Action", list(config.TASK_ACTIONS))
+            reason = st.text_input("Reason")
+            notes = st.text_area("Notes (access concern, destination note, ...)", height=68)
+            if st.form_submit_button("Create task") and try_action(
+                    "create task", sess.create_task, aid, action, reason.strip() or action.replace("_", " "), notes):
+                st.rerun()
+        teams = sess.store.teams()
+        team_ids = [t["team_id"] for t in teams]
+        team_names = {t["team_id"]: t["name"] for t in teams}
+        for t in sess.store.tasks(asset_id=aid):
+            render_task(sess, t, team_ids, team_names)
 
 
 # ----------------------------------------------------------------------------- main
 def main() -> None:
-    if not (SCEN_DIR / "index.json").exists():
-        st.error("No precomputed scenarios. Run `make precompute` first.")
-        st.stop()
-    index = load_index()
-    name = sidebar(index)
-    sc, layers, cells = session_scenario(name)
+    sess = session()
+    if sess.scenario_id is None and sess.scenario_ids:
+        sess.select_scenario(DEFAULT_SCENARIO if DEFAULT_SCENARIO in sess.scenario_ids else sess.scenario_ids[0])
+    sidebar(sess)
+    s = sess.status()
+    c = s["counts"]
+    st.title(f"FireLine - {s['scenario_id']} - {s['as_of']}")
+    st.caption("Priority is for analyst attention, not physical risk. Distance-based exposure is not burn "
+               "probability or time to impact. Recommendations, not orders.")
+    m = st.columns(5)
+    m[0].metric("Ranked", c["ranked"])
+    m[1].metric("Needs review", c["needs_review"], help="unknown required input; investigation queue")
+    m[2].metric("Open tasks", c["open_tasks"])
+    m[3].metric("Pending proposals", c["pending_proposals"])
+    m[4].metric("Open questions", c["open_questions"])
 
-    st.title(f"FireLine - {sc.cluster_id} at {sc.t:%Y-%m-%d %H:%M} UTC")
-    st.caption(f"Wind from {layers['wind_dir_deg']:.0f} deg at {layers['wind_speed_mps']:.0f} m/s - spread source "
-               f"`{sc.spread_source}` - horizon {sc.horizon_min} min - perimeter {layers['perimeter_area_ha']} ha - "
-               f"p50 burned at horizon about {layers['burned_ha_p50_at_horizon']:.0f} ha")
-    counts = {t: sum(1 for a in sc.assets if a["tier"] == t) for t in TIER_RANK}
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Act now", counts.get("act_now", 0))
-    c2.metric("Prepare", counts.get("prepare", 0))
-    c3.metric("Monitor", counts.get("monitor", 0))
-    c4.metric("Open questions", sum(1 for e in sc.queue if e["status"] == "open"))
+    deck, unlocated = build_deck(sess)
+    st.pydeck_chart(deck, width="stretch")
+    st.caption(f"{c['assets'] - unlocated} located assets shown; {unlocated} unlocated assets are not on the map "
+               f"(see needs-review queue). Colour: yellow (low) to red (high) priority score; grey = not scored. "
+               f"Fire: {s['fire_geometry_kind']} from {s['fire_source']}.")
 
-    st.pydeck_chart(build_deck(sc, layers, cells), width="stretch")
+    open_counts = open_task_counts(sess)
+    st.subheader(f"Ranked assets ({c['ranked']})")
+    st.dataframe(ranked_frame(sess.scored["ranked"], open_counts), width="stretch", hide_index=True)
+    st.subheader(f"Needs-review queue ({c['needs_review']})")
+    st.caption("Unknown exposure first, then by known distance. An investigation queue, not an assertion of highest risk.")
+    st.dataframe(review_frame(sess.scored["needs_review"], open_counts), width="stretch", hide_index=True)
+    if sess.scored["flagged"]:
+        st.caption(f"Ranked assets that still carry review flags ({len(sess.scored['flagged'])}):")
+        st.dataframe(ranked_frame(sess.scored["flagged"], open_counts), width="stretch", hide_index=True)
 
-    st.subheader(f"Assets by tier - {DIRECTOR}")
-    st.caption("director del pla / alcalde orders, CECAT sends. Times in minutes after t.")
-    df = asset_frame(sc)
-    st.dataframe(df.style.apply(tier_style, axis=1), width="stretch", hide_index=True)
+    assets = sess.assets_in_order()
+    labels = {a["asset_id"]: f"{a['name']} ({a['asset_type']}; {a['queue']})" for a in assets}
+    ids = list(labels)
+    default = st.session_state.get("selected_asset")
+    chosen = st.selectbox("Selected asset", ids, index=ids.index(default) if default in ids else 0,
+                          format_func=labels.get, key="asset_select")
+    st.session_state.selected_asset = chosen
+    render_selected(sess, sess.asset(chosen))
 
-    st.subheader(f"Coordinator queue - {DIRECTOR}")
-    open_q = [e for e in sc.queue if e["status"] == "open"]
-    if not open_q:
-        st.success("No open questions.")
-    for e in open_q:
-        asset = sc.asset(e["asset_id"])
-        cols = st.columns([5] + [1] * len(e["options"]))
-        cols[0].markdown(f"**{asset['name']}** ({asset['tier']}): {e['question']}  \n"
-                         f"<small>default applied: *{e['default']}* - id `{e['escalation_id']}`</small>",
-                         unsafe_allow_html=True)
-        for i, opt in enumerate(e["options"]):
-            if cols[i + 1].button(opt, key=f"{name}-{e['escalation_id']}-{opt}",
-                                  type="primary" if opt == e["default"] else "secondary"):
-                sc.answer_escalation(e["escalation_id"], opt)
-                st.rerun()
-    answered = [e for e in sc.queue if e["status"] != "open"]
-    if answered:
-        with st.expander(f"Answered ({len(answered)})"):
-            for e in answered:
-                st.write(f"- `{e['escalation_id']}` {e['question']} -> **{e['answer']}**")
+    st.subheader(f"All tasks ({len(sess.store.tasks())})")
+    team_names = {t["team_id"]: t["name"] for t in sess.store.teams()}
+    st.dataframe(tasks_frame(sess.store.tasks(), team_names), width="stretch", hide_index=True)
 
-    with st.expander(f"Change log ({len(sc.change_log)})", expanded=False):
-        for line in sc.change_log:
+    events = sess.store.events()
+    with st.expander(f"Change log ({len(events)} store events, {len(sess.workbench.change_log)} agent lines)"):
+        st.dataframe(pd.DataFrame(events[::-1]), width="stretch", hide_index=True)
+        for line in reversed(sess.workbench.change_log):
             st.write(f"- {line}")
-
-    with_over = [a for a in sc.assets if a.get("overrides")]
-    if with_over:
-        st.subheader(f"Overrides and evidence - {DIRECTOR}")
-    for a in with_over:
-        with st.expander(f"{a['name']} - {len(a['overrides'])} override(s), tier {a['tier']}"):
-            for i, o in enumerate(list(a["overrides"])):
-                c = st.columns([6, 1])
-                c[0].markdown(f"**{o['field']}**: {o.get('previous')} -> {o['value']} ({o.get('direction')}, "
-                              f"confidence {o.get('confidence')})  \nsource: {o.get('source')} at {o.get('fetched_at')}  \n"
-                              f"> {o.get('quoted_snippet', '')}")
-                if c[1].button("reject", key=f"{name}-rej-{a['asset_id']}-{i}"):
-                    a["overrides"].remove(o)
-                    if "previous" in o and o["field"] in a:
-                        a[o["field"]] = o["previous"]
-                    sc._redecide(a, f"coordinator rejected override {o['field']}={o['value']}")
-                    sc.change_log.append(f"{a['asset_id']}: override {o['field']}={o['value']} rejected by coordinator")
-                    st.rerun()
-
-    if index.get("diff_0800_1000"):
-        with st.expander("Diff 08:00 -> 10:00"):
-            for line in index["diff_0800_1000"]:
-                st.write(f"- {line}")
 
 
 main()

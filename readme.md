@@ -34,7 +34,10 @@ Equipaments and schools extract for the Gavarres area (2026-09-19); care homes a
 coordinates in their registers and are listed with `location_unknown`. The fire in every committed
 snapshot and recorded provider response is **synthetic** (built to the Deepfire schema; live
 authentication has not been verified because no token was available). `fixtures/evidence.json` is
-labelled manual enrichment. Tasks and overrides persist in `data/fireline.sqlite` (`FIRELINE_DB`).
+labelled manual enrichment. No located register row carries a capacity, so the real-area ranked
+table is empty until capacities are sourced or confirmed; every real asset sits in the review queue.
+Tasks and overrides persist in `data/fireline.sqlite` (`FIRELINE_DB`). Recorded check outcomes are in
+`VALIDATION.md` (`scripts/validate.py --write`).
 
 ## 1. Product and first milestone
 

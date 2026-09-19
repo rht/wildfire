@@ -97,7 +97,7 @@ in the value policy. `estimated_occupancy` null with `capacity` set is allowed; 
 says capacity is a proxy only where the producer chose to fill `estimated_occupancy` from it (it does
 not by default). Forecast fields are null unless `config.FEATURES["forecast_enrichment"]` is on, in which
 case `forecast_source` names the method (e.g. `"ca_ensemble (labelled enrichment, not validated)"`).
-Point fallback for distance is recorded in `sources` with `fields: ["distance_to_fire_m"]` and a note
+Point fallback for distance is recorded in `sources` with `fields: ["distance_to_fire_m", "intersects_fire"]` and a note
 `"point fallback: facility footprint missing"`.
 
 ### 2.3 API
@@ -121,7 +121,8 @@ to change the ranking; one asset with `location_unknown`, one with `occupancy_un
 
 ### 2.4 Real-area assets
 
-`fixtures/real_area/assets_gavarres.json`: every `data/assets_in.json` row (Gencat Equipaments +
+`fixtures/real_area/assets_gavarres.json`: envelope `{area, bbox, extracted_on, registers, counts, assets}` whose
+`assets` hold every `data/assets_in.json` row (Gencat Equipaments +
 schools extract, 2026-09-19) inside `feeds.GAVARRES_BBOX`, in v4 asset-record shape with `sources`
 carrying `fetched_at` = extraction time and `source` = the register. Unlocated care homes and
 campsites from `data/unlocated.json` inside the area's municipalities are included with null
@@ -140,12 +141,16 @@ FireUpdate = {
   "geometry_kind": "perimeter" | "hotspot_centre" | None,
   "source": str,                   # "deepfire:satellite-perimeters", "deepfire:clusters", "fixture:..."
   "raw_ref": str | None,           # path of the cached raw response
+  "notes": str,                    # e.g. "observed_at from observed_watermark"; informational
 }
 
 fire_input.parse_deepfire(body: dict, received_at: datetime, collection: str) -> FireUpdate | None
 fire_input.poll_deepfire(client, bbox, as_of, *, incident_id=None) -> FireUpdate | None   # live path
 fire_input.load_recorded(dir_or_files) -> list[FireUpdate]      # recorded responses through parse_deepfire
 fire_input.UpdateCache().accept(update) -> bool                 # False for duplicate (incident_id, observed_at, geometry hash)
+                                                                #   and for an update observed earlier than the latest accepted
+fire_input.record_response(collection, body, received_at, out_dir) -> Path   # writes the recorded shape
+fire_input.measure_update(update, started_at, finished_at, now=None) -> {"source_age_s", "processing_s"}
 fire_input.data_status(observed_at, now, cfg=config) -> "current" | "stale" | "unavailable"
 fire_input.source_age_s(observed_at, now) -> float | None
 fire_input.Stopwatch() -> .start(); .stop() -> processing_s     # receipt-to-snapshot processing time
@@ -161,7 +166,9 @@ responses live in `fixtures/fire/deepfire/*.json` as `{"collection", "received_a
 priority.SnapshotSequence().accept(snap) -> bool   # False on duplicate snapshot_id or sequence <= last for scenario_id
 priority.apply_overrides(assets, overrides) -> list[dict]   # copies; overrides from tasks.TaskStore.overrides()
 priority.score_asset(asset, cfg=config) -> dict             # adds the six coordination keys below
-priority.score_snapshot(snap, cfg=config, overrides=None) -> {"ranked": [...], "needs_review": [...], "all": [...]}
+priority.score_snapshot(snap, cfg=config, overrides=None) -> {"ranked": [...], "needs_review": [...], "flagged": [...], "all": [...]}
+    # flagged = ranked assets that still carry review reasons (shown in both views); all = ranked + needs_review
+priority.input_age(asset, now=None) -> {"oldest_observed_at", "newest_fetched_at", ...ages when now given}
 ```
 
 Added keys per asset: `priority_score` (float | None), `priority_rank` (int | None, 1-based within
@@ -175,7 +182,10 @@ estimated_occupancy` or `capacity` as labelled proxy; `value = value_score`. Any
 null -> `priority_score` null, `queue = "needs_review"`. Ranked sorted by score desc then `asset_id`;
 needs_review ordered: exposure unknown first, then ascending known distance, then `asset_id`.
 Assets with review reasons but a computable score stay in `ranked` and also carry their reasons
-(the UI shows them in both views).
+(the UI shows them in both views). `apply_overrides` also clears `occupancy_unknown` /
+`occupancy_seasonal` when `estimated_occupancy` is overridden, re-derives `value_score` when
+`asset_type` is overridden, and adds `override_conflict` when a provider source for the same field
+is observed later than the override was confirmed (the override is kept and the conflict shown).
 
 ## 5. Tasks and roster — `fireline/tasks.py` (SQLite)
 
@@ -234,7 +244,11 @@ analyst's: `tasks.TaskStore.confirm_override(..., proposal_id=)` then rescoring;
 `rejected`. The agent never assigns teams or changes policy.
 
 Evidence cache `fixtures/evidence.json`: `[{"evidence_id", "name", "municipality", "url", "snippet",
-"observed_at", "fetched_at", "capacity", "asset_type", "notes"}]`, labelled manual enrichment.
+"observed_at", "fetched_at", "capacity", "asset_type", "notes", "source", "register"?, "address"?}]`,
+labelled manual enrichment (`source: "manual enrichment"`) or copied register rows (`source:
+"gencat:<register>"`). Candidates from `lookup_facility` always carry both `register` and `url` (one
+null) plus `source` and `asset_type`. `propose_update` raises `CapacityAsOccupancyError` (surfaced by
+`dispatch` as an error with a hint) when `estimated_occupancy` is proposed from capacity-worded evidence.
 `fixtures/agent/prerecorded_investigation.json` holds one real-model transcript (or a labelled fake if
 no key was available when recorded) that `scripts/investigate.py` replays when no key is present.
 

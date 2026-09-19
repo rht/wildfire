@@ -154,7 +154,8 @@ class TaskStore:
         self.path = str(path)
         self.cfg = cfg
         self._clock = clock or _utcnow
-        self.conn = sqlite3.connect(self.path)
+        # check_same_thread=False: Streamlit reruns on different threads; the store is used from one at a time.
+        self.conn = sqlite3.connect(self.path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
         self.conn.commit()
