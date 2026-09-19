@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SNAPSHOT_DIRS = (ROOT / "fixtures" / "snapshots", ROOT / "data" / "snapshots")
 ROSTER_PATH = ROOT / "fixtures" / "teams.json"
 DEFAULT_DB = ROOT / "data" / "fireline.sqlite"
-FAKE_LABEL_NO_KEY = "fake (no ANTHROPIC_API_KEY)"
+FAKE_LABEL_NO_KEY = "fake (no NEBIUS_API_KEY or ANTHROPIC_API_KEY)"
 
 
 def discover_snapshots(dirs=SNAPSHOT_DIRS) -> tuple[dict[str, list[dict]], list[str]]:
@@ -60,7 +60,7 @@ def db_path_from_env() -> Path:
 
 
 def llm_available() -> bool:
-    return env.has_anthropic_key()   # loads .env first
+    return env.live_llm_provider() is not None   # loads .env first
 
 
 class Session:
@@ -258,12 +258,14 @@ class Session:
     # -- agent ------------------------------------------------------------------------------
 
     def investigate(self, asset_id: str, live: bool) -> tuple[dict, str]:
-        """Run one bounded investigation. Live uses AnthropicLLM only when asked and a key is set;
-        otherwise the deterministic FakeLLM. Returns `(record, llm_mode_label)`."""
-        if live and llm_available():
-            from fireline.llm import AnthropicLLM
+        """Run one bounded investigation. Live uses the provider back-end for the configured key
+        (Nebius by default) only when asked; otherwise the deterministic FakeLLM. Returns
+        `(record, llm_mode_label)`."""
+        from fireline.llm import live_llm
 
-            llm, label = AnthropicLLM(), "live"
+        backend = live_llm() if live else None
+        if backend is not None:
+            llm, label = backend, f"live ({backend.model})"
         else:
             llm, label = None, (FAKE_LABEL_NO_KEY if not llm_available() else "fake (live disabled)")
         record = agent.investigate(self.workbench, asset_id, llm=llm)

@@ -302,7 +302,7 @@ def sidebar(sess: Session) -> None:
 def render_agent(sess: Session, asset: dict) -> None:
     aid = asset["asset_id"]
     live = llm_available()
-    label = "Investigate (live LLM)" if live else "Investigate (FakeLLM, no ANTHROPIC_API_KEY)"
+    label = "Investigate (live LLM)" if live else "Investigate (FakeLLM, no LLM API key)"
     if st.button(label, key=f"inv-{aid}", disabled=not asset.get("review_reasons")):
         try:
             sess.investigate(aid, live=live)

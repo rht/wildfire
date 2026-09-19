@@ -13,7 +13,8 @@ Every proposal needs analyst confirmation (`confirm_proposal`), which persists i
 `tasks.TaskStore.confirm_override` when a store is attached, updates the in-memory asset and
 re-ranks the workbench's snapshot with `priority.rank_snapshot` (readme 8 step 4). Every number in the agent's final message must come from a tool result of the
 same loop (post-check); otherwise the message is replaced and the failure logged. The loop is capped
-at `max_steps` model calls. Works offline with `llm.FakeLLM` (default when `llm=None`).
+at `max_steps` model calls. Runs live on whatever `llm.live_llm()` returns for the configured key
+(Nebius by default) and offline with `llm.FakeLLM` (the default when `llm=None`).
 """
 
 from __future__ import annotations
@@ -745,12 +746,13 @@ def _first_message(asset: dict) -> str:
 
 
 def llm_mode(llm) -> str:
-    """'fake' for FakeLLM (or None), 'live' for AnthropicLLM, else 'custom'."""
-    from .llm import AnthropicLLM, FakeLLM
+    """'fake' for FakeLLM (or None), 'live' for a provider back-end (NebiusLLM, AnthropicLLM),
+    else 'custom'."""
+    from .llm import AnthropicLLM, FakeLLM, NebiusLLM
 
     if llm is None or isinstance(llm, FakeLLM):
         return "fake"
-    if isinstance(llm, AnthropicLLM):
+    if isinstance(llm, (NebiusLLM, AnthropicLLM)):
         return "live"
     return "custom"
 

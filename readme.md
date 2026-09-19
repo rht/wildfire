@@ -208,11 +208,11 @@ Sources checked on 19 September 2026:
 
 ```sh
 make setup        # uv venv + uv pip install -e ".[dev]"
-make test         # pytest, no network, no LLM key
+make test         # pytest, no network, no LLM key (tests/conftest.py strips the keys so .env cannot leak in)
 make snapshots    # rebuild fixtures/snapshots/ (synthetic fire + synthetic forecasts; real facilities + real perimeters + labelled CA arrival enrichment) with scripts/make_snapshots.py
 make demo         # streamlit run fireline/app.py: map, ranked table, review queue, tasks, change log
                   #   (the sidebar steps and scrubs through the snapshot sequence, back as well as forward)
-make investigate  # one agent investigation; live with ANTHROPIC_API_KEY, else a labelled prerecorded replay
+make investigate  # one agent investigation; live with NEBIUS_API_KEY (or ANTHROPIC_API_KEY), else a labelled prerecorded replay
 make fetch        # pull real Gencat registers and Open-Meteo wind into data/ (network)
 make precompute   # v0 engine demo (spread CA, routing, decisions); the same uncalibrated CA enriches gavarres_real_0001..0003 (labelled, see below)
 ```
@@ -449,6 +449,15 @@ Implement one bounded loop for unknown occupancy or ambiguous class:
 Four tools suffice: `get_asset`, `lookup_facility`, `propose_update`, and `escalate`. Keep evidence and tool calls visible, cap investigation steps, and leave unsupported questions unresolved. All field updates require analyst confirmation in this MVP. The agent does not directly assign teams or change scoring policy; calculation stays in code.
 
 No general chat, live web research, alert drafting or wind what-if tools are needed. An LLM failure leaves the question answerable manually. Demonstrate one actual investigation call; label any prerecorded fallback output.
+
+**Model as implemented (2026-09-19):** the loop runs on `deepseek-ai/DeepSeek-V4.1-Flash` through
+Nebius AI Studio's OpenAI-compatible endpoint (`fireline.llm.NebiusLLM`, key `NEBIUS_API_KEY` in the
+ignored `.env`, model overridable with `FIRELINE_MODEL`); `fireline.llm.live_llm()` falls back to
+`AnthropicLLM` when only an `ANTHROPIC_API_KEY` is present. It was chosen by running this same loop
+over the flagged fixture assets on five open-weight models: it and Kimi-K3 were the only two that
+handled all cases without stalling or returning an empty message, at a twelfth of Kimi's cost. The
+offline `FakeLLM` remains the default when no key is configured, so the tests and `scripts/validate.py`
+stay reproducible; `scripts/validate.py --live` records what the real model did in `VALIDATION.md`.
 
 ## 9. Interface and implementation
 

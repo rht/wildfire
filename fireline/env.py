@@ -55,3 +55,24 @@ def has_deepfire_credentials() -> bool:
 def has_anthropic_key() -> bool:
     load_env()
     return bool(os.environ.get("ANTHROPIC_API_KEY"))
+
+
+def has_nebius_key() -> bool:
+    load_env()
+    return bool(os.environ.get("NEBIUS_API_KEY"))
+
+
+def live_llm_provider() -> str | None:
+    """'nebius', 'anthropic' or None: which live agent back-end this environment can run.
+
+    Nebius first, because it is the provider the project is configured for; Anthropic is kept so a
+    checkout with an ANTHROPIC_API_KEY still runs live without a code change.
+    """
+    if has_nebius_key():
+        return "nebius"
+    if has_anthropic_key():
+        return "anthropic"
+    return None
+
+
+LLM_KEY_NAMES = {"nebius": "NEBIUS_API_KEY", "anthropic": "ANTHROPIC_API_KEY"}

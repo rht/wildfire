@@ -3,9 +3,12 @@
 
     .venv/bin/python scripts/validate.py            # run every check, print the table
     .venv/bin/python scripts/validate.py --write    # also write VALIDATION.md
+    .venv/bin/python scripts/validate.py --live     # additionally call the live model (costs tokens)
 
 Every check runs offline on the committed fixtures: no network, no Deepfire credentials, no LLM key
-(the agent check uses `fireline.llm.FakeLLM` and is labelled as such). Each check is a function
+(the agent check uses `fireline.llm.FakeLLM` and is labelled as such). The one exception is the live
+agent check, which is skipped as "not verified" unless `--live` is passed *and* an LLM API key is
+configured; it is the only check that leaves the machine. Each check is a function
 returning `{"name", "outcome", "details", "measured"}` with outcome `pass`, `fail` or
 `not verified`; `tests/test_validate.py` imports them. What the script cannot measure is listed
 under "Not verified" rather than claimed.
@@ -629,11 +632,98 @@ def check_agent() -> dict:
         "escalations": len(questions), "estimated_occupancy_proposals": len(occupancy_from_capacity)})
 
 
-def check_agent_live() -> dict:
-    return _result("Agent (live model)", False, [
-        "not run: no ANTHROPIC_API_KEY in this environment; supported proposals, correct escalations and unsupported "
-        "claims on held-out examples are unmeasured for the real model",
-    ], outcome=NOT_VERIFIED)
+LIVE_MUST_ESCALATE = ("fixture:mas_nou",)   # no evidence entry exists: the model has nothing to propose from
+
+
+def _supported(proposal: dict, record: dict) -> bool:
+    """A proposal is supported when the snippet it quotes appears verbatim in a tool result of the
+    same loop. This is the live counterpart of the number post-check: it catches a model that
+    invents an evidence quote to justify a field it wants to set."""
+    snippet = (proposal.get("quoted_snippet") or "").strip()
+    if not snippet:
+        return False
+    haystack = json.dumps([c["result"] for c in record["tool_calls"]], ensure_ascii=False)
+    return snippet in haystack
+
+
+def check_agent_live(live: bool = False) -> dict:
+    """Readme 11 agent, against the real model: are its proposals supported by evidence it actually
+    read, does it escalate the cases it cannot resolve, and does it stay inside the guards?
+
+    The only check that uses the network, and the only one that costs money, so it runs solely when
+    `--live` is passed and a key is configured; otherwise it records itself as not verified.
+    """
+    from fireline import env, llm as llm_module
+
+    provider = env.live_llm_provider()
+    if not live or provider is None:
+        reason = ("no LLM API key in this environment (NEBIUS_API_KEY or ANTHROPIC_API_KEY)" if provider is None
+                  else "--live was not passed, so no tokens were spent")
+        return _result("Agent (live model)", False, [
+            f"not run: {reason}; supported proposals, correct escalations and unsupported claims are unmeasured "
+            f"for the real model",
+        ], outcome=NOT_VERIFIED)
+
+    backend = llm_module.live_llm()
+    snap1 = _snap("synthetic_gavarres_0001")
+    store = _store()
+    store.apply_snapshot(snap1)
+    scored = priority.rank_snapshot(snap1, overrides=store.overrides())
+    wb = agent.Workbench.from_scored(scored, tasks=store)
+    nowhere = dict(wb.asset("fixture:can_xic"), asset_id="fixture:mas_nou", name="Mas Nou de Ningú",
+                   capacity=None, estimated_occupancy=None, occupancy_basis=None, slack_min=None,
+                   priority_status="needs_review", priority_rank=None, queue="needs_review",
+                   review_reasons=["occupancy_unknown"], needs_review=True)
+    wb.assets[nowhere["asset_id"]] = nowhere
+    timing_reasons = ("forecast_unavailable", "evacuation_unknown")
+    ids = [aid for aid in agent.flagged_asset_ids(wb)
+           if [r for r in wb.asset(aid).get("review_reasons") or [] if r not in timing_reasons]]
+
+    records, failures = [], []
+    for aid in ids:
+        try:
+            records.append(agent.investigate(wb, aid, llm=backend))
+        except Exception as exc:
+            failures.append(f"{aid}: {type(exc).__name__}: {exc}")
+    proposals = [(r, p) for r in records for p in r["proposals_added"]]
+    questions = [q for r in records for q in r["questions_added"]]
+    unsupported = [p["proposal_id"] for r, p in proposals if not _supported(p, r)]
+    occupancy_from_capacity = [p["proposal_id"] for _, p in proposals if p["field"] == "estimated_occupancy"]
+    postcheck_failed = [r["asset_id"] for r in records if not r["postcheck_ok"]]
+    silent = [r["asset_id"] for r in records if not r["final_text"].strip()]
+    capped = [r["asset_id"] for r in records if r["steps"] >= 6 and r["final_text"] == agent.STEP_CAP_TEXT]
+    escalated = {r["asset_id"] for r in records if r["questions_added"]}
+    missing_escalation = [aid for aid in LIVE_MUST_ESCALATE if aid in ids and aid not in escalated]
+    by_field = dict(Counter(p["field"] for _, p in proposals))
+    per_asset = {r["asset_id"].split(":")[-1]: (r["review_reasons"], len(r["proposals_added"]),
+                                                len(r["questions_added"]), r["steps"]) for r in records}
+
+    ok = (not failures and not unsupported and not occupancy_from_capacity and not postcheck_failed
+          and not silent and not capped and not missing_escalation and len(records) == len(ids))
+    details = [
+        f"model: {provider} `{backend.model}` at temperature 0 (fireline.llm.NebiusLLM translates the four tools "
+        f"to the OpenAI-compatible schema; the loop, guards and post-check are the same code the FakeLLM runs)",
+        f"{len(records)}/{len(ids)} investigations completed over the flagged fixture assets of "
+        f"synthetic_gavarres_0001 plus the no-evidence case fixture:mas_nou"
+        + (f"; failures: {failures}" if failures else ""),
+        f"proposals {len(proposals)} by field {by_field}; escalations {len(questions)}; per asset "
+        f"{{id: (reasons, proposals, questions, steps)}}: {per_asset}",
+        f"supported proposals (quoted snippet found verbatim in a tool result of the same loop): "
+        f"{len(proposals) - len(unsupported)}/{len(proposals)}; unsupported: {unsupported or 'none'}",
+        f"estimated_occupancy proposed from capacity evidence: {len(occupancy_from_capacity)} "
+        f"({occupancy_from_capacity or 'none'}); the CapacityAsOccupancyError guard refuses these regardless",
+        f"number post-check failed on: {postcheck_failed or 'none'}; empty final message on: {silent or 'none'}; "
+        f"stopped at the step cap: {capped or 'none'}",
+        f"must-escalate cases {list(LIVE_MUST_ESCALATE)} escalated: {not missing_escalation} "
+        f"({'missing: ' + str(missing_escalation) if missing_escalation else 'all'})",
+        "held-out examples: the fixture assets were used while writing the system prompt, so these are not held-out "
+        "examples; this run measures whether the model obeys the evidence and escalation rules, not its accuracy on "
+        "unseen facilities",
+    ]
+    return _result("Agent (live model)", ok, details, {
+        "provider": provider, "model": backend.model, "investigations": len(records),
+        "proposals": len(proposals), "by_field": by_field, "escalations": len(questions),
+        "unsupported_proposals": len(unsupported), "occupancy_from_capacity": len(occupancy_from_capacity)})
 
 
 def check_latency(repeats: int = 3) -> dict:
@@ -724,12 +814,20 @@ def check_stale() -> dict:
 CHECKS = [check_coverage, check_geometry, check_priority, check_updates, check_tasks, check_agent, check_agent_live,
           check_latency, check_stale]
 
+LIVE_LLM_NOT_VERIFIED = (
+    "Live LLM investigation: the live agent check did not run (no key, or --live not passed), so the agent check "
+    "ran the scripted FakeLLM and the prerecorded fixture is a labelled FakeLLM transcript. Supported proposals, "
+    "correct escalations and unsupported claims are unmeasured for the real model."
+)
+LIVE_LLM_HELD_OUT_NOT_VERIFIED = (
+    "Live LLM accuracy on unseen facilities: the live agent check measures whether the model obeys the evidence, "
+    "guard and escalation rules on the fixture assets, which were used while writing the system prompt. No "
+    "examples were held back, so its accuracy on facilities it has not been prompted against is unmeasured."
+)
+
 NOT_VERIFIED_ITEMS = [
     "Live Deepfire authentication and a real response: no credentials were available; fixtures/fire/deepfire is "
     "synthetic content in the documented response shape (fixtures/fire/deepfire/README.md).",
-    "Live LLM investigation: no ANTHROPIC_API_KEY; the agent check ran the scripted FakeLLM and the prerecorded "
-    "fixture is a labelled FakeLLM transcript. Supported proposals, correct escalations and unsupported claims on "
-    "held-out examples are unmeasured for the real model.",
     "Forecast accuracy and evacuation estimates: no provider forecast was validated; the ranking checks use "
     "constructed synthetic arrivals and policy evacuation durations, and distance-based exposure is not time "
     "to impact.",
@@ -744,11 +842,11 @@ NOT_VERIFIED_ITEMS = [
 
 
 # ------------------------------------------------------------------------------------------ run / report
-def run_checks(checks=CHECKS) -> list[dict]:
+def run_checks(checks=CHECKS, live: bool = False) -> list[dict]:
     results = []
     for fn in checks:
         try:
-            results.append(fn())
+            results.append(fn(live=live) if fn is check_agent_live else fn())
         except Exception as exc:  # a crashing check is a failed check, recorded as such
             tb = traceback.format_exc().strip().splitlines()[-1]
             results.append(_result(fn.__name__.replace("check_", "").replace("_", " ").title(), False,
@@ -772,6 +870,12 @@ def _measured_summary(r: dict) -> str:
         return f"suggestions {m['suggested_first']} then {m['suggested_second']}; {m['tasks_persisted']} tasks survive reload"
     if n == "Agent (FakeLLM)":
         return f"{m['investigations']} runs: {m['proposals']} proposals {m['by_field']}, {m['escalations']} escalations, {m['estimated_occupancy_proposals']} occupancy-from-capacity"
+    if n == "Agent (live model)":
+        if not m:
+            return ""
+        return (f"{m['model']}: {m['investigations']} runs, {m['proposals']} proposals {m['by_field']}, "
+                f"{m['escalations']} escalations, {m['unsupported_proposals']} unsupported, "
+                f"{m['occupancy_from_capacity']} occupancy-from-capacity")
     if n == "Latency":
         return f"median {m['median_s']:.3f} s for {m['assets']} assets (target < {m['target_s']:.0f} s); source age {m['source_age_s']:.0f} s"
     if n == "Stale data":
@@ -781,7 +885,9 @@ def _measured_summary(r: dict) -> str:
 
 def print_table(results: list[dict], verbose: bool = True) -> None:
     width = max(len(r["name"]) for r in results)
-    print(f"FireLine v4 validation ({VALIDATION_DATE}, offline)")
+    live = next((r for r in results if r["name"] == "Agent (live model)"), None)
+    mode = f"live agent check on {live['measured'].get('model')}" if live and live["measured"] else "offline"
+    print(f"FireLine v4 validation ({VALIDATION_DATE}, {mode})")
     print(f"{'check':<{width}}  {'outcome':<13} measured")
     print("-" * (width + 80))
     for r in results:
@@ -795,13 +901,32 @@ def print_table(results: list[dict], verbose: bool = True) -> None:
     print(f"\n{counts[PASS]} pass, {counts[FAIL]} fail, {counts[NOT_VERIFIED]} not verified")
 
 
+def _offline_sentence(results: list[dict]) -> str:
+    live = next((r for r in results if r["name"] == "Agent (live model)"), None)
+    if live and live["outcome"] != NOT_VERIFIED:
+        return ("Every check ran offline on the committed fixtures (no network, no Deepfire credentials) except "
+                f"the live agent check, which called {live['measured'].get('provider')} "
+                f"`{live['measured'].get('model')}` over the network.")
+    return "Every check ran offline on the committed fixtures (no network, no Deepfire credentials, no LLM key)."
+
+
+def not_verified_items(results: list[dict]) -> list[str]:
+    """The standing list, plus the live-LLM item in the form this run earns: the whole thing when no
+    live run happened, the narrower held-out caveat when one did."""
+    live = next((r for r in results if r["name"] == "Agent (live model)"), None)
+    ran_live = bool(live and live["outcome"] != NOT_VERIFIED)
+    return [NOT_VERIFIED_ITEMS[0],
+            LIVE_LLM_HELD_OUT_NOT_VERIFIED if ran_live else LIVE_LLM_NOT_VERIFIED,
+            *NOT_VERIFIED_ITEMS[1:]]
+
+
 def render_markdown(results: list[dict]) -> str:
     lines = [
         "# FireLine v4 MVP validation (readme.md section 11)",
         "",
         f"Validation date: {VALIDATION_DATE}. Written by `scripts/validate.py --write`; rerun it to refresh. "
-        "Every check ran offline on the committed fixtures (no network, no Deepfire credentials, no LLM key). "
-        "Outcomes and numbers below are what the script measured on that run; nothing here is a claim beyond "
+        + _offline_sentence(results) +
+        " Outcomes and numbers below are what the script measured on that run; nothing here is a claim beyond "
         "those measurements. Fixture content is synthetic except the Gencat register extract in "
         "`fixtures/real_area/`.",
         "",
@@ -821,7 +946,7 @@ def render_markdown(results: list[dict]) -> str:
         lines += [f"- {d}" for d in r["details"]]
         lines.append("")
     lines += ["## Not verified", ""]
-    lines += [f"- {item}" for item in NOT_VERIFIED_ITEMS]
+    lines += [f"- {item}" for item in not_verified_items(results)]
     lines.append("")
     return "\n".join(lines)
 
@@ -830,8 +955,10 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--write", action="store_true", help=f"write {OUTPUT.name} next to readme.md")
     ap.add_argument("--quiet", action="store_true", help="table only, no per-check details")
+    ap.add_argument("--live", action="store_true",
+                    help="also run the live agent check against the configured LLM provider (network, costs tokens)")
     args = ap.parse_args(argv)
-    results = run_checks()
+    results = run_checks(live=args.live)
     print_table(results, verbose=not args.quiet)
     if args.write:
         OUTPUT.write_text(render_markdown(results), encoding="utf-8")
