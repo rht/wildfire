@@ -1,0 +1,1060 @@
+{
+  "main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+  "branches": [
+    {
+      "remote": "origin/claude/ca-calibration",
+      "sha": "856487189fc122226a33fac11a7623e36b9bb918",
+      "merged": false,
+      "unique_commits": 3,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/close-v4-gaps",
+      "sha": "81bdc19eefaa1127d06d33d38c5ef055aec916a7",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/fix-map-tooltip-html",
+      "sha": "5ddd66575226de25f8bed436ab991dba5eacd1e1",
+      "merged": false,
+      "unique_commits": 1,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/real-ca-forecast",
+      "sha": "058acdbd941bf9517e8716f825ee33b6393e1af2",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/school-enrolment",
+      "sha": "f91178ec8a935905a81799e94fa43c10e45761c1",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/snapshot-time-travel",
+      "sha": "d10f58225816c8a428afbd035a91765f5daf4f38",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/ventallo-scenario",
+      "sha": "c5d74f20c1bb762f53a93ac6418c29bfc6c51e9b",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/window-consumer",
+      "sha": "7ffff07eb2be8a84c861c9dea941abd0a2d93e9f",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/window-producer",
+      "sha": "c893603f5ee12fd1eb86dbfd8291b7e9b21320f8",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/window-ranking",
+      "sha": "f8e417fafe646399ef2463046a9ba3f12c3fbe1f",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": null
+    },
+    {
+      "remote": "origin/claude/workflow-setup",
+      "sha": "367dddca72895bae50b25f0cfa33ab39ac9d1f96",
+      "merged": false,
+      "unique_commits": 9,
+      "worktree": null
+    },
+    {
+      "remote": "origin/codex/architecture-diagram",
+      "sha": "4ffff955040e35087f4a393ddd4565b566b3ce58",
+      "merged": false,
+      "unique_commits": 1,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/architecture-diagram",
+        "HEAD": "4ffff955040e35087f4a393ddd4565b566b3ce58",
+        "branch": "refs/heads/codex/architecture-diagram",
+        "status": []
+      }
+    },
+    {
+      "remote": "origin/codex/calling-research",
+      "sha": "a294af58e73f63ffbd52202fbd5cf3f21afad1ac",
+      "merged": false,
+      "unique_commits": 2,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/calling-research",
+        "HEAD": "a294af58e73f63ffbd52202fbd5cf3f21afad1ac",
+        "branch": "refs/heads/codex/calling-research",
+        "status": []
+      }
+    },
+    {
+      "remote": "origin/codex/coordination-contract",
+      "sha": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/coordination-contract",
+        "HEAD": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+        "branch": "refs/heads/codex/coordination-contract",
+        "status": []
+      }
+    },
+    {
+      "remote": "origin/codex/evacuation-readiness",
+      "sha": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
+      "merged": false,
+      "unique_commits": 1,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/evacuation-readiness",
+        "HEAD": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
+        "branch": "refs/heads/codex/evacuation-readiness",
+        "status": []
+      }
+    },
+    {
+      "remote": "origin/codex/norma-fixes",
+      "sha": "d6055d3250ca0c9a472c9a54f0e24c35d982e998",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/norma-fixes",
+        "HEAD": "d6055d3250ca0c9a472c9a54f0e24c35d982e998",
+        "branch": "refs/heads/codex/norma-fixes",
+        "status": []
+      }
+    },
+    {
+      "remote": "origin/codex/qualityclouds-audit",
+      "sha": "92ae882545ae6b45fb6e2356e1f8aa17da599312",
+      "merged": false,
+      "unique_commits": 1,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/qualityclouds-audit",
+        "HEAD": "92ae882545ae6b45fb6e2356e1f8aa17da599312",
+        "branch": "refs/heads/codex/qualityclouds-audit",
+        "status": []
+      }
+    },
+    {
+      "remote": "origin/codex/review-rht-window",
+      "sha": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/review-rht-window",
+        "HEAD": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+        "branch": "refs/heads/codex/review-rht-window",
+        "status": []
+      }
+    },
+    {
+      "remote": "origin/codex/slng-voice-agent",
+      "sha": "02e091443a13991e5832dc01c0528e57ea271d1f",
+      "merged": false,
+      "unique_commits": 7,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/slng-voice-agent",
+        "HEAD": "02e091443a13991e5832dc01c0528e57ea271d1f",
+        "branch": "refs/heads/codex/slng-voice-agent",
+        "status": [
+          "?? uv.lock"
+        ]
+      }
+    },
+    {
+      "remote": "origin/codex/static-priorities",
+      "sha": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/static-priorities",
+        "HEAD": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+        "branch": "refs/heads/codex/static-priorities",
+        "status": []
+      }
+    },
+    {
+      "remote": "origin/codex/voice-plan",
+      "sha": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+      "merged": true,
+      "unique_commits": 0,
+      "worktree": {
+        "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/voice-plan",
+        "HEAD": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+        "branch": "refs/heads/codex/voice-plan",
+        "status": []
+      }
+    }
+  ],
+  "schema_version": 1,
+  "verified_at": "2026-09-19T18:51:56.550321+00:00",
+  "remediation_pr": "https://github.com/rht/wildfire/pull/3",
+  "remediation_merge_sha": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+  "results": [
+    {
+      "branch": "codex/architecture-diagram",
+      "original_head": "4ffff955040e35087f4a393ddd4565b566b3ce58",
+      "backup_ref": "refs/norma-backups/2026-09-19/codex/architecture-diagram",
+      "base_main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+      "final_head": "829313233ae53a443bc8316df521b17a6a745207",
+      "verified_remote_head": "829313233ae53a443bc8316df521b17a6a745207",
+      "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/architecture-diagram",
+      "worktree_clean": true,
+      "push": {
+        "method": "explicit force-with-lease",
+        "expected_remote_head": "4ffff955040e35087f4a393ddd4565b566b3ce58",
+        "result": "success"
+      },
+      "pr": "https://github.com/rht/wildfire/pull/4",
+      "pr_state": "OPEN",
+      "merge_authorized": false,
+      "changed_files": [
+        "readme.md"
+      ],
+      "coverage": [
+        {
+          "file": "readme.md",
+          "sha256": "e65b019faf8e3796d3f3a2bfce84a0a7d71f9676e32e55a44a849c85a5e05621",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        }
+      ],
+      "findings": [],
+      "verification": {
+        "pytest_passed": null,
+        "pytest_skipped": null,
+        "dom_tests_passed": 0,
+        "whitespace": "pass",
+        "review": "Original documentation patch preserved by range-diff; whitespace checks pass."
+      },
+      "limitations": [
+        "Markdown prose is unscanned."
+      ]
+    },
+    {
+      "branch": "codex/calling-research",
+      "original_head": "a294af58e73f63ffbd52202fbd5cf3f21afad1ac",
+      "backup_ref": "refs/norma-backups/2026-09-19/codex/calling-research",
+      "base_main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+      "final_head": "fb9299f284dd433fb30e17aa3b2ffe0d74eb168d",
+      "verified_remote_head": "fb9299f284dd433fb30e17aa3b2ffe0d74eb168d",
+      "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/calling-research",
+      "worktree_clean": true,
+      "push": {
+        "method": "explicit force-with-lease",
+        "expected_remote_head": "a294af58e73f63ffbd52202fbd5cf3f21afad1ac",
+        "result": "success"
+      },
+      "pr": "https://github.com/rht/wildfire/pull/5",
+      "pr_state": "OPEN",
+      "merge_authorized": false,
+      "changed_files": [
+        "readme.md",
+        "scripts/check_calling_host.py",
+        "tests/test_calling_host.py"
+      ],
+      "coverage": [
+        {
+          "file": "readme.md",
+          "sha256": "1ba08184d430faa24c6d60d628f6175a8017888fa0e74ed7266188c3330dc787",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "scripts/check_calling_host.py",
+          "sha256": "21012d70268f267171674606ab4a04754e2e77e8d0741966404ad66a9f6ff638",
+          "status": "zero_findings",
+          "evidence_attempt_index": 0,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "tests/test_calling_host.py",
+          "sha256": "210dd2a7c2165919c1d1d61ffa80518a6ec846da168d1a500adb648e647f41ec",
+          "status": "zero_findings",
+          "evidence_attempt_index": 2,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        }
+      ],
+      "findings": [],
+      "verification": {
+        "pytest_passed": 312,
+        "pytest_skipped": 0,
+        "dom_tests_passed": 0,
+        "whitespace": "pass",
+        "review": "Read-only host preflight; original code patches preserved; README conflict retained both complete sections. No real call or hardware operation."
+      },
+      "limitations": [
+        "Markdown prose is unscanned."
+      ]
+    },
+    {
+      "branch": "claude/fix-map-tooltip-html",
+      "original_head": "5ddd66575226de25f8bed436ab991dba5eacd1e1",
+      "backup_ref": "refs/norma-backups/2026-09-19/claude/fix-map-tooltip-html",
+      "base_main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+      "final_head": "9ae3a3ffdaf1a601cdfeb8b7b01372f6df636ae9",
+      "verified_remote_head": "9ae3a3ffdaf1a601cdfeb8b7b01372f6df636ae9",
+      "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/norma-map-tooltip",
+      "worktree_clean": true,
+      "push": {
+        "method": "explicit force-with-lease",
+        "expected_remote_head": "5ddd66575226de25f8bed436ab991dba5eacd1e1",
+        "result": "success"
+      },
+      "pr": "https://github.com/rht/wildfire/pull/6",
+      "pr_state": "OPEN",
+      "merge_authorized": false,
+      "changed_files": [
+        "fireline/app.py",
+        "readme.md"
+      ],
+      "coverage": [
+        {
+          "file": "fireline/app.py",
+          "sha256": "7689a439bdb3cff7855303c344412cf18eb4dce992c7fe16363d69058071a2a3",
+          "status": "zero_findings",
+          "evidence_attempt_index": 3,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "readme.md",
+          "sha256": "f4cf1b94366e88097a4b0c98ddc2f76155dfc86496f984cb92cdc7c1fa4be5fb",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        }
+      ],
+      "findings": [],
+      "verification": {
+        "pytest_passed": 309,
+        "pytest_skipped": 0,
+        "dom_tests_passed": 0,
+        "whitespace": "pass",
+        "review": "Original tooltip patch preserved by range-diff; full suite includes Streamlit tests."
+      },
+      "limitations": [
+        "Markdown prose is unscanned."
+      ]
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "original_head": "856487189fc122226a33fac11a7623e36b9bb918",
+      "backup_ref": "refs/norma-backups/2026-09-19/claude/ca-calibration",
+      "base_main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+      "final_head": "ef845e9eabfa492ecf3eda94e22255b84f8d8491",
+      "verified_remote_head": "ef845e9eabfa492ecf3eda94e22255b84f8d8491",
+      "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/norma-ca-calibration",
+      "worktree_clean": true,
+      "push": {
+        "method": "explicit force-with-lease",
+        "expected_remote_head": "856487189fc122226a33fac11a7623e36b9bb918",
+        "result": "success"
+      },
+      "pr": "https://github.com/rht/wildfire/pull/7",
+      "pr_state": "OPEN",
+      "merge_authorized": false,
+      "changed_files": [
+        "docs/handoffs/002-apply-the-ca-calibration.md",
+        "fireline/calibrate.py",
+        "fireline/spread.py",
+        "readme.md",
+        "reports/ca-calibration.json",
+        "scripts/calibrate_ca.py",
+        "tests/test_calibrate.py",
+        "tests/test_spread.py"
+      ],
+      "coverage": [
+        {
+          "file": "docs/handoffs/002-apply-the-ca-calibration.md",
+          "sha256": "5d4903ae2494f07fab3806b07ea3048671f3ea875da5b6af3234ca664ba2827b",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "fireline/calibrate.py",
+          "sha256": "18011b82718c048468c42b848c03c3a0da1cf80696106c31cf48e8f153f89d84",
+          "status": "zero_findings",
+          "evidence_attempt_index": 22,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "fireline/spread.py",
+          "sha256": "18738cbd00857cd27ccf43cecb8e49643328b3b6ca6fe1f836a6ee8e45921ed7",
+          "status": "zero_findings",
+          "evidence_attempt_index": 8,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "readme.md",
+          "sha256": "909c5c0eb4dadcecda40314f1db3cf7a6a33fd356bb69c007f4d0fbf399ec1bd",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "reports/ca-calibration.json",
+          "sha256": "d1fb1cac40ba9eb4c5fb1366ab82ffb1a1fbd6ced1be3a54edf1e915e4405fc3",
+          "status": "zero_findings",
+          "evidence_attempt_index": 4,
+          "rulesets_evaluated": [
+            "nodejs-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "scripts/calibrate_ca.py",
+          "sha256": "a9132bc9cb596a7baa67ab200e39812c0a86040c0c9271f3bac6b1b143c41ded",
+          "status": "zero_findings",
+          "evidence_attempt_index": 23,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "tests/test_calibrate.py",
+          "sha256": "e6d44dca285c3325c4d13c21f7be4e83a1822361db07f4a07a7acc44de33fc90",
+          "status": "zero_findings",
+          "evidence_attempt_index": 21,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "tests/test_spread.py",
+          "sha256": "9b833d8f2d52b23176a6f26c2323f72e23165097d1944ffdef685fe2fa4054c3",
+          "status": "zero_findings",
+          "evidence_attempt_index": 7,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        }
+      ],
+      "findings": [
+        {
+          "attempt_index": 6,
+          "file": "fireline/calibrate.py",
+          "rule_id": "fa-sec-path-traversal",
+          "original_line": 82,
+          "resolution": "Local caller-selected paths are normalized before entering cached functions; no arbitrary root restriction is introduced. These were local cache decorators, not FastAPI request handlers.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 22
+        },
+        {
+          "attempt_index": 6,
+          "file": "fireline/calibrate.py",
+          "rule_id": "fa-sec-path-traversal",
+          "original_line": 132,
+          "resolution": "Local caller-selected paths are normalized before entering cached functions; no arbitrary root restriction is introduced. These were local cache decorators, not FastAPI request handlers.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 22
+        },
+        {
+          "attempt_index": 9,
+          "file": "scripts/calibrate_ca.py",
+          "rule_id": "py-scal-subprocess-no-timeout",
+          "original_line": 352,
+          "resolution": "Optional Git provenance uses a named five-second timeout and handles missing executable, nonzero exit and timeout.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 23
+        },
+        {
+          "attempt_index": 9,
+          "file": "scripts/calibrate_ca.py",
+          "rule_id": "py-mng-open-no-encoding",
+          "original_line": 167,
+          "resolution": "Text I/O explicitly uses UTF-8.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 23
+        },
+        {
+          "attempt_index": 9,
+          "file": "scripts/calibrate_ca.py",
+          "rule_id": "py-mng-open-no-encoding",
+          "original_line": 416,
+          "resolution": "Text I/O explicitly uses UTF-8.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 23
+        }
+      ],
+      "verification": {
+        "pytest_passed": 337,
+        "pytest_skipped": 0,
+        "dom_tests_passed": 0,
+        "whitespace": "pass",
+        "review": "Independent remediation review approved; original three feature patches preserved. Cache alias, Git success/non-repo/timeout regression tests pass."
+      },
+      "limitations": [
+        "Markdown prose is unscanned."
+      ]
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "original_head": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
+      "backup_ref": "refs/norma-backups/2026-09-19/codex/evacuation-readiness",
+      "base_main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+      "final_head": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+      "verified_remote_head": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+      "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/evacuation-readiness",
+      "worktree_clean": true,
+      "push": {
+        "method": "explicit force-with-lease",
+        "expected_remote_head": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
+        "result": "success"
+      },
+      "pr": "https://github.com/rht/wildfire/pull/8",
+      "pr_state": "OPEN",
+      "merge_authorized": false,
+      "changed_files": [
+        "fireline/evacuation_readiness.py",
+        "fixtures/evacuation_readiness.json",
+        "readme.md",
+        "scripts/static_priorities.py",
+        "tests/test_evacuation_readiness.py"
+      ],
+      "coverage": [
+        {
+          "file": "fireline/evacuation_readiness.py",
+          "sha256": "d05131a74ca895f89ce5ca5dddf5a26938c7b6eb7bee48a306a212b24b272876",
+          "status": "zero_findings",
+          "evidence_attempt_index": 18,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "fixtures/evacuation_readiness.json",
+          "sha256": "35acf1e19c0956d0ab22a31105c4bf63573322d792f1561c73419120ab97f5d7",
+          "status": "zero_findings",
+          "evidence_attempt_index": 10,
+          "rulesets_evaluated": [
+            "nodejs-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "readme.md",
+          "sha256": "38c896f38321267c232bd277b829cfe678aa8d0da06ec055e91f4a0808691608",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "scripts/static_priorities.py",
+          "sha256": "b40d87eee71a07b1c0ccf3db824ced2107c7c68a389c405b38f988f409ad9f28",
+          "status": "zero_findings",
+          "evidence_attempt_index": 19,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "tests/test_evacuation_readiness.py",
+          "sha256": "7ce52f31493fc9c9de571d140e6f8c3a77daaa354a45675e704796acd75613ea",
+          "status": "zero_findings",
+          "evidence_attempt_index": 20,
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        }
+      ],
+      "findings": [
+        {
+          "attempt_index": 12,
+          "file": "scripts/static_priorities.py",
+          "rule_id": "py-mng-open-no-encoding",
+          "original_line": 39,
+          "resolution": "Text I/O explicitly uses UTF-8.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 19
+        },
+        {
+          "attempt_index": 13,
+          "file": "fireline/evacuation_readiness.py",
+          "rule_id": "py-arch-type-eq",
+          "original_line": 103,
+          "resolution": "Use isinstance for integer capacities and explicitly reject booleans, floats and negative values; integer subclasses are accepted.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 18
+        }
+      ],
+      "verification": {
+        "pytest_passed": 350,
+        "pytest_skipped": 0,
+        "dom_tests_passed": 0,
+        "whitespace": "pass",
+        "review": "Independent remediation review approved; README conflict retains both sections. Includes 41 readiness tests and ASCII-locale CLI regression."
+      },
+      "limitations": [
+        "Markdown prose is unscanned."
+      ]
+    },
+    {
+      "branch": "claude/workflow-setup",
+      "original_head": "367dddca72895bae50b25f0cfa33ab39ac9d1f96",
+      "backup_ref": "refs/norma-backups/2026-09-19/claude/workflow-setup",
+      "base_main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+      "final_head": "575f0ecb3f9faa251ac9a588b21aeedf6a8e8a2d",
+      "verified_remote_head": "575f0ecb3f9faa251ac9a588b21aeedf6a8e8a2d",
+      "worktree": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/norma-workflow-setup",
+      "worktree_clean": true,
+      "push": {
+        "method": "explicit force-with-lease",
+        "expected_remote_head": "367dddca72895bae50b25f0cfa33ab39ac9d1f96",
+        "result": "success"
+      },
+      "pr": "https://github.com/rht/wildfire/pull/9",
+      "pr_state": "OPEN",
+      "merge_authorized": false,
+      "changed_files": [
+        "design/araspons-tier2-brief.md",
+        "design/demo_script.md",
+        "design/pitch_outline.md",
+        "design/tier2_architecture.md",
+        "design/tier2_brief.md",
+        "design/ui-mockup.html",
+        "design/use_case.md",
+        "readme.md",
+        "tests/test_ui_mockup.cjs"
+      ],
+      "coverage": [
+        {
+          "file": "design/araspons-tier2-brief.md",
+          "sha256": "825291faf28ea98b5baaf655ebd082e121b7eed5e9ee72d35251980dc5e40d53",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "design/demo_script.md",
+          "sha256": "3731d92388ad353a79db3e30699db1793ba8aa2ab4576986248c039e51324243",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "design/pitch_outline.md",
+          "sha256": "705570876d8219be919cbc8c4ed29626eec0676a5589d443e905ff96dac51e81",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "design/tier2_architecture.md",
+          "sha256": "1a12d725c2d28f08541340dc32a5f20ee94ef979f63759982b899e496eb31ef4",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "design/tier2_brief.md",
+          "sha256": "885175996d99037e5d0de08607e4e9410f6c1a456fae7611f69f91d0f583c62a",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "design/ui-mockup.html",
+          "sha256": "3e04c7a0d65c0257a107b91b606bd8302140a70486f057d5a626ac26ab8104e6",
+          "status": "zero_findings",
+          "evidence_attempt_index": 27,
+          "rulesets_evaluated": [
+            "vite-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "method": "live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          }
+        },
+        {
+          "file": "design/ui-mockup.inline-1.js",
+          "sha256": "51426552875c256a816e35d48afa042ad37a5fe594e1e1a418b25d3968e98ac1",
+          "status": "zero_findings_reduced_coverage",
+          "evidence_attempt_index": 29,
+          "rulesets_evaluated": [
+            "javascript-norma-ruleset",
+            "nodejs-norma-ruleset",
+            "react-norma-ruleset",
+            "supabase-norma-ruleset",
+            "typescript-norma-ruleset",
+            "vite-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": true,
+            "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+          },
+          "method": "extracted_inline_live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          },
+          "source_file": "design/ui-mockup.html",
+          "source_start_tag_line": 207,
+          "source_line_mapping": "source line = virtual line + 206"
+        },
+        {
+          "file": "design/use_case.md",
+          "sha256": "5bc44a928bd082c56f5b4080bc983d9444157026df73b7e2a34539248c9f8e82",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "readme.md",
+          "sha256": "8ddafe6bcc2a94b843e55428fef50862d507eaf75947f49db709cef5ada3366c",
+          "status": "not_scanned",
+          "reason": "No applicable deterministic ruleset for Markdown prose in the exposed catalog."
+        },
+        {
+          "file": "tests/test_ui_mockup.virtual.js",
+          "sha256": "57717415e78d3391a0c1f09dd2466ef28de720ce699b8de74a799e2c6724f81d",
+          "status": "zero_findings_reduced_coverage",
+          "evidence_attempt_index": 28,
+          "rulesets_evaluated": [
+            "javascript-norma-ruleset",
+            "nodejs-norma-ruleset",
+            "react-norma-ruleset",
+            "supabase-norma-ruleset",
+            "typescript-norma-ruleset",
+            "vite-norma-ruleset"
+          ],
+          "coverage": {
+            "reduced": true,
+            "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+          },
+          "method": "extension_mapped_live_check",
+          "result_reuse": {
+            "scope": "same branch and path, exact final content bytes, same session ruleset context",
+            "cross_branch_reuse": false
+          },
+          "source_file": "tests/test_ui_mockup.cjs"
+        }
+      ],
+      "findings": [
+        {
+          "attempt_index": 1,
+          "file": "design/ui-mockup.html",
+          "rule_id": "vite-missing-sri",
+          "original_line": 8,
+          "resolution": "Leaflet JS and CSS have independently verified pinned SHA-256 integrity hashes and anonymous CORS.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 27
+        },
+        {
+          "attempt_index": 14,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-inner-html-assignment",
+          "original_line": 132,
+          "resolution": "Build dynamic UI with elements, textContent and shared event listeners; tooltip text is an HTMLElement rather than parsed markup.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 14,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-inner-html-assignment",
+          "original_line": 148,
+          "resolution": "Build dynamic UI with elements, textContent and shared event listeners; tooltip text is an HTMLElement rather than parsed markup.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 14,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-inner-html-assignment",
+          "original_line": 159,
+          "resolution": "Build dynamic UI with elements, textContent and shared event listeners; tooltip text is an HTMLElement rather than parsed markup.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 14,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-inner-html-assignment",
+          "original_line": 245,
+          "resolution": "Build dynamic UI with elements, textContent and shared event listeners; tooltip text is an HTMLElement rather than parsed markup.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 14,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-scl-foreach-async",
+          "original_line": 114,
+          "resolution": "Replace the synchronous forEach iterations with for-of/entries loops preserving ordering; no asynchronous behavior was present.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 14,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-scl-foreach-async",
+          "original_line": 127,
+          "resolution": "Replace the synchronous forEach iterations with for-of/entries loops preserving ordering; no asynchronous behavior was present.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 14,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-scl-foreach-async",
+          "original_line": 189,
+          "resolution": "Replace the synchronous forEach iterations with for-of/entries loops preserving ordering; no asynchronous behavior was present.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 25,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-function-in-loop",
+          "original_line": 167,
+          "resolution": "Use shared handlers with currentTarget dataset or Leaflet event target fields; no per-item closure factory.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 25,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-function-in-loop",
+          "original_line": 205,
+          "resolution": "Use shared handlers with currentTarget dataset or Leaflet event target fields; no per-item closure factory.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 25,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-function-in-loop",
+          "original_line": 260,
+          "resolution": "Use shared handlers with currentTarget dataset or Leaflet event target fields; no per-item closure factory.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        },
+        {
+          "attempt_index": 25,
+          "file": "design/ui-mockup.inline-1.js",
+          "rule_id": "js-function-in-loop",
+          "original_line": 369,
+          "resolution": "Use shared handlers with currentTarget dataset or Leaflet event target fields; no per-item closure factory.",
+          "status": "fixed_and_rechecked",
+          "final_evidence_attempt_index": 29
+        }
+      ],
+      "verification": {
+        "pytest_passed": 309,
+        "pytest_skipped": 0,
+        "dom_tests_passed": 2,
+        "whitespace": "pass",
+        "review": "Independent remediation review approved; DOM tests cover hostile text/IDs, marker/queue selection, task assignment and snapshot transitions. JavaScript syntax and downloaded SRI digests verified. No visual browser pass."
+      },
+      "limitations": [
+        "Markdown prose is unscanned.",
+        "One JavaScript Semgrep rule could not be evaluated; server does not identify which rule. Inline CSS/SVG are not covered by matching rulesets. No browser visual pass."
+      ]
+    }
+  ],
+  "frozen_audit": {
+    "head": "92ae882545ae6b45fb6e2356e1f8aa17da599312",
+    "worktree_clean": true,
+    "remote_matches": true,
+    "report_sha256": "e518a2546f572acb7a4fa9537a0b460b9423f3d32d1438082fc27bc599041674"
+  },
+  "deferred": [
+    {
+      "branch": "codex/slng-voice-agent",
+      "local_head": "02e091443a13991e5832dc01c0528e57ea271d1f",
+      "remote_head": "02e091443a13991e5832dc01c0528e57ea271d1f",
+      "status": "?? uv.lock",
+      "reason": "Active voice/demo sessions and untracked uv.lock; user explicitly instructed deferral. No rebase, scan, fix, push or removal performed."
+    }
+  ],
+  "historical_branches": {
+    "action": "not rescanned",
+    "branches": [
+      "origin/claude/close-v4-gaps",
+      "origin/claude/real-ca-forecast",
+      "origin/claude/school-enrolment",
+      "origin/claude/snapshot-time-travel",
+      "origin/claude/ventallo-scenario",
+      "origin/claude/window-consumer",
+      "origin/claude/window-producer",
+      "origin/claude/window-ranking",
+      "origin/codex/coordination-contract",
+      "origin/codex/norma-fixes",
+      "origin/codex/review-rht-window",
+      "origin/codex/static-priorities",
+      "origin/codex/voice-plan"
+    ]
+  },
+  "livecheck_usage": {
+    "phase2_calls": 30,
+    "maximum_calls_in_any_60_seconds": 10,
+    "daily_org_limit": 5000,
+    "org_usage_and_remaining_unknown": true
+  },
+  "account_tier": null,
+  "remaining_quota": null,
+  "limitations": [
+    "Norma MCP exposes no actual account-tier or remaining-quota endpoint.",
+    "Repository registration remains unlinked; original phase1 applied-actions registration failed. No defenses/exceptions submitted.",
+    "No whole-repository or historical merged-branch scans performed.",
+    "No feature branches merged."
+  ]
+}
