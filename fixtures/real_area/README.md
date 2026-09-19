@@ -28,6 +28,7 @@ Municipalities with located rows (24): Begur, Bordils, Calonge i Sant Antoni, Ca
   capacity, so every located asset carries `occupancy_unknown`; unlocated care homes and campsites carry the
   register capacity (`capacity`, not `estimated_occupancy`).
 - No footprints: every distance in a snapshot built from this file is a labelled point fallback.
-- `fixtures/snapshots/gavarres_real_0001.json` / `_0002.json` combine **these real facilities with the
-  synthetic fire** from `fixtures/synthetic_ignition.json` (`input_mode: synthetic`, `fire_source` labelled
-  synthetic). They demonstrate update handling on real coverage; they are not a recorded incident.
+- `fixtures/snapshots/gavarres_real_0001..0003.json` combine **these real facilities with three real
+  recorded Deepfire satellite perimeters** (`fixtures/fire/deepfire/real/`, `input_mode: recorded`);
+  the register extract (2026-09-19) postdates the fire (July 2026), so this is a recorded-input demo,
+  not historical as-of replay (readme section 4).

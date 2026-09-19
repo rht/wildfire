@@ -290,9 +290,11 @@ def test_committed_real_area_fixtures():
             assert "location_unknown" in a["review_reasons"] and a["asset_type"] in ("care_home", "campsite")
         else:
             assert 2.85 <= a["longitude"] <= 3.20 and 41.80 <= a["latitude"] <= 42.05
-    r1, r2 = _load("gavarres_real_0001.json"), _load("gavarres_real_0002.json")
+    r1, r2 = _load("gavarres_real_0001.json"), _load("gavarres_real_0003.json")
     for s in (r1, r2):
-        assert validate_snapshot(s) == [] and s["input_mode"] == "synthetic" and "synthetic" in s["fire_source"]
+        assert validate_snapshot(s) == [] and s["input_mode"] == "recorded"
+        assert s["fire_source"] == "deepfire:satellite-perimeters" and s["fire_geometry_kind"] == "perimeter"
+        assert s["incident_id"] == "5769dcea-385a-4ee5-9313-804f55ddb5fa"
         assert len(s["assets"]) == len(assets)
     assert _by_distance(r1) != _by_distance(r2)
     assert (FIX / "real_area" / "README.md").read_text().count("2026-09-19") >= 1

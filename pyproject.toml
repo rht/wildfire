@@ -13,6 +13,7 @@ dependencies = [
     "pydeck",
     "pandas",
     "anthropic",
+    "python-dotenv",
 ]
 
 [project.optional-dependencies]

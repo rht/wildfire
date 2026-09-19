@@ -1,0 +1,557 @@
+{
+ "collection": "clusters",
+ "received_at": "2026-09-19T13:13:40+00:00",
+ "body": {
+  "type": "FeatureCollection",
+  "features": [
+   {
+    "type": "Feature",
+    "id": "clusters.029b3ede-ff05-442d-b96c-5700875ec49c",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.903946,
+      41.870026
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "029b3ede-ff05-442d-b96c-5700875ec49c",
+     "first_observed": "2025-04-27T09:58:34Z",
+     "last_observed": "2025-04-27T09:58:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.1487bb86-ee32-4c0b-a442-a2f5731a37e9",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.8878885,
+      42.049349
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "1487bb86-ee32-4c0b-a442-a2f5731a37e9",
+     "first_observed": "2026-05-25T06:08:34Z",
+     "last_observed": "2026-05-25T06:18:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.16b42172-85b8-452a-afd3-4bf46cd6f359",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.914398,
+      41.827606
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "16b42172-85b8-452a-afd3-4bf46cd6f359",
+     "first_observed": "2026-03-23T11:08:34Z",
+     "last_observed": "2026-03-23T11:08:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.3b0d070f-3541-4e7d-9bc8-3b9759e1ef42",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.026798,
+      42.043549
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "3b0d070f-3541-4e7d-9bc8-3b9759e1ef42",
+     "first_observed": "2026-03-30T12:58:34Z",
+     "last_observed": "2026-03-30T12:58:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.3c2b09dd-7dca-4b34-96d2-cb789b89624d",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.099612,
+      41.986805
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "3c2b09dd-7dca-4b34-96d2-cb789b89624d",
+     "first_observed": "2026-03-23T12:48:34Z",
+     "last_observed": "2026-03-23T12:48:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.499a5a70-9be8-45f4-b3f4-2411572da815",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.02600837,
+      41.89769808
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "499a5a70-9be8-45f4-b3f4-2411572da815",
+     "first_observed": "2026-07-03T07:28:34Z",
+     "last_observed": "2026-07-04T14:08:37Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.49b1f773-f654-41b7-bdae-a0e9fd4367b3",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.144612,
+      41.886803
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "49b1f773-f654-41b7-bdae-a0e9fd4367b3",
+     "first_observed": "2025-08-03T16:48:37Z",
+     "last_observed": "2025-08-03T16:48:37Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.51356c9c-6f5c-46c2-bf45-9249c94d9a7f",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.176352,
+      42.002071
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "51356c9c-6f5c-46c2-bf45-9249c94d9a7f",
+     "first_observed": "2025-03-25T12:58:34Z",
+     "last_observed": "2025-03-25T12:58:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.558e26c1-b0ab-4786-9bbb-4f090831a1cc",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.919326,
+      41.925518
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "558e26c1-b0ab-4786-9bbb-4f090831a1cc",
+     "first_observed": "2026-04-19T11:58:34Z",
+     "last_observed": "2026-04-19T11:58:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.5769dcea-385a-4ee5-9313-804f55ddb5fa",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.02981687,
+      41.89202528
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "5769dcea-385a-4ee5-9313-804f55ddb5fa",
+     "first_observed": "2026-07-03T09:34:00Z",
+     "last_observed": "2026-07-05T01:43:00Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.62b9cc4f-2d63-44fe-8400-9d0802341fd1",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.935007,
+      41.983646
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "62b9cc4f-2d63-44fe-8400-9d0802341fd1",
+     "first_observed": "2025-03-29T12:28:34Z",
+     "last_observed": "2025-03-29T12:28:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.6379a87a-e304-4b21-a71d-74565402e02d",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.891353,
+      41.870186
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "6379a87a-e304-4b21-a71d-74565402e02d",
+     "first_observed": "2025-03-29T13:08:37Z",
+     "last_observed": "2025-03-29T13:08:37Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.75f389df-fdeb-462a-ae14-87e18133f26c",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.00891575,
+      41.9461195
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "75f389df-fdeb-462a-ae14-87e18133f26c",
+     "first_observed": "2026-03-15T11:58:30Z",
+     "last_observed": "2026-03-15T13:18:30Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.77a064fa-791d-420e-9917-e200d6f94aad",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.981414,
+      41.9051075
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "77a064fa-791d-420e-9917-e200d6f94aad",
+     "first_observed": "2026-03-28T11:08:34Z",
+     "last_observed": "2026-03-28T11:08:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.7e2fb05d-2d84-4d44-81e3-a48267a46670",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.0925075,
+      41.9724715
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "7e2fb05d-2d84-4d44-81e3-a48267a46670",
+     "first_observed": "2026-04-19T10:48:34Z",
+     "last_observed": "2026-04-19T10:48:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.946f6f10-28aa-458b-9baf-713672856e19",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.18391,
+      41.99594
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "946f6f10-28aa-458b-9baf-713672856e19",
+     "first_observed": "2026-06-26T11:42:00Z",
+     "last_observed": "2026-06-26T12:19:00Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.94d6917c-5766-4737-8715-d90cdf104cf2",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.096307,
+      41.927994
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "94d6917c-5766-4737-8715-d90cdf104cf2",
+     "first_observed": "2025-05-13T13:08:37Z",
+     "last_observed": "2025-05-13T13:08:37Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.9cbed082-59ca-4711-9f9f-034d152537fb",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.881542,
+      41.926292
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "9cbed082-59ca-4711-9f9f-034d152537fb",
+     "first_observed": "2025-08-26T11:08:37Z",
+     "last_observed": "2025-08-26T11:08:37Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.9fac5951-b3e8-42a7-9bff-c9a81809a6a4",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.935848,
+      41.998913
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "9fac5951-b3e8-42a7-9bff-c9a81809a6a4",
+     "first_observed": "2026-03-23T11:08:34Z",
+     "last_observed": "2026-03-23T11:08:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.af03bcf5-d89b-470e-8d44-2a9e1a9aafc9",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.958892,
+      41.956123
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "af03bcf5-d89b-470e-8d44-2a9e1a9aafc9",
+     "first_observed": "2026-03-28T11:38:34Z",
+     "last_observed": "2026-03-28T11:38:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.b1499ef1-f244-4902-a86a-159e2f8a343c",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.964088,
+      41.813667
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "b1499ef1-f244-4902-a86a-159e2f8a343c",
+     "first_observed": "2025-03-26T11:28:34Z",
+     "last_observed": "2025-03-26T11:28:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.c5d4b388-1cd6-4037-bf55-6d1581d666ab",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.85641,
+      42.04815
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "c5d4b388-1cd6-4037-bf55-6d1581d666ab",
+     "first_observed": "2026-04-14T00:39:00Z",
+     "last_observed": "2026-04-14T00:39:00Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.c66324fb-55b5-42b1-9a3e-8962713b759f",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.194825,
+      42.020405
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "c66324fb-55b5-42b1-9a3e-8962713b759f",
+     "first_observed": "2026-02-23T11:51:00Z",
+     "last_observed": "2026-02-23T12:21:00Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.c6c25555-f926-49bf-a264-b4fd73a287f1",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.874874,
+      42.042175
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "c6c25555-f926-49bf-a264-b4fd73a287f1",
+     "first_observed": "2025-11-03T06:28:29Z",
+     "last_observed": "2025-11-03T08:08:29Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.d3ce38b9-1629-46e7-bc2a-fdc07088a013",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.9324105,
+      41.933569
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "d3ce38b9-1629-46e7-bc2a-fdc07088a013",
+     "first_observed": "2026-03-23T11:18:34Z",
+     "last_observed": "2026-03-23T11:18:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.e2ab52ad-e376-47ed-a9f2-222415ee4b8a",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.139963,
+      42.030224
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "e2ab52ad-e376-47ed-a9f2-222415ee4b8a",
+     "first_observed": "2026-03-23T13:28:37Z",
+     "last_observed": "2026-03-23T13:28:37Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.f3218729-2d1b-4922-bef7-b643bcb06f54",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.015926,
+      41.841568
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "f3218729-2d1b-4922-bef7-b643bcb06f54",
+     "first_observed": "2025-05-08T12:48:34Z",
+     "last_observed": "2025-05-08T12:48:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.f38ad19c-6a4c-404c-a810-d070794ab23e",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.073325,
+      41.96855025
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "f38ad19c-6a4c-404c-a810-d070794ab23e",
+     "first_observed": "2026-06-19T14:08:41Z",
+     "last_observed": "2026-06-19T14:28:41Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.f9c0f877-25de-4dba-a27f-de1a54cd6c1a",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      3.061769,
+      41.8718665
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "f9c0f877-25de-4dba-a27f-de1a54cd6c1a",
+     "first_observed": "2026-03-23T13:18:34Z",
+     "last_observed": "2026-03-23T13:18:34Z",
+     "active": false
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "clusters.fac3f1f5-ac2d-4fb7-b761-f691cb7ed0a8",
+    "geometry": {
+     "type": "Point",
+     "coordinates": [
+      2.908151,
+      41.953903
+     ]
+    },
+    "geometry_name": "geom",
+    "properties": {
+     "id": "fac3f1f5-ac2d-4fb7-b761-f691cb7ed0a8",
+     "first_observed": "2026-06-04T11:08:37Z",
+     "last_observed": "2026-06-04T11:08:37Z",
+     "active": false
+    }
+   }
+  ],
+  "numberReturned": 30,
+  "bbox": [
+   2.85,
+   41.8,
+   3.2,
+   42.05
+  ],
+  "as_of": "2026-07-06T00:00:00+00:00"
+ }
+}

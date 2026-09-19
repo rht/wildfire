@@ -13,7 +13,7 @@ import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fireline import agent, config, fire_input, priority, tasks
+from fireline import env, agent, config, fire_input, priority, tasks
 
 ROOT = Path(__file__).resolve().parent.parent
 SNAPSHOT_DIRS = (ROOT / "fixtures" / "snapshots", ROOT / "data" / "snapshots")
@@ -52,7 +52,7 @@ def db_path_from_env() -> Path:
 
 
 def llm_available() -> bool:
-    return bool(os.environ.get("ANTHROPIC_API_KEY"))
+    return env.has_anthropic_key()   # loads .env first
 
 
 class Session:

@@ -1,105 +1,195 @@
 {
  "schema_version": "1.0",
  "scenario_id": "gavarres_real",
- "incident_id": "synthetic-bisbal-2026-07-03",
+ "incident_id": "5769dcea-385a-4ee5-9313-804f55ddb5fa",
  "snapshot_id": "gavarres_real-0002",
  "sequence": 2,
- "as_of": "2026-07-03T10:00:00+00:00",
- "computed_at": "2026-07-03T10:00:20+00:00",
- "input_mode": "synthetic",
- "fire_observed_at": "2026-07-03T10:00:00+00:00",
- "fire_source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
+ "as_of": "2026-07-03T15:32:24.822000+00:00",
+ "computed_at": "2026-07-03T15:32:44.822000+00:00",
+ "input_mode": "recorded",
+ "fire_observed_at": "2026-07-03T13:25:00+00:00",
+ "fire_source": "deepfire:satellite-perimeters",
  "fire_geometry": {
-  "type": "Polygon",
+  "type": "MultiPolygon",
   "coordinates": [
    [
     [
-     3.036178,
-     41.928296
-    ],
-    [
-     3.031562,
-     41.928983
-    ],
-    [
-     3.028527,
-     41.930343
-    ],
-    [
-     3.026151,
-     41.932302
-    ],
-    [
-     3.024351,
-     41.935549
-    ],
-    [
-     3.024178,
-     41.938189
-    ],
-    [
-     3.02645,
-     41.950528
-    ],
-    [
-     3.027441,
-     41.951911
-    ],
-    [
-     3.029295,
-     41.95265
-    ],
-    [
-     3.030707,
-     41.95265
-    ],
-    [
-     3.032297,
-     41.952088
-    ],
-    [
-     3.044717,
-     41.943669
-    ],
-    [
-     3.046824,
-     41.941545
-    ],
-    [
-     3.048015,
-     41.939056
-    ],
-    [
-     3.048012,
-     41.935541
-    ],
-    [
-     3.046818,
-     41.933053
-    ],
-    [
-     3.045503,
-     41.931586
-    ],
-    [
-     3.041864,
-     41.929358
-    ],
-    [
-     3.038531,
-     41.928468
-    ],
-    [
-     3.036178,
-     41.928296
+     [
+      2.99046781,
+      41.90119496
+     ],
+     [
+      2.9890818,
+      41.90133607
+     ],
+     [
+      2.98836581,
+      41.90192138
+     ],
+     [
+      2.98570634,
+      41.91017365
+     ],
+     [
+      2.98661781,
+      41.91117942
+     ],
+     [
+      2.99543301,
+      41.91340801
+     ],
+     [
+      2.99322173,
+      41.92225199
+     ],
+     [
+      2.99350239,
+      41.92325785
+     ],
+     [
+      2.99499987,
+      41.92385102
+     ],
+     [
+      3.00711462,
+      41.92385104
+     ],
+     [
+      3.01339581,
+      41.9259448
+     ],
+     [
+      3.01617214,
+      41.93591772
+     ],
+     [
+      3.02953195,
+      41.93880503
+     ],
+     [
+      3.03112933,
+      41.93855558
+     ],
+     [
+      3.03178959,
+      41.93769956
+     ],
+     [
+      3.03420144,
+      41.9256387
+     ],
+     [
+      3.05146903,
+      41.91328819
+     ],
+     [
+      3.05427773,
+      41.90274798
+     ],
+     [
+      3.05427734,
+      41.88975186
+     ],
+     [
+      3.04930753,
+      41.86987486
+     ],
+     [
+      3.04930734,
+      41.86322185
+     ],
+     [
+      3.06850479,
+      41.85362292
+     ],
+     [
+      3.06917349,
+      41.85300974
+     ],
+     [
+      3.06916047,
+      41.85196701
+     ],
+     [
+      3.06815827,
+      41.8512418
+     ],
+     [
+      3.06676393,
+      41.85126613
+     ],
+     [
+      3.04558293,
+      41.85832661
+     ],
+     [
+      3.04144737,
+      41.85419107
+     ],
+     [
+      3.04033374,
+      41.85367221
+     ],
+     [
+      3.03464722,
+      41.85367496
+     ],
+     [
+      3.02973228,
+      41.85600854
+     ],
+     [
+      3.01946071,
+      41.85371053
+     ],
+     [
+      3.01336728,
+      41.85942076
+     ],
+     [
+      3.01108767,
+      41.86614904
+     ],
+     [
+      3.00000013,
+      41.86614897
+     ],
+     [
+      2.99875738,
+      41.8665189
+     ],
+     [
+      2.99576644,
+      41.8753829
+     ],
+     [
+      3.00569203,
+      41.88544909
+     ],
+     [
+      3.00569198,
+      41.88733428
+     ],
+     [
+      3.0032225,
+      41.89475196
+     ],
+     [
+      3.00108088,
+      41.90331767
+     ],
+     [
+      2.99046781,
+      41.90119496
+     ]
     ]
    ]
   ]
  },
  "fire_geometry_kind": "perimeter",
- "data_status": "current",
+ "data_status": "stale",
  "metrics": {
-  "source_age_s": 0.0,
+  "source_age_s": 7644.822,
   "processing_s": 20.0
  },
  "assets": [
@@ -116,7 +206,7 @@
    "occupancy_basis": null,
    "value_score": 1.0,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11271.9,
+   "distance_to_fire_m": 5152.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -158,9 +248,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -180,7 +270,7 @@
    "occupancy_basis": null,
    "value_score": 1.0,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10847.8,
+   "distance_to_fire_m": 4510.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -223,9 +313,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -245,7 +335,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 939.6,
+   "distance_to_fire_m": 2227.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -287,9 +377,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -309,7 +399,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 997.9,
+   "distance_to_fire_m": 2375.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -351,9 +441,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -373,7 +463,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13516.3,
+   "distance_to_fire_m": 14284.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -415,9 +505,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -437,7 +527,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8230.4,
+   "distance_to_fire_m": 1468.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -479,9 +569,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -501,7 +591,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10216.7,
+   "distance_to_fire_m": 2779.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -543,9 +633,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -565,7 +655,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10429.6,
+   "distance_to_fire_m": 2737.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -607,9 +697,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -629,7 +719,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13452.7,
+   "distance_to_fire_m": 9426.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -671,9 +761,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -693,7 +783,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13641.0,
+   "distance_to_fire_m": 9654.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -735,9 +825,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -757,7 +847,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13068.5,
+   "distance_to_fire_m": 4782.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -799,9 +889,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -821,7 +911,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12850.8,
+   "distance_to_fire_m": 4220.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -863,9 +953,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -885,7 +975,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14559.7,
+   "distance_to_fire_m": 14654.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -927,9 +1017,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -949,7 +1039,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 4115.2,
+   "distance_to_fire_m": 5620.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -991,9 +1081,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1013,7 +1103,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 1397.5,
+   "distance_to_fire_m": 2178.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1055,9 +1145,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1077,7 +1167,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 3667.9,
+   "distance_to_fire_m": 4754.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1119,9 +1209,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1141,7 +1231,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12162.6,
+   "distance_to_fire_m": 13328.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1183,9 +1273,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1205,7 +1295,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 15843.4,
+   "distance_to_fire_m": 9540.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1247,9 +1337,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1269,7 +1359,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8654.1,
+   "distance_to_fire_m": 7651.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1311,9 +1401,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1333,7 +1423,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10152.4,
+   "distance_to_fire_m": 9423.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1375,9 +1465,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1397,7 +1487,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9533.9,
+   "distance_to_fire_m": 9094.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1439,9 +1529,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1461,7 +1551,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9537.3,
+   "distance_to_fire_m": 8915.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1503,9 +1593,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1525,7 +1615,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10293.0,
+   "distance_to_fire_m": 9689.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1567,9 +1657,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1589,7 +1679,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10156.4,
+   "distance_to_fire_m": 9572.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1631,9 +1721,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1653,7 +1743,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9699.9,
+   "distance_to_fire_m": 9096.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1695,9 +1785,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1717,7 +1807,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10048.4,
+   "distance_to_fire_m": 9234.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1759,9 +1849,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1781,7 +1871,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10191.6,
+   "distance_to_fire_m": 9323.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1823,9 +1913,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1845,7 +1935,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11609.8,
+   "distance_to_fire_m": 5281.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1887,9 +1977,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1909,7 +1999,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11466.2,
+   "distance_to_fire_m": 5185.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1951,9 +2041,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1973,7 +2063,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11717.6,
+   "distance_to_fire_m": 5424.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2015,9 +2105,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2037,7 +2127,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9282.6,
+   "distance_to_fire_m": 10556.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2079,9 +2169,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2101,7 +2191,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8375.1,
+   "distance_to_fire_m": 9616.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2143,9 +2233,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2165,7 +2255,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 2989.7,
+   "distance_to_fire_m": 3073.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2207,9 +2297,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2229,7 +2319,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12857.3,
+   "distance_to_fire_m": 4498.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2271,9 +2361,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2293,7 +2383,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12845.0,
+   "distance_to_fire_m": 14139.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2335,9 +2425,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2357,7 +2447,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13177.0,
+   "distance_to_fire_m": 14447.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2399,9 +2489,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2421,7 +2511,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12470.4,
+   "distance_to_fire_m": 13828.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2463,9 +2553,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2485,7 +2575,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 6475.6,
+   "distance_to_fire_m": 7880.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2527,9 +2617,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2549,7 +2639,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9770.2,
+   "distance_to_fire_m": 4683.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2591,9 +2681,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2613,7 +2703,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10393.4,
+   "distance_to_fire_m": 10295.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2655,9 +2745,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2677,7 +2767,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 1672.1,
+   "distance_to_fire_m": 3129.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2719,9 +2809,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2741,7 +2831,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9606.9,
+   "distance_to_fire_m": 9043.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2783,9 +2873,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2805,7 +2895,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10774.2,
+   "distance_to_fire_m": 4159.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2847,9 +2937,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2869,7 +2959,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 1095.3,
+   "distance_to_fire_m": 2613.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2911,9 +3001,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2933,7 +3023,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13417.4,
+   "distance_to_fire_m": 9551.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2975,9 +3065,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2997,7 +3087,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10024.2,
+   "distance_to_fire_m": 9234.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3039,9 +3129,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3061,7 +3151,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12312.4,
+   "distance_to_fire_m": 3701.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3103,9 +3193,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3125,7 +3215,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 15939.1,
+   "distance_to_fire_m": 9642.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3167,9 +3257,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3189,7 +3279,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13221.9,
+   "distance_to_fire_m": 14471.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3231,9 +3321,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3253,7 +3343,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12823.6,
+   "distance_to_fire_m": 4463.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3295,9 +3385,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3317,7 +3407,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12600.3,
+   "distance_to_fire_m": 13888.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3359,9 +3449,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3381,7 +3471,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13069.7,
+   "distance_to_fire_m": 4783.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3423,9 +3513,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3445,7 +3535,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14466.2,
+   "distance_to_fire_m": 14672.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3487,9 +3577,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3509,7 +3599,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 16185.8,
+   "distance_to_fire_m": 9691.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3551,9 +3641,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3573,7 +3663,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9281.7,
+   "distance_to_fire_m": 8443.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3615,9 +3705,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3637,7 +3727,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13897.3,
+   "distance_to_fire_m": 9952.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3679,9 +3769,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3701,7 +3791,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12423.2,
+   "distance_to_fire_m": 3646.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3743,9 +3833,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3765,7 +3855,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12383.3,
+   "distance_to_fire_m": 13650.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3807,9 +3897,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3829,7 +3919,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 1058.7,
+   "distance_to_fire_m": 2328.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3871,9 +3961,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3893,7 +3983,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11664.9,
+   "distance_to_fire_m": 5150.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3935,9 +4025,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3957,7 +4047,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14490.2,
+   "distance_to_fire_m": 14534.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3999,9 +4089,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4021,7 +4111,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7855.8,
+   "distance_to_fire_m": 1066.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4063,9 +4153,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4085,7 +4175,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12386.2,
+   "distance_to_fire_m": 13652.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4127,9 +4217,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4149,7 +4239,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14503.1,
+   "distance_to_fire_m": 14666.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4191,9 +4281,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4213,7 +4303,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10549.5,
+   "distance_to_fire_m": 9883.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4255,9 +4345,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4277,7 +4367,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8126.3,
+   "distance_to_fire_m": 1516.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4319,9 +4409,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4341,7 +4431,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8852.1,
+   "distance_to_fire_m": 5527.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4383,9 +4473,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4405,7 +4495,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8688.9,
+   "distance_to_fire_m": 7655.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4447,9 +4537,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4469,7 +4559,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 6477.7,
+   "distance_to_fire_m": 7882.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4511,9 +4601,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4533,7 +4623,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10185.8,
+   "distance_to_fire_m": 3086.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4575,9 +4665,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4597,7 +4687,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14547.0,
+   "distance_to_fire_m": 14721.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4639,9 +4729,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4661,7 +4751,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8825.1,
+   "distance_to_fire_m": 5521.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4703,9 +4793,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4725,7 +4815,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14164.6,
+   "distance_to_fire_m": 10194.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4767,9 +4857,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4789,7 +4879,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10525.2,
+   "distance_to_fire_m": 10016.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4831,9 +4921,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4853,7 +4943,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9262.4,
+   "distance_to_fire_m": 8562.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4895,9 +4985,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4917,7 +5007,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 1814.4,
+   "distance_to_fire_m": 2993.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4959,9 +5049,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4981,7 +5071,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12886.8,
+   "distance_to_fire_m": 14181.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5023,9 +5113,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5045,7 +5135,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 15955.4,
+   "distance_to_fire_m": 9391.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5087,9 +5177,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5109,7 +5199,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12848.1,
+   "distance_to_fire_m": 4228.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5151,9 +5241,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5173,7 +5263,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10896.5,
+   "distance_to_fire_m": 4540.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5215,9 +5305,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5237,7 +5327,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 3716.4,
+   "distance_to_fire_m": 4689.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5279,9 +5369,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5301,7 +5391,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 16416.0,
+   "distance_to_fire_m": 9986.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5343,9 +5433,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5365,7 +5455,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14221.6,
+   "distance_to_fire_m": 14461.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5407,9 +5497,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5429,7 +5519,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 35.0,
+   "distance_to_fire_m": 1448.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5471,9 +5561,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5493,7 +5583,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7891.1,
+   "distance_to_fire_m": 9429.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5535,9 +5625,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5557,7 +5647,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13445.9,
+   "distance_to_fire_m": 5117.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5599,9 +5689,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5621,7 +5711,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10310.6,
+   "distance_to_fire_m": 3122.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5663,9 +5753,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5685,7 +5775,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11630.0,
+   "distance_to_fire_m": 12451.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5727,9 +5817,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5749,7 +5839,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9808.3,
+   "distance_to_fire_m": 9408.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5791,9 +5881,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5813,7 +5903,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12140.6,
+   "distance_to_fire_m": 13391.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5855,9 +5945,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5877,7 +5967,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 4184.8,
+   "distance_to_fire_m": 5671.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5919,9 +6009,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5941,7 +6031,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9129.3,
+   "distance_to_fire_m": 10316.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5983,9 +6073,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6005,7 +6095,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13408.9,
+   "distance_to_fire_m": 9466.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6047,9 +6137,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6069,7 +6159,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11209.9,
+   "distance_to_fire_m": 4964.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6111,9 +6201,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6133,7 +6223,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10578.9,
+   "distance_to_fire_m": 5063.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6175,9 +6265,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6197,7 +6287,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9628.6,
+   "distance_to_fire_m": 9221.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6239,9 +6329,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6261,7 +6351,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 1215.7,
+   "distance_to_fire_m": 2697.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6303,9 +6393,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6325,7 +6415,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11557.2,
+   "distance_to_fire_m": 2961.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6367,9 +6457,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6389,7 +6479,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 1250.4,
+   "distance_to_fire_m": 2471.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6431,9 +6521,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6506,9 +6596,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6581,9 +6671,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6656,9 +6746,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6731,9 +6821,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6806,9 +6896,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6881,9 +6971,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6956,9 +7046,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7031,9 +7121,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7106,9 +7196,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7181,9 +7271,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7256,9 +7346,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7331,9 +7421,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7406,9 +7496,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7481,9 +7571,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7556,9 +7646,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7631,9 +7721,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7706,9 +7796,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7781,9 +7871,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7856,9 +7946,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7931,9 +8021,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8006,9 +8096,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8081,9 +8171,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8156,9 +8246,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8231,9 +8321,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8306,9 +8396,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8381,9 +8471,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8456,9 +8546,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8531,9 +8621,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8606,9 +8696,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8681,9 +8771,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8756,9 +8846,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8831,9 +8921,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8906,9 +8996,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8981,9 +9071,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9056,9 +9146,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9131,9 +9221,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9206,9 +9296,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9281,9 +9371,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9356,9 +9446,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9431,9 +9521,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9506,9 +9596,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9581,9 +9671,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9655,9 +9745,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9729,9 +9819,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9803,9 +9893,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9877,9 +9967,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9951,9 +10041,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10025,9 +10115,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10099,9 +10189,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10173,9 +10263,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10247,9 +10337,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10321,9 +10411,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10395,9 +10485,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10469,9 +10559,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10543,9 +10633,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10617,9 +10707,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10691,9 +10781,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10765,9 +10855,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10839,9 +10929,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10913,9 +11003,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10987,9 +11077,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11061,9 +11151,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11135,9 +11225,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11209,9 +11299,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11283,9 +11373,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11357,9 +11447,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11431,9 +11521,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11505,9 +11595,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11579,9 +11669,9 @@
       "distance_to_fire_m",
       "intersects_fire"
      ],
-     "source": "fixture:synthetic_ignition (10:00 perimeter grown ~1.5 km downwind, synthetic)",
-     "observed_at": "2026-07-03T10:00:00+00:00",
-     "available_at": "2026-07-03T10:00:00+00:00",
+     "source": "deepfire:satellite-perimeters",
+     "observed_at": "2026-07-03T13:25:00+00:00",
+     "available_at": "2026-07-03T15:32:24+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }

@@ -50,7 +50,7 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 
 | Item | Status | Where |
 |---|---|---|
-| Deepfire polling | Partial | `fire_input.poll_deepfire` and `load_recorded` share one parse path; recorded fixtures are synthetic to the documented schema. Live authentication and a real response are **not verified** (no token). |
+| Deepfire polling | Closed | `fire_input.poll_deepfire` and `load_recorded` share one parse path. Live auth verified on 2026-09-19 with the `.env` credentials (`fireline/env.py`); the real responses are recorded under `fixtures/fire/deepfire/real/`. Continuous polling is not run in the demo; the UI steps through recorded snapshots. |
 | Fire footprint | Closed | GeoJSON `fire_geometry` with `fire_observed_at`, `fire_source`, `fire_geometry_kind`; a cluster is always a hotspot centre |
 | Stale-data status | Closed | `fire_input.data_status`, `config.FRESHNESS`; shown recorded and recomputed in the UI |
 | Latency measurement | Closed | `fire_input.measure_update`; source age and processing time reported separately (VALIDATION.md) |
@@ -58,7 +58,7 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 | Routing, cut roads, destinations | Deferred | `FEATURES["routing"]` off |
 | Confine / evacuate rule | Deferred | `FEATURES["decisions"]` off |
 | Wind what-if | Deferred | only in the v0 `scripts/precompute.py` demo |
-| Real facilities in scenarios | Closed | `fixtures/snapshots/gavarres_real_000{1,2}.json` (real facilities, synthetic fire, labelled) |
+| Real facilities in scenarios | Closed | `fixtures/snapshots/gavarres_real_0001..0003.json` (real facilities, real recorded perimeters, `input_mode: recorded`) |
 
 ## 5. UI (readme section 9)
 
@@ -80,10 +80,8 @@ be done in this environment. **Deferred** = kept out of the default path on purp
 
 ## Still open after this pass
 
-1. Verify Deepfire authentication and record one real response (`scripts/fetch_data.py deepfire` with
-   `DEEPFIRE_TOKEN`), then build a recorded-input snapshot from it.
-2. Run one live investigation (`scripts/investigate.py --record --asset fixture:pou_del_glac`) and
+1. Run one live investigation (`scripts/investigate.py --record --asset fixture:pou_del_glac`) and
    replace the FakeLLM fixture; hold out examples before tuning the prompt.
-3. Real-area ranking is empty: no located register row carries a capacity, so every real asset sits
+2. Real-area ranking is empty: no located register row carries a capacity, so every real asset sits
    in the review queue until capacities are sourced or confirmed. Disclosed in `VALIDATION.md`.
-4. Install Superpowers for the next session.
+3. Install Superpowers for the next session.

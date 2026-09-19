@@ -141,7 +141,8 @@ def main(argv=None) -> int:
     ap.add_argument("--max-steps", type=int, default=6)
     args = ap.parse_args(argv)
 
-    have_key = bool(os.environ.get("ANTHROPIC_API_KEY"))
+    from fireline import env
+    have_key = env.has_anthropic_key()   # loads .env first
     if not have_key and not args.fake and not args.record:
         if PRERECORDED.exists():
             print(f"PRERECORDED FALLBACK: no ANTHROPIC_API_KEY; replaying {PRERECORDED.relative_to(ROOT)}")

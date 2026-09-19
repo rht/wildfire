@@ -9,7 +9,8 @@ Writes
   fixtures/real_area/assets_gavarres.json           every data/assets_in.json row inside GAVARRES_BBOX plus
                                                     unlocated care homes / campsites of the same municipalities
   fixtures/real_area/README.md                      counts and limitations
-  fixtures/snapshots/gavarres_real_0001.json/_0002  real facilities + the same two synthetic fire geometries
+  fixtures/snapshots/gavarres_real_0001..0003.json  real facilities + three REAL recorded Deepfire satellite
+                                                    perimeters (fixtures/fire/deepfire/real/, incident 5769dcea)
 
 The real-area extract needs data/assets_in.json and data/unlocated.json (from `scripts/fetch_data.py
 registers`, gitignored); when they are absent only the synthetic snapshots are rebuilt.
@@ -21,7 +22,7 @@ import json
 import math
 import sys
 import unicodedata
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -215,9 +216,10 @@ def write_real_area(located, unlocated) -> list[dict]:
         "  capacity, so every located asset carries `occupancy_unknown`; unlocated care homes and campsites carry the",
         "  register capacity (`capacity`, not `estimated_occupancy`).",
         "- No footprints: every distance in a snapshot built from this file is a labelled point fallback.",
-        "- `fixtures/snapshots/gavarres_real_0001.json` / `_0002.json` combine **these real facilities with the",
-        "  synthetic fire** from `fixtures/synthetic_ignition.json` (`input_mode: synthetic`, `fire_source` labelled",
-        "  synthetic). They demonstrate update handling on real coverage; they are not a recorded incident.",
+        "- `fixtures/snapshots/gavarres_real_0001..0003.json` combine **these real facilities with three real",
+        "  recorded Deepfire satellite perimeters** (`fixtures/fire/deepfire/real/`, `input_mode: recorded`);",
+        "  the register extract (2026-09-19) postdates the fire (July 2026), so this is a recorded-input demo,",
+        "  not historical as-of replay (readme section 4).",
         "",
     ]
     (REAL_DIR / "README.md").write_text("\n".join(lines))
@@ -232,13 +234,15 @@ def synthetic_assets() -> list[dict]:
     return rows + [dict(UNLOCATED_FIXTURE, register="fixture")]
 
 
-def build_pair(assets, fires, scenario_id: str, incident_id: str) -> list[dict]:
+def build_pair(assets, fires, scenario_id: str, incident_id: str, input_mode: str = "synthetic") -> list[dict]:
     snaps = []
     for seq, (fire, t) in enumerate(fires, start=1):
+        observed = datetime.fromisoformat(fire["observed_at"]) if fire.get("observed_at") else None
+        age = (t - observed).total_seconds() if observed else None
         snap = build_snapshot(assets, fire, scenario_id=scenario_id, incident_id=incident_id, sequence=seq,
-                              as_of=t, input_mode="synthetic",
-                              computed_at=t.replace(second=COMPUTE_LAG_S),
-                              metrics={"source_age_s": 0.0, "processing_s": float(COMPUTE_LAG_S)})
+                              as_of=t, input_mode=input_mode,
+                              computed_at=t + timedelta(seconds=COMPUTE_LAG_S),
+                              metrics={"source_age_s": age, "processing_s": float(COMPUTE_LAG_S)})
         errs = validate_snapshot(snap)
         if errs:
             raise SystemExit(f"{snap['snapshot_id']} invalid: {errs}")
@@ -270,8 +274,42 @@ def main() -> int:
     records = write_real_area(located, unlocated)
     print(f"fixtures/real_area/assets_gavarres.json: {len(located)} located + {len(unlocated)} unlocated "
           f"in {len(munis)} municipalities")
-    build_pair(records, fires, "gavarres_real", fs.cluster_id)
+    real_fires = recorded_real_fires()
+    if real_fires is None:
+        print("fixtures/fire/deepfire/real/ has no satellite-perimeters response: real snapshots not rebuilt")
+        return 0
+    build_pair(records, real_fires, "gavarres_real", real_fires[0][0]["incident_id"], input_mode="recorded")
     return 0
+
+
+# --------------------------------------------------------------------------------- real fire
+REAL_FIRE_DIR = FIX / "fire" / "deepfire" / "real"
+REAL_PERIMETER_PICKS = (0, 3, -1)   # first, middle and last perimeter by observation time
+
+
+def recorded_real_fires() -> list[tuple[dict, datetime]] | None:
+    """(FireUpdate, as_of) per chosen perimeter of the real recorded satellite-perimeters response.
+
+    The raw response (one FeatureCollection with every perimeter of the incident) is split into one
+    single-feature body per perimeter and each goes through `fire_input.parse_deepfire`, the same path a
+    live poll uses. `as_of` = the provider's `computed_at` (when that perimeter became available);
+    `observed_at` = `observed_watermark`."""
+    from fireline import fire_input
+
+    files = sorted(REAL_FIRE_DIR.glob("*satellite-perimeters.json"))
+    if not files:
+        return None
+    rec = json.loads(files[-1].read_text())
+    feats = rec["body"]["features"]
+    updates = []
+    for feat in feats:
+        computed = datetime.fromisoformat(feat["properties"]["computed_at"].replace("Z", "+00:00"))
+        upd = fire_input.parse_deepfire({"type": "FeatureCollection", "features": [feat]}, computed,
+                                        "satellite-perimeters", raw_ref=str(files[-1].relative_to(ROOT)))
+        if upd is not None:
+            updates.append((upd, computed))
+    updates.sort(key=lambda u: u[1])
+    return [updates[i] for i in REAL_PERIMETER_PICKS]
 
 
 if __name__ == "__main__":

@@ -31,9 +31,11 @@ feature flags). The v0 engine (`spread.py`, `routing.py`, `decide.py`, `scenario
 
 What is real and what is synthetic: the facilities in `fixtures/real_area/` are a real Gencat
 Equipaments and schools extract for the Gavarres area (2026-09-19); care homes and campsites carry no
-coordinates in their registers and are listed with `location_unknown`. The fire in every committed
-snapshot and recorded provider response is **synthetic** (built to the Deepfire schema; live
-authentication has not been verified because no token was available). `fixtures/evidence.json` is
+coordinates in their registers and are listed with `location_unknown`. The `gavarres_real` snapshots
+use **real recorded Deepfire satellite perimeters** of the July 2026 incident in the bbox
+(`fixtures/fire/deepfire/real/`, pulled on 2026-09-19 with the credentials in `.env`, loaded by
+`fireline/env.py`); the `synthetic_gavarres` snapshots and the top-level recorded responses are
+**synthetic**, built to the same schema. `fixtures/evidence.json` is
 labelled manual enrichment. No located register row carries a capacity, so the real-area ranked
 table is empty until capacities are sourced or confirmed; every real asset sits in the review queue.
 Tasks and overrides persist in `data/fireline.sqlite` (`FIRELINE_DB`). Recorded check outcomes are in

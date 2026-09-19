@@ -314,3 +314,28 @@ def test_poll_deepfire_through_real_client_with_faked_session(tmp_path, monkeypa
     # second poll is served from the file cache (max_age 60 s): no further network call
     assert fire_input.poll_deepfire(feeds.DeepfireClient(), GAVARRES, T0)["observed_at"] == upd["observed_at"]
     assert len(calls) == 2
+
+
+# --------------------------------------------------------------------------- real recorded responses
+REAL_DIR = FIXTURE_DIR / "real"
+
+
+def test_real_recorded_perimeters_parse_through_the_same_path():
+    files = sorted(REAL_DIR.glob("*satellite-perimeters.json"))
+    assert files, "real recorded perimeters missing"
+    rec = json.loads(files[-1].read_text())
+    feats = rec["body"]["features"]
+    assert len(feats) == 7 and {f["geometry"]["type"] for f in feats} == {"MultiPolygon"}
+    upd = fire_input.parse_deepfire(rec["body"], datetime(2026, 9, 19, 13, 13, 42, tzinfo=timezone.utc),
+                                    "satellite-perimeters")
+    assert upd["geometry_kind"] == "perimeter" and upd["provider"] == "deepfire"
+    assert upd["observed_at"] == "2026-07-04T04:14:00+00:00"       # newest observed_watermark wins
+    assert upd["incident_id"] == "5769dcea-385a-4ee5-9313-804f55ddb5fa"
+
+
+def test_real_recorded_clusters_are_hotspot_centres():
+    files = sorted(REAL_DIR.glob("*clusters.json"))
+    rec = json.loads(files[-1].read_text())
+    upd = fire_input.parse_deepfire(rec["body"], datetime(2026, 9, 19, 13, 13, 40, tzinfo=timezone.utc), "clusters")
+    assert upd["geometry_kind"] == "hotspot_centre" and upd["geometry"]["type"] == "Point"
+    assert upd["observed_at"] == "2026-07-05T01:43:00+00:00"

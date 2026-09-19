@@ -29,6 +29,8 @@ from typing import Any, Iterable
 
 import requests
 
+from .env import load_env
+
 log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -264,6 +266,7 @@ class DeepfireClient:
         self.base = base.rstrip("/")
         self.session = session or get_session()
         self.max_age_s = max_age_s
+        load_env()  # .env credentials (never overrides the real environment)
         self._token = token or os.environ.get("DEEPFIRE_TOKEN") or None
 
     # -- auth

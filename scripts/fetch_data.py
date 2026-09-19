@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from fireline import feeds, fire_input  # noqa: E402
+from fireline import env, feeds, fire_input  # noqa: E402
 
 COMARQUES = ["Baix Empordà", "Gironès", "Selva"]
 REPLAY_START = date(2026, 7, 3)
@@ -84,8 +84,7 @@ def cmd_wind(args) -> int:
 
 
 def cmd_deepfire(args) -> int:
-    creds = os.environ.get("DEEPFIRE_TOKEN") or (
-        os.environ.get("DEEPFIRE_CLIENT_ID") and os.environ.get("DEEPFIRE_CLIENT_SECRET"))
+    creds = env.has_deepfire_credentials()   # loads .env first
     as_of = datetime.combine(REPLAY_END + timedelta(days=1), datetime.min.time(), tzinfo=timezone.utc)
     since = datetime.combine(REPLAY_START, datetime.min.time(), tzinfo=timezone.utc)
     bbox = feeds.GAVARRES_BBOX
@@ -98,7 +97,7 @@ def cmd_deepfire(args) -> int:
         f"filter=computed_at <= {as_of.isoformat()}",
     ]
     if not creds:
-        print("no DEEPFIRE_TOKEN / DEEPFIRE_CLIENT_ID+SECRET set; would run:")
+        print("no DEEPFIRE_TOKEN / DEEPFIRE_CLIENT_ID+SECRET in the environment or .env; would run:")
         for p in plan:
             print("  " + p)
         print(f"  and write data/deepfire/{{clusters,hotspots,perimeters}}.json")

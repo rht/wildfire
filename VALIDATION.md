@@ -63,7 +63,7 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 - top-3 before (seq 1): ['sant_pol 0.653', 'escola_cruilles 0.597', 'sant_sadurni 0.511']
 - top-3 after (seq 2): ['sant_pol 0.725', 'escola_cruilles 0.597', 'can_xic 0.516']
 - source age preserved (synthetic, escola_cruilles unchanged at 1228.7 m): non-fire sources identical True; fire source observed_at 2026-07-03T08:00:00+00:00 -> 2026-07-03T10:00:00+00:00
-- source age preserved (real-area equipaments:3620470): newest_fetched_at 2026-09-19T11:46:36+00:00 and the register provenance identical in both snapshots while as_of advances 2026-07-03T08:00:00+00:00 -> 2026-07-03T10:00:00+00:00: True (the register extract of 2026-09-19 postdates the synthetic fire of 2026-07-03, so these fixtures are not an as-of replay)
+- source age preserved (real-area equipaments:3620470): newest_fetched_at 2026-09-19T11:46:36+00:00 and the register provenance identical in both snapshots while as_of advances 2026-07-03T13:20:01.981000+00:00 -> 2026-07-03T15:32:24.822000+00:00: True (the register extract of 2026-09-19 postdates the recorded real fire of 2026-07-03/04, so these fixtures are not an as-of replay)
 - missing asset (seq 3 = seq 2 without fixture:pou_del_glac): missing_asset_ids ['fixture:pou_del_glac']; tasks {'task-0006': ('open', None), 'task-0007': ('open', None)} -> {'task-0006': ('open', None), 'task-0007': ('open', None)}; flagged ['task-0006', 'task-0007']; exposure present False; asset_missing events 1
 - 7 tasks suggested from seq 1 review reasons
 
@@ -97,10 +97,10 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 ### Latency: pass
 
 - input: 168 real-area assets (fixtures/real_area/assets_gavarres.json) + recorded update 20260703T100500Z_satellite-perimeters.json (deepfire:satellite-perimeters, SYNTHETIC content, observed 2026-07-03T10:00:00+00:00, received 2026-07-03T10:05:00+00:00) through fire_input.load_recorded
-- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.06, 0.063, 0.061] s; median 0.061 s
-- stages of run 1: build 0.031 s, score 0.012 s, apply+suggest 0.017 s; validate errors 0
+- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.061, 0.063, 0.06] s; median 0.061 s
+- stages of run 1: build 0.032 s, score 0.012 s, apply+suggest 0.017 s; validate errors 0
 - result: 0 ranked, 168 needs_review; 91 assets changed vs seq 1, 0 new suggestions on the update (ranked queue empty on real coverage: located register rows carry no capacity, so the size component is unknown and every asset is an investigation-queue item)
-- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.061120980011764914} (separate numbers, never combined)
+- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.06092156301019713} (separate numbers, never combined)
 - target < 60 s processing for the selected area: met on x86_64, Python 3.14.7
 
 ### Stale data: pass

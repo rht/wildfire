@@ -341,7 +341,7 @@ def check_updates() -> dict:
         f"identical {same_synth}; fire source observed_at {fire_src(a1)['observed_at']} -> {fire_src(a2)['observed_at']}",
         f"source age preserved (real-area {ra1['asset_id']}): newest_fetched_at {age1['newest_fetched_at']} and the "
         f"register provenance identical in both snapshots while as_of advances {real1['as_of']} -> {real2['as_of']}: "
-        f"{same_real} (the register extract of 2026-09-19 postdates the synthetic fire of 2026-07-03, so these "
+        f"{same_real} (the register extract of 2026-09-19 postdates the recorded real fire of 2026-07-03/04, so these "
         f"fixtures are not an as-of replay)",
         f"missing asset (seq 3 = seq 2 without {missing_id}): missing_asset_ids {r3['missing_asset_ids']}; tasks "
         f"{tasks_before} -> {tasks_after}; flagged {flagged}; exposure present {exposure.get('present')}; "

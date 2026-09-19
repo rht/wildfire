@@ -2,12 +2,12 @@
  "schema_version": "1.0",
  "scenario_id": "gavarres_real",
  "incident_id": "5769dcea-385a-4ee5-9313-804f55ddb5fa",
- "snapshot_id": "gavarres_real-0001",
- "sequence": 1,
- "as_of": "2026-07-03T13:20:01.981000+00:00",
- "computed_at": "2026-07-03T13:20:21.981000+00:00",
+ "snapshot_id": "gavarres_real-0003",
+ "sequence": 3,
+ "as_of": "2026-07-04T06:31:53.899000+00:00",
+ "computed_at": "2026-07-04T06:32:13.899000+00:00",
  "input_mode": "recorded",
- "fire_observed_at": "2026-07-03T11:47:00+00:00",
+ "fire_observed_at": "2026-07-04T04:14:00+00:00",
  "fire_source": "deepfire:satellite-perimeters",
  "fire_geometry": {
   "type": "MultiPolygon",
@@ -15,196 +15,228 @@
    [
     [
      [
-      3.01899367,
-      41.92137732
+      2.990574,
+      41.90121884
      ],
      [
-      3.01372292,
-      41.9240431
+      2.98913001,
+      41.90131559
      ],
      [
-      3.01331711,
-      41.92549575
+      2.9883718,
+      41.90191204
      ],
      [
-      3.01426253,
-      41.92623367
+      2.98570634,
+      41.91017365
      ],
      [
-      3.02095736,
-      41.92846532
+      2.98661781,
+      41.91117942
      ],
      [
-      3.02335799,
-      41.9355675
+      2.99543301,
+      41.91340801
      ],
      [
-      3.02465908,
-      41.93632682
+      2.99322173,
+      41.92225199
      ],
      [
-      3.02597434,
-      41.93613841
+      2.99350239,
+      41.92325785
      ],
      [
-      3.0267558,
-      41.93532633
+      2.99499987,
+      41.92385102
      ],
      [
-      3.02908692,
-      41.92833245
+      3.00711462,
+      41.92385104
      ],
      [
-      3.03419479,
-      41.92547262
+      3.01339581,
+      41.9259448
      ],
      [
-      3.03678015,
-      41.92024011
+      3.01621196,
+      41.93594884
      ],
      [
-      3.03680889,
-      41.91822139
+      3.01749992,
+      41.93635102
      ],
      [
-      3.03957875,
-      41.91683647
+      3.02445013,
+      41.93635103
      ],
      [
-      3.04160706,
-      41.91867494
+      3.02930148,
+      41.93874629
      ],
      [
-      3.04369649,
-      41.91851325
+      3.03125429,
+      41.93847375
      ],
      [
-      3.05164576,
-      41.91056035
+      3.03178527,
+      41.93727991
      ],
      [
-      3.05180859,
-      41.90749999
+      3.02946978,
+      41.93257701
      ],
      [
-      3.04902708,
-      41.90177628
+      3.03411953,
+      41.92560205
      ],
      [
-      3.04430836,
-      41.89927853
+      3.03642949,
+      41.921003
      ],
      [
-      3.04419394,
-      41.89702717
+      3.04348258,
+      41.91863432
      ],
      [
-      3.04130818,
-      41.89156734
+      3.0512045,
+      41.91350788
      ],
      [
-      3.0403631,
-      41.8911765
+      3.05419434,
+      41.91047272
      ],
      [
-      3.03625467,
-      41.89114899
+      3.05677972,
+      41.90524016
      ],
      [
-      3.03419368,
-      41.88702718
+      3.05680831,
+      41.89749999
      ],
      [
-      3.03321139,
-      41.88625795
+      3.05430802,
+      41.8873749
      ],
      [
-      3.02804908,
-      41.88614898
+      3.05426667,
+      41.88221316
      ],
      [
-      3.0231926,
-      41.88375204
+      3.05169981,
+      41.87944295
      ],
      [
-      3.01840593,
-      41.88364899
+      3.04953875,
+      41.87079976
      ],
      [
-      3.01621796,
-      41.88150158
+      3.0560049,
+      41.86862298
      ],
      [
-      3.0146231,
-      41.88117866
+      3.06650879,
+      41.86324378
      ],
      [
-      3.00855173,
-      41.88419129
+      3.06917241,
+      41.8519883
      ],
      [
-      3.00585495,
-      41.88693944
+      3.06823371,
+      41.85126534
      ],
      [
-      3.0056919,
-      41.88999999
+      3.06657529,
+      41.85133926
      ],
      [
-      3.00819175,
-      41.89524412
+      3.0598416,
+      41.85579549
      ],
      [
-      3.00832919,
-      41.90301699
+      3.05535278,
+      41.85367496
      ],
      [
-      3.00964714,
-      41.90382506
+      3.04068864,
+      41.85364898
      ],
      [
-      3.01319151,
-      41.90385105
+      3.03282712,
+      41.84867129
      ],
      [
-      3.01319142,
-      41.9070511
+      3.02712386,
+      41.84867856
      ],
      [
-      3.01073255,
-      41.90971325
+      3.01961544,
+      41.85114898
      ],
      [
-      3.01082904,
-      41.91301718
+      3.01250008,
+      41.85114896
      ],
      [
-      3.01180855,
-      41.9137484
+      3.01122228,
+      41.85154465
      ],
      [
-      3.01285404,
-      41.91382489
+      3.01069296,
+      41.85249999
      ],
      [
-      3.0175,
-      41.91162579
+      3.01069283,
+      41.85689463
      ],
      [
-      3.02069125,
-      41.91322142
+      3.00379717,
+      41.86149163
      ],
      [
-      3.02071999,
-      41.91524012
+      2.99855235,
+      41.86669107
      ],
      [
-      3.02280491,
-      41.91947175
+      2.99574596,
+      41.87467335
      ],
      [
-      3.01899367,
-      41.92137732
+      2.99620409,
+      41.87594192
+     ],
+     [
+      2.99752387,
+      41.87635091
+     ],
+     [
+      3.00441691,
+      41.87417372
+     ],
+     [
+      3.00803855,
+      41.87779541
+     ],
+     [
+      3.00574567,
+      41.8846734
+     ],
+     [
+      3.00569198,
+      41.88733428
+     ],
+     [
+      3.0032225,
+      41.89475196
+     ],
+     [
+      3.00099804,
+      41.90364898
+     ],
+     [
+      2.990574,
+      41.90121884
      ]
     ]
    ]
@@ -213,7 +245,7 @@
  "fire_geometry_kind": "perimeter",
  "data_status": "stale",
  "metrics": {
-  "source_age_s": 5581.981,
+  "source_age_s": 8273.899,
   "processing_s": 20.0
  },
  "assets": [
@@ -230,7 +262,7 @@
    "occupancy_basis": null,
    "value_score": 1.0,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8613.8,
+   "distance_to_fire_m": 5153.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -273,8 +305,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -294,7 +326,7 @@
    "occupancy_basis": null,
    "value_score": 1.0,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8051.8,
+   "distance_to_fire_m": 4512.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -338,8 +370,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -359,7 +391,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 2662.0,
+   "distance_to_fire_m": 2231.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -402,8 +434,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -423,7 +455,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 2784.3,
+   "distance_to_fire_m": 2380.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -466,8 +498,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -487,7 +519,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14672.6,
+   "distance_to_fire_m": 14283.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -530,8 +562,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -551,7 +583,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 4759.7,
+   "distance_to_fire_m": 1277.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -594,8 +626,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -615,7 +647,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 6915.3,
+   "distance_to_fire_m": 2778.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -658,8 +690,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -679,7 +711,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7053.3,
+   "distance_to_fire_m": 2736.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -722,8 +754,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -743,7 +775,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10685.9,
+   "distance_to_fire_m": 9427.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -786,8 +818,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -807,7 +839,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10954.4,
+   "distance_to_fire_m": 9655.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -850,8 +882,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -871,7 +903,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8078.4,
+   "distance_to_fire_m": 4251.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -914,8 +946,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -935,7 +967,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8315.0,
+   "distance_to_fire_m": 4226.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -978,8 +1010,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -999,7 +1031,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 15398.6,
+   "distance_to_fire_m": 14654.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1042,8 +1074,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1063,7 +1095,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 5832.1,
+   "distance_to_fire_m": 5623.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1106,8 +1138,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1127,7 +1159,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 2388.4,
+   "distance_to_fire_m": 2163.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1170,8 +1202,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1191,7 +1223,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 4982.4,
+   "distance_to_fire_m": 4745.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1234,8 +1266,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1255,7 +1287,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13579.3,
+   "distance_to_fire_m": 13326.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1298,8 +1330,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1319,7 +1351,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11236.9,
+   "distance_to_fire_m": 9533.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1362,8 +1394,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1383,7 +1415,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7825.7,
+   "distance_to_fire_m": 7423.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1426,8 +1458,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1447,7 +1479,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9567.7,
+   "distance_to_fire_m": 9184.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1490,8 +1522,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1511,7 +1543,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9163.0,
+   "distance_to_fire_m": 8837.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1554,8 +1586,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1575,7 +1607,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9025.0,
+   "distance_to_fire_m": 8666.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1618,8 +1650,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1639,7 +1671,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9805.3,
+   "distance_to_fire_m": 9443.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1682,8 +1714,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1703,7 +1735,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9681.9,
+   "distance_to_fire_m": 9324.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1746,8 +1778,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1767,7 +1799,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9204.0,
+   "distance_to_fire_m": 8846.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1810,8 +1842,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1831,7 +1863,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9395.5,
+   "distance_to_fire_m": 9001.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1874,8 +1906,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1895,7 +1927,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9494.6,
+   "distance_to_fire_m": 9095.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -1938,8 +1970,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -1959,7 +1991,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8891.2,
+   "distance_to_fire_m": 5281.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2002,8 +2034,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2023,7 +2055,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8755.2,
+   "distance_to_fire_m": 5184.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2066,8 +2098,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2087,7 +2119,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9024.5,
+   "distance_to_fire_m": 5423.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2130,8 +2162,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2151,7 +2183,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10718.6,
+   "distance_to_fire_m": 10558.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2194,8 +2226,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2215,7 +2247,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9828.1,
+   "distance_to_fire_m": 9607.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2258,8 +2290,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2279,7 +2311,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 3526.9,
+   "distance_to_fire_m": 3072.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2322,8 +2354,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2343,7 +2375,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7390.8,
+   "distance_to_fire_m": 4073.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2386,8 +2418,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2407,7 +2439,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14598.1,
+   "distance_to_fire_m": 14141.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2450,8 +2482,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2471,7 +2503,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14912.0,
+   "distance_to_fire_m": 14449.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2514,8 +2546,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2535,7 +2567,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14267.6,
+   "distance_to_fire_m": 13831.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2578,8 +2610,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2599,7 +2631,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8298.2,
+   "distance_to_fire_m": 7885.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2642,8 +2674,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2663,7 +2695,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7355.4,
+   "distance_to_fire_m": 4667.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2706,8 +2738,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2727,7 +2759,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10344.3,
+   "distance_to_fire_m": 10083.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2770,8 +2802,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2791,7 +2823,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 3512.2,
+   "distance_to_fire_m": 3135.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2834,8 +2866,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2855,7 +2887,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9140.0,
+   "distance_to_fire_m": 8790.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2898,8 +2930,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2919,7 +2951,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7855.1,
+   "distance_to_fire_m": 4158.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -2962,8 +2994,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -2983,7 +3015,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 2965.6,
+   "distance_to_fire_m": 2623.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3026,8 +3058,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3047,7 +3079,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11029.3,
+   "distance_to_fire_m": 9551.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3090,8 +3122,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3111,7 +3143,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9390.4,
+   "distance_to_fire_m": 8999.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3154,8 +3186,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3175,7 +3207,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7798.1,
+   "distance_to_fire_m": 3706.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3218,8 +3250,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3239,7 +3271,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11337.7,
+   "distance_to_fire_m": 9636.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3282,8 +3314,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3303,7 +3335,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14940.6,
+   "distance_to_fire_m": 14472.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3346,8 +3378,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3367,7 +3399,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7358.1,
+   "distance_to_fire_m": 4039.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3410,8 +3442,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3431,7 +3463,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14348.3,
+   "distance_to_fire_m": 13889.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3474,8 +3506,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3495,7 +3527,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8080.0,
+   "distance_to_fire_m": 4252.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3538,8 +3570,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3559,7 +3591,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 15346.6,
+   "distance_to_fire_m": 14672.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3602,8 +3634,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3623,7 +3655,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11468.5,
+   "distance_to_fire_m": 9687.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3666,8 +3698,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3687,7 +3719,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8599.5,
+   "distance_to_fire_m": 8207.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3730,8 +3762,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3751,7 +3783,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11295.6,
+   "distance_to_fire_m": 9952.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3794,8 +3826,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3815,7 +3847,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7998.7,
+   "distance_to_fire_m": 3651.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3858,8 +3890,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3879,7 +3911,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14115.1,
+   "distance_to_fire_m": 13651.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3922,8 +3954,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -3943,7 +3975,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 2770.1,
+   "distance_to_fire_m": 2332.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -3986,8 +4018,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4007,7 +4039,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8870.3,
+   "distance_to_fire_m": 5150.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4050,8 +4082,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4071,7 +4103,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 15309.2,
+   "distance_to_fire_m": 14534.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4114,8 +4146,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4135,7 +4167,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 4175.5,
+   "distance_to_fire_m": 561.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4178,8 +4210,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4199,7 +4231,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14117.9,
+   "distance_to_fire_m": 13654.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4242,8 +4274,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4263,7 +4295,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 15367.7,
+   "distance_to_fire_m": 14666.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4306,8 +4338,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4327,7 +4359,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10017.3,
+   "distance_to_fire_m": 9642.0,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4370,8 +4402,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4391,7 +4423,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 4670.8,
+   "distance_to_fire_m": 1271.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4434,8 +4466,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4455,7 +4487,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 6853.4,
+   "distance_to_fire_m": 5232.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4498,8 +4530,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4519,7 +4551,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7835.5,
+   "distance_to_fire_m": 7430.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4562,8 +4594,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4583,7 +4615,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8300.1,
+   "distance_to_fire_m": 7886.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4626,8 +4658,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4647,7 +4679,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7008.8,
+   "distance_to_fire_m": 3085.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4690,8 +4722,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4711,7 +4743,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 15416.2,
+   "distance_to_fire_m": 14721.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4754,8 +4786,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4775,7 +4807,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 6828.5,
+   "distance_to_fire_m": 5221.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4818,8 +4850,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4839,7 +4871,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11494.8,
+   "distance_to_fire_m": 10194.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4882,8 +4914,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4903,7 +4935,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10112.1,
+   "distance_to_fire_m": 9764.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -4946,8 +4978,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -4967,7 +4999,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8687.2,
+   "distance_to_fire_m": 8317.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5010,8 +5042,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5031,7 +5063,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 3478.2,
+   "distance_to_fire_m": 2993.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5074,8 +5106,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5095,7 +5127,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 14640.3,
+   "distance_to_fire_m": 14183.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5138,8 +5170,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5159,7 +5191,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11191.3,
+   "distance_to_fire_m": 9387.7,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5202,8 +5234,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5223,7 +5255,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8301.2,
+   "distance_to_fire_m": 4234.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5266,8 +5298,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5287,7 +5319,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8097.2,
+   "distance_to_fire_m": 4540.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5330,8 +5362,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5351,7 +5383,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 4954.1,
+   "distance_to_fire_m": 4686.6,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5394,8 +5426,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5415,7 +5447,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 11742.5,
+   "distance_to_fire_m": 9981.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5458,8 +5490,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5479,7 +5511,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 15112.2,
+   "distance_to_fire_m": 14461.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5522,8 +5554,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5543,7 +5575,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 1822.1,
+   "distance_to_fire_m": 1456.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5586,8 +5618,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5607,7 +5639,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9719.6,
+   "distance_to_fire_m": 9436.2,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5650,8 +5682,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5671,7 +5703,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7967.2,
+   "distance_to_fire_m": 4670.4,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5714,8 +5746,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5735,7 +5767,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7114.2,
+   "distance_to_fire_m": 3121.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5778,8 +5810,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5799,7 +5831,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 12819.9,
+   "distance_to_fire_m": 12450.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5842,8 +5874,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5863,7 +5895,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9472.4,
+   "distance_to_fire_m": 9151.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5906,8 +5938,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5927,7 +5959,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 13609.4,
+   "distance_to_fire_m": 13384.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -5970,8 +6002,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -5991,7 +6023,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 5863.4,
+   "distance_to_fire_m": 5673.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6034,8 +6066,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6055,7 +6087,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10485.2,
+   "distance_to_fire_m": 10319.3,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6098,8 +6130,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6119,7 +6151,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 10832.2,
+   "distance_to_fire_m": 9466.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6162,8 +6194,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6183,7 +6215,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8489.2,
+   "distance_to_fire_m": 4964.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6226,8 +6258,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6247,7 +6279,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 8118.5,
+   "distance_to_fire_m": 5082.1,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6290,8 +6322,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6311,7 +6343,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 9285.2,
+   "distance_to_fire_m": 8964.5,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6354,8 +6386,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6375,7 +6407,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 3065.6,
+   "distance_to_fire_m": 2704.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6418,8 +6450,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6439,7 +6471,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 7064.0,
+   "distance_to_fire_m": 2965.9,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6482,8 +6514,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6503,7 +6535,7 @@
    "occupancy_basis": null,
    "value_score": 0.8,
    "value_basis": "value-proto-2026-09-19",
-   "distance_to_fire_m": 2974.7,
+   "distance_to_fire_m": 2468.8,
    "intersects_fire": false,
    "burn_probability": null,
    "arrival_p10_at": null,
@@ -6546,8 +6578,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "point fallback: facility footprint missing"
     }
@@ -6621,8 +6653,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6696,8 +6728,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6771,8 +6803,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6846,8 +6878,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6921,8 +6953,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -6996,8 +7028,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7071,8 +7103,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7146,8 +7178,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7221,8 +7253,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7296,8 +7328,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7371,8 +7403,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7446,8 +7478,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7521,8 +7553,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7596,8 +7628,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7671,8 +7703,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7746,8 +7778,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7821,8 +7853,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7896,8 +7928,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -7971,8 +8003,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8046,8 +8078,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8121,8 +8153,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8196,8 +8228,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8271,8 +8303,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8346,8 +8378,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8421,8 +8453,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8496,8 +8528,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8571,8 +8603,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8646,8 +8678,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8721,8 +8753,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8796,8 +8828,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8871,8 +8903,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -8946,8 +8978,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9021,8 +9053,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9096,8 +9128,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9171,8 +9203,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9246,8 +9278,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9321,8 +9353,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9396,8 +9428,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9471,8 +9503,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9546,8 +9578,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9621,8 +9653,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9696,8 +9728,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9770,8 +9802,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9844,8 +9876,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9918,8 +9950,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -9992,8 +10024,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10066,8 +10098,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10140,8 +10172,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10214,8 +10246,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10288,8 +10320,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10362,8 +10394,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10436,8 +10468,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10510,8 +10542,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10584,8 +10616,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10658,8 +10690,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10732,8 +10764,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10806,8 +10838,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10880,8 +10912,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -10954,8 +10986,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11028,8 +11060,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11102,8 +11134,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11176,8 +11208,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11250,8 +11282,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11324,8 +11356,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11398,8 +11430,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11472,8 +11504,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11546,8 +11578,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11620,8 +11652,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }
@@ -11694,8 +11726,8 @@
       "intersects_fire"
      ],
      "source": "deepfire:satellite-perimeters",
-     "observed_at": "2026-07-03T11:47:00+00:00",
-     "available_at": "2026-07-03T13:20:01+00:00",
+     "observed_at": "2026-07-04T04:14:00+00:00",
+     "available_at": "2026-07-04T06:31:53+00:00",
      "fetched_at": null,
      "notes": "asset location unknown"
     }

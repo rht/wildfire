@@ -1,4 +1,4 @@
-# fixtures/fire/deepfire — recorded Deepfire responses (SYNTHETIC)
+# fixtures/fire/deepfire — recorded Deepfire responses
 
 Files here are `{"collection", "received_at", "body", "note"}` records read by
 `fireline.fire_input.load_recorded()` and passed through `parse_deepfire()` on the same path as a
@@ -13,13 +13,30 @@ same shape to `data/deepfire/recorded/` when credentials are set.
   `last_observed`; `hotspots` carry `observed_at`. Perimeter features have Polygon/MultiPolygon
   geometry; clusters are treated as a hotspot centre (Point; any area geometry is reduced to its
   centroid), never as a surveyed perimeter.
-- **Not verified: live authentication and a real response.** No `DEEPFIRE_TOKEN` or client
-  credentials were available in this environment, so no request has been made against
-  `api.deepfire.co`. The exact property set of a real feature (extra keys, id format, link
-  structure, paging) is unconfirmed. If a real response differs, adjust `OBSERVED_FIELDS` /
-  `INCIDENT_FIELDS` in `fireline/fire_input.py` and `DeepfireClient.TIME_FIELD` in `fireline/feeds.py`.
+- **Verified live on 2026-09-19 13:13Z:** `scripts/fetch_data.py deepfire` authenticated with the
+  client id/secret from `.env` (loaded by `fireline/env.py`, python-dotenv) and pulled the Gavarres
+  bbox for 2026-07-03..05: 30 clusters, 1272 hotspots, 7 satellite perimeters. The real property
+  sets match the parser's assumptions: perimeters `{active, algo_version, area_m2, cluster_id,
+  computed_at, id, n_hotspots, observed_watermark, perimeter_m}` with MultiPolygon geometry;
+  clusters `{active, first_observed, id, last_observed}` with Point geometry; hotspots `{active,
+  cluster_id, confidence, country, fire_radiative_power, id, observed_at, source}`. Times are `Z`
+  suffixed. Paging was not exercised (all responses fit one page).
 
-## Contents — all SYNTHETIC
+## `real/` — REAL recorded responses (incident 5769dcea-385a-4ee5-9313-804f55ddb5fa)
+
+| file | collection | content |
+|---|---|---|
+| `real/20260919T131342Z_satellite-perimeters.json` | satellite-perimeters | 7 MultiPolygon perimeters of one incident, `observed_watermark` 2026-07-03 11:47Z to 2026-07-04 04:14Z, `computed_at` about 2 h later each, 1264 to 3870 ha |
+| `real/20260919T131340Z_clusters.json` | clusters | 30 Point cluster centres in the bbox, June and July 2026 |
+
+The hotspots response (680 KB) stays in `data/deepfire/recorded/` (gitignored). `scripts/make_snapshots.py`
+splits the perimeters response into one single-feature body per perimeter, passes each through
+`fire_input.parse_deepfire` and builds `fixtures/snapshots/gavarres_real_0001..0003.json` from the
+first, middle and last perimeter (`input_mode: recorded`). Their `data_status` is `stale` because the
+provider computed each perimeter about two hours after its observation watermark and `as_of` is the
+`computed_at`; that is the measured provider latency, not a fixture artefact.
+
+## Top-level files — SYNTHETIC
 
 Every file carries a top-level `note` saying it is synthetic. They describe an invented fire near
 la Bisbal d'Empordà (Gavarres) on 2026-07-03, `cluster_id = "synthetic-gavarres"`, built with
