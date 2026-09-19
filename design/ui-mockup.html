@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>FocTriage — UI/UX mockup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --ink: #16191c;
+    --paper: #f4f2ee;
+    --panel: #ffffff;
+    --line: #e2ded7;
+    --muted: #6b6459;
+    --act-now: #c73a2f;
+    --prepare: #d98a1f;
+    --monitor: #7a8a7d;
+    --accent: #1f5c4d;
+    --accent-ink: #ffffff;
+    --review: #a8471f;
+    --stale: #b8862b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    height: 100vh;
+    overflow: hidden;
+  }
+  #app { display: flex; flex-direction: column; height: 100vh; }
+
+  /* ---------- top bar ---------- */
+  #topbar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 18px; background: var(--ink); color: #fff;
+    flex-shrink: 0; z-index: 20;
+  }
+  #topbar .brand { font-weight: 700; font-size: 18px; letter-spacing: 0.2px; }
+  #topbar .brand small { font-weight: 400; opacity: 0.7; font-size: 12px; margin-left: 6px; }
+  .badge {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 3px 9px; border-radius: 999px; font-weight: 600;
+  }
+  .badge.mode { background: #2c3236; color: #cfd6d3; }
+  .badge.current { background: #234f3f; color: #b9f0d4; }
+  .badge.stale { background: #4a3a1a; color: #f0d9a8; }
+  .badge.unavailable { background: #4a1f1f; color: #f0b9b9; }
+  #topbar .timestamps { font-size: 12px; color: #aab0ac; margin-left: auto; text-align: right; line-height: 1.4; }
+  #topbar .timestamps b { color: #e7e4de; }
+  #nextUpdateBtn {
+    background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px;
+    padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  #nextUpdateBtn:hover { background: #276b58; }
+
+  /* ---------- layout ---------- */
+  #main { flex: 1; display: flex; min-height: 0; }
+  #mapCol { flex: 1.3; position: relative; border-right: 1px solid var(--line); }
+  #map { position: absolute; inset: 0; }
+  #sideCol { flex: 1; display: flex; flex-direction: column; min-width: 420px; max-width: 480px; background: var(--panel); }
+
+  .metrics { display: flex; gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); flex-shrink: 0; }
+  .metric { flex: 1; background: var(--panel); padding: 10px 12px; }
+  .metric .n { font-size: 20px; font-weight: 700; }
+  .metric .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .metric.act-now .n { color: var(--act-now); }
+  .metric.prepare .n { color: var(--prepare); }
+  .metric.review .n { color: var(--review); }
+
+  .panelHead {
+    padding: 10px 14px 6px; font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--muted); border-top: 1px solid var(--line);
+  }
+
+  #rankedList { overflow-y: auto; flex: 1 1 40%; min-height: 0; }
+  .row {
+    display: flex; gap: 10px; align-items: center; padding: 9px 14px; border-bottom: 1px solid var(--line);
+    cursor: pointer; transition: background 0.1s;
+  }
+  .row:hover { background: #f7f5f0; }
+  .row.selected { background: #eef4f1; border-left: 3px solid var(--accent); padding-left: 11px; }
+  .row .rank { font-size: 12px; color: var(--muted); width: 18px; text-align: right; flex-shrink: 0; }
+  .row .info { flex: 1; min-width: 0; }
+  .row .name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .sub { font-size: 11.5px; color: var(--muted); }
+  .row .score { font-size: 15px; font-weight: 700; width: 40px; text-align: right; flex-shrink: 0; }
+  .bar { width: 54px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; display: flex; flex-shrink: 0; }
+  .bar span { display: block; height: 100%; }
+  .bar .b-prox { background: #c73a2f; }
+  .bar .b-size { background: #d98a1f; }
+  .bar .b-val  { background: #1f5c4d; }
+  .review-flag { font-size: 10px; background: #fbe4d5; color: var(--review); padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+  .task-flag { font-size: 10px; background: #e4ecf5; color: #244a75; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+
+  #detailPanel { border-top: 2px solid var(--line); flex: 1 1 60%; min-height: 0; overflow-y: auto; padding: 14px; }
+  #detailPanel h3 { margin: 0 0 2px; font-size: 16px; }
+  #detailPanel .kind { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .kv { display: grid; grid-template-columns: 130px 1fr; gap: 4px 10px; font-size: 12.5px; margin-bottom: 12px; }
+  .kv div.k { color: var(--muted); }
+  .kv div.v.null { color: #b0473a; font-style: italic; }
+  .scoreBreak { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .scoreBreak .sb-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .scoreBreak .sb-label { width: 78px; color: var(--muted); }
+  .scoreBreak .sb-bar { flex: 1; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .scoreBreak .sb-bar span { display: block; height: 100%; }
+  .scoreBreak .sb-val { width: 34px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .reviewBox { background: #fdf2ea; border: 1px solid #f0c9a6; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 12.5px; }
+  .reviewBox b { color: var(--review); }
+
+  .sourceItem { font-size: 11.5px; border-left: 2px solid var(--line); padding: 4px 0 4px 8px; margin-bottom: 6px; color: var(--muted); }
+  .sourceItem b { color: var(--ink); }
+
+  .taskActions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .taskActions button {
+    font-size: 12px; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line);
+    background: #fff; cursor: pointer; font-weight: 600; color: var(--ink);
+  }
+  .taskActions button:hover { border-color: var(--accent); color: var(--accent); }
+  .taskActions button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .assignRow { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .assignRow select {
+    flex: 1; font-size: 12.5px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: #fff;
+  }
+  .teamUnavailable { color: #b0473a; }
+
+  #reviewQueue { border-top: 1px solid var(--line); max-height: 130px; overflow-y: auto; flex-shrink: 0; }
+  .qrow { padding: 6px 14px; font-size: 12px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 8px; }
+  .qrow .qreason { color: var(--review); }
+
+  #changeLogBtn {
+    position: absolute; bottom: 14px; left: 14px; z-index: 15; background: #fff; border: 1px solid var(--line);
+    border-radius: 6px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  }
+  #changeLog {
+    position: absolute; bottom: 52px; left: 14px; z-index: 15; background: #fff; border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 12px; font-size: 11.5px; width: 300px; max-height: 220px; overflow-y: auto;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16); display: none;
+  }
+  #changeLog.open { display: block; }
+  #changeLog .cl-entry { padding: 4px 0; border-bottom: 1px dashed var(--line); }
+  #changeLog .cl-entry:last-child { border-bottom: none; }
+
+  .leaflet-tooltip.fire-tip { font-size: 11px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="brand">🔥 FocTriage <small>Which infrastructure, people and assets are in danger — and which hospital, which school, needs a call first.</small></div>
+    <span class="badge mode" id="modeBadge">Mode: synthetic</span>
+    <span class="badge current" id="statusBadge">current</span>
+    <div class="timestamps">
+      <div>as_of <b id="asOf">—</b></div>
+      <div>computed_at <b id="computedAt">—</b></div>
+    </div>
+    <button id="nextUpdateBtn" onclick="nextUpdate()">Next update →</button>
+  </div>
+
+  <div id="main">
+    <div id="mapCol">
+      <div id="map"></div>
+      <button id="changeLogBtn" onclick="toggleLog()">Change log (<span id="logCount">0</span>)</button>
+      <div id="changeLog"></div>
+    </div>
+
+    <div id="sideCol">
+      <div class="metrics">
+        <div class="metric act-now"><div class="n" id="mAct">0</div><div class="l">act now</div></div>
+        <div class="metric prepare"><div class="n" id="mPrep">0</div><div class="l">prepare</div></div>
+        <div class="metric review"><div class="n" id="mReview">0</div><div class="l">needs review</div></div>
+      </div>
+
+      <div class="panelHead">Ranked locations — analyst priority</div>
+      <div id="rankedList"></div>
+
+      <div class="panelHead" style="border-top:2px solid var(--line)">Selected location</div>
+      <div id="detailPanel"><p style="color:var(--muted);font-size:13px;padding:0 14px">Select a location from the list, or a pin on the map.</p></div>
+
+      <div id="reviewQueue"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------------------------------------------------------------
+   Illustrative sample data only — field names follow readme.md v4
+   section 5 (snapshot contract) so this doubles as a UI target spec.
+   Facility names are placeholders from the documented Gavarres example;
+   swap for the real kickoff-selected area once chosen (readme 15).
+--------------------------------------------------------------------- */
+const TEAMS = [
+  { id: "t-bombers-3", name: "Bombers unit 3", capabilities: ["access_check", "contact"], available: true },
+  { id: "t-bombers-7", name: "Bombers unit 7", capabilities: ["access_check", "contact"], available: false },
+  { id: "t-creu-roja-1", name: "Creu Roja team 1", capabilities: ["contact", "resources"], available: true },
+  { id: "t-mossos-2", name: "Mossos patrol 2", capabilities: ["access_check"], available: true },
+  { id: "t-analyst", name: "Coordination desk (analyst)", capabilities: ["contact", "resources", "access_check"], available: true },
+];
+
+const FIRE_PERIM_1 = [[41.951,3.031],[41.957,3.045],[41.949,3.058],[41.937,3.052],[41.935,3.036],[41.943,3.026]];
+const FIRE_PERIM_2 = [[41.951,3.031],[41.962,3.052],[41.951,3.071],[41.933,3.063],[41.928,3.040],[41.940,3.024]];
+
+function asset(id, name, asset_type, lat, lon, capacity, estimated_occupancy, occupancy_basis,
+                value_score, value_basis, distance_to_fire_m, intersects, needs_review, review_reasons, sources) {
+  return { asset_id: id, name, asset_type, latitude: lat, longitude: lon, capacity, estimated_occupancy,
+           occupancy_basis, value_score, value_basis, distance_to_fire_m, intersects_fire: intersects,
+           needs_review, review_reasons, sources };
+}
+
+const SNAPSHOT_1 = {
+  schema_version: "1.0", scenario_id: "scn-gavarres-demo", snapshot_id: "snap-001", sequence: 1,
+  as_of: "2026-07-03T10:00:00Z", computed_at: "2026-07-03T10:00:42Z", input_mode: "synthetic",
+  fire_source: "deepfire:satellite-perimeters (recorded)", data_status: "current",
+  assets: [
+    asset("a-poudelglac","Pou del Glaç (casa de colònies)","school",41.9440,3.0410, null, null, null,
+      0.9, "children present, class v1", 480, false, true, ["occupancy_seasonal"],
+      [{ fields: ["estimated_occupancy"], source: "operator page (fixture)", observed_at: "2026-07-02", notes: "July programme listed; headcount not confirmed" }]),
+    asset("a-vallrepos","Vall Repòs","care_home",41.9505,3.0210, 78, 70, "register capacitat",
+      1.0, "care home, class v1", 950, false, false, [], [
+      { fields: ["capacity"], source: "Registre d'entitats i serveis socials", observed_at: "2026-06-01" }]),
+    asset("a-escolabisbal","Escola la Bisbal","school",41.9610,3.0390, 240, 180, "enrolment register",
+      0.7, "school, class v1", 1400, false, false, [], [
+      { fields: ["capacity"], source: "Directori de centres docents", observed_at: "2026-05-15" }]),
+    asset("a-canxic","Can Xic (masia)","residential",41.9390,3.0500, null, 4, "estimated, isolated dwelling",
+      0.4, "residential, class v1", 620, false, true, ["exposure_unknown"], [
+      { fields: ["distance_to_fire_m"], source: "OSM building centroid (point fallback)", notes: "footprint unavailable" }]),
+    asset("a-urbsantpol","Urbanització Sant Pol","residential",41.9700,3.0250, null, 210, "Idescat allocation",
+      0.6, "residential nucleus, class v1", 2600, false, false, [], [
+      { fields: ["estimated_occupancy"], source: "Idescat municipal allocation", observed_at: "2026-01-01" }]),
+    asset("a-capbisbal","CAP la Bisbal (medical centre)","medical",41.9615,3.0355, null, 15, "typical staffing estimate",
+      0.85, "medical, class v1", 1550, false, false, [], []),
+  ],
+};
+
+const SNAPSHOT_2 = {
+  schema_version: "1.0", scenario_id: "scn-gavarres-demo", snapshot_id: "snap-002", sequence: 2,
+  as_of: "2026-07-03T12:00:00Z", computed_at: "2026-07-03T12:00:38Z", input_mode: "synthetic",
+  fire_source: "deepfire:satellite-perimeters (recorded)", data_status: "stale",
+  assets: [
+    // Pou del Glaç: occupancy confirmed via agent proposal accepted -> review cleared
+    asset("a-poudelglac","Pou del Glaç (casa de colònies)","school",41.9440,3.0410, 150, 150, "operator confirmed via investigation",
+      0.9, "children present, class v1", 310, false, false, [], [
+      { fields: ["estimated_occupancy"], source: "operator page (fixture)", observed_at: "2026-07-02" },
+      { fields: ["estimated_occupancy"], source: "agent investigation, confirmed by analyst", observed_at: "2026-07-03T11:40:00Z" }]),
+    asset("a-vallrepos","Vall Repòs","care_home",41.9505,3.0210, 78, 70, "register capacitat",
+      1.0, "care home, class v1", 640, false, false, [], [
+      { fields: ["capacity"], source: "Registre d'entitats i serveis socials", observed_at: "2026-06-01" }]),
+    // Urbanització Sant Pol: fire moved much closer -> jumps up the ranking
+    asset("a-urbsantpol","Urbanització Sant Pol","residential",41.9700,3.0250, null, 210, "Idescat allocation",
+      0.6, "residential nucleus, class v1", 480, false, false, [], [
+      { fields: ["estimated_occupancy"], source: "Idescat municipal allocation", observed_at: "2026-01-01" }]),
+    asset("a-escolabisbal","Escola la Bisbal","school",41.9610,3.0390, 240, 180, "enrolment register",
+      0.7, "school, class v1", 980, false, false, [], [
+      { fields: ["capacity"], source: "Directori de centres docents", observed_at: "2026-05-15" }]),
+    asset("a-canxic","Can Xic (masia)","residential",41.9390,3.0500, null, 4, "estimated, isolated dwelling",
+      0.4, "residential, class v1", 190, true, true, ["exposure_unknown"], [
+      { fields: ["distance_to_fire_m"], source: "OSM building centroid (point fallback)", notes: "footprint unavailable" }]),
+    asset("a-capbisbal","CAP la Bisbal (medical centre)","medical",41.9615,3.0355, null, 15, "typical staffing estimate",
+      0.85, "medical, class v1", 1120, false, false, [], []),
+  ],
+};
+
+// ---- priority scoring (mirrors readme.md section 6: w_prox*prox + w_size*size + w_value*value) ----
+const WEIGHTS = { proximity: 0.5, size: 0.3, value: 0.2 };
+const POLICY_VERSION = "priority-policy-v0 (prototype, frozen at kickoff)";
+
+function scoreAsset(a) {
+  if (a.distance_to_fire_m == null && !a.intersects_fire) return null; // exposure_unknown -> needs review path
+  const proximity = a.intersects_fire ? 1 : Math.max(0, 1 - a.distance_to_fire_m / 3000);
+  const occ = a.estimated_occupancy ?? a.capacity;
+  if (occ == null || a.value_score == null) return null;
+  const size = Math.min(1, occ / 250);
+  const value = a.value_score;
+  const total = WEIGHTS.proximity * proximity + WEIGHTS.size * size + WEIGHTS.value * value;
+  return { total, proximity, size, value };
+}
+
+// ---- state ----
+let current = SNAPSHOT_1;
+let selectedId = null;
+let changeLog = [];
+const taskState = {}; // asset_id -> { action, teamId, status }
+
+function fmtTime(iso) {
+  const d = new Date(iso);
+  return d.toISOString().slice(11, 16) + "Z " + d.toISOString().slice(0, 10);
+}
+
+function render() {
+  document.getElementById("modeBadge").textContent = "Mode: " + current.input_mode;
+  document.getElementById("asOf").textContent = fmtTime(current.as_of);
+  document.getElementById("computedAt").textContent = fmtTime(current.computed_at);
+  const sb = document.getElementById("statusBadge");
+  sb.textContent = current.data_status;
+  sb.className = "badge " + current.data_status;
+
+  const scored = [], review = [];
+  current.assets.forEach(a => {
+    const s = scoreAsset(a);
+    if (a.needs_review || s === null) review.push(a);
+    if (s !== null) scored.push({ a, s });
+  });
+  scored.sort((x, y) => y.s.total - x.s.total || x.a.asset_id.localeCompare(y.a.asset_id));
+
+  document.getElementById("mAct").textContent = scored.filter(x => x.s.total > 0.7).length;
+  document.getElementById("mPrep").textContent = scored.filter(x => x.s.total > 0.4 && x.s.total <= 0.7).length;
+  document.getElementById("mReview").textContent = review.length;
+
+  const list = document.getElementById("rankedList");
+  list.innerHTML = "";
+  scored.forEach((x, i) => {
+    const row = document.createElement("div");
+    row.className = "row" + (x.a.asset_id === selectedId ? " selected" : "");
+    row.onclick = () => selectAsset(x.a.asset_id);
+    const task = taskState[x.a.asset_id];
+    row.innerHTML = `
+      <div class="rank">${i + 1}</div>
+      <div class="bar">
+        <span class="b-prox" style="width:${x.s.proximity * 100}%"></span>
+        <span class="b-size" style="width:${x.s.size * 100}%"></span>
+        <span class="b-val" style="width:${x.s.value * 100}%"></span>
+      </div>
+      <div class="info">
+        <div class="name">${x.a.name} ${task ? `<span class="task-flag">${task.status}</span>` : ""}</div>
+        <div class="sub">${x.a.asset_type} · ${Math.round(x.a.distance_to_fire_m)} m to fire</div>
+      </div>
+      <div class="score">${x.s.total.toFixed(2)}</div>`;
+    list.appendChild(row);
+  });
+
+  const q = document.getElementById("reviewQueue");
+  q.innerHTML = review.length
+    ? `<div class="panelHead" style="border-top:none">Needs-review queue (${review.length})</div>` +
+      review.map(a => `<div class="qrow" onclick="selectAsset('${a.asset_id}')" style="cursor:pointer">
+        <span>${a.name}</span><span class="qreason">${(a.review_reasons || ["exposure_unknown"]).join(", ")}</span></div>`).join("")
+    : "";
+
+  renderMap(scored, review);
+  if (selectedId) renderDetail(selectedId, scored); else document.getElementById("detailPanel").innerHTML =
+    '<p style="color:var(--muted);font-size:13px;padding:0 14px">Select a location from the list, or a pin on the map.</p>';
+
+  document.getElementById("logCount").textContent = changeLog.length;
+  document.getElementById("changeLog").innerHTML = changeLog.slice().reverse()
+    .map(l => `<div class="cl-entry">${l}</div>`).join("") || '<div class="cl-entry">No changes yet.</div>';
+}
+
+function tierColor(total) {
+  if (total > 0.7) return "#c73a2f";
+  if (total > 0.4) return "#d98a1f";
+  return "#7a8a7d";
+}
+
+let map, fireLayer, markerLayer;
+function initMap() {
+  map = L.map("map", { zoomControl: true }).setView([41.951, 3.038], 13);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+    attribution: "Esri World Imagery (basemap reference only)",
+    maxZoom: 18,
+  }).addTo(map);
+  fireLayer = L.layerGroup().addTo(map);
+  markerLayer = L.layerGroup().addTo(map);
+}
+
+function renderMap(scored, review) {
+  fireLayer.clearLayers();
+  markerLayer.clearLayers();
+  const perim = current.sequence === 1 ? FIRE_PERIM_1 : FIRE_PERIM_2;
+  L.polygon(perim, { color: "#ff5a3c", weight: 2, fillColor: "#ff5a3c", fillOpacity: 0.28 })
+    .bindTooltip("Fire perimeter (recorded satellite hull), as_of " + fmtTime(current.as_of), { className: "fire-tip" })
+    .addTo(fireLayer);
+
+  const all = [...scored.map(x => ({ a: x.a, total: x.s.total })), ...review.map(a => ({ a, total: null }))];
+  all.forEach(({ a, total }) => {
+    const color = total === null ? "#a8471f" : tierColor(total);
+    const marker = L.circleMarker([a.latitude, a.longitude], {
+      radius: total === null ? 8 : 6 + total * 6, color: "#fff", weight: 1.5, fillColor: color, fillOpacity: 0.95,
+    }).addTo(markerLayer);
+    marker.bindTooltip(`<b>${a.name}</b><br/>${total === null ? "needs review" : "priority " + total.toFixed(2)}`, { className: "fire-tip" });
+    marker.on("click", () => selectAsset(a.asset_id));
+  });
+}
+
+function selectAsset(id) {
+  selectedId = id;
+  render();
+}
+
+function renderDetail(id, scored) {
+  const a = current.assets.find(x => x.asset_id === id);
+  const panel = document.getElementById("detailPanel");
+  const s = scoreAsset(a);
+  const task = taskState[id];
+
+  let scoreHtml = "";
+  if (s) {
+    scoreHtml = `<div class="scoreBreak">
+      <div class="sb-row"><span class="sb-label">proximity</span><div class="sb-bar"><span style="width:${s.proximity*100}%;background:#c73a2f"></span></div><span class="sb-val">${s.proximity.toFixed(2)}</span></div>
+      <div class="sb-row"><span class="sb-label">size</span><div class="sb-bar"><span style="width:${s.size*100}%;background:#d98a1f"></span></div><span class="sb-val">${s.size.toFixed(2)}</span></div>
+      <div class="sb-row"><span class="sb-label">value</span><div class="sb-bar"><span style="width:${s.value*100}%;background:#1f5c4d"></span></div><span class="sb-val">${s.value.toFixed(2)}</span></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">total ${s.total.toFixed(2)} · weights prox ${WEIGHTS.proximity} / size ${WEIGHTS.size} / value ${WEIGHTS.value} · ${POLICY_VERSION}</div>
+    </div>`;
+  }
+
+  const reviewHtml = (a.needs_review || s === null)
+    ? `<div class="reviewBox"><b>Needs review:</b> ${(a.review_reasons || ["exposure_unknown"]).join(", ")}.
+       This asset is in the investigation queue, not asserted as highest physical risk.</div>` : "";
+
+  const sourcesHtml = (a.sources || []).map(src => `<div class="sourceItem">
+      <b>${src.fields.join(", ")}</b> — ${src.source}${src.observed_at ? " (" + src.observed_at + ")" : ""}
+      ${src.notes ? "<br/>" + src.notes : ""}</div>`).join("") || '<div class="sourceItem">No recorded sources yet.</div>';
+
+  const actions = ["confirm occupancy", "contact facility", "check access", "request resources"];
+  const actionsHtml = actions.map(act =>
+    `<button class="${task && task.action === act ? "active" : ""}" onclick="pickAction('${id}','${act}')">${act}</button>`).join("");
+
+  let assignHtml = "";
+  if (task) {
+    const teamOptions = TEAMS.map(t => `<option value="${t.id}" ${task.teamId === t.id ? "selected" : ""} ${!t.available ? "disabled" : ""}>
+        ${t.name}${!t.available ? " (unavailable)" : ""}</option>`).join("");
+    assignHtml = `<div class="assignRow">
+        <select onchange="assignTeam('${id}', this.value)">
+          <option value="">— assign team —</option>${teamOptions}
+        </select>
+        <span class="task-flag">${task.status}</span>
+      </div>
+      ${task.blocked ? '<div class="teamUnavailable" style="font-size:11.5px;margin-top:4px">Selected team unavailable — reassign or leave blocked.</div>' : ""}`;
+  }
+
+  panel.innerHTML = `
+    <h3>${a.name}</h3>
+    <div class="kind">${a.asset_type} · asset_id <code>${a.asset_id}</code></div>
+    ${scoreHtml}
+    ${reviewHtml}
+    <div class="kv">
+      <div class="k">capacity</div><div class="v ${a.capacity == null ? "null" : ""}">${a.capacity ?? "null (unknown)"}</div>
+      <div class="k">estimated occupancy</div><div class="v ${a.estimated_occupancy == null ? "null" : ""}">${a.estimated_occupancy ?? "null (unknown)"}</div>
+      <div class="k">occupancy basis</div><div class="v">${a.occupancy_basis ?? "—"}</div>
+      <div class="k">distance to fire</div><div class="v">${a.distance_to_fire_m != null ? Math.round(a.distance_to_fire_m) + " m" : "unknown"}${a.intersects_fire ? " (intersects)" : ""}</div>
+      <div class="k">value basis</div><div class="v">${a.value_basis ?? "—"}</div>
+    </div>
+    <div class="panelHead" style="padding-left:0">Evidence &amp; provenance</div>
+    ${sourcesHtml}
+    <div class="panelHead" style="padding-left:0">Follow-up task</div>
+    <div class="taskActions">${actionsHtml}</div>
+    ${assignHtml}
+  `;
+}
+
+function pickAction(id, action) {
+  const existing = taskState[id];
+  taskState[id] = { action, teamId: existing ? existing.teamId : null, status: "open", blocked: false };
+  changeLog.push(`${fmtTime(current.as_of)} — task <b>${action}</b> opened for ${assetName(id)}`);
+  render();
+}
+
+function assignTeam(id, teamId) {
+  const team = TEAMS.find(t => t.id === teamId);
+  const t = taskState[id];
+  if (!team) { t.teamId = null; t.status = "open"; t.blocked = false; render(); return; }
+  if (!team.available) {
+    t.blocked = true; t.status = "blocked"; t.teamId = teamId;
+    changeLog.push(`${fmtTime(current.as_of)} — assignment to <b>${team.name}</b> for ${assetName(id)} rejected: team unavailable`);
+  } else {
+    t.teamId = teamId; t.status = "assigned"; t.blocked = false;
+    changeLog.push(`${fmtTime(current.as_of)} — ${assetName(id)} <b>${t.action}</b> assigned to <b>${team.name}</b>`);
+  }
+  render();
+}
+
+function assetName(id) { return current.assets.find(a => a.asset_id === id)?.name || id; }
+
+function nextUpdate() {
+  if (current.sequence >= 2) return;
+  const prevTasks = JSON.stringify(taskState);
+  current = SNAPSHOT_2;
+  changeLog.push(`${fmtTime(current.as_of)} — <b>snapshot ${current.snapshot_id}</b> received (sequence ${current.sequence}). ` +
+    `Urbanització Sant Pol moved up the ranking as the fire front advanced; Vall Repòs task assignment preserved.`);
+  document.getElementById("nextUpdateBtn").disabled = true;
+  document.getElementById("nextUpdateBtn").textContent = "No further updates (demo)";
+  render();
+}
+
+function toggleLog() { document.getElementById("changeLog").classList.toggle("open"); }
+
+initMap();
+render();
+</script>
+</body>
+</html>
