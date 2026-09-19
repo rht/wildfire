@@ -218,12 +218,14 @@ class VoiceStore:
                     verification = dict(normalized.evidence_verification)
                     evidence_times = dict(normalized.evidence_observed_at)
                     for key in retained:
-                        if key in previous['evidence']:
-                            evidence[key] = previous['evidence'][key]
+                        prior_evidence = previous['evidence'].get(key)
+                        if prior_evidence is not None:
+                            evidence[key] = prior_evidence
                             evidence_times[key] = previous.get('evidence_observed_at', {}).get(key, previous['observed_at'])
                         verification.pop(key, None)
-                        if key in previous.get('evidence_verification', {}):
-                            verification[key] = previous['evidence_verification'][key]
+                        prior_verification = previous.get('evidence_verification', {}).get(key)
+                        if prior_verification is not None:
+                            verification[key] = prior_verification
                     conflict = any(getattr(normalized, key) is not None for key in retained)
                     normalized = replace(normalized, **retained, evidence=evidence,
                         evidence_verification=verification, evidence_observed_at=evidence_times,

@@ -1114,9 +1114,9 @@ an active SIP trunk and the tester has supplied an authorized destination.
 This follows the agreed conversation and Vonage architecture in this session.
 
 The package in `voice-agent/` is a connectivity smoke test. It uses fictional
-incident details and is configured to record conversation variables on SLNG; it does not yet
-submit answers to FireLine's database, dispatch assistance, or transfer to a
-real responder. The existing offline voice demo remains the separate test of
+incident details and records conversation variables on SLNG. The local `sync`
+command saves completed answers in FireLine's database. The package does not
+dispatch assistance or transfer to a real responder. The offline voice demo tests
 FireLine's validation and persistent follow-up. A working greeting alone does
 not prove recognition, reasoning, answer persistence, or two-way phone audio.
 
@@ -1145,14 +1145,15 @@ answers, wrong location, assistance-question polarity and corrections. These
 are expected results, not recorded calls. The agent classifies each field as
 `yes`, `no` or `inconclusive`, with exact tester quotes. Those values correspond
 to FireLine's `true`, `false` and `null`. Initial message receipt and final
-readback acknowledgement are separate. Hosted memory capture, model runtime
-availability and actual audio interruptions still need a browser test.
+readback acknowledgement are separate. Hosted model execution and memory capture
+were verified with an authorized Vonage phone call; browser speech and the full
+interruption/correction scripts still need manual testing.
 
-Durable hosted answer capture still needs a verified provider result/tool
-payload connected to FireLine's existing result ingestion endpoint. Polling
-call lifecycle alone does not prove answers were saved. This smoke package has
-no FireLine submission tool and no real human-transfer tool; requests for a
-person are recorded and the tester is told that no transfer occurs.
+Durable hosted answer capture uses `scripts/voice_demo.py --mode sync`, which
+authenticates a read-only SLNG call fetch and saves lifecycle, true/false/null
+answers, evidence and its provenance atomically through `VoiceStore`. `poll`
+remains lifecycle-only. There is no background sync or hosted FireLine submission
+tool. Human requests are recorded; no real human-transfer tool is configured.
 
 Readiness now exposes `reported_can_self_evacuate`,
 `reported_transport_available` and `reported_needs_assistance` separately from
@@ -1174,8 +1175,8 @@ This verifies session creation, not two-way speech or captured answers.
 
 To speak to it, open the [SLNG dashboard](https://app.slng.ai), select
 `fireline-mock-interview-slng`, then **Test agent → Web session**, and allow microphone
-access. Follow the smoke scripts above. No Vonage call or real human handoff has
-been verified. The SLNG API key remains in the existing shared environment;
+access. Follow the smoke scripts above. A Vonage call was confirmed working by
+the tester; real human handoff remains unverified. The SLNG API key remains in the existing shared environment;
 browser connection tokens are never committed.
 
 **Vonage connection update:** the account's `vonage` connection is active with
@@ -1183,8 +1184,37 @@ caller ID `+442039856256`. Attachment to the initial `eu-north` deployment faile
 because its LiveKit project was incompatible. A single CLI update setting both
 the region to `eu-central` and the outbound connection succeeded; a fresh GET
 and connection-options query confirmed it is current and selectable. Inbound
-calling remains unconfigured. One explicitly authorized outbound test was
-dispatched; API acceptance alone does not verify ringing or two-way audio.
+calling remains unconfigured. Two explicitly authorized test calls completed.
+The first lasted about 119 seconds and the tester confirmed it worked; the
+repeat lasted about 198 seconds and ended when the participant disconnected.
+Both were imported into the ignored local `data/voice-slng-mock.sqlite`.
+The first contains assistance and human follow-up answers. The repeat returned
+all memory variables unset and is saved as incomplete, requiring follow-up.
+
+To import an existing call, use a private JSON `CallRequest` with the correct
+request, asset and snapshot IDs, and a separate persistent database:
+
+```bash
+SLNG_AGENT_ID=be7b9f79-8b5c-46f0-948f-08ccc43e9397 PYTHONPATH=. \
+  .venv/bin/python scripts/voice_demo.py --mode sync \
+  --provider-call-id YOUR_CALL_UUID --request-file data/private-request.json \
+  --db data/voice-slng-mock.sqlite --epoch 2026-09-19T20:39:59.576264Z
+```
+
+Use the same epoch for every operation on that database. The explicit call ID
+authorizes the initial local association for legacy calls lacking request
+arguments; subsequent syncs omit it and use the stored call/agent binding.
+Conflicting provider arguments are rejected. Repeating both real imports was
+verified to create no duplicate events or tasks after reopening the database.
+SLNG redacted caller transcript turns on the first call, so extracted quotes
+remain labelled `provider_reported`. Provider record timestamps are not exact
+speech timestamps. No confidence is inferred; live results require review.
+Explicit assistance and human requests survive partial later reports.
+
+The fixed mock package currently rejects FireLine's per-call metadata arguments
+with HTTP 400. These two calls used the VoiceAI CLI's argument-free dispatch
+and an explicit local association. The generic `--mode outbound` path needs a
+compatible agent configuration before use with this fixed mock package.
 
 **Redeployment caveat:** Unmute 0.5.5 rejects `eu-central`, although the hosted
 agent API accepts it. Keep the compilable target in `targets.yaml` and apply
@@ -1221,13 +1251,13 @@ parallel work, review fixes, PR creation and merging after verification.
 - [x] Rebase the voice commits onto `origin/main`, preserving upstream Norma
   remediation and Nebius investigations. Publish `codex/slng-voice-integration`
   without rewriting the existing published voice branch.
-- [ ] Evaluate branch-owned Python with Norma, fix actionable violations and
+- [x] Evaluate branch-owned Python with Norma, fix actionable violations and
   verify the fixes. Repository scan status and per-file checks remain distinct.
-- [ ] Add authenticated completed-call import/sync to the existing SLNG adapter
+- [x] Add authenticated completed-call import/sync to the existing SLNG adapter
   and voice CLI, with an explicit FireLine request/call association. Normalize
   memory answers to true/false/null, retain provider evidence and redaction
   limitations, and commit results idempotently through `VoiceStore`.
-- [ ] Cover mismatched associations, duplicate delivery, missing/unknown answers,
+- [x] Cover mismatched associations, duplicate delivery, missing/unknown answers,
   human and assistance requests, provider failures and database restart. Use a
   sanitized provider fixture; keep phone numbers, credentials and raw reports
   out of Git. Save the authorized mock call to an isolated local demo database.
@@ -1237,3 +1267,11 @@ parallel work, review fixes, PR creation and merging after verification.
 The capture path preserves the boundary between household reports and operational
 readiness: live answers remain human-review input; this work does not declare
 evacuation complete, reserve resources, or place additional calls.
+
+Integration verification: **542 passed, 1 skipped**; Unmute SLNG validation passed.
+Norma per-file checks fixed actionable findings; the evidence ledger is
+`reports/norma-voice-review.json`. Three remaining findings apply FastAPI rules
+to synchronous replay/Streamlit code and are documented as inapplicable.
+Repository-wide scan and audit registration were unavailable because repository
+linking returned `auto_import_not_available`; this is not a repository-wide
+compliance claim.

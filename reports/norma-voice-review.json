@@ -371,7 +371,7 @@
             "rule_name": "Mutable global state",
             "severity": "HIGH",
             "impact_area": "scalability",
-            "description": "Module-level dict/list/set mutated from inside a route \u2014 breaks horizontal scaling and creates race conditions.",
+            "description": "Module-level dict/list/set mutated from inside a route — breaks horizontal scaling and creates race conditions.",
             "remediation_action": "Move to Redis/DB.",
             "good_code": "@app.post(\"/set\")\nasync def set_v(k: str, v: str, redis = Depends(get_redis)):\n    await redis.set(k, v)",
             "bad_code": "_cache: dict = {}\n@app.post(\"/set\")\nasync def set_v(k: str, v: str):\n    _cache[k] = v",
@@ -381,7 +381,7 @@
             "rule_name": "Business logic in route",
             "severity": "HIGH",
             "impact_area": "architecture",
-            "description": "Pure business logic (loops, calculations, branches) directly in the route handler \u2014 violates layered architecture.",
+            "description": "Pure business logic (loops, calculations, branches) directly in the route handler — violates layered architecture.",
             "remediation_action": "Move into a service class.",
             "good_code": "@app.post(\"/order\")\nasync def create(o: OrderIn, svc: OrderService = Depends()):\n    return await svc.create(o)",
             "bad_code": "@app.post(\"/order\")\nasync def create(o: OrderIn):\n    total = 0\n    for it in o.items:\n        for d in it.discounts:\n            total += it.price - d",
@@ -424,7 +424,7 @@
             "rule_name": "Mutable global state",
             "severity": "HIGH",
             "impact_area": "scalability",
-            "description": "Module-level dict/list/set mutated from inside a route \u2014 breaks horizontal scaling and creates race conditions.",
+            "description": "Module-level dict/list/set mutated from inside a route — breaks horizontal scaling and creates race conditions.",
             "remediation_action": "Move to Redis/DB.",
             "good_code": "@app.post(\"/set\")\nasync def set_v(k: str, v: str, redis = Depends(get_redis)):\n    await redis.set(k, v)",
             "bad_code": "_cache: dict = {}\n@app.post(\"/set\")\nasync def set_v(k: str, v: str):\n    _cache[k] = v",
@@ -434,7 +434,7 @@
             "rule_name": "Business logic in route",
             "severity": "HIGH",
             "impact_area": "architecture",
-            "description": "Pure business logic (loops, calculations, branches) directly in the route handler \u2014 violates layered architecture.",
+            "description": "Pure business logic (loops, calculations, branches) directly in the route handler — violates layered architecture.",
             "remediation_action": "Move into a service class.",
             "good_code": "@app.post(\"/order\")\nasync def create(o: OrderIn, svc: OrderService = Depends()):\n    return await svc.create(o)",
             "bad_code": "@app.post(\"/order\")\nasync def create(o: OrderIn):\n    total = 0\n    for it in o.items:\n        for d in it.discounts:\n            total += it.price - d",
@@ -691,5 +691,132 @@
   "verification": {
     "regression_red": "2 tests failed before fixes: published integer subclass rejected and descriptor left open on unlock failure.",
     "targeted_tests": "139 passed; tests/test_voice_provider.py tests/test_voice_interview.py tests/test_voice_store.py tests/test_voice_replay.py tests/test_voice_neighbourhood.py tests/test_voice_replay_ui.py"
+  },
+  "integration_recheck": {
+    "base_commit": "59d5f40",
+    "scope": "Five result-persistence production files after cherry-pick; full applicable per-file coverage.",
+    "files": [
+      {
+        "file": "fireline/slng_results.py",
+        "sha256": "519d7b27ff5fec4487327cbc6ab44f1ecc8443e177f5ecba9545f32bec0ad960",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      {
+        "file": "fireline/voice_store.py",
+        "sha256": "b9c242015444d79fb4c324f4b9e7111210cb39d6b11297824f0b50efb06075ad",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        },
+        "before": {
+          "outcome": "issues",
+          "rules": {
+            "py-perf-double-lookup": {
+              "rule_name": "Double dict lookup",
+              "severity": "LOW",
+              "impact_area": "performance",
+              "description": "Looks up the same key in a dictionary twice in a row when one lookup is enough.",
+              "remediation_action": "Use d.get(k).",
+              "good_code": "try:\n    v = d[k]\nexcept KeyError:\n    # Manage case of not existing",
+              "bad_code": "if k in d:\n    v = d[k]",
+              "estimated_time_to_fix": 2
+            }
+          },
+          "issues": [
+            {
+              "rule_id": "py-perf-double-lookup",
+              "file": "fireline/voice_store.py",
+              "line": 221,
+              "column": 25,
+              "snippet": "                        if key in previous['evidence']:\n                            evidence[key] = previous['evidence'][key]\n                            evidence_times[key] = previous.get('evidence_observed_at', {}).get(key, previous['observed_at'])"
+            }
+          ],
+          "issues_returned": 1,
+          "total_issues": 1,
+          "capped": false,
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      {
+        "file": "fireline/voice_models.py",
+        "sha256": "e95fd2ab6934ebaad6e1631e5ce1978ac932bff9e00476434f0eee0d5648b6ce",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      {
+        "file": "fireline/voice_interview.py",
+        "sha256": "f5fe2e08c1e55c9c0d9ca89e69da51a52e877282622e0cd671ddb20ef48dc59e",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      {
+        "file": "scripts/voice_demo.py",
+        "sha256": "8d51da7021eaa3f604f1c12604e20c3970e066235782f850f1f030357f1bd999",
+        "result": {
+          "outcome": "clean",
+          "message": "No issues found in this file for the applicable rules.",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      }
+    ]
   }
 }
