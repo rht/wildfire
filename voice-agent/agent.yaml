@@ -103,7 +103,7 @@ tools:
 conversation:
   greeting:
     speaks_first: agent
-    text: "This is a simulation, not an emergency call. Hello, I am an automated voice assistant representing the fictional Demo Valley Fire Department. You can ask for a first responder at any time during this test. For this scenario, are you at Willow House?"
+    text: "Warning: This is a message disseminated on behalf of the Demo Valley Fire Department. This is Response'Ara, the automated voice assistant. This is a simulation involving a fictional fire department, not an emergency call. For this scenario, are you at Willow House?"
   interruption:
     enabled: true
 
