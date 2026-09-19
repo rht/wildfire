@@ -371,7 +371,7 @@
       "original_snippet": "    dests = json.load(open(fixtures / \"destinations.json\"))",
       "status": "fixed",
       "resolution": "Explicit UTF-8 for text I/O; precompute input streams also use context managers.",
-      "current_line": 160
+      "current_line": 162
     },
     {
       "finding_id": "N037",
@@ -421,7 +421,7 @@
       "original_snippet": "    fire_src = lambda a: next(s for s in a[\"sources\"] if \"distance_to_fire_m\" in s[\"fields\"])  # noqa: E731",
       "status": "fixed",
       "resolution": "Replace the assigned lambda with a named local function using the same expression.",
-      "current_line": 401
+      "current_line": 404
     },
     {
       "finding_id": "N042",
@@ -467,7 +467,8 @@
       "reviewer": "independent Codex subagent",
       "assessment": "approved; no blocking or important findings",
       "pytest_passed": 309,
-      "targeted_passed": 140
+      "targeted_passed": 140,
+      "follow_up": "Direct defusedxml.parse import reviewed; corrected two ledger line references identified during follow-up review."
     }
   },
   "xml_probe": {
