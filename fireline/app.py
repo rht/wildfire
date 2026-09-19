@@ -176,9 +176,9 @@ def try_action(label: str, fn, *args, **kwargs) -> bool:
 def polygon_rows(geometry: dict, geometry_kind: str | None = None) -> list[dict]:
     kind = geometry.get("type")
     polys = [geometry["coordinates"]] if kind == "Polygon" else geometry["coordinates"] if kind == "MultiPolygon" else []
-    tip = ("simulated burned area (fire-spread run), not an observed perimeter" if geometry_kind == "simulated"
-           else "fire perimeter (surveyed/synthetic footprint)")
-    return [{"polygon": rings, "tip": tip} for rings in polys]
+    title, tip = (("Simulated burn area", "fire-spread run, not an observed perimeter") if geometry_kind == "simulated"
+                  else ("Fire perimeter", "surveyed/synthetic footprint"))
+    return [{"polygon": rings, "title": title, "tip": tip} for rings in polys]
 
 
 def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
@@ -199,7 +199,8 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
         lons.append(x)
         lats.append(y)
         layers.append(pdk.Layer("ScatterplotLayer",
-                                data=[{"lon": x, "lat": y, "tip": "hotspot centre, not a surveyed perimeter"}],
+                                data=[{"lon": x, "lat": y, "title": "Hotspot centre",
+                                       "tip": "not a surveyed perimeter"}],
                                 get_position=["lon", "lat"], get_radius=600, radius_min_pixels=14, filled=False,
                                 stroked=True, get_line_color=[255, 120, 0], line_width_min_pixels=3, pickable=True))
     points = []
@@ -209,17 +210,22 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
         lons.append(a["longitude"])
         lats.append(a["latitude"])
         points.append({"lon": a["longitude"], "lat": a["latitude"], "color": window_colour(a),
-                       "tip": f"<b>{a['name']}</b> ({a['asset_type']})<br/>{fmt_window(a)}<br/>arrival "
-                              f"{a.get('fire_arrival_at') or 'no forecast'}; evacuation {fmt(a.get('evacuation_min'))} min"
-                              f"<br/>distance {fmt(a.get('distance_to_fire_m'))} m; people {people(a)}<br/>"
-                              f"{', '.join(a.get('review_reasons') or []) or 'no review flags'}"})
+                       "title": f"{a['name']} ({a['asset_type']})",
+                       "tip": "\n".join([
+                           fmt_window(a),
+                           f"arrival {a.get('fire_arrival_at') or 'no forecast'}; "
+                           f"evacuation {fmt(a.get('evacuation_min'))} min",
+                           f"distance {fmt(a.get('distance_to_fire_m'))} m; people {people(a)}",
+                           ', '.join(a.get('review_reasons') or []) or 'no review flags',
+                       ])})
     layers.append(pdk.Layer("ScatterplotLayer", data=points, get_position=["lon", "lat"], get_fill_color="color",
                             get_radius=150, radius_min_pixels=6, pickable=True, stroked=True,
                             get_line_color=[40, 40, 40], line_width_min_pixels=1))
     clon = sum(lons) / len(lons) if lons else 3.0
     clat = sum(lats) / len(lats) if lats else 41.9
     view = pdk.ViewState(longitude=clon, latitude=clat, zoom=10.5, pitch=0)
-    deck = pdk.Deck(layers=layers, initial_view_state=view, tooltip={"html": "{tip}"}, map_style="light")
+    tooltip = {"html": "<b>{title}</b><br/>{tip}", "style": {"whiteSpace": "pre-line"}}
+    deck = pdk.Deck(layers=layers, initial_view_state=view, tooltip=tooltip, map_style="light")
     return deck, status["counts"]["unlocated"]
 
 
