@@ -24,15 +24,32 @@
     --stale: #b8862b;
   }
   * { box-sizing: border-box; }
+  html, body { height: 100%; }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    background: var(--paper);
+    background: #05080a;
     color: var(--ink);
-    height: 100vh;
     overflow: hidden;
+    display: flex;
+    align-items: stretch;
   }
-  #app { display: flex; flex-direction: column; height: 100vh; }
+  /* device/vehicle-terminal bezel: the analyst dashboard sits inside this like a
+     panel-mounted screen, so the frame is dark even though the content is light */
+  #deviceFrame {
+    flex: 1;
+    margin: 14px;
+    padding: 16px;
+    border-radius: 22px;
+    background: linear-gradient(155deg, #26292b, #101214 60%);
+    box-shadow: inset 0 0 0 2px #000, inset 0 2px 6px rgba(255,255,255,0.06), 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+  }
+  #app {
+    flex: 1; display: flex; flex-direction: column;
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 0 0 1px #000;
+  }
 
   /* ---------- top bar ---------- */
   #topbar {
@@ -42,7 +59,6 @@
   }
   #topbar .brand { display: inline-flex; align-items: center; font-weight: 700; font-size: 18px; letter-spacing: 0.2px; }
   #topbar .brand small { font-weight: 400; opacity: 0.7; font-size: 12px; margin-left: 6px; }
-  #topbar .brand .logo-mark { flex-shrink: 0; margin-right: 8px; }
   #topbar .brand .word-1 { color: #f5f3ef; }
   #topbar .brand .word-2 { color: #b9bfc2; font-weight: 600; }
   .badge {
@@ -62,10 +78,43 @@
   #nextUpdateBtn:hover { background: #276b58; }
 
   /* ---------- layout ---------- */
-  #main { flex: 1; display: flex; min-height: 0; }
-  #mapCol { flex: 1.3; position: relative; border-right: 1px solid var(--line); }
-  #map { position: absolute; inset: 0; }
-  #sideCol { flex: 1; display: flex; flex-direction: column; min-width: 420px; max-width: 480px; background: var(--panel); }
+  #main { flex: 1; display: flex; min-height: 0; background: var(--paper); }
+  /* map is now a bounded card within its column, not full-bleed, and the column
+     itself is narrower relative to the sidebar per the "map slightly smaller" note */
+  #mapCol { flex: 1; position: relative; padding: 14px; min-width: 0; }
+  .mapCardHead {
+    position: absolute; top: 24px; left: 24px; z-index: 12;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(2px);
+    padding: 5px 11px; border-radius: 7px; font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  #map {
+    position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.25), 0 0 0 1px var(--line);
+  }
+  #sideCol { flex: 1; display: flex; flex-direction: column; min-width: 440px; max-width: 500px; background: var(--panel); border-left: 1px solid var(--line); }
+
+  /* ---------- escalation & notification status ---------- */
+  #escalationPanel { flex-shrink: 0; border-top: 1px solid var(--line); }
+  .escStats { display: flex; gap: 1px; background: var(--line); }
+  .escStat { flex: 1; background: var(--panel); padding: 8px 10px; }
+  .escStat .n { font-size: 18px; font-weight: 700; }
+  .escStat .l { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .escStat.confirmed .n { color: var(--accent); }
+  .escStat.open .n { color: var(--review); }
+  .escStat.mobility .n { color: #244a75; }
+  .escListLabel { padding: 6px 14px 2px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .escList { max-height: 80px; overflow-y: auto; }
+  .escRow {
+    display: flex; align-items: center; gap: 8px; padding: 5px 14px; font-size: 12px;
+    border-bottom: 1px solid var(--line); cursor: pointer;
+  }
+  .escRow:hover { background: #f7f5f0; }
+  .escDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .escDot.open { background: var(--review); }
+  .escDot.mobility { background: #244a75; }
+  .escRow .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .metrics { display: flex; gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); flex-shrink: 0; }
   .metric { flex: 1; background: var(--panel); padding: 10px 12px; }
@@ -138,11 +187,11 @@
   .qrow .qreason { color: var(--review); }
 
   #changeLogBtn {
-    position: absolute; bottom: 14px; left: 14px; z-index: 15; background: #fff; border: 1px solid var(--line);
+    position: absolute; bottom: 28px; left: 28px; z-index: 15; background: #fff; border: 1px solid var(--line);
     border-radius: 6px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.12);
   }
   #changeLog {
-    position: absolute; bottom: 52px; left: 14px; z-index: 15; background: #fff; border: 1px solid var(--line);
+    position: absolute; bottom: 66px; left: 28px; z-index: 15; background: #fff; border: 1px solid var(--line);
     border-radius: 8px; padding: 10px 12px; font-size: 11.5px; width: 300px; max-height: 220px; overflow-y: auto;
     box-shadow: 0 4px 16px rgba(0,0,0,0.16); display: none;
   }
@@ -154,19 +203,10 @@
 </style>
 </head>
 <body>
+<div id="deviceFrame">
 <div id="app">
   <div id="topbar">
     <div class="brand">
-      <svg class="logo-mark" width="26" height="26" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="Respons'Ara logo">
-        <defs>
-          <linearGradient id="emberGrad" x1="0" y1="1" x2="0.15" y2="0">
-            <stop offset="0%" stop-color="#0b0b0c"/>
-            <stop offset="45%" stop-color="#4a4d4f"/>
-            <stop offset="100%" stop-color="#cfd4d6"/>
-          </linearGradient>
-        </defs>
-        <path fill="url(#emberGrad)" d="M31 61c-11.5 0-19-8.6-18.3-18.8.6-8.6 6.6-14.6 9.4-22 2-5.3 2.2-11.8 6.6-16.9 2.1-2.4 4.6-2.6 5.3.6 1 4.8-1.6 9.8.6 15 1.8 4.3 6.7 6.2 8.3 11.6 2.9 9.6 3.9 22-4 27.9-2.4 1.8-5 2.6-7.9 2.6z"/>
-      </svg>
       <span class="word-1">Respons</span><span class="word-2">'Ara</span>
       <small>Which infrastructure, people and assets are in danger — and which hospital, which school, needs a call first.</small>
     </div>
@@ -181,6 +221,7 @@
 
   <div id="main">
     <div id="mapCol">
+      <div class="mapCardHead">Response map — live exposure radius</div>
       <div id="map"></div>
       <button id="changeLogBtn">Change log (<span id="logCount">0</span>)</button>
       <div id="changeLog"></div>
@@ -193,6 +234,19 @@
         <div class="metric review"><div class="n" id="mReview">0</div><div class="l">needs review</div></div>
       </div>
 
+      <div id="escalationPanel">
+        <div class="panelHead">Escalation &amp; notification status</div>
+        <div class="escStats">
+          <div class="escStat confirmed"><div class="n" id="escConfirmed">0</div><div class="l">confirmed</div></div>
+          <div class="escStat open"><div class="n" id="escOpen">0</div><div class="l">no response</div></div>
+          <div class="escStat mobility"><div class="n" id="escMobility">0</div><div class="l">need mobility help</div></div>
+        </div>
+        <div class="escListLabel">Awaiting confirmation</div>
+        <div id="escOpenList" class="escList"></div>
+        <div class="escListLabel">Requested mobility assistance</div>
+        <div id="escMobilityList" class="escList"></div>
+      </div>
+
       <div class="panelHead">Ranked locations — analyst priority</div>
       <div id="rankedList"></div>
 
@@ -202,6 +256,7 @@
       <div id="reviewQueue"></div>
     </div>
   </div>
+</div>
 </div>
 
 <script>
@@ -229,28 +284,44 @@ function asset(id, name, asset_type, lat, lon, capacity, estimated_occupancy, oc
            needs_review, review_reasons, sources };
 }
 
+// Tier 2 voice-agent check-in outcome (readme.md "Voice-agent delivery plan" interview
+// contract): notification_status is the acknowledged/no_answer outcome, mobility_assistance
+// is the separate "wants_human"/assisted-evacuation signal from the same call. Independent
+// dimensions, not a single tri-state field.
+function notify(a, notification_status, mobility_assistance) {
+  a.notification_status = notification_status;
+  a.mobility_assistance = mobility_assistance;
+  return a;
+}
+
 const SNAPSHOT_1 = {
   schema_version: "1.0", scenario_id: "scn-gavarres-demo", snapshot_id: "snap-001", sequence: 1,
   as_of: "2026-07-03T10:00:00Z", computed_at: "2026-07-03T10:00:42Z", input_mode: "synthetic",
   fire_source: "deepfire:satellite-perimeters (recorded)", data_status: "current",
   assets: [
-    asset("a-poudelglac","Pou del Glaç (casa de colònies)","school",41.9440,3.0410, null, null, null,
+    notify(asset("a-poudelglac","Pou del Glaç (casa de colònies)","school",41.9440,3.0410, null, null, null,
       0.9, "children present, class v1", 480, false, true, ["occupancy_seasonal"],
       [{ fields: ["estimated_occupancy"], source: "operator page (fixture)", observed_at: "2026-07-02", notes: "July programme listed; headcount not confirmed" }]),
-    asset("a-vallrepos","Vall Repòs","care_home",41.9505,3.0210, 78, 70, "register capacitat",
+      "no_response", false),
+    notify(asset("a-vallrepos","Vall Repòs","care_home",41.9505,3.0210, 78, 70, "register capacitat",
       1.0, "care home, class v1", 950, false, false, [], [
       { fields: ["capacity"], source: "Registre d'entitats i serveis socials", observed_at: "2026-06-01" }]),
-    asset("a-escolabisbal","Escola la Bisbal","school",41.9610,3.0390, 240, 180, "enrolment register",
+      "confirmed", true),
+    notify(asset("a-escolabisbal","Escola la Bisbal","school",41.9610,3.0390, 240, 180, "enrolment register",
       0.7, "school, class v1", 1400, false, false, [], [
       { fields: ["capacity"], source: "Directori de centres docents", observed_at: "2026-05-15" }]),
-    asset("a-canxic","Can Xic (masia)","residential",41.9390,3.0500, null, 4, "estimated, isolated dwelling",
+      "confirmed", false),
+    notify(asset("a-canxic","Can Xic (masia)","residential",41.9390,3.0500, null, 4, "estimated, isolated dwelling",
       0.4, "residential, class v1", 620, false, true, ["exposure_unknown"], [
       { fields: ["distance_to_fire_m"], source: "OSM building centroid (point fallback)", notes: "footprint unavailable" }]),
-    asset("a-urbsantpol","Urbanització Sant Pol","residential",41.9700,3.0250, null, 210, "Idescat allocation",
+      "no_response", false),
+    notify(asset("a-urbsantpol","Urbanització Sant Pol","residential",41.9700,3.0250, null, 210, "Idescat allocation",
       0.6, "residential nucleus, class v1", 2600, false, false, [], [
       { fields: ["estimated_occupancy"], source: "Idescat municipal allocation", observed_at: "2026-01-01" }]),
-    asset("a-capbisbal","CAP la Bisbal (medical centre)","medical",41.9615,3.0355, null, 15, "typical staffing estimate",
+      "no_response", false),
+    notify(asset("a-capbisbal","CAP la Bisbal (medical centre)","medical",41.9615,3.0355, null, 15, "typical staffing estimate",
       0.85, "medical, class v1", 1550, false, false, [], []),
+      "confirmed", true),
   ],
 };
 
@@ -259,26 +330,34 @@ const SNAPSHOT_2 = {
   as_of: "2026-07-03T12:00:00Z", computed_at: "2026-07-03T12:00:38Z", input_mode: "synthetic",
   fire_source: "deepfire:satellite-perimeters (recorded)", data_status: "stale",
   assets: [
-    // Pou del Glaç: occupancy confirmed via agent proposal accepted -> review cleared
-    asset("a-poudelglac","Pou del Glaç (casa de colònies)","school",41.9440,3.0410, 150, 150, "operator confirmed via investigation",
+    // Pou del Glaç: occupancy confirmed via agent proposal accepted -> review cleared;
+    // check-in also now confirmed, and 150 children means mobility/transport assistance
+    notify(asset("a-poudelglac","Pou del Glaç (casa de colònies)","school",41.9440,3.0410, 150, 150, "operator confirmed via investigation",
       0.9, "children present, class v1", 310, false, false, [], [
       { fields: ["estimated_occupancy"], source: "operator page (fixture)", observed_at: "2026-07-02" },
       { fields: ["estimated_occupancy"], source: "agent investigation, confirmed by analyst", observed_at: "2026-07-03T11:40:00Z" }]),
-    asset("a-vallrepos","Vall Repòs","care_home",41.9505,3.0210, 78, 70, "register capacitat",
+      "confirmed", true),
+    notify(asset("a-vallrepos","Vall Repòs","care_home",41.9505,3.0210, 78, 70, "register capacitat",
       1.0, "care home, class v1", 640, false, false, [], [
       { fields: ["capacity"], source: "Registre d'entitats i serveis socials", observed_at: "2026-06-01" }]),
-    // Urbanització Sant Pol: fire moved much closer -> jumps up the ranking
-    asset("a-urbsantpol","Urbanització Sant Pol","residential",41.9700,3.0250, null, 210, "Idescat allocation",
+      "confirmed", true),
+    // Urbanització Sant Pol: fire moved much closer -> jumps up the ranking, and the
+    // renewed urgency is also when the check-in call finally got through
+    notify(asset("a-urbsantpol","Urbanització Sant Pol","residential",41.9700,3.0250, null, 210, "Idescat allocation",
       0.6, "residential nucleus, class v1", 480, false, false, [], [
       { fields: ["estimated_occupancy"], source: "Idescat municipal allocation", observed_at: "2026-01-01" }]),
-    asset("a-escolabisbal","Escola la Bisbal","school",41.9610,3.0390, 240, 180, "enrolment register",
+      "confirmed", false),
+    notify(asset("a-escolabisbal","Escola la Bisbal","school",41.9610,3.0390, 240, 180, "enrolment register",
       0.7, "school, class v1", 980, false, false, [], [
       { fields: ["capacity"], source: "Directori de centres docents", observed_at: "2026-05-15" }]),
-    asset("a-canxic","Can Xic (masia)","residential",41.9390,3.0500, null, 4, "estimated, isolated dwelling",
+      "confirmed", false),
+    notify(asset("a-canxic","Can Xic (masia)","residential",41.9390,3.0500, null, 4, "estimated, isolated dwelling",
       0.4, "residential, class v1", 190, true, true, ["exposure_unknown"], [
       { fields: ["distance_to_fire_m"], source: "OSM building centroid (point fallback)", notes: "footprint unavailable" }]),
-    asset("a-capbisbal","CAP la Bisbal (medical centre)","medical",41.9615,3.0355, null, 15, "typical staffing estimate",
+      "no_response", false),
+    notify(asset("a-capbisbal","CAP la Bisbal (medical centre)","medical",41.9615,3.0355, null, 15, "typical staffing estimate",
       0.85, "medical, class v1", 1120, false, false, [], []),
+      "confirmed", true),
   ],
 };
 
@@ -436,11 +515,39 @@ function render() {
   }
 
   renderMap(scored, review);
+  renderEscalation();
   const detailPanel = document.getElementById("detailPanel");
   if (selectedId) renderDetail(selectedId, scored); else renderEmptyDetail(detailPanel);
 
   document.getElementById("logCount").textContent = changeLog.length;
   renderChangeLog();
+}
+
+function renderEscalation() {
+  const confirmed = current.assets.filter(a => a.notification_status === "confirmed");
+  const open = current.assets.filter(a => a.notification_status === "no_response");
+  const mobility = current.assets.filter(a => a.mobility_assistance);
+
+  document.getElementById("escConfirmed").textContent = confirmed.length;
+  document.getElementById("escOpen").textContent = open.length;
+  document.getElementById("escMobility").textContent = mobility.length;
+
+  function fillList(elId, items, dotClass) {
+    const el = document.getElementById(elId);
+    el.replaceChildren();
+    for (const a of items) {
+      const row = document.createElement("div");
+      row.className = "escRow";
+      row.dataset.assetId = a.asset_id;
+      row.addEventListener("click", handleAssetSelection);
+      const dot = document.createElement("span");
+      dot.className = "escDot " + dotClass;
+      row.append(dot, textElement("span", a.name, "name"));
+      el.append(row);
+    }
+  }
+  fillList("escOpenList", open, "open");
+  fillList("escMobilityList", mobility, "mobility");
 }
 
 function tierColor(total) {
@@ -458,13 +565,19 @@ function initMap() {
   }).addTo(map);
   fireLayer = L.layerGroup().addTo(map);
   markerLayer = L.layerGroup().addTo(map);
+  // the map now sits in an inset card rather than filling its column edge-to-edge;
+  // give the layout a tick to settle before Leaflet measures its container
+  setTimeout(() => map.invalidateSize(), 50);
 }
 
 function renderMap(scored, review) {
   fireLayer.clearLayers();
   markerLayer.clearLayers();
   const perim = current.sequence === 1 ? FIRE_PERIM_1 : FIRE_PERIM_2;
-  L.polygon(perim, { color: "#ff5a3c", weight: 2, fillColor: "#ff5a3c", fillOpacity: 0.28 })
+  // white halo behind the perimeter line so the exposure radius reads as the primary
+  // signal against the satellite basemap, with everything else as surrounding context
+  L.polygon(perim, { color: "#ffffff", weight: 6, opacity: 0.85, fill: false }).addTo(fireLayer);
+  L.polygon(perim, { color: "#ff5a3c", weight: 3, fillColor: "#ff5a3c", fillOpacity: 0.22 })
     .bindTooltip("Fire perimeter (recorded satellite hull), as_of " + fmtTime(current.as_of), { className: "fire-tip" })
     .addTo(fireLayer);
 
