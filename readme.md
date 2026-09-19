@@ -923,7 +923,7 @@ These are offline software checks, not validation of provider audio, telephony o
 
 ### Mock scenario replay and dashboard updates
 
-The expanded mock exercise on `codex/slng-voice-agent` runs **32 isolated scenarios** through the
+The expanded mock exercise on `codex/slng-voice-agent` runs **34 isolated scenarios** through the
 existing contact ranking, one-crew response planner, interview normalization, readiness checks and
 persistent task store. Fixtures are in `fixtures/voice/replay_scenarios.json` and
 `fixtures/voice/neighbourhood.json`; the reproducible
@@ -968,11 +968,13 @@ The original A/B/C cases remain available in the selector.
 |---|---|
 | Shared capacity | Lower-priority households answer first. A later, more urgent answer moves a proposed destination to the second centre; no centre is overbooked and the depot cannot yet be accommodated. |
 | Mixed escalations | Different buildings report low confidence plus assistance, missing transport, a human request, no answer, or supported self-evacuation. Each keeps its own evidence and follow-up work. |
-| Road closure | Both supplied routes from Oak apartments become unavailable; its proposal is withdrawn and other allocations are recalculated. |
+| Road closure | Oak Lane closes after the interviews. Oak apartments loses both supplied routes; the incident-wide warning requires fresh acknowledgement from all buildings and appears in the next-call briefing. |
 | Reception centre closes | The 10-place hall loses approval; only the five-person household fits in the annex. |
 | Fire changes direction | Mill house's updated arrival forecast leaves a negative evacuation window. It moves to the front of the contact queue and loses its self-evacuation proposal. |
 | Later assistance request | Oak apartments initially reports self-evacuation, then reports needing help. Both calls remain in history and the latest assessment changes its mode. |
 | Crew capability loss | The crew loses transport and assisted-evacuation capabilities. Care-home and school actions become blocked, and the proposed sequence changes. |
+| Named dangerous road | Mill Road is excluded even if a route was previously confirmed. Mill house uses the eligible annex route; calls carry the named warning and evidenced acknowledgement. |
+| Warning not understood | Mill house cannot acknowledge the road restriction. Its mode remains unresolved and a human callback is required, even if its other interview answers were confirmed. |
 
 The village contact order initially is **CARE → SCHOOL → H1 → H2 → H3 → DEPOT**; its one-crew
 proposal is **CARE → SCHOOL**. Capacity is allocated only to proposed **self-evacuating** groups.
@@ -1009,9 +1011,59 @@ minutes or in-progress crew movements: event order advances at a fixed scenario 
 forecast/capability recomputes an unexecuted static proposal, not a live dispatch plan. The current
 readiness API also withholds the old crew proposal when supplied a nonzero elapsed time.
 
+**Road restrictions in the escalation-to-voice handoff:** `EvacuationRoute.road_ids` lists the
+roads used by each supplied route. `coordinate_evacuation(..., road_warnings=[...])` accepts the
+current incident-scoped restrictions from the analyst/upstream feed. Each warning requires
+`road_id`, `road_name`, `reason` and `source`, for example:
+
+```json
+{
+  "road_id": "mill-road",
+  "road_name": "Mill Road",
+  "reason": "fire reported beside the bridge",
+  "source": "Synthetic incident command update"
+}
+```
+
+Every location output carries `road_warnings`, `road_warning_version` and
+`current_road_warning_acknowledged`; a selected destination also carries
+`route_road_ids`. A warning overrides a route's previous `confirmed` flag. While restrictions are
+active, a route with no road IDs cannot establish avoidance and is rejected. A supplied alternative
+must still meet the existing timing, capacity and confirmation checks. With no eligible option,
+the household remains unresolved with human follow-up. The system does not generate detours or
+interpret a missing destination as an instruction to remain in place. These road constraints apply
+to household evacuation routes; the one-crew planner still uses its separately supplied travel
+matrix, which must also be updated if crew travel is affected.
+
+The caller copies the location's current `road_warnings` into its `CallRequest` alongside the
+analyst-supplied `incident_brief`. This is automatic for mock replay; callers using the private JSON
+request interface must supply the warnings for that snapshot. SLNG receives a per-call
+`road_warning_brief`, such as **“Do not take Mill Road: fire reported beside the bridge.”** The
+prompt requires the road name and reported reason to be relayed with any approved evacuation
+instruction; a conflicting direction is withheld for human review. It asks residents to repeat
+which roads to avoid and records `road_warning_acknowledged` plus the supporting excerpt in
+`evidence.road_warning_acknowledged`. Missing, negative or unevidenced acknowledgement adds
+`road_warning_unconfirmed` and prevents an automatic self-evacuation proposal. A generic readback
+or agreement to evacuate does not satisfy this check.
+
+Warnings create persistent `communicate_road_warning` tasks. They remain open until an analyst
+handles them, consistent with the other follow-up tasks. A content version binds acknowledgement
+to the exact road names, reasons and sources in the persisted call request. Changed restrictions
+invalidate the current acknowledgement and create fresh communication/callback work if the old
+work was completed; repeated delivery of the same version does not duplicate it. Earlier call
+answers remain historical evidence, and reported assistance needs stay visible. All buildings in
+these mock incidents receive the incident-wide restrictions; none silently inherits an earlier
+warning's readback. The dashboard's **Road warnings for the
+next call** panel and downloadable `voice_briefings` show the current restriction text; they are
+not delivery receipts. Stored requests retain the warnings supplied at call creation. A later
+closure refreshes the preview and follow-up work, but does not interrupt an active call or
+redeliver instructions automatically. Feed operators must supply current restrictions and complete
+route road IDs; this prototype does not discover road hazards or expire stale reports. Changed
+village fixtures require **Start a fresh mock run** for previously saved exercises.
+
 **What the UI receives:** `MockReplay.state()` returns a `mock-coordination-state-1` object with
 `case_id`, `snapshot_id`, `revision`, `as_of`, `pending_events`, `calls`, `plan`, `tasks`,
-`response_review_required`, `layout`, `reception_centres`, `input_mode="synthetic"`, `dispatch=false`
+`response_review_required`, `layout`, `reception_centres`, `voice_briefings`, `input_mode="synthetic"`, `dispatch=false`
 and `live_validation=false`.
 `plan` contains both algorithm outputs, household modes and proposed reception capacity. Calls
 retain confidence/basis, evidence, reported assistance, human requests and escalation reasons.
@@ -1048,7 +1100,7 @@ authenticated SSE stream for server-to-browser notifications, or WebSockets if b
 interaction warrants them, and fetch current state after reconnecting. A socket is transport,
 not the durable output or source of truth. No new SSE/WebSocket endpoint is deployed here.
 
-Validation after integration: **460 tests passed**, including all eight combinations, additional
+Validation after integration: **479 tests passed**, including all eight combinations, additional
 adverse cases, both algorithm update examples, cross-reader refresh/restart, duplicate delivery,
 crash rollback, existing-database protection, CLI output and Streamlit interaction tests.
 Independent review findings about partial commits and incomplete invalidation IDs were fixed and

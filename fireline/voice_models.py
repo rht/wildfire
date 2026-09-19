@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import math
 import re
+from .route_guidance import validate_road_warnings
 
 ANSWER_FIELDS = ('identity_confirmed', 'whole_household_confirmed', 'can_self_evacuate',
                  'transport_available', 'wants_human', 'acknowledged')
@@ -45,6 +46,7 @@ class CallRequest:
     incident_brief: str = field(repr=False)
     human_callback_number: str | None = field(default=None, repr=False)
     input_mode: str = 'synthetic'
+    road_warnings: list[dict] = field(default_factory=list, repr=False)
 
     def __post_init__(self):
         for key in ('request_id', 'asset_id', 'snapshot_id'):
@@ -57,6 +59,7 @@ class CallRequest:
         if not isinstance(self.language, str) or not re.fullmatch(r'[a-z]{2,3}(?:-[A-Z]{2})?', self.language):
             raise ValueError('invalid language')
         text(self.incident_brief, 'incident_brief')
+        validate_road_warnings(self.road_warnings)
 
 
 @dataclass(frozen=True)
@@ -83,6 +86,7 @@ class CallResult:
     transfer_status: str | None = None
     bad_audio: bool = False
     evidence_time_basis: str = 'source_observation'
+    road_warning_acknowledged: bool | None = None
 
     def __post_init__(self):
         for key in ('request_id', 'asset_id', 'snapshot_id', 'provider_call_id'):
@@ -93,7 +97,7 @@ class CallResult:
         if self.evidence_time_basis not in ('source_observation', 'receipt_only'):
             raise ValueError('invalid evidence_time_basis')
         text(self.source, 'source', 256)
-        for key in ANSWER_FIELDS:
+        for key in ANSWER_FIELDS + ('road_warning_acknowledged',):
             value = getattr(self, key)
             if value is not None and type(value) is not bool:
                 raise ValueError(f'invalid {key}')
@@ -108,7 +112,7 @@ class CallResult:
         if not isinstance(self.evidence, dict) or len(self.evidence) > 16:
             raise ValueError('invalid evidence')
         for key, value in self.evidence.items():
-            if key not in ANSWER_FIELDS + ('help_needs', 'preparation_remaining', 'instruction_received'):
+            if key not in ANSWER_FIELDS + ('help_needs', 'preparation_remaining', 'instruction_received', 'road_warning_acknowledged'):
                 raise ValueError('invalid evidence field')
             text(value, 'evidence excerpt', 2048)
         if not isinstance(self.human_followup_reasons, list):

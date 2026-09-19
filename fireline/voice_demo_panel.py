@@ -70,11 +70,21 @@ def render_voice_demo():
         rows = []
         for r in state['plan']['locations']:
             c = latest.get(r['asset_id'], {})
-            rows.append({k: r[k] for k in ('asset_id', 'name', 'mode', 'destination_id', 'human_followup', 'evacuation_status')} |
+            rows.append({k: r[k] for k in ('asset_id', 'name', 'mode', 'destination_id', 'human_followup', 'evacuation_status', 'current_road_warning_acknowledged')} |
                         dict(reported_needs_assistance=c.get('reported_needs_assistance'),
                              wants_human=c.get('wants_human'), confidence=c.get('confidence'),
+                             last_call_road_warning_acknowledged=c.get('road_warning_acknowledged'),
                              reasons=', '.join(sorted(set(r['reasons'] + c.get('human_followup_reasons', []))))))
         st.dataframe(pd.DataFrame(rows), hide_index=True, width='stretch')
+        warnings = {w['road_id']: w for r in state['plan']['locations'] for w in r['road_warnings']}
+        if warnings:
+            st.subheader('Road warnings for the next call')
+            st.caption('Current briefing preview, not proof that a resident received it. '
+                       'Named restrictions also exclude affected routes from destination proposals.')
+            for w in warnings.values():
+                st.warning(f"Do not take {w['road_name']}: {w['reason']}. Source: {w['source']}.")
+            with st.expander('Per-building road briefings'):
+                st.json(state['voice_briefings'])
         st.subheader('Reception capacity')
         st.caption('Uncommunicated proposals only. A later answer may change these allocations; '
                    'revising instructions already sent to residents requires an analyst decision. '
