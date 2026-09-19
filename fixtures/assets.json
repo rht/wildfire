@@ -1,0 +1,133 @@
+[
+ {
+  "asset_id": "fixture:pou_del_glac",
+  "name": "Pou del Glaç",
+  "asset_class": "camp",
+  "lon": 3.04,
+  "lat": 41.933,
+  "municipality": "la Bisbal d'Empordà",
+  "occupancy": null,
+  "occupancy_source": "unknown",
+  "seasonal": true,
+  "note": "casa de colònies ~2 km SSE of the ignition; school register has no capacity field"
+ },
+ {
+  "asset_id": "fixture:sant_pol",
+  "name": "Sant Pol",
+  "asset_class": "nucleus",
+  "lon": 3.036,
+  "lat": 41.942,
+  "municipality": "la Bisbal d'Empordà",
+  "occupancy": 85,
+  "occupancy_source": "allocated"
+ },
+ {
+  "asset_id": "fixture:can_xic",
+  "name": "Can Xic",
+  "asset_class": "masia",
+  "lon": 3.03,
+  "lat": 41.923,
+  "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+  "occupancy": 4,
+  "occupancy_source": "allocated",
+  "shelter_viable": false,
+  "note": "isolated masia ~3 km S of the ignition; only link is an unpaved track"
+ },
+ {
+  "asset_id": "fixture:camping_gavarres",
+  "name": "Càmping Gavarres",
+  "asset_class": "campsite",
+  "lon": 3.075,
+  "lat": 41.885,
+  "municipality": "Calonge i Sant Antoni",
+  "occupancy": 200,
+  "occupancy_source": "register",
+  "class_ambiguous": true,
+  "note": "register does not say whether places are tents or bungalows"
+ },
+ {
+  "asset_id": "fixture:les_cabanyes",
+  "name": "Les Cabanyes",
+  "asset_class": "nucleus",
+  "lon": 3.06,
+  "lat": 41.86,
+  "municipality": "Calonge i Sant Antoni",
+  "occupancy": 120,
+  "occupancy_source": "allocated"
+ },
+ {
+  "asset_id": "fixture:vall_repos",
+  "name": "Vall Repòs",
+  "asset_class": "care_home",
+  "lon": 3.0,
+  "lat": 41.83,
+  "municipality": "Santa Cristina d'Aro",
+  "occupancy": 70,
+  "occupancy_source": "register"
+ },
+ {
+  "asset_id": "fixture:residencia_la_bisbal",
+  "name": "Residència la Bisbal",
+  "asset_class": "care_home",
+  "lon": 3.038,
+  "lat": 41.962,
+  "municipality": "la Bisbal d'Empordà",
+  "occupancy": null,
+  "occupancy_source": "unknown",
+  "note": "Equipaments row without capacitat; care-home register join failed on the name"
+ },
+ {
+  "asset_id": "fixture:escola_cruilles",
+  "name": "Escola de Cruïlles",
+  "asset_class": "school",
+  "lon": 3.012,
+  "lat": 41.953,
+  "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+  "occupancy": 60,
+  "occupancy_source": "register",
+  "seasonal": true,
+  "note": "school in July: register enrolment, calendar says closed; casal d'estiu possible"
+ },
+ {
+  "asset_id": "fixture:hospital_palamos",
+  "name": "Hospital de Palamós",
+  "asset_class": "hospital",
+  "lon": 3.13,
+  "lat": 41.85,
+  "municipality": "Palamós",
+  "occupancy": 140,
+  "occupancy_source": "register"
+ },
+ {
+  "asset_id": "fixture:sant_sadurni",
+  "name": "Sant Sadurní de l'Heura",
+  "asset_class": "nucleus",
+  "lon": 2.975,
+  "lat": 41.955,
+  "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+  "occupancy": 300,
+  "occupancy_source": "allocated"
+ },
+ {
+  "asset_id": "fixture:monells",
+  "name": "Monells",
+  "asset_class": "nucleus",
+  "lon": 2.985,
+  "lat": 41.973,
+  "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+  "occupancy": 200,
+  "occupancy_source": "allocated"
+ },
+ {
+  "asset_id": "fixture:mas_pla",
+  "name": "Urbanització Mas Pla",
+  "asset_class": "nucleus",
+  "lon": 3.066,
+  "lat": 41.872,
+  "municipality": "Calonge i Sant Antoni",
+  "occupancy": 260,
+  "occupancy_source": "allocated",
+  "seasonal": true,
+  "note": "second-home urbanisation on the GI-660 above Calonge"
+ }
+]

@@ -1,0 +1,408 @@
+{
+ "crs": "EPSG:4326",
+ "note": "Synthetic road graph around Les Gavarres; names are real roads, geometry is simplified.",
+ "nodes": {
+  "bisbal": [
+   3.038,
+   41.96
+  ],
+  "bisbal_s": [
+   3.038,
+   41.95
+  ],
+  "gi660_k4": [
+   3.045,
+   41.925
+  ],
+  "gi660_k8": [
+   3.058,
+   41.9
+  ],
+  "gi660_k12": [
+   3.072,
+   41.88
+  ],
+  "calonge": [
+   3.078,
+   41.86
+  ],
+  "sant_antoni": [
+   3.095,
+   41.845
+  ],
+  "palamos": [
+   3.13,
+   41.848
+  ],
+  "palafrugell": [
+   3.163,
+   41.917
+  ],
+  "vulpellac": [
+   3.08,
+   41.96
+  ],
+  "corca": [
+   3.01,
+   41.987
+  ],
+  "cruilles": [
+   3.012,
+   41.953
+  ],
+  "sant_sadurni": [
+   2.975,
+   41.955
+  ],
+  "monells": [
+   2.985,
+   41.973
+  ],
+  "cassa": [
+   2.874,
+   41.889
+  ],
+  "llagostera": [
+   2.893,
+   41.828
+  ],
+  "santa_cristina": [
+   2.998,
+   41.814
+  ],
+  "romanya": [
+   3.008,
+   41.85
+  ],
+  "castell_daro": [
+   3.045,
+   41.825
+  ],
+  "n_sant_pol": [
+   3.037,
+   41.943
+  ],
+  "n_pou": [
+   3.041,
+   41.933
+  ],
+  "n_can_xic": [
+   3.03,
+   41.923
+  ],
+  "n_camping": [
+   3.076,
+   41.886
+  ],
+  "n_cabanyes": [
+   3.061,
+   41.861
+  ],
+  "n_escola": [
+   3.013,
+   41.952
+  ],
+  "n_hospital": [
+   3.131,
+   41.851
+  ],
+  "n_vall_repos": [
+   3.001,
+   41.831
+  ],
+  "n_res_bisbal": [
+   3.039,
+   41.963
+  ],
+  "n_espai_ridaura": [
+   2.987,
+   41.816
+  ],
+  "n_pav_bisbal": [
+   3.041,
+   41.966
+  ],
+  "n_res_palamos": [
+   3.125,
+   41.853
+  ],
+  "n_pav_llagostera": [
+   2.895,
+   41.83
+  ]
+ },
+ "edges": [
+  {
+   "u": "bisbal",
+   "v": "bisbal_s",
+   "name": "GI-660",
+   "highway": "secondary",
+   "length_m": 1221,
+   "speed_kmh": 50
+  },
+  {
+   "u": "bisbal_s",
+   "v": "gi660_k4",
+   "name": "GI-660",
+   "highway": "secondary",
+   "length_m": 3403,
+   "speed_kmh": 60
+  },
+  {
+   "u": "gi660_k4",
+   "v": "gi660_k8",
+   "name": "GI-660",
+   "highway": "tertiary",
+   "length_m": 4169,
+   "speed_kmh": 50
+  },
+  {
+   "u": "gi660_k8",
+   "v": "gi660_k12",
+   "name": "GI-660",
+   "highway": "tertiary",
+   "length_m": 3508,
+   "speed_kmh": 50
+  },
+  {
+   "u": "gi660_k12",
+   "v": "calonge",
+   "name": "GI-660",
+   "highway": "secondary",
+   "length_m": 2731,
+   "speed_kmh": 60
+  },
+  {
+   "u": "corca",
+   "v": "bisbal",
+   "name": "C-66",
+   "highway": "primary",
+   "length_m": 4170,
+   "speed_kmh": 70
+  },
+  {
+   "u": "bisbal",
+   "v": "vulpellac",
+   "name": "C-66",
+   "highway": "primary",
+   "length_m": 3829,
+   "speed_kmh": 70
+  },
+  {
+   "u": "vulpellac",
+   "v": "palafrugell",
+   "name": "C-66",
+   "highway": "primary",
+   "length_m": 9212,
+   "speed_kmh": 70
+  },
+  {
+   "u": "bisbal",
+   "v": "cruilles",
+   "name": "GI-664",
+   "highway": "tertiary",
+   "length_m": 2520,
+   "speed_kmh": 50
+  },
+  {
+   "u": "cruilles",
+   "v": "sant_sadurni",
+   "name": "GI-664",
+   "highway": "tertiary",
+   "length_m": 3689,
+   "speed_kmh": 50
+  },
+  {
+   "u": "sant_sadurni",
+   "v": "cassa",
+   "name": "GI-664",
+   "highway": "tertiary",
+   "length_m": 15579,
+   "speed_kmh": 50
+  },
+  {
+   "u": "sant_sadurni",
+   "v": "monells",
+   "name": "GIV-6703",
+   "highway": "tertiary",
+   "length_m": 2596,
+   "speed_kmh": 40
+  },
+  {
+   "u": "cassa",
+   "v": "llagostera",
+   "name": "C-65",
+   "highway": "primary",
+   "length_m": 7649,
+   "speed_kmh": 70
+  },
+  {
+   "u": "llagostera",
+   "v": "santa_cristina",
+   "name": "C-31",
+   "highway": "trunk",
+   "length_m": 9743,
+   "speed_kmh": 80
+  },
+  {
+   "u": "santa_cristina",
+   "v": "castell_daro",
+   "name": "C-31",
+   "highway": "trunk",
+   "length_m": 4499,
+   "speed_kmh": 80
+  },
+  {
+   "u": "castell_daro",
+   "v": "sant_antoni",
+   "name": "C-31",
+   "highway": "trunk",
+   "length_m": 5179,
+   "speed_kmh": 80
+  },
+  {
+   "u": "sant_antoni",
+   "v": "palamos",
+   "name": "C-31",
+   "highway": "trunk",
+   "length_m": 3217,
+   "speed_kmh": 80
+  },
+  {
+   "u": "palamos",
+   "v": "palafrugell",
+   "name": "C-31",
+   "highway": "trunk",
+   "length_m": 8949,
+   "speed_kmh": 80
+  },
+  {
+   "u": "calonge",
+   "v": "sant_antoni",
+   "name": "C-253",
+   "highway": "secondary",
+   "length_m": 2401,
+   "speed_kmh": 60
+  },
+  {
+   "u": "santa_cristina",
+   "v": "romanya",
+   "name": "GIV-6612",
+   "highway": "tertiary",
+   "length_m": 5715,
+   "speed_kmh": 40
+  },
+  {
+   "u": "romanya",
+   "v": "calonge",
+   "name": "GIV-6611",
+   "highway": "tertiary",
+   "length_m": 8282,
+   "speed_kmh": 40
+  },
+  {
+   "u": "n_can_xic",
+   "v": "gi660_k4",
+   "name": "Camí de Can Xic",
+   "highway": "track",
+   "length_m": 1642,
+   "speed_kmh": 15
+  },
+  {
+   "u": "n_sant_pol",
+   "v": "bisbal_s",
+   "name": "Carrer de Sant Pol",
+   "highway": "residential",
+   "length_m": 860,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_pou",
+   "v": "gi660_k4",
+   "name": "Camí del Pou del Glaç",
+   "highway": "residential",
+   "length_m": 1138,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_camping",
+   "v": "gi660_k12",
+   "name": "Carrer del Càmping",
+   "highway": "residential",
+   "length_m": 819,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_cabanyes",
+   "v": "calonge",
+   "name": "Carrer de les Cabanyes",
+   "highway": "residential",
+   "length_m": 1557,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_escola",
+   "v": "cruilles",
+   "name": "Carrer de l'Escola",
+   "highway": "residential",
+   "length_m": 152,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_hospital",
+   "v": "palamos",
+   "name": "Carrer de l'Hospital",
+   "highway": "residential",
+   "length_m": 378,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_vall_repos",
+   "v": "santa_cristina",
+   "name": "Carrer de Vall Repòs",
+   "highway": "residential",
+   "length_m": 2094,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_res_bisbal",
+   "v": "bisbal",
+   "name": "Carrer de la Residència",
+   "highway": "residential",
+   "length_m": 378,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_espai_ridaura",
+   "v": "santa_cristina",
+   "name": "Carrer de l'Espai Ridaura",
+   "highway": "residential",
+   "length_m": 1034,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_pav_bisbal",
+   "v": "bisbal",
+   "name": "Carrer del Pavelló",
+   "highway": "residential",
+   "length_m": 782,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_res_palamos",
+   "v": "palamos",
+   "name": "Carrer de la Residència de Palamós",
+   "highway": "residential",
+   "length_m": 762,
+   "speed_kmh": 30
+  },
+  {
+   "u": "n_pav_llagostera",
+   "v": "llagostera",
+   "name": "Carrer del Pavelló de Llagostera",
+   "highway": "residential",
+   "length_m": 305,
+   "speed_kmh": 30
+  }
+ ]
+}

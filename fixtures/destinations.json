@@ -1,0 +1,49 @@
+[
+ {
+  "asset_id": "fixture:dest:espai_ridaura",
+  "name": "Espai Ridaura",
+  "kind": "reception",
+  "lon": 2.986,
+  "lat": 41.816,
+  "capacity": 500,
+  "municipality": "Santa Cristina d'Aro",
+  "note": "real Vall Repòs destination in July 2026; inside the envelope in some runs"
+ },
+ {
+  "asset_id": "fixture:dest:pavello_bisbal",
+  "name": "Pavelló de la Bisbal",
+  "kind": "reception",
+  "lon": 3.04,
+  "lat": 41.966,
+  "capacity": 400,
+  "municipality": "la Bisbal d'Empordà"
+ },
+ {
+  "asset_id": "fixture:dest:residencia_palamos",
+  "name": "Residència Palamós",
+  "kind": "medical",
+  "lon": 3.124,
+  "lat": 41.853,
+  "capacity": 80,
+  "municipality": "Palamós"
+ },
+ {
+  "asset_id": "fixture:hospital_palamos",
+  "name": "Hospital de Palamós",
+  "kind": "medical",
+  "lon": 3.13,
+  "lat": 41.85,
+  "capacity": 120,
+  "municipality": "Palamós",
+  "note": "same asset_id as the hospital asset so it is never its own destination"
+ },
+ {
+  "asset_id": "fixture:dest:pavello_llagostera",
+  "name": "Pavelló de Llagostera",
+  "kind": "reception",
+  "lon": 2.894,
+  "lat": 41.83,
+  "capacity": 400,
+  "municipality": "Llagostera"
+ }
+]

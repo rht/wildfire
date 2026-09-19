@@ -1,0 +1,122 @@
+{
+ "_note": "Fake of the Gencat registers used by lookup_facility; fields mimic the real datasets.",
+ "equipaments": [
+  {
+   "name": "Espai Ridaura",
+   "municipality": "Santa Cristina d'Aro",
+   "categoria": "Pavelló poliesportiu",
+   "adreca": "Carrer de Ridaura, s/n",
+   "lon": 2.986,
+   "lat": 41.816
+  },
+  {
+   "name": "Pavelló Municipal de la Bisbal",
+   "municipality": "la Bisbal d'Empordà",
+   "categoria": "Pavelló poliesportiu",
+   "adreca": "Carrer del Pavelló, 1",
+   "lon": 3.04,
+   "lat": 41.966
+  },
+  {
+   "name": "Pavelló de Llagostera",
+   "municipality": "Llagostera",
+   "categoria": "Pavelló poliesportiu",
+   "adreca": "Carrer de l'Esport, 3",
+   "lon": 2.894,
+   "lat": 41.83
+  },
+  {
+   "name": "Hospital de Palamós",
+   "municipality": "Palamós",
+   "categoria": "Hospital",
+   "adreca": "Carrer de l'Hospital, 36",
+   "lon": 3.13,
+   "lat": 41.85
+  },
+  {
+   "name": "Residència la Bisbal",
+   "municipality": "la Bisbal d'Empordà",
+   "categoria": "Residència",
+   "adreca": "Carrer de la Residència, 2",
+   "lon": 3.038,
+   "lat": 41.962
+  },
+  {
+   "name": "Residència Palamós",
+   "municipality": "Palamós",
+   "categoria": "Residència gent gran",
+   "adreca": "Avinguda de Catalunya, 12",
+   "lon": 3.124,
+   "lat": 41.853
+  },
+  {
+   "name": "Pou del Glaç",
+   "municipality": "la Bisbal d'Empordà",
+   "categoria": "Centre",
+   "adreca": "Camí del Pou del Glaç, s/n",
+   "lon": 3.04,
+   "lat": 41.933
+  }
+ ],
+ "care_homes": [
+  {
+   "name": "Vall Repòs",
+   "municipality": "Santa Cristina d'Aro",
+   "tipus": "Residència gent gran",
+   "capacitat": 70,
+   "titularitat": "privada"
+  },
+  {
+   "name": "Residència Geriàtrica de la Bisbal",
+   "municipality": "la Bisbal d'Empordà",
+   "tipus": "Residència gent gran",
+   "capacitat": 48,
+   "titularitat": "pública"
+  },
+  {
+   "name": "Residència Palamós",
+   "municipality": "Palamós",
+   "tipus": "Residència gent gran",
+   "capacitat": 80,
+   "titularitat": "privada"
+  }
+ ],
+ "campsites": [
+  {
+   "name": "Càmping Gavarres",
+   "municipality": "Calonge i Sant Antoni",
+   "categoria": "2a",
+   "total_places": 200,
+   "unitats": 62
+  },
+  {
+   "name": "Càmping Cala Gogó",
+   "municipality": "Calonge i Sant Antoni",
+   "categoria": "1a",
+   "total_places": 1800,
+   "unitats": 620
+  }
+ ],
+ "schools": [
+  {
+   "name": "Pou del Glaç",
+   "municipality": "la Bisbal d'Empordà",
+   "tipologia": "casa de colònies",
+   "titularitat": "privada"
+  },
+  {
+   "name": "Escola de Cruïlles",
+   "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
+   "tipologia": "escola",
+   "alumnes": 60,
+   "titularitat": "pública"
+  },
+  {
+   "name": "Escola Mas Clarà",
+   "municipality": "la Bisbal d'Empordà",
+   "tipologia": "escola",
+   "alumnes": 420,
+   "titularitat": "pública"
+  }
+ ]
+}
