@@ -203,6 +203,8 @@ def committed_scene(status='en_route'):
     data = scene()
     first = tasks(plan(data))[0]
     first['status'] = status
+    if status == 'completed':
+        first['actual_finish_min'] = 3
     data['committed'] = [first]
     data['now_min'] = 1
     return data, first
@@ -320,3 +322,53 @@ def test_synthetic_demo_contains_two_trucks_shared_access_and_three_explicit_rej
     assert 'route_unavailable' in reasons['protect-D']
     assert 'deadline' in reasons['protect-E']
     assert 'transport_capacity' in reasons['help-F']
+
+
+@pytest.mark.parametrize('change', ['missing_team', 'reduced_capacity'])
+def test_actual_completed_work_survives_later_team_loss_or_capacity_change(change):
+    data, first = committed_scene('completed')
+    first['actual_finish_min'] = 3
+    data['now_min'] = 4
+    if change == 'missing_team':
+        data['teams'] = data['teams'][1:]
+    else:
+        data['teams'][0]['transport_capacity'] = 1
+    data['actions'][1]['requires'] = ['help-A']
+    result = plan(data)
+    assert result['coverage']['A'] == 1
+    assert any(t['action_id'] == 'help-B' and t['status'] == 'proposed' for t in tasks(result))
+
+
+def test_actual_late_completion_never_uses_planned_finish_for_deadline_credit():
+    data, first = committed_scene('completed')
+    data['assets'][0]['deadline_min'] = 5
+    first['actual_finish_min'] = 8
+    data['now_min'] = 10
+    result = plan(data)
+    assert result['coverage']['A'] == 0
+    row = next(t for t in tasks(result) if t['action_id'] == 'help-A')
+    assert row['finish_min'] == 3 and row['actual_finish_min'] == 8
+
+
+def test_completed_status_without_actual_completion_time_is_rejected():
+    data, first = committed_scene('completed')
+    data['now_min'] = 4
+    first.pop('actual_finish_min', None)
+    with pytest.raises(ValueError, match='actual_finish_min'):
+        plan(data)
+
+
+@pytest.mark.parametrize('field', ['effects', 'asset_id', 'prerequisites', 'transport_people'])
+def test_versioned_commitment_payload_must_match_its_declared_action(field):
+    data, first = committed_scene('completed')
+    data['now_min'] = 4
+    if field == 'effects':
+        first['effects'][0]['asset_id'] = 'C'
+    elif field == 'asset_id':
+        first[field] = 'C'
+    elif field == 'prerequisites':
+        first[field] = ['protect-C']
+    else:
+        first[field] = 0
+    with pytest.raises(ValueError, match='committed payload'):
+        plan(data)

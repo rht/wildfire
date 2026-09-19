@@ -7,9 +7,9 @@ one-crew planning is independent. Every elapsed minute uses the caller's scenari
 from __future__ import annotations
 
 import argparse
-from copy import deepcopy
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 from .priority_models import number, string_sequence
@@ -28,6 +28,7 @@ def _text(value, label):
 
 def _integer(value, label):
     number(value, label)
+    # JSON count contract deliberately rejects bool and custom numeric objects.
     if type(value) is not int:
         raise ValueError(f'{label} must be an integer')
 
@@ -156,7 +157,7 @@ class _Routes:
         if graph is not None:
             if graph.g.is_multigraph():
                 raise ValueError('parallel graph edges are unsupported')
-            self.graph = RoadGraph(deepcopy(graph.g))
+            self.graph = RoadGraph(graph.g.copy())
             for u, v, edge in list(self.graph.g.edges(data=True)):
                 number(edge['travel_min'], 'graph travel_min')
                 cut = edge.get('cut_min')
@@ -195,7 +196,7 @@ class _Routes:
     def _geometry(self, path):
         points = []
         for u, v in zip(path, path[1:]):
-            segment = deepcopy(self.graph.g[u][v].get('geometry_lonlat'))
+            segment = self.graph.g[u][v].get('geometry_lonlat')
             if not isinstance(segment, (list, tuple)) or len(segment) < 2:
                 return None
             segment = [list(point) for point in segment]
@@ -303,8 +304,9 @@ class _Planner:
             row['readiness'] = {k: outcome[k] for k in ('asset_id', 'status', 'observed_min',
                                 'valid_until_min', 'source', 'request_id')}
         for key in ('path_lonlat', 'path_nodes'):
-            if key in leg:
-                row[key] = leg[key]
+            value = leg.get(key)
+            if value is not None:
+                row[key] = value
         return row, []
 
     def gain(self, action, finish=0):
@@ -336,12 +338,13 @@ class _Planner:
         return (*(-x for x in best), row['finish_min'], row['action_id'], row['team_id'])
 
     def credit(self, row):
+        finish = row.get('actual_finish_min', row['finish_min'])
         gained = {}
         for effect in row['effects']:
             asset = self.assets[effect['asset_id']]
             if (not effect['confirmed'] or asset['deadline_min'] is None
                     or any(asset[k] is None for k in DIMENSIONS)
-                    or after_deadline(row['finish_min'] + self.data['buffer_min'], asset['deadline_min'])):
+                    or after_deadline(finish + self.data['buffer_min'], asset['deadline_min'])):
                 continue
             delta = max(0, effect['coverage'] - self.coverage[effect['asset_id']])
             self.coverage[effect['asset_id']] += delta
@@ -356,7 +359,8 @@ class _Planner:
             fields = ('action_id', 'asset_id', 'team_id', 'scenario_id', 'snapshot_id',
                       'action_version', 'status', 'from_node', 'to_node', 'depart_min',
                       'travel_min', 'start_min', 'finish_min', 'prerequisites', 'transport_people')
-            row = {key: deepcopy(original[key]) for key in fields}
+            row = {key: original[key] for key in fields}
+            row['prerequisites'] = list(original['prerequisites'])
             for key in fields[:9]:
                 _text(row[key], key)
             if row['scenario_id'] != self.data['scenario_id']:
@@ -378,7 +382,7 @@ class _Planner:
                 string_sequence(source, 'route_source')
             else:
                 _text(source, 'route_source')
-            row['route_source'] = deepcopy(source)
+            row['route_source'] = list(source) if isinstance(source, list) else source
             self.reserved.add(row['action_id'])
             reasons = []
             team_id = row['team_id']
@@ -395,16 +399,26 @@ class _Planner:
                 reasons.append('missing_action')
             elif row['action_version'] != _action_version(action):
                 reasons.append('changed_action')
+            elif (row['asset_id'] != action['asset_id']
+                  or row['transport_people'] != action['transport_people']
+                  or sorted(row['prerequisites']) != sorted(action['requires'])
+                  or row['effects'] != _public_effects(action)):
+                raise ValueError('committed payload does not match its action version')
             if row['asset_id'] not in self.assets or any(e['asset_id'] not in self.assets for e in row['effects']):
                 reasons.append('missing_asset')
             row['coverage_gained'] = {}
             if row['status'] == 'completed':
-                if row['finish_min'] > self.data['now_min']:
-                    raise ValueError('completed assignment cannot finish in the future')
-                if not reasons:
-                    self.done[row['action_id']] = row['finish_min']
+                actual_finish = original.get('actual_finish_min')
+                number(actual_finish, 'actual_finish_min')
+                if actual_finish > self.data['now_min'] or actual_finish < row['start_min']:
+                    raise ValueError('actual_finish_min must be between start_min and now_min')
+                row['actual_finish_min'] = actual_finish
+                # A current roster/capacity change cannot undo actual completed work.
+                if 'missing_asset' not in reasons:
                     self.credit(row)
-                else:
+                if not {'missing_action', 'changed_action', 'missing_asset'}.intersection(reasons):
+                    self.done[row['action_id']] = actual_finish
+                if reasons:
                     state['locked'] = True
             else:
                 state['locked'] = True
@@ -486,7 +500,7 @@ def main(argv=None):
         with args.input.open(encoding='utf-8') as source:
             data = json.load(source)
         result = plan_multi_response(data)
-        print(json.dumps(result, indent=2, allow_nan=False))
+        sys.stdout.write(json.dumps(result, indent=2, allow_nan=False) + '\n')
     except (OSError, ValueError, KeyError, TypeError) as exc:
         # Do not echo arbitrary rejected values, file contents or private input payloads.
         parser.exit(2, f'invalid multi-response input ({type(exc).__name__})\n')

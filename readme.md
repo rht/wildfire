@@ -1726,7 +1726,7 @@ The JSON input uses `schema_version: "multi-response-input-1"`. Required fields:
 | `actions` | `action_id`, `asset_id`, positive `duration_min`, nullable `deadline_min`, `requires` action-ID list, `capabilities` list, integer `transport_people`, boolean `readiness_required`, and `effects`. Each effect has `asset_id`, coverage in [0,1], boolean `confirmed`, and public `source` provenance. Requirements must be acyclic; effects never propagate to nearby buildings. |
 | `routes` | Directed end-to-end records: `from_node`, `to_node`, `minutes`, booleans `confirmed` and `safe`, nullable `available_until_min`, public `source`. Missing, unsafe, unconfirmed or unknown-expiry routes are unusable. Expiry must be strictly later than arrival plus buffer. No reverse leg is inferred. Route records do not produce geometry. |
 | `readiness` | Optional latest normalized outcome per asset: `asset_id`, `status`, `observed_min`, `valid_until_min`, public `source`, `request_id`. Status is `assistance_required`, `unknown`, `no_answer`, `self_evacuating`, or `completed`. This is an adapter input, not a raw provider payload. |
-| `committed` | Optional persisted task records from an earlier result, with status explicitly changed to `informed`, `en_route`, `in_progress`, or `completed`. A proposal is never a commitment by itself. Preserve the original scenario/snapshot/action version and timings. Explicit actual completion cannot be in the future. |
+| `committed` | Optional persisted task records from an earlier result, with status explicitly changed to `informed`, `en_route`, `in_progress`, or `completed`. A proposal is never a commitment by itself. Preserve the original scenario/snapshot/action version and timings. Completed records additionally require `actual_finish_min` between the scheduled start and `now_min`; a status change alone is insufficient. |
 
 When `readiness_required` is true, only a supplied `assistance_required` outcome observed by
 `now_min` and valid through task completion plus buffer permits a proposal. Existing outcomes
@@ -1769,7 +1769,8 @@ output unchanged in identity/status/timing. It receives no completed benefit and
 prerequisite. Snapshot changes, changed action definitions, missing/unavailable teams, overdue
 work and unavailable routes add explicit review reasons. No automatic cancellation, reassignment
 or completion occurs. Other teams may receive proposals for new incidents. Explicitly completed
-compatible commitments provide coverage and satisfy prerequisites; the caller supplies each team's
+commitments use `actual_finish_min` for coverage deadlines. Current team loss or reduced capacity
+does not erase actual work. Compatible action versions satisfy prerequisites; the caller supplies each team's
 current starting node for its next leg. Keep historical assets/actions until commitments are
 reconciled. Removing or changing a historical action can lock its team pending analyst review.
 
