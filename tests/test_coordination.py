@@ -497,3 +497,36 @@ def test_startup_rejects_snapshot_older_than_existing_taskstore_history(tmp_path
     assert store.state() is None
     assert store.refresh(*supplied(2))['revision'] == 1
     store.close()
+
+
+def test_first_tick_after_closed_assistance_work_is_already_idempotent(tmp_path):
+    path = tmp_path / 'live.sqlite'
+    args = supplied()
+    save_call(path, args[0], can_self_evacuate=False)
+    voice = VoiceStore(path, epoch=EPOCH, clock=lambda: EPOCH)
+    task = next(t for t in voice.tasks.tasks() if t['reason'] == 'voice:arrange_assistance')
+    voice.tasks.set_status(task['task_id'], 'done')
+    voice.close()
+    store = coordinator(path)
+    first = store.refresh(*args)
+    assert store.refresh(*args) == first
+    assert location(first)['assistance_review_required'] is True
+    assert next(t for t in first['tasks'] if t['task_id'] == task['task_id'])['status'] == 'done'
+    store.close()
+
+
+def test_multi_crew_preserved_commitment_for_missing_asset_remains_in_review(tmp_path):
+    from pathlib import Path
+    response = json.loads(Path('fixtures/coordination/multi_response.json').read_text())['missing_asset_response']
+    snapshot, scenario, centres, _ = supplied(2)
+    snapshot['assets'] = [a for a in snapshot['assets'] if a['asset_id'] != 'B']
+    scenario = replace(scenario, locations=tuple(a for a in scenario.locations if a.asset_id != 'B'),
+        actions=tuple(a for a in scenario.actions if a.site_id != 'B'),
+        travel={k: v for k, v in scenario.travel.items() if 'B' not in k})
+    store = coordinator(tmp_path / 'live.sqlite')
+    state = store.refresh(snapshot, scenario, centres, [], response_plan=response)
+    task = state['plan']['response']['teams'][0]['tasks'][0]
+    assert task['asset_id'] == 'B' and task['status'] == 'informed'
+    assert any('missing_asset' in r.get('reasons', []) for r in state['plan']['response']['review'])
+    assert store.refresh(snapshot, scenario, centres, [], response_plan=response) == state
+    store.close()

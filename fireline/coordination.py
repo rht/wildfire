@@ -169,7 +169,12 @@ def _response_proposal(response, snapshot, elapsed):
         team_ids.add(team['team_id'])
         tasks = []
         for task in team['tasks']:
-            if (task['asset_id'] not in assets or task['team_id'] != team['team_id']
+            preserved_missing = task['status'] != 'proposed' and any(
+                row.get('action_id') == task['action_id'] and 'missing_asset' in row.get('reasons', [])
+                for row in response['review'])
+            if ((task['asset_id'] not in assets and not preserved_missing)
+                    or (task['status'] == 'proposed' and task['snapshot_id'] != snapshot['snapshot_id'])
+                    or task['team_id'] != team['team_id']
                     or task['scenario_id'] != snapshot['scenario_id']
                     or task['action_id'] in action_ids
                     or task['status'] not in ('proposed', 'informed', 'en_route', 'in_progress', 'completed')):
@@ -178,7 +183,7 @@ def _response_proposal(response, snapshot, elapsed):
             public = {k: task[k] for k in task_keys if k in task}
             public['effects'] = []
             for effect in task['effects']:
-                if effect['asset_id'] not in assets:
+                if effect['asset_id'] not in assets and not preserved_missing:
                     raise ValueError('response effect asset mismatch')
                 public['effects'].append({k: effect[k] for k in
                     ('asset_id', 'coverage', 'confirmed', 'source') if k in effect})
@@ -304,6 +309,8 @@ class CoordinationStore:
             assessments, calls, records, errors = self._calls(snapshot)
             pending_assistance = {t['asset_id'] for t in self.tasks.tasks()
                                   if t['reason'] == 'voice:arrange_assistance' and t['status'] != 'done'}
+            pending_assistance.update(a.asset_id for a in assessments
+                                      if a.can_self_evacuate is False or a.transport_available is False)
             assessments = [replace(a, confidence=None) if a.asset_id in pending_assistance else a
                            for a in assessments]
             elapsed = (now - self.epoch).total_seconds() / 60
