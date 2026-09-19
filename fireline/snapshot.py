@@ -18,6 +18,13 @@ headcount sources fill `estimated_occupancy`. `occupancy_register` / `occupancy_
 `occupancy_fetched_at` on the row, when the figure comes from a different register than the
 identity fields, are recorded in the `sources` entry for the occupancy fields.
 
+Behind `config.FEATURES["value_at_risk"]` each record also carries the value-at-risk layer of handoff 002:
+`replacement_value_eur` / `replacement_value_basis` (an assumed per-class figure from
+`config.VALUE_AT_RISK_POLICY`), `people_exposed`, `people_at_risk_p50` / `people_at_risk_p10` and
+`expected_loss_eur_low` / `_mid` / `_high`. The eight keys are an optional flagged extension: with the flag
+off they are absent and the record is unchanged. Every one of them is `null`, never zero, when an input is
+null; `burn_probability = 0.0` is a value, not a null, and gives zeros.
+
 Schema version `1.1`; `validate_snapshot` still accepts `1.0` files, whose v1.1 keys are optional.
 This module never imports `fire_input`; the `fire` argument is a plain dict (or None).
 """
@@ -33,6 +40,7 @@ from shapely.geometry import Point, shape
 from shapely.ops import transform as shapely_transform
 
 from . import config
+from .contact_priority import window_arithmetic
 from .forecast_input import FORECAST_UNAVAILABLE, attach_forecast
 from .grid import lonlat_to_xy
 
@@ -60,11 +68,15 @@ ASSET_KEYS = ("asset_id", "name", "asset_type", "latitude", "longitude", "geomet
               "fire_arrival_basis", "evacuation_min", "evacuation_source", "needs_review",
               "review_reasons", "sources", "municipality")
 TIMING_KEYS = ("fire_arrival_at", "fire_arrival_basis", "evacuation_min", "evacuation_source")   # v1.1
+# Optional flagged extension (FEATURES["value_at_risk"]): all eight present together or all absent.
+VALUE_AT_RISK_KEYS = ("replacement_value_eur", "replacement_value_basis", "expected_loss_eur_low",
+                      "expected_loss_eur_mid", "expected_loss_eur_high", "people_exposed",
+                      "people_at_risk_p50", "people_at_risk_p10")
 SOURCE_KEYS = ("fields", "source", "observed_at", "available_at", "fetched_at", "notes")
 _COMPUTED_FIELDS = {"value_score", "value_basis", "distance_to_fire_m", "intersects_fire",
                     "burn_probability", "arrival_p10_at", "arrival_p50_at", "forecast_horizon_at",
                     "forecast_source", "fire_arrival_at", "fire_arrival_basis", "evacuation_min",
-                    "evacuation_source"}
+                    "evacuation_source", *VALUE_AT_RISK_KEYS}
 
 
 # ------------------------------------------------------------------------------------------ time
@@ -412,6 +424,110 @@ def _enrich_forecast(rec: dict, arrival, as_of: datetime, note: str | None = Non
               + (f"; {note}" if note else "")))
 
 
+# --------------------------------------------------------------------------------- value at risk
+def _arrival_slack_min(rec: dict, field: str, now, evacuation_min: float, buffer_min: float):
+    """(slack_min, known) for one arrival quantile: minutes of window left at `now`.
+
+    `known` is False when the timestamp is unusable. A null quantile on an asset a forecast covers is
+    not a gap: the fire does not reach it inside the horizon, so the window is not exhausted and the
+    caller reads `slack_min = None, known = True` as "not at risk".
+    """
+    raw = rec.get(field)
+    if raw is None:
+        return None, True
+    try:
+        arrival = _utc(raw)
+    except (TypeError, ValueError):
+        return None, False
+    minutes = (arrival - now).total_seconds() / 60.0
+    return window_arithmetic(minutes, evacuation_min, 0.0, buffer_min)["slack_min"], True
+
+
+def derive_value_at_risk(rec: dict, now_at=None, cfg=config) -> None:
+    """Fill the eight `VALUE_AT_RISK_KEYS` of one asset record IN PLACE (handoff 002).
+
+        people_exposed         = estimated_occupancy x burn_probability          # never capacity
+        people_at_risk_p50     = estimated_occupancy if slack_p50 <= 0 else 0
+        people_at_risk_p10     = estimated_occupancy if slack_p10 <= 0 else 0
+        expected_loss_eur_mid  = burn_probability x d_mid  x replacement_value_eur   # low / high alike
+
+    `slack_pXX = arrival_pXX_at - evacuation_min - CONTACT_POLICY["buffer_min"] - now_at`, the remaining
+    evacuation window of `priority.rank_asset` evaluated at each quantile rather than at the selected
+    arrival. The threshold is `<= 0`, matching `window_exhausted`: `people_at_risk` is a re-labelling of
+    that status weighted by headcount, so it uses the same boundary (the handoff writes `< 0`).
+
+    Every field is `null`, never zero, when an input is null: no headcount (`capacity` is never a
+    headcount), no `burn_probability`, no `evacuation_min`, no forecast covering the asset, no location,
+    or a class with no replacement value (`nucleus`, or any class outside the policy). An asset a forecast
+    does cover whose quantile is null is not reached inside the horizon, so `people_at_risk_* = 0`, and
+    `burn_probability = 0.0` gives `people_exposed = 0` and `expected_loss_eur_* = 0`: those are the
+    forecast's statement, not a gap. `now_at` (the snapshot `as_of`) may be None when only the
+    time-independent fields can be re-derived; `people_at_risk_*` is then left as it is.
+
+    One `sources` entry naming exactly the fields it set replaces any earlier entry for them, so
+    re-deriving after an analyst override does not duplicate provenance. No review reason is added: a
+    class that is not valued is reported by the scenario header's excluded count, not by the review queue.
+    """
+    policy = cfg.VALUE_AT_RISK_POLICY
+    band = policy["by_type"].get(rec.get("asset_type"))
+    located = rec.get("latitude") is not None and rec.get("longitude") is not None
+    covered = located and bool(str(rec.get("forecast_source") or "").strip())
+    occupancy = rec.get("estimated_occupancy")
+    occupancy = None if isinstance(occupancy, bool) else _int(occupancy)
+    burn_probability = _num(rec.get("burn_probability"))
+    evacuation_min = rec.get("evacuation_min")
+    evacuation_min = None if isinstance(evacuation_min, bool) else _num(evacuation_min)
+    value = None if band is None else _num(band.get("replacement_value_eur"))
+
+    values = {k: None for k in VALUE_AT_RISK_KEYS}
+    if value is not None:
+        values["replacement_value_eur"] = int(value) if float(value).is_integer() else value
+        values["replacement_value_basis"] = (f"assumed per-class replacement cost for {rec.get('asset_type')}, "
+                                             f"policy {policy['version']} ({policy['value_basis']})")
+    if occupancy is not None and burn_probability is not None:
+        values["people_exposed"] = round(float(occupancy) * burn_probability, 1)
+    if value is not None and burn_probability is not None:
+        for level in ("low", "mid", "high"):
+            values[f"expected_loss_eur_{level}"] = round(burn_probability * float(band[f"d_{level}"]) * value)
+    at_risk = {"people_at_risk_p50": None, "people_at_risk_p10": None}
+    if occupancy is not None and evacuation_min is not None and covered and now_at is not None:
+        now = _utc(now_at)
+        buffer_min = float(cfg.CONTACT_POLICY["buffer_min"])
+        for key, field in (("people_at_risk_p50", "arrival_p50_at"), ("people_at_risk_p10", "arrival_p10_at")):
+            slack, known = _arrival_slack_min(rec, field, now, evacuation_min, buffer_min)
+            if not known:
+                continue                                  # unusable timestamp: leave it null
+            at_risk[key] = occupancy if slack is not None and slack <= 0 else 0
+    if now_at is None:                                    # time-independent re-derivation only
+        at_risk = {k: rec.get(k) for k in at_risk}
+    values.update(at_risk)
+    rec.update(values)
+
+    sources = [s for s in (rec.get("sources") or [])
+               if not (set(s.get("fields") or []) & set(VALUE_AT_RISK_KEYS))]
+    fields = [k for k in VALUE_AT_RISK_KEYS if values[k] is not None]
+    if band is not None and fields:
+        sources.append(_source_entry(fields, "config.VALUE_AT_RISK_POLICY",
+                                     notes=_value_at_risk_note(rec.get("asset_type"), band, value, policy, cfg)))
+    rec["sources"] = sources
+
+
+def _value_at_risk_note(asset_type, band, value, policy, cfg) -> str:
+    money = "not valued" if value is None else f"replacement_value_eur {value:.0f}"
+    return (f"policy {policy['version']} for class {asset_type}: {money}, damage ratio "
+            f"{band['d_low']:g} / {band['d_mid']:g} / {band['d_high']:g} (low / mid / high); "
+            "people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); "
+            "people_at_risk_p50 / _p10 = estimated_occupancy when the remaining evacuation window at that "
+            f"arrival quantile is exhausted (arrival - evacuation_min - buffer {float(cfg.CONTACT_POLICY['buffer_min']):g} min "
+            "<= 0 from as_of), else 0, and 0 when the forecast does not reach the asset inside its horizon; "
+            "expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x replacement_value_eur; "
+            "the replacement value is an assumed per-class placeholder with no per-asset basis and the band "
+            "shown is the damage-ratio band only, so the value uncertainty is at least as large; total "
+            "economic loss (insured and uninsured), not an insurer's figure; euros never enter the ranking, "
+            "the sort or a filter"
+            + (f"; {band['note']}" if band.get("note") else ""))
+
+
 # ---------------------------------------------------------------------------------------- builder
 def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of, input_mode,
                    computed_at=None, data_status=None, metrics=None, arrival=None, forecast=None,
@@ -424,7 +540,8 @@ def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of
     precedence over `arrival` (spread.ArrivalRaster), which is used only when
     `cfg.FEATURES["forecast_enrichment"]` is on (`arrival_note`, optional, is appended to that
     enrichment's provenance entry). Every asset without `fire_arrival_at` afterwards carries
-    `forecast_unavailable`; nothing is inferred from distance.
+    `forecast_unavailable`; nothing is inferred from distance. With `cfg.FEATURES["value_at_risk"]` on,
+    `derive_value_at_risk` then adds the eight value-at-risk keys to every record (absent when it is off).
     """
     if input_mode not in INPUT_MODES:
         raise ValueError(f"input_mode {input_mode!r} not in {INPUT_MODES}")
@@ -479,6 +596,9 @@ def build_snapshot(assets_in, fire, *, scenario_id, incident_id, sequence, as_of
         if rec["fire_arrival_at"] is None and FORECAST_UNAVAILABLE not in rec["review_reasons"]:
             rec["review_reasons"].append(FORECAST_UNAVAILABLE)
             rec["needs_review"] = True
+    if cfg.FEATURES.get("value_at_risk"):   # optional layer: people exposed / at risk and expected loss
+        for rec in assets:
+            derive_value_at_risk(rec, as_of_dt, cfg)
 
     return {
         "schema_version": SCHEMA_VERSION,
@@ -614,6 +734,46 @@ def validate_snapshot(snap) -> list[str]:
                 errs.append(f"{tag}: evacuation_source must be a string")
         elif a["evacuation_source"] is not None:
             errs.append(f"{tag}: evacuation_source must be null without evacuation_min")
+        # value-at-risk layer (optional, FEATURES["value_at_risk"]): all eight keys or none, never a zero
+        # standing in for a null, and euros only where both a burn probability and a class value exist.
+        present = [k for k in VALUE_AT_RISK_KEYS if k in a]
+        if present and len(present) != len(VALUE_AT_RISK_KEYS):
+            missing_var = [k for k in VALUE_AT_RISK_KEYS if k not in a]
+            errs.append(f"{tag}: value-at-risk keys must be all present or all absent (missing {missing_var})")
+        elif present:
+            value, basis = a["replacement_value_eur"], a["replacement_value_basis"]
+            if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))
+                                      or not math.isfinite(value) or value < 0):
+                errs.append(f"{tag}: replacement_value_eur must be a nonnegative finite number or null")
+            if (value is None) != (basis is None):
+                errs.append(f"{tag}: replacement_value_eur and replacement_value_basis must be null together")
+            elif basis is not None and not isinstance(basis, str):
+                errs.append(f"{tag}: replacement_value_basis must be a string")
+            exposed = a["people_exposed"]
+            if exposed is not None and (isinstance(exposed, bool) or not isinstance(exposed, (int, float))
+                                        or not math.isfinite(exposed) or exposed < 0):
+                errs.append(f"{tag}: people_exposed must be a nonnegative finite number or null")
+            if (exposed is None) != (a["estimated_occupancy"] is None or a["burn_probability"] is None):
+                errs.append(f"{tag}: people_exposed must be null iff estimated_occupancy or burn_probability is null")
+            for k in ("people_at_risk_p50", "people_at_risk_p10"):
+                v = a[k]
+                if v is not None and (not isinstance(v, int) or isinstance(v, bool) or v < 0):
+                    errs.append(f"{tag}: {k} must be a nonnegative int or null")
+                elif v is not None and v not in (0, a["estimated_occupancy"]):
+                    errs.append(f"{tag}: {k} must be 0 or the whole estimated_occupancy (no partial clearance)")
+                if v is not None and any(a[f] is None for f in ("estimated_occupancy", "evacuation_min", "forecast_source")):
+                    errs.append(f"{tag}: {k} requires estimated_occupancy, evacuation_min and forecast_source")
+            losses = [a[f"expected_loss_eur_{level}"] for level in ("low", "mid", "high")]
+            for level, v in zip(("low", "mid", "high"), losses):
+                if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float))
+                                      or not math.isfinite(v) or v < 0):
+                    errs.append(f"{tag}: expected_loss_eur_{level} must be a nonnegative finite number or null")
+                if (v is None) != (a["burn_probability"] is None or value is None):
+                    errs.append(f"{tag}: expected_loss_eur_{level} must be null iff burn_probability or "
+                                "replacement_value_eur is null")
+            if all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in losses) \
+                    and not losses[0] <= losses[1] <= losses[2]:
+                errs.append(f"{tag}: expected_loss_eur_low <= _mid <= _high is required")
         reasons = a["review_reasons"]
         if not isinstance(reasons, list) or any(r not in REVIEW_REASONS for r in reasons):
             errs.append(f"{tag}: review_reasons must be a list from {REVIEW_REASONS}")

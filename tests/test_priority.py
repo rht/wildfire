@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from fireline import config
+from fireline import config, snapshot
 from fireline.contact_priority import ContactPolicy, rank_contacts
 from fireline.priority import (SnapshotSequence, apply_overrides, input_age, minutes_between, rank_asset,
                                rank_snapshot)
@@ -377,3 +377,56 @@ def test_asset_type_override_retains_explicit_policy_values(monkeypatch, score):
     assert updated["value_basis"] == config.VALUE_POLICY["version"]
     assert "value_unknown" not in updated["review_reasons"]
     assert "class_ambiguous" not in updated["review_reasons"]
+
+
+# --------------------------------------------------------------------- value at risk (handoff 002)
+def valued(asset_id="fixture:v", asset_type="hospital", estimated_occupancy=120, burn_probability=0.5,
+           evacuation_min=180.0, p10_min=60.0, p50_min=200.0, **kw) -> dict:
+    """An asset carrying the optional value-at-risk fields, derived the way the producer derives them."""
+    asset = timed(asset_id, asset_type=asset_type, evacuation_min=evacuation_min,
+                  estimated_occupancy=estimated_occupancy, burn_probability=burn_probability,
+                  arrival_p10_at=at(p10_min), arrival_p50_at=at(p50_min),
+                  value_score=config.VALUE_POLICY["by_type"].get(asset_type), **kw)
+    snapshot.derive_value_at_risk(asset, AS_OF)
+    return asset
+
+
+def test_valued_asset_starts_from_the_producer_derivation():
+    a = valued()
+    assert a["replacement_value_eur"] == 25_000_000 and a["people_exposed"] == 60.0
+    assert a["expected_loss_eur_mid"] == 3_125_000
+    assert a["people_at_risk_p10"] == 120 and a["people_at_risk_p50"] == 120      # both windows exhausted
+
+
+def test_apply_overrides_asset_type_rederives_value_at_risk():
+    a = apply_overrides([valued()], [override("fixture:v", "asset_type", "school")], now_at=AS_OF)[0]
+    assert a["replacement_value_eur"] == 4_000_000                                # class value follows the class
+    assert (a["expected_loss_eur_low"], a["expected_loss_eur_mid"], a["expected_loss_eur_high"]) == \
+           (300_000, 800_000, 1_600_000)                                          # 0.5 x (0.15, 0.40, 0.80) x 4 M
+    assert a["evacuation_min"] == 90.0                                            # re-derived from the class ...
+    assert a["people_at_risk_p10"] == 120 and a["people_at_risk_p50"] == 0        # ... so the p50 window reopens
+    assert a["people_exposed"] == 60.0                                            # headcount and probability unchanged
+    assert sum("people_exposed" in s["fields"] for s in a["sources"]) == 1        # provenance replaced, not stacked
+    assert a["sources"][-1]["source"].startswith("analyst override")              # the override entry stays last
+
+
+def test_apply_overrides_occupancy_rederives_the_people_fields():
+    a = apply_overrides([valued()], [override("fixture:v", "estimated_occupancy", 40)], now_at=AS_OF)[0]
+    assert a["people_exposed"] == 20.0 and a["people_at_risk_p10"] == 40 and a["people_at_risk_p50"] == 40
+    assert a["expected_loss_eur_mid"] == 3_125_000                                # euros do not depend on headcount
+    # rank_snapshot supplies the epoch itself
+    ranked = rank_snapshot(make_snapshot([valued()]), overrides=[override("fixture:v", "estimated_occupancy", 40)])
+    assert ranked["ranked"][0]["people_at_risk_p10"] == 40
+
+
+def test_apply_overrides_without_an_epoch_leaves_people_at_risk_alone():
+    a = apply_overrides([valued()], [override("fixture:v", "estimated_occupancy", 40)])[0]
+    assert a["people_exposed"] == 20.0                                            # time-independent fields move
+    assert a["people_at_risk_p10"] == 120 and a["people_at_risk_p50"] == 120      # these keep the producer's epoch
+
+
+def test_apply_overrides_leaves_an_asset_without_the_layer_untouched():
+    asset = timed("fixture:x", estimated_occupancy=40)
+    a = apply_overrides([asset], [override("fixture:x", "asset_type", "care_home")], now_at=AS_OF)[0]
+    assert not any(k in a for k in snapshot.VALUE_AT_RISK_KEYS)
+    assert not any(set(s.get("fields") or []) & set(snapshot.VALUE_AT_RISK_KEYS) for s in a["sources"])
