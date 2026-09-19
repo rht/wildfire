@@ -14,10 +14,17 @@ Writes
   fixtures/snapshots/gavarres_real_0001..0003.json  real facilities + three REAL recorded Deepfire satellite
                                                     perimeters (fixtures/fire/deepfire/real/, incident 5769dcea);
                                                     no forecast covers them, so every asset is forecast_unavailable
+  fixtures/snapshots/gavarres_real_0004.json        real facilities + the REAL recorded Deepfire fire-spread run
+                                                    4bbd8e98 (1 member, 12 h, simulated point ignition at the July
+                                                    incident centroid, run 2026-09-19): hour-1 burned area as a
+                                                    `simulated` fire geometry, per-location arrivals through
+                                                    forecast_input.deepfire_spread_to_forecast (0 of 99 located
+                                                    facilities inside the 12 h area: all forecast_unavailable)
 
 The synthetic snapshots get their v1.1 `fire_arrival_at` from the synthetic forecast files through
-`forecast_input.load_forecast` + `snapshot.build_snapshot(forecast=...)`; the real snapshots have no
-forecast (no per-location spread product has been recorded) and never derive one from distance.
+`forecast_input.load_forecast` + `snapshot.build_snapshot(forecast=...)`; the July real snapshots have no
+forecast (Deepfire fire-spread runs are seeded from hotspots observed now, so the July incident cannot be
+simulated) and never derive one from distance.
 Evacuation durations come from `config.EVACUATION_POLICY` by class in both cases.
 
 The real-area extract needs data/assets_in.json and data/unlocated.json (from `scripts/fetch_data.py
@@ -42,7 +49,7 @@ sys.path.insert(0, str(ROOT))
 
 from fireline import config  # noqa: E402
 from fireline.fire_state import FireState  # noqa: E402
-from fireline.forecast_input import SYNTHETIC_LABEL, load_forecast  # noqa: E402
+from fireline.forecast_input import SYNTHETIC_LABEL, forecast_from_recorded_spread, load_forecast, read_recorded_spread  # noqa: E402
 from fireline.grid import xy_to_lonlat  # noqa: E402
 from fireline.snapshot import asset_record, build_snapshot, validate_snapshot, write_snapshot  # noqa: E402
 
@@ -318,9 +325,17 @@ def write_real_area(located, unlocated) -> list[dict]:
         "  recorded Deepfire satellite perimeters** (`fixtures/fire/deepfire/real/`, `input_mode: recorded`);",
         "  the register extract (2026-09-19) postdates the fire (July 2026), so this is a recorded-input demo,",
         "  not historical as-of replay (readme section 4).",
-        "- **No forecast covers the real area** (no per-location spread product has been recorded for the incident),",
-        "  so in the real snapshots every asset has `fire_arrival_at` null with `forecast_unavailable` (schema 1.1);",
-        "  arrival is never derived from distance, and the consumer shows them as an unranked review queue.",
+        "- **No forecast covers the July snapshots** (`gavarres_real_0001..0003`): Deepfire fire-spread runs are seeded",
+        "  from hotspots observed within a lookback of NOW (no as-of parameter; the July incident returns 422 and the",
+        "  account archive starts 2026-07-10), so every asset has `fire_arrival_at` null with `forecast_unavailable`",
+        "  (schema 1.1); arrival is never derived from distance, and the consumer shows an unranked review queue.",
+        "- `gavarres_real_0004.json` (sequence 4, `as_of` 2026-09-19T13:49:18Z) uses the REAL recorded fire-spread run",
+        "  `4bbd8e98` (elmfire, 1 member, 12 h, simulated point ignition at the July incident centroid, run on",
+        "  2026-09-19): `fire_geometry` is its hour-1 burned area labelled `fire_geometry_kind: simulated`, and the",
+        "  per-location forecast comes from `forecast_input.deepfire_spread_to_forecast` (hourly isochrone crossing,",
+        "  t0 = createdAt assumed). Its 12 h burned area is about 20 ha and the nearest located facility is 5.3 km",
+        "  away, so **0 of 99 located facilities get a `fire_arrival_at`** (the 5-member run at member fraction 0.2",
+        "  also covers none); the adapter path is demonstrated, not tuned to produce arrivals.",
         f"  `evacuation_min` comes from `config.EVACUATION_POLICY` ({config.EVACUATION_POLICY['version']}) for the",
         "  classes hospital, care_home, school and campsite; no row has an unknown class.",
         "",
@@ -338,12 +353,12 @@ def synthetic_assets() -> list[dict]:
 
 
 def build_pair(assets, fires, scenario_id: str, incident_id: str, input_mode: str = "synthetic",
-               forecasts: list[dict | None] | None = None) -> list[dict]:
-    """One snapshot per (fire, as_of); `forecasts[i]` (a loaded forecast-input-1 dict or None) goes to
-    `build_snapshot(forecast=...)`; without one every asset is forecast_unavailable."""
+               forecasts: list[dict | None] | None = None, start_sequence: int = 1) -> list[dict]:
+    """One snapshot per (fire, as_of) from `start_sequence`; `forecasts[i]` (a loaded forecast-input-1 dict
+    or None) goes to `build_snapshot(forecast=...)`; without one every asset is forecast_unavailable."""
     snaps = []
     forecasts = forecasts or [None] * len(fires)
-    for seq, ((fire, t), forecast) in enumerate(zip(fires, forecasts), start=1):
+    for seq, ((fire, t), forecast) in enumerate(zip(fires, forecasts), start=start_sequence):
         observed = datetime.fromisoformat(fire["observed_at"]) if fire.get("observed_at") else None
         age = (t - observed).total_seconds() if observed else None
         snap = build_snapshot(assets, fire, scenario_id=scenario_id, incident_id=incident_id, sequence=seq,
@@ -395,6 +410,13 @@ def main() -> int:
         print("fixtures/fire/deepfire/real/ has no satellite-perimeters response: real snapshots not rebuilt")
         return 0
     build_pair(records, real_fires, "gavarres_real", real_fires[0][0]["incident_id"], input_mode="recorded")
+    sim = simulated_real_fire(records)
+    if sim is None:
+        print("fixtures/fire/deepfire/real/ has no fire-spread response: gavarres_real_0004 not rebuilt")
+        return 0
+    fire, as_of, forecast = sim
+    build_pair(records, [(fire, as_of)], "gavarres_real", real_fires[0][0]["incident_id"], input_mode="recorded",
+               forecasts=[forecast], start_sequence=len(real_fires) + 1)
     return 0
 
 
@@ -426,6 +448,48 @@ def recorded_real_fires() -> list[tuple[dict, datetime]] | None:
             updates.append((upd, computed))
     updates.sort(key=lambda u: u[1])
     return [updates[i] for i in REAL_PERIMETER_PICKS]
+
+
+# ------------------------------------------------------------------------ real fire-spread run
+SPREAD_RUN_FILE = REAL_FIRE_DIR / "20260919T135029Z_fire-spread-simulation-latlon_12h_1member.json"
+SPREAD_FIRE_SOURCE = ("deepfire:fire-spread/elmfire/4bbd8e98 (simulated point ignition at the July incident centroid, "
+                      "run 2026-09-19; not an observed perimeter)")
+
+
+def simulated_real_fire(records) -> tuple[dict, datetime, dict] | None:
+    """(FireUpdate, as_of, forecast) for gavarres_real_0004 from the recorded 1-member fire-spread run.
+
+    fire_geometry = the run's hour-1 cumulative burned area labelled `simulated`; `observed_at` and `as_of`
+    = the run's createdAt (t0 assumption, see forecast_input); the forecast = hourly isochrone crossing per
+    located facility through `forecast_from_recorded_spread`. The 5-member run at member fraction 0.2 covers
+    the same zero facilities (checked 2026-09-19), so the deterministic run is committed as the labelled example."""
+    if not SPREAD_RUN_FILE.exists():
+        return None
+    from shapely import make_valid
+    from shapely.geometry import mapping, shape
+    from shapely.ops import unary_union
+
+    rec = read_recorded_spread(SPREAD_RUN_FILE)
+    body = rec["body"]
+    hour1 = next(ft for ft in body["result"]["features"] if ft["properties"]["hour"] == 1)
+    geom = make_valid(shape(hour1["geometry"]))
+    if geom.geom_type == "GeometryCollection":
+        geom = unary_union([g for g in geom.geoms if g.geom_type in ("Polygon", "MultiPolygon")])
+    created = datetime.fromisoformat(body["createdAt"].replace("Z", "+00:00"))
+    fire = {
+        "provider": "deepfire",
+        "incident_id": body["id"],
+        "observed_at": created.isoformat(),
+        "received_at": rec["received_at"],
+        "geometry": json.loads(json.dumps(mapping(geom))),
+        "geometry_kind": "simulated",
+        "source": SPREAD_FIRE_SOURCE,
+        "raw_ref": str(SPREAD_RUN_FILE.relative_to(ROOT)),
+        "notes": "hour-1 cumulative burned area of a simulated point ignition; t0 = createdAt assumed",
+    }
+    points = {a["asset_id"]: (a["longitude"], a["latitude"]) for a in records if a["latitude"] is not None}
+    forecast = forecast_from_recorded_spread(SPREAD_RUN_FILE, points)
+    return fire, created, forecast
 
 
 if __name__ == "__main__":

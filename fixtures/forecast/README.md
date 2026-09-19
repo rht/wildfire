@@ -17,5 +17,7 @@ Both are **synthetic, not a provider forecast**: the numbers are the `SYNTHETIC_
 the readme section 11 "Priority" checks are demonstrable (farther downwind outranks nearer off-axis,
 exhausted windows and an order change at 10:00, a located asset without an estimate, an exact tie).
 The reasoning is in each file's `note`. `fixture:vall_repos` and the unlocated care home are
-deliberately absent. No real forecast file exists yet: the Deepfire fire-spread adapter is an
-unimplemented extension point in `fireline/forecast_input.py`.
+deliberately absent. No real forecast file lives here: the real fire-spread runs are recorded as raw
+responses in `fixtures/fire/deepfire/real/` and turned into a forecast dict at build time by
+`forecast_input.deepfire_spread_to_forecast` (see that directory's README), which fills the optional
+per-estimate `arrival_at` key and a descriptive `basis`.

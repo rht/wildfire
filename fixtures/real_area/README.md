@@ -32,8 +32,16 @@ Municipalities with located rows (24): Begur, Bordils, Calonge i Sant Antoni, Ca
   recorded Deepfire satellite perimeters** (`fixtures/fire/deepfire/real/`, `input_mode: recorded`);
   the register extract (2026-09-19) postdates the fire (July 2026), so this is a recorded-input demo,
   not historical as-of replay (readme section 4).
-- **No forecast covers the real area** (no per-location spread product has been recorded for the incident),
-  so in the real snapshots every asset has `fire_arrival_at` null with `forecast_unavailable` (schema 1.1);
-  arrival is never derived from distance, and the consumer shows them as an unranked review queue.
+- **No forecast covers the July snapshots** (`gavarres_real_0001..0003`): Deepfire fire-spread runs are seeded
+  from hotspots observed within a lookback of NOW (no as-of parameter; the July incident returns 422 and the
+  account archive starts 2026-07-10), so every asset has `fire_arrival_at` null with `forecast_unavailable`
+  (schema 1.1); arrival is never derived from distance, and the consumer shows an unranked review queue.
+- `gavarres_real_0004.json` (sequence 4, `as_of` 2026-09-19T13:49:18Z) uses the REAL recorded fire-spread run
+  `4bbd8e98` (elmfire, 1 member, 12 h, simulated point ignition at the July incident centroid, run on
+  2026-09-19): `fire_geometry` is its hour-1 burned area labelled `fire_geometry_kind: simulated`, and the
+  per-location forecast comes from `forecast_input.deepfire_spread_to_forecast` (hourly isochrone crossing,
+  t0 = createdAt assumed). Its 12 h burned area is about 20 ha and the nearest located facility is 5.3 km
+  away, so **0 of 99 located facilities get a `fire_arrival_at`** (the 5-member run at member fraction 0.2
+  also covers none); the adapter path is demonstrated, not tuned to produce arrivals.
   `evacuation_min` comes from `config.EVACUATION_POLICY` (evacuation-proto-2026-09-19) for the
   classes hospital, care_home, school and campsite; no row has an unknown class.
