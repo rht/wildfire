@@ -1,7 +1,12 @@
 """Replay harness and scoring for the recorded Gavarres incident (no network, committed fixtures)."""
 
 import json
+import importlib.util
+import os
+import re
+import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -12,6 +17,7 @@ from fireline.grid import Grid
 
 INCIDENT = "5769dcea"
 START = datetime(2026, 7, 3, 11, 47, tzinfo=timezone.utc)
+ROOT = Path(__file__).resolve().parents[1]
 
 # observed_watermark -> recomputed area in EPSG:25831 (hectares), handoff 001 table
 EXPECTED_AREAS = [
@@ -50,6 +56,19 @@ def test_load_perimeters_are_the_one_recorded_incident(perims):
     assert {p.id for p in perims} == {f["properties"]["id"] for f in feats}
 
 
+def test_load_perimeters_normalizes_paths_before_caching(monkeypatch):
+    source = calibrate._perimeters_file(None)
+    monkeypatch.chdir(ROOT)
+    calibrate._load_perimeters.cache_clear()
+
+    relative = calibrate.load_perimeters(source.relative_to(ROOT))
+    absolute = calibrate.load_perimeters(source)
+
+    assert relative == absolute
+    assert calibrate._load_perimeters.cache_info().hits == 1
+    assert calibrate._load_perimeters.cache_info().misses == 1
+
+
 def test_pairs_use_observation_times(perims):
     prs = calibrate.pairs(perims)
     assert [p.minutes for p in prs] == [19.0, 47.0, 32.0, 21.0, 54.0, 814.0]
@@ -77,6 +96,18 @@ def test_wind_series_overnight_pair_ends_calm_and_veered():
     assert ws[0] == (-40.0, 36.0, 3.72)
     assert ws[-1] == (800.0, 349.0, 2.14)          # 07-04 04:00Z, 13 h 20 min after the start
     assert all(b[0] > a[0] for a, b in zip(ws, ws[1:]))
+
+
+def test_wind_series_normalizes_paths_before_caching(monkeypatch):
+    monkeypatch.chdir(ROOT)
+    calibrate._read_wind.cache_clear()
+
+    relative = calibrate.wind_series(START, 10, calibrate.WIND_FILE.relative_to(ROOT))
+    absolute = calibrate.wind_series(START, 10, calibrate.WIND_FILE)
+
+    assert relative == absolute
+    assert calibrate._read_wind.cache_info().hits == 1
+    assert calibrate._read_wind.cache_info().misses == 1
 
 
 def test_wind_series_without_usable_values_raises(tmp_path):
@@ -242,3 +273,38 @@ def test_calm_wind_area_ha_returns_a_positive_area():
     assert isinstance(ha, float)
     assert ha > 0.0
     assert ha >= np.pi * 1000.0 ** 2 / 1e4 * 0.9      # at least about the seed disc
+
+
+def _calibration_script():
+    spec = importlib.util.spec_from_file_location("calibrate_ca_script", ROOT / "scripts/calibrate_ca.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_git_revision_returns_current_commit():
+    script = _calibration_script()
+    revision = script._git_revision(ROOT)
+    assert revision is not None
+    assert re.fullmatch(r"[0-9a-f]{40}", revision)
+
+
+def test_git_revision_failure_keeps_optional_provenance_empty(tmp_path):
+    script = _calibration_script()
+    assert script._git_revision(tmp_path) is None
+
+
+def test_git_revision_timeout_keeps_optional_provenance_empty(tmp_path, monkeypatch):
+    script = _calibration_script()
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    fake_git = fake_bin / "git"
+    fake_git.write_text("#!/usr/bin/env python3\nimport time\ntime.sleep(10)\n", encoding="utf-8")
+    fake_git.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{fake_bin}{os.pathsep}{os.environ['PATH']}")
+
+    started = time.monotonic()
+    revision = script._git_revision(ROOT, timeout_seconds=0.01)
+
+    assert revision is None
+    assert time.monotonic() - started < 1.0

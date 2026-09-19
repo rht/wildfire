@@ -81,6 +81,7 @@ SNAPSHOT_AS_OF = [
 ]
 SNAPSHOT_HORIZON_MIN = 720
 ASSETS_FILE = ROOT / "fixtures" / "real_area" / "assets_gavarres.json"
+GIT_REVISION_TIMEOUT_SECONDS = 5.0
 
 
 # ------------------------------------------------------------------------------------- objective
@@ -164,7 +165,7 @@ def seed_stability(prs, grid, cfg, seeds, *, n_runs: int) -> dict:
 
 
 def located_assets() -> list[tuple[float, float]]:
-    rows = json.loads(ASSETS_FILE.read_text())["assets"]
+    rows = json.loads(ASSETS_FILE.read_text(encoding="utf-8"))["assets"]
     return [(float(r["longitude"]), float(r["latitude"])) for r in rows
             if r.get("latitude") is not None and r.get("longitude") is not None]
 
@@ -224,6 +225,22 @@ def verdict(scores: dict[int, cal.PairScore]) -> dict:
             "pass": bool(c2_val < 0.20), "growth_frac_of_observed": c2_val,
             "pair": scores[OVERNIGHT].label},
     }
+
+
+def _git_revision(root: Path, *, timeout_seconds: float = GIT_REVISION_TIMEOUT_SECONDS) -> str | None:
+    """Return the current revision when available; report provenance remains optional."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=root,
+            capture_output=True,
+            check=True,
+            timeout=timeout_seconds,
+            encoding="utf-8",
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        return None
+    return result.stdout.strip() or None
 
 
 # ------------------------------------------------------------------------------------------- main
@@ -349,8 +366,7 @@ def main() -> int:
     print(f"  3 calm-wind 12 h area documented: {calm_after:,.1f} ha "
           f"({'tens of hectares' if c3['pass'] else 'still large'})")
 
-    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
-                            text=True).stdout.strip() or None
+    commit = _git_revision(ROOT)
     payload = {
         "produced_on": "2026-09-19",
         "git_commit": commit,
@@ -413,7 +429,7 @@ def main() -> int:
         ],
     }
     args.json.parent.mkdir(parents=True, exist_ok=True)
-    args.json.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n")
+    args.json.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n", encoding="utf-8")
     print(f"\nwrote {args.json.relative_to(ROOT) if args.json.is_relative_to(ROOT) else args.json}"
           f"  ({time.time() - t_start:.0f}s total)")
     return 0

@@ -78,8 +78,8 @@ def _perimeters_file(path: Path | None) -> Path:
 
 
 @lru_cache(maxsize=8)
-def _load_perimeters(path_str: str) -> tuple[Perimeter, ...]:
-    rec = json.loads(Path(path_str).read_text())
+def _load_perimeters(path: Path) -> tuple[Perimeter, ...]:
+    rec = json.loads(path.read_text(encoding="utf-8"))
     body = rec.get("body", rec)
     out = []
     for feat in body["features"]:
@@ -100,7 +100,8 @@ def _load_perimeters(path_str: str) -> tuple[Perimeter, ...]:
 
 def load_perimeters(path: Path | None = None) -> list[Perimeter]:
     """Every perimeter of the recorded incident, ascending by ``observed_at``."""
-    return list(_load_perimeters(str(_perimeters_file(path))))
+    source = _perimeters_file(path).expanduser().resolve()
+    return list(_load_perimeters(source))
 
 
 @dataclass(frozen=True)
@@ -127,9 +128,9 @@ def pairs(perims: list[Perimeter]) -> list[Pair]:
 # ------------------------------------------------------------------------------------------ wind
 
 @lru_cache(maxsize=8)
-def _read_wind(path_str: str) -> tuple[tuple[datetime, float, float], ...]:
+def _read_wind(path: Path) -> tuple[tuple[datetime, float, float], ...]:
     """(valid hour UTC, dir_from_deg, speed_mps) of every hour with both values, ascending."""
-    series = json.loads(Path(path_str).read_text())
+    series = json.loads(path.read_text(encoding="utf-8"))
     rows = [(datetime.fromisoformat(t).replace(tzinfo=timezone.utc), float(d), float(v))
             for t, v, d in zip(series["time"], series["wind_speed_10m"], series["wind_direction_10m"])
             if v is not None and d is not None]
@@ -145,7 +146,8 @@ def wind_series(start: datetime, minutes: float, path: Path | None = None
     sample per following hour boundary inside the window. Hours with a null speed or direction are
     skipped. Raises ValueError when the window holds no usable value.
     """
-    series = _read_wind(str(path or WIND_FILE))
+    source = (Path(path) if path is not None else WIND_FILE).expanduser().resolve()
+    series = _read_wind(source)
     start = start.astimezone(timezone.utc)
     hour0 = start.replace(minute=0, second=0, microsecond=0)
     end = start + timedelta(minutes=float(minutes))
