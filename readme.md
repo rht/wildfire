@@ -1422,3 +1422,95 @@ Implementation plan (execute locally using Superpowers test-first and verificati
    `python -m fireline.discovery` with local input/output, cache and previous-result flags.
 4. Run focused and full offline pytest, scoped code review and changed-file Norma checks;
    fix actual findings, commit/push `codex/fire-discovery`, and open a PR to main.
+
+### Fire-discovery interface and offline example
+
+```python
+from fireline.discovery import DiscoveryConfig, DiscoveryService, records_from_registers
+from fireline.snapshot import build_snapshot
+
+# records may also be supplied as existing assets_in or snapshot-style records.
+records = records_from_registers(local_register_extracts)
+service = DiscoveryService(lambda bounds: records, source_id="local-registers:revision-1",
+                           cache_dir="data/discovery-cache")
+result = service.discover(fire_update, predicted_spread=spread_geojson,
+                          horizon_minutes=120,
+                          config=DiscoveryConfig(threat_buffer_m=1000,
+                                                 destination_buffer_m=10000),
+                          previous=previous_result)
+# Keep the discovery sidecar for classification, unknowns, and conflict review.
+snapshot = build_snapshot(result["assets_in"], fire_update, scenario_id="incident-demo",
+                          incident_id=fire_update["incident_id"], sequence=1,
+                          as_of=fire_update["received_at"], computed_at=fire_update["received_at"],
+                          input_mode="recorded")
+```
+
+Run the synthetic example without credentials, network, calls or LLMs:
+
+```sh
+PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m fireline.discovery \
+  --input fixtures/discovery/synthetic.json --output data/discovery/synthetic.json \
+  --cache-dir data/discovery/cache
+```
+
+The JSON bundle accepts `fire_update`, `assets_in`, `registers`, `predicted_spread`,
+`horizon_minutes`, `config`, and `tracked_assets`. Use `--previous` to retain earlier
+results across CLI invocations, and `--refresh` to bypass cached source queries.
+Output is deterministic for identical inputs. Snapshots use explicit timestamps above;
+discovery never invokes the expensive spread/routing pipeline. `equipaments_source(bounds)`
+is an opt-in network adapter for a bounded existing feed query, never used by the CLI.
+Registers with no coordinates must come from a caller-scoped extract and stay unlocated;
+no bulk live register fetch was used for verification.
+
+`DiscoveryService(source, *, source_id, cache_dir=None).discover(fire_update, *,
+predicted_spread=None, horizon_minutes=None, config=DiscoveryConfig(), previous=None,
+tracked_assets=(), refresh=False)` returns this `discovery-1` shape:
+
+- `incident_id`, `fire_update`, `predicted_spread`, `source_id`: internal provenance.
+- `areas`: `basis`, `horizon_minutes`, `threat_geometry`, `destination_geometry`,
+  `threat_bounds`, `destination_bounds`, `limitations`. Bounds are west/south/east/north.
+- `assets_in`: one snapshot-compatible record per stable ID, sorted by ID.
+- `classifications`: ID to `threatened_search`, `destination_candidate`,
+  `unlocated_review`, or `retained_outside_search`.
+- `review_records`: missing IDs and invalid locations with their original evidence.
+- `conflicts`: disputed fields with known alternatives; merged values remain null even
+  on subsequent partial refreshes. An explicit analyst resolution outside discovery is
+  required to clear the conflict ledger. List union is restricted to provenance/review lists.
+- `errors`: sanitized source failure class and source ID; failed queries are not cached.
+
+Current polygons and every selected forecast polygon are unioned independently of input
+ordering; holes remain holes. `horizon_minutes` filters `properties.elapsed_seconds` from
+one caller-supplied forecast epoch. Untimed footprints are included with a limitation;
+there is no interpolation at the horizon, inference of arrival times, or probability model.
+Buffers use a local azimuthal projection; extents wider than 10 degrees, polar areas above
+80 degrees, and antimeridian crossings are rejected rather than queried incorrectly.
+`fallback_radius_m` explicitly configures a point-only fallback; `fallback_bbox` configures
+an ordered WGS84 extent when geometry is absent. Neither is a predicted footprint.
+
+The destination buffer is *additional* to the threatened-area buffer. Its candidates still
+need suitability, current capacity, routes and approval from evacuation planning. No
+containment capabilities are claimed. Retained outside-search assets remain tracked, not
+newly threatened. Cross-incident previous results are rejected. Revisioned cache entries
+have no hidden expiry: callers update `source_id` or request `refresh=True` for new data.
+
+This result is an internal collection artifact: raw register evidence can contain contact
+data, so do not publish it as `coordination-state-1`. Use snapshot/public-envelope adapters.
+The existing snapshot conversion regenerates its review reasons; retain the discovery
+sidecar to preserve arbitrary source review reasons and disputed values. The integration
+boundary to snapshot-call-adapter is the existing validated location snapshot, not this
+collection envelope. No sibling implementation code is required or imported here.
+
+Fire-discovery verification: 29 focused tests and the full offline suite (630 passed,
+1 skipped). Scoped read-only review found six issues, all fixed with regression tests;
+final review found no remaining actionable findings. Changed-file Norma checks passed
+for tests and JSON; Markdown has no applicable rules. Five `deepcopy` performance
+advisories remain intentionally accepted because nested provenance/review evidence must
+not alias caller-owned objects (covered by mutation-isolation tests). Conditional and
+dictionary-lookup findings were fixed. No live registers, calls or paid models were used.
+
+Sibling integration was checked against evacuation-plans export `candidate_from_record`
+at `1f589a4ee4747dd3fe2b9d84887ffc2d22b5a431`: selecting records classified
+`destination_candidate` preserves stable IDs and leaves capacity/capabilities unknown and
+approval false. Snapshot-call-adapter's published interface consumes the existing validated
+snapshot, which the discovery CLI contract test builds. Deployment wiring, verified contact
+selection and approved destination evidence remain downstream integration responsibilities.

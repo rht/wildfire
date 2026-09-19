@@ -17,10 +17,12 @@ import tempfile
 from typing import Callable, Iterable
 
 from pyproj import CRS, Transformer
+from shapely.errors import ShapelyError
 from shapely.geometry import Point, box, mapping, shape
 from shapely.ops import transform, unary_union
 
 from . import feeds
+from .snapshot import asset_record
 
 
 @dataclass(frozen=True)
@@ -51,7 +53,10 @@ def _json(value):
 
 
 def _geometry(value):
-    geom = shape(value)
+    try:
+        geom = shape(value)
+    except (ShapelyError, ValueError, TypeError, KeyError, AttributeError, IndexError) as exc:
+        raise ValueError('invalid GeoJSON geometry') from exc
     if geom.is_empty or not geom.is_valid:
         raise ValueError('empty or invalid geometry')
     w, s, e, n = geom.bounds
@@ -78,10 +83,11 @@ def _forecast_polygons(value, horizon_minutes, limitations):
         if horizon_minutes is not None:
             if elapsed is None:
                 limitations.append('undated forecast footprint included; horizon cannot filter it')
-            elif isinstance(elapsed, bool) or not math.isfinite(float(elapsed)) or float(elapsed) < 0:
-                raise ValueError('elapsed_seconds must be finite and nonnegative')
-            elif float(elapsed) > horizon_minutes * 60:
-                continue
+            else:
+                if isinstance(elapsed, bool) or not math.isfinite(float(elapsed)) or float(elapsed) < 0:
+                    raise ValueError('elapsed_seconds must be finite and nonnegative')
+                if float(elapsed) > horizon_minutes * 60:
+                    continue
         geom = _geometry(feature['geometry'])
         if geom.geom_type not in ('Polygon', 'MultiPolygon'):
             raise ValueError('predicted spread must contain polygon footprints')
@@ -140,6 +146,11 @@ def derive_search_areas(fire_update, *, predicted_spread=None, horizon_minutes=N
     destination = transform(inverse, projected.buffer(radius + config.destination_buffer_m))
     if not radius and not config.destination_buffer_m:
         destination = base
+    # Projection inversion can wrap even when the input does not cross the date line.
+    for area in (threat, destination):
+        _geometry(mapping(area))
+        if area.bounds[2] - area.bounds[0] > 10 or area.bounds[3] - area.bounds[1] > 10:
+            raise ValueError('buffered discovery area exceeds local 10-degree extent')
     def encoded(geom):
         return json.loads(_json(mapping(geom.normalize())))
     return {'basis': basis, 'horizon_minutes': horizon_minutes,
@@ -195,6 +206,26 @@ def _location(record):
         return None
 
 
+def _canonical_group(group):
+    """Only mixed input formats need normalization; preserve raw records otherwise."""
+    if not any(any(key in r for key in ('asset_type', 'latitude', 'capacity')) for r in group):
+        return group
+    result = []
+    for record in group:
+        if any(key in record for key in ('asset_type', 'latitude', 'capacity')):
+            result.append(record)
+            continue
+        normalized = {**record, **asset_record(record)}
+        for key in ('review_reasons', 'sources'):
+            if isinstance(record.get(key), list):
+                normalized[key] = normalized.get(key, []) + record[key]
+        normalized['needs_review'] = record.get('needs_review', normalized['needs_review'])
+        for key in ('asset_class', 'lon', 'lat', 'occupancy', 'occupancy_source'):
+            normalized.pop(key, None)
+        result.append(normalized)
+    return result
+
+
 def _deduplicate(records):
     grouped = defaultdict(list)
     review, conflicts, assets = [], [], []
@@ -205,15 +236,16 @@ def _deduplicate(records):
         else:
             grouped[aid].append(record)
     for aid, group in sorted(grouped.items()):
+        group = _canonical_group(group)
         merged = {}
         for field in sorted(set().union(*(r.keys() for r in group))):
             values = {_json(r[field]): r[field] for r in group if r.get(field) is not None}
             unique = [values[key] for key in sorted(values)]
             if len(unique) <= 1:
                 merged[field] = deepcopy(unique[0]) if unique else None
-            elif all(isinstance(v, list) for v in unique):
+            elif field in ('sources', 'review_reasons', 'needs_review') and all(isinstance(v, list) for v in unique):
                 items = {_json(item): item for value in unique for item in value}
-                merged[field] = [items[key] for key in sorted(items)]
+                merged[field] = deepcopy([items[key] for key in sorted(items)])
             else:
                 merged[field] = None
                 conflicts.append({'asset_id': aid, 'field': field, 'values': unique})
@@ -280,15 +312,25 @@ class DiscoveryService:
             collected = []
             errors.append({'source_id': self.source_id, 'error': type(exc).__name__,
                            'reason': 'facility_source_unavailable'})
-        selected = []
-        for record in collected:
-            location = _location(record)
-            if location is None or destination.intersects(location) or record.get('asset_id') in retained_ids:
-                selected.append(record)
-        assets, review, conflicts = _deduplicate(retained + selected)
-        classes = {}
+        # Reintroduce unresolved evidence before merging, so a later partial source cannot
+        # turn a disputed field into a fact. Resolution belongs to an explicit analyst step.
+        prior_records = {r['asset_id']: r for r in previous.get('assets_in', [])}
+        evidence = [{**prior_records[c['asset_id']], c['field']: value}
+                    for c in previous.get('conflicts', []) if c['asset_id'] in prior_records
+                    for value in c['values']]
+        assets, review, conflicts = _deduplicate(retained + collected + evidence)
+        conflicted_locations = {c['asset_id'] for c in conflicts
+                                if c['field'] in ('geometry', 'lon', 'lat', 'longitude', 'latitude')}
+        selected, classes = [], {}
         for record in assets:
+            if record['asset_id'] in conflicted_locations:
+                for key in ('geometry', 'lon', 'lat', 'longitude', 'latitude'):
+                    if key in record:
+                        record[key] = None
             location = _location(record)
+            if location is not None and not destination.intersects(location) and record['asset_id'] not in retained_ids:
+                continue
+            selected.append(record)
             if location is None:
                 category = 'unlocated_review'
                 # Keep malformed input for review, but don't pass unusable geometry to snapshots.
@@ -310,7 +352,8 @@ class DiscoveryService:
             return [indexed[key] for key in sorted(indexed)]
         return {'schema_version': 'discovery-1', 'incident_id': fire_update.get('incident_id'),
                 'fire_update': deepcopy(fire_update), 'source_id': self.source_id,
-                'areas': areas, 'assets_in': assets, 'classifications': classes,
+                'predicted_spread': deepcopy(predicted_spread),
+                'areas': areas, 'assets_in': selected, 'classifications': classes,
                 'review_records': unique(list(previous.get('review_records', [])) + review),
                 'conflicts': unique(list(previous.get('conflicts', [])) + conflicts), 'errors': errors}
 

@@ -154,3 +154,172 @@ def test_offline_cli_example_produces_deterministic_snapshot(tmp_path):
     before = output.read_bytes()
     subprocess.run(command, check=True, capture_output=True, text=True)
     assert output.read_bytes() == before
+
+
+@pytest.mark.parametrize('options', [
+    {'threat_buffer_m': -1}, {'destination_buffer_m': float('inf')},
+    {'fallback_radius_m': 0}, {'fallback_bbox': (3, 42, 2, 43)}])
+def test_invalid_search_configuration_is_rejected(options):
+    with pytest.raises(ValueError):
+        discovery.DiscoveryConfig(**options)
+
+
+def test_ring_order_and_multipart_order_do_not_change_areas():
+    a, b = box(2, 42, 2.02, 42.02), box(2.1, 42, 2.12, 42.02)
+    from shapely.geometry import MultiPolygon, Polygon
+    reordered = MultiPolygon([Polygon(list(b.exterior.coords)[::-1]), Polygon(list(a.exterior.coords)[::-1])])
+    assert discovery.derive_search_areas(fire(mapping(MultiPolygon([a, b])))) == discovery.derive_search_areas(fire(mapping(reordered)))
+
+
+def test_unusable_location_preserves_evidence_but_can_build_snapshot():
+    bad = row('broken', lon='unknown', geometry={'type': 'NotGeoJSON'})
+    result = discovery.DiscoveryService(lambda bounds: [bad], source_id='bad:v1').discover(
+        fire(mapping(box(2, 42, 2.02, 42.02))))
+    assert result['classifications']['broken'] == 'unlocated_review'
+    assert result['review_records'][0]['record']['geometry'] == {'type': 'NotGeoJSON'}
+    snap = build_snapshot(result['assets_in'], fire(mapping(box(2, 42, 2.02, 42.02))),
+                          scenario_id='s', incident_id='synthetic-discovery', sequence=1,
+                          as_of=T0, computed_at=T0, input_mode='synthetic')
+    assert validate_snapshot(snap) == []
+    assert snap['assets'][0]['longitude'] is None
+
+
+def test_outside_duplicate_cannot_hide_conflicting_location():
+    records = [row('same', 2.01), row('same', 5.0)]
+    result = discovery.DiscoveryService(lambda bounds: records, source_id='dupes:v1').discover(
+        fire(mapping(box(2, 42, 2.02, 42.02))), config=config())
+    assert result['classifications']['same'] == 'unlocated_review'
+    assert any(c['field'] == 'lon' for c in result['conflicts'])
+
+
+def test_duplicate_uncertainty_is_not_silently_resolved_by_next_single_row():
+    update = fire(mapping(box(2, 42, 2.02, 42.02)))
+    first = discovery.DiscoveryService(lambda bounds: [row('a', occupancy=10), row('a', occupancy=20)],
+                                       source_id='v1').discover(update)
+    second = discovery.DiscoveryService(lambda bounds: [row('a', occupancy=20)], source_id='v2').discover(
+        update, previous=first)
+    assert second['assets_in'][0]['occupancy'] is None
+    assert second['conflicts'] == first['conflicts']
+
+
+def test_geometry_coordinate_lists_are_not_unioned_as_review_lists():
+    records = [row('same', geometry=mapping(Point(2.01, 42.01))),
+               row('same', geometry=mapping(Point(2.015, 42.01)))]
+    result = discovery.DiscoveryService(lambda bounds: records, source_id='v1').discover(
+        fire(mapping(box(2, 42, 2.02, 42.02))))
+    assert result['assets_in'][0]['geometry'] is None
+    assert result['classifications']['same'] == 'unlocated_review'
+
+
+def test_forecast_provenance_and_source_input_are_not_mutated():
+    spread = {'type': 'Feature', 'properties': {'source': 'synthetic only', 'elapsed_seconds': 60},
+              'geometry': mapping(box(2, 42, 2.03, 42.03))}
+    original = row('a', sources=[{'source':'local'}], custom={'nested': ['original']})
+    service = discovery.DiscoveryService(lambda bounds: [original], source_id='fixture:v1')
+    result = service.discover(fire(mapping(box(2, 42, 2.02, 42.02))), predicted_spread=spread)
+    assert result['predicted_spread'] == spread
+    result['assets_in'][0]['custom']['nested'].append('changed')
+    assert original['custom']['nested'] == ['original']
+    result['predicted_spread']['properties']['source'] = 'changed'
+    assert spread['properties']['source'] == 'synthetic only'
+
+
+def test_cache_refresh_and_new_service_reuse(tmp_path):
+    update = fire(mapping(box(2, 42, 2.02, 42.02)))
+    service = discovery.DiscoveryService(lambda bounds: [row('old')], source_id='v1', cache_dir=tmp_path)
+    service.discover(update)
+    fresh = discovery.DiscoveryService(lambda bounds: [row('new')], source_id='v1', cache_dir=tmp_path)
+    assert fresh.discover(update)['assets_in'][0]['asset_id'] == 'old'
+    assert fresh.discover(update, refresh=True)['assets_in'][0]['asset_id'] == 'new'
+
+
+def test_forecast_without_timing_remains_included_with_limitation():
+    area = discovery.derive_search_areas(fire(), predicted_spread=mapping(box(2, 42, 2.1, 42.1)),
+                                         horizon_minutes=1)
+    assert any('undated' in note for note in area['limitations'])
+
+
+def test_missing_raw_register_ids_are_quarantined_separately():
+    records = discovery.records_from_registers({'schools': [{'denominaci_completa': 'Unknown A'},
+                                                           {'denominaci_completa': 'Unknown B'}]})
+    result = discovery.DiscoveryService(lambda bounds: records, source_id='test').discover(
+        fire(mapping(box(2, 42, 2.02, 42.02))))
+    assert result['assets_in'] == []
+    assert len(result['review_records']) == 2
+
+
+def test_previous_cannot_cross_incident_boundary():
+    with pytest.raises(ValueError, match='different incident'):
+        discovery.DiscoveryService(lambda bounds: [], source_id='test').discover(
+            fire(mapping(box(2, 42, 2.02, 42.02))), previous={'incident_id': 'different'})
+
+
+def test_bounded_equipaments_adapter_preserves_newly_admitted_types(monkeypatch):
+    def get_rows(bbox):
+        assert bbox == (2, 42, 2.1, 42.1)
+        return [{'idequipament': 'new', 'categoria': 'centres de recerca', 'longitud': '2.01', 'latitud': '42.01'}]
+    monkeypatch.setattr(discovery.feeds, 'equipaments', get_rows)
+    monkeypatch.setitem(discovery.feeds.ASSET_CLASS_RULES, 'equipaments',
+                        discovery.feeds.ASSET_CLASS_RULES['equipaments'] + [('centres de recerca', 'research_facility')])
+    result = discovery.equipaments_source((2, 42, 2.1, 42.1))
+    assert result[0]['asset_class'] == 'research_facility'
+    assert result[0]['asset_id'] == 'equipaments:new'
+
+
+def test_mixed_snapshot_and_register_rows_keep_known_location_and_capacity():
+    tracked = {'asset_id': 'a', 'asset_type': 'hospital', 'name': 'a', 'longitude': None,
+               'latitude': None, 'capacity': None, 'estimated_occupancy': None,
+               'occupancy_basis': None, 'sources': [], 'review_reasons': ['location_unknown']}
+    result = discovery.DiscoveryService(lambda bounds: [row('a', occupancy=12, occupancy_source='register')],
+                                         source_id='mixed').discover(
+        fire(mapping(box(2, 42, 2.02, 42.02))), tracked_assets=[tracked])
+    assert result['classifications']['a'] == 'threatened_search'
+    snapshot = build_snapshot(result['assets_in'], fire(mapping(box(2, 42, 2.02, 42.02))),
+                              scenario_id='s', incident_id='synthetic-discovery', sequence=1,
+                              as_of=T0, computed_at=T0, input_mode='synthetic')
+    asset = snapshot['assets'][0]
+    assert asset['longitude'] == 2.01
+    assert asset['capacity'] == 12
+    assert asset['estimated_occupancy'] is None
+
+
+def test_buffer_crossing_antimeridian_is_rejected_before_source_query():
+    def source(bounds):
+        pytest.fail('unsupported wrapped bounds must not reach facility source')
+    with pytest.raises(ValueError, match='antimeridian'):
+        discovery.DiscoveryService(source, source_id='test').discover(
+            fire(mapping(Point(179.999, 42)), 'hotspot_centre'),
+            config=discovery.DiscoveryConfig(fallback_radius_m=1000))
+
+
+def test_snapshot_style_conflict_retains_other_fields_on_refresh():
+    one = {'asset_id': 'a', 'asset_type': 'hospital', 'longitude': 2.01, 'latitude': 42.01,
+           'capacity': 10, 'sources': [], 'name': 'a'}
+    two = {**one, 'capacity': 20, 'name': 'disputed name'}
+    update = fire(mapping(box(2, 42, 2.02, 42.02)))
+    first = discovery.DiscoveryService(lambda bounds: [one, two], source_id='v1').discover(update)
+    second = discovery.DiscoveryService(lambda bounds: [one], source_id='v2').discover(update, previous=first)
+    assert second['assets_in'][0]['asset_type'] == 'hospital'
+    assert second['assets_in'][0]['capacity'] is None
+    assert second['classifications']['a'] == 'threatened_search'
+
+
+def test_mixed_format_canonicalization_preserves_review_and_provenance():
+    raw = row('a', occupancy=10, needs_review=['confirm_contact_permission'],
+              review_reasons=['operator_requested_verification'], sources=[{'source': 'manual-review-file'}])
+    tracked = {'asset_id': 'a', 'asset_type': 'hospital', 'longitude': 2.01, 'latitude': 42.01}
+    result = discovery.DiscoveryService(lambda bounds: [raw], source_id='v1').discover(
+        fire(mapping(box(2, 42, 2.02, 42.02))), tracked_assets=[tracked])
+    record = result['assets_in'][0]
+    assert 'confirm_contact_permission' in record['needs_review']
+    assert 'operator_requested_verification' in record['review_reasons']
+    assert {'source': 'manual-review-file'} in record['sources']
+
+
+def test_conflicts_do_not_resurrect_excluded_assets():
+    update = fire(mapping(box(2, 42, 2.02, 42.02)))
+    first = discovery.DiscoveryService(lambda bounds: [row('outside', 5, occupancy=10),
+        row('outside', 5, occupancy=20)], source_id='v1').discover(update)
+    assert first['assets_in'] == []
+    second = discovery.DiscoveryService(lambda bounds: [], source_id='v2').discover(update, previous=first)
+    assert second['assets_in'] == []
