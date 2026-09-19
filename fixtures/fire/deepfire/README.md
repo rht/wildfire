@@ -36,6 +36,13 @@ first, middle and last perimeter (`input_mode: recorded`). Their `data_status` i
 provider computed each perimeter about two hours after its observation watermark and `as_of` is the
 `computed_at`; that is the measured provider latency, not a fixture artefact.
 
+**No fire-spread (per-location arrival) response has been recorded.** The real snapshots therefore
+carry `fire_arrival_at: null` with `forecast_unavailable` on every asset (schema 1.1); arrival is never
+derived from distance. `fireline/forecast_input.py` reads per-location estimates from a labelled
+`forecast-input-1` file (`fixtures/forecast/`, synthetic only so far) and leaves an unimplemented
+`deepfire_spread_to_forecast(body, received_at, ...)` extension point for the fire-spread endpoint once
+its response shape is recorded here.
+
 ## Top-level files — SYNTHETIC
 
 Every file carries a top-level `note` saying it is synthetic. They describe an invented fire near
