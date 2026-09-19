@@ -1848,7 +1848,7 @@ No new Markdown documents or implementation agents are needed.
 - [x] Integration: add `coordinate_approved_evacuation` wrapper and
   `scripts/evacuation_plans.py` JSON CLI; exercise them with real local databases and
   synthetic fixtures. Preserve crew/contacts output and gate proposed destinations.
-- [ ] Verify relevant and full tests, inspect sibling exports, scan only changed files
+- [x] Verify relevant and full tests, inspect sibling exports, scan only changed files
   with Norma, obtain scoped review, fix actual findings, commit/push and open a PR.
 
 Verification command from this worktree:
@@ -1923,3 +1923,11 @@ still needs to wire this wrapper or overlay `public_plan` into its `coordination
 envelope; this branch does not change its module. Verified directions, analyst approvals,
 current facility/road/threat evidence and transport/reception confirmations remain external
 inputs. This is not a live evacuation, directions or notification service.
+
+Final branch verification: **646 passed, 1 skipped**, including **45 new evacuation
+tests**; the synthetic CLI and idempotent replay passed. Scoped read-only review
+accepted the fixes and independently reran all 45 tests. Norma reported all seven
+changed Python files clean after fixing one timeout naming finding. Compliance audit
+registration was unavailable because the repository is not linked in Norma; no repository
+configuration was changed. The existing readiness core and its capacity predicate are
+unchanged.
