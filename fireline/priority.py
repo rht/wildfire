@@ -1,9 +1,21 @@
-"""Consumer side of the location snapshot: sequence guard, overrides, explainable priority, queues.
+"""Consumer side of the location snapshot: sequence guard, overrides, contact priority by remaining
+evacuation window, queues.
 
-CONTRACTS.md section 4 / readme.md section 6. Priority is for analyst attention, not physical risk:
-`score = w_proximity * proximity + w_size * size + w_value * value` with every component normalised to
-[0, 1] by the fixed scales in `config.PRIORITY_POLICY`. Any required component unknown -> score null
-and the asset goes to the needs-review queue. Nothing here mutates its inputs.
+CONTRACTS.md section 4 / readme.md section 6. Contact priority is the remaining evacuation window,
+policy `config.CONTACT_POLICY` (`forecast-evacuation-window-v2`); the weighted proximity/size/value
+score of v1.0 is gone. With every time converted to minutes from `now_at` (the snapshot `as_of` by
+default):
+
+    time_to_impact = fire_arrival_at - now_at
+    latest_start   = fire_arrival_at - evacuation_min - buffer_min - now_at
+    slack          = latest_start            (the remaining window, relative to now_at; negative allowed)
+
+Ranked order is `slack_min` ascending, then earlier `fire_arrival_at`, then nearer known distance, then
+`asset_id`. A zero or negative window stays at the top as `window_exhausted` (immediate analyst review,
+not an evacuation instruction). A missing forecast, evacuation duration or provenance makes an unranked
+review item; nothing is inferred from distance or headcount. A missing distance does not block ranking.
+The arithmetic and sort key are shared with `contact_priority.rank_contacts` (readme 16). Nothing here
+mutates its inputs.
 """
 
 from __future__ import annotations
@@ -12,10 +24,16 @@ import copy
 from datetime import datetime, timezone
 
 from fireline import config
+from fireline.contact_priority import contact_sort_key, missing_timing, window_arithmetic
 
 OVERRIDE_CONFLICT = "override_conflict"
 CAPACITY_PROXY = "capacity as proxy"
 OCCUPANCY_FIELDS = ("estimated_occupancy", "capacity")
+FORECAST_UNAVAILABLE = "forecast_unavailable"
+EVACUATION_UNKNOWN = "evacuation_unknown"
+OVERRIDE_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min")
+STATUS_OPEN, STATUS_EXHAUSTED, STATUS_REVIEW = "window_open", "window_exhausted", "needs_review"
+ORDERING = "slack ascending; forecast arrival ascending; distance ascending; asset ID"
 
 
 # ---------------------------------------------------------------------------------------------
@@ -62,7 +80,7 @@ class SnapshotSequence:
 
 
 # ---------------------------------------------------------------------------------------------
-# Confirmed analyst overrides (from tasks.TaskStore.overrides())
+# Time helpers
 # ---------------------------------------------------------------------------------------------
 
 def _parse_time(value) -> datetime | None:
@@ -77,9 +95,33 @@ def _parse_time(value) -> datetime | None:
     return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
 
 
+def minutes_between(later, earlier) -> float | None:
+    """`later - earlier` in minutes for ISO strings or datetimes; None when either is missing/invalid."""
+    a, b = _parse_time(later), _parse_time(earlier)
+    if a is None or b is None:
+        return None
+    return (a - b).total_seconds() / 60.0
+
+
+def _fmt_min(value) -> str:
+    if value is None:
+        return "unknown"
+    text = f"{float(value):.3f}".rstrip("0").rstrip(".")
+    return f"{text} min"
+
+
+# ---------------------------------------------------------------------------------------------
+# Confirmed analyst overrides (from tasks.TaskStore.overrides())
+# ---------------------------------------------------------------------------------------------
+
 def _apply_one(asset: dict, override: dict, cfg) -> None:
     field = override["field"]
     value = override["value"]
+    if field == "fire_arrival_at":
+        raise ValueError("overrides on fire_arrival_at are not accepted: the forecast arrival comes from the "
+                         "producer snapshot; confirm evacuation_min, occupancy, capacity or asset_type instead")
+    if field not in OVERRIDE_FIELDS:
+        raise ValueError(f"override field must be one of {list(OVERRIDE_FIELDS)}, got {field!r}")
     confirmed_at = _parse_time(override.get("confirmed_at"))
     # Conflict: a provider value for the same field observed after the analyst confirmed the override.
     conflict = False
@@ -92,9 +134,10 @@ def _apply_one(asset: dict, override: dict, cfg) -> None:
         if observed is not None and confirmed_at is not None and observed > confirmed_at:
             conflict = True
     asset[field] = value
+    source_label = "analyst override: " + str(override.get("source") or "unspecified")
     entry = {
         "fields": [field],
-        "source": "analyst override: " + str(override.get("source") or "unspecified"),
+        "source": source_label,
         "observed_at": override.get("observed_at"),
         "available_at": override.get("confirmed_at"),
         "fetched_at": override.get("confirmed_at"),
@@ -122,6 +165,15 @@ def _apply_one(asset: dict, override: dict, cfg) -> None:
             asset["value_score"] = None
             if "value_unknown" not in reasons:
                 reasons.append("value_unknown")
+    elif field == "evacuation_min":
+        if value is not None:
+            asset["evacuation_min"] = float(value)
+            asset["evacuation_source"] = source_label
+            reasons = [r for r in reasons if r != EVACUATION_UNKNOWN]
+        else:
+            asset["evacuation_source"] = None
+            if EVACUATION_UNKNOWN not in reasons:
+                reasons.append(EVACUATION_UNKNOWN)
     if conflict and OVERRIDE_CONFLICT not in reasons:
         reasons.append(OVERRIDE_CONFLICT)
     asset["review_reasons"] = reasons
@@ -135,7 +187,9 @@ def apply_overrides(assets: list[dict], overrides: list[dict] | None, cfg=config
     entry and marks `occupancy_basis` when it touches occupancy or capacity. When the asset's own
     provider source for that field was observed after the override was confirmed the override is
     kept and `override_conflict` is added to `review_reasons` so the analyst sees the disagreement.
-    An asset_type override re-derives value_score from the value policy.
+    An asset_type override re-derives value_score from the value policy. An evacuation_min override
+    sets `evacuation_source = "analyst override: <source>"` and clears `evacuation_unknown`.
+    Overrides on `fire_arrival_at` raise ValueError: forecasts come from the producer.
     """
     copies = [copy.deepcopy(a) for a in assets]
     if not overrides:
@@ -151,90 +205,127 @@ def apply_overrides(assets: list[dict], overrides: list[dict] | None, cfg=config
 
 
 # ---------------------------------------------------------------------------------------------
-# Scoring
+# Ranking by remaining evacuation window
 # ---------------------------------------------------------------------------------------------
 
-def _clip01(x: float) -> float:
-    return max(0.0, min(1.0, float(x)))
+def _round9(value):
+    return None if value is None else round(float(value), 9)
 
 
-def _proximity(asset: dict, policy: dict) -> tuple[float | None, dict, str | None, str]:
-    distance = asset.get("distance_to_fire_m")
-    intersects = asset.get("intersects_fire")
-    scale = policy["proximity_scale_m"]
-    inputs = {"distance_to_fire_m": distance, "intersects_fire": intersects}
-    if intersects is True:
-        return 1.0, inputs, None, "proximity 1.00 (intersects fire)"
-    if distance is None:
-        return None, inputs, None, "proximity unknown: distance to fire is null"
-    value = _clip01(1.0 - float(distance) / float(scale))
-    return value, inputs, None, f"proximity {value:.2f} ({float(distance):.0f} m of {scale} m scale)"
+def rank_asset(asset: dict, now_at, cfg=config) -> dict:
+    """Return a copy of `asset` with the coordination keys of CONTRACTS 4 added (priority_rank stays None).
 
-
-def _size(asset: dict, policy: dict) -> tuple[float | None, dict, str | None, str]:
-    occupancy = asset.get("estimated_occupancy")
-    capacity = asset.get("capacity")
-    scale = policy["size_scale_people"]
-    inputs = {"estimated_occupancy": occupancy, "capacity": capacity}
-    if occupancy is not None:
-        value = _clip01(float(occupancy) / float(scale))
-        basis = asset.get("occupancy_basis")
-        suffix = f", {basis}" if basis else ""
-        return value, inputs, None, f"size {value:.2f} from estimated occupancy {occupancy}{suffix}"
-    if capacity is not None and policy.get("size_capacity_proxy", False):
-        value = _clip01(float(capacity) / float(scale))
-        return value, inputs, CAPACITY_PROXY, f"size {value:.2f} from capacity {capacity} (proxy)"
-    if capacity is not None:
-        return None, inputs, None, "size unknown: estimated occupancy null and capacity proxy disabled"
-    return None, inputs, None, "size unknown: estimated occupancy and capacity are null"
-
-
-def _value(asset: dict, cfg) -> tuple[float | None, dict, str | None, str]:
-    score = asset.get("value_score")
-    asset_type = asset.get("asset_type")
-    inputs = {"asset_type": asset_type, "value_score": score, "value_basis": asset.get("value_basis")}
-    if score is None:
-        return None, inputs, None, f"value unknown: asset_type {asset_type!r} has no value policy entry"
-    basis = asset.get("value_basis") or cfg.VALUE_POLICY["version"]
-    return _clip01(score), inputs, None, f"value {float(score):.2f} ({asset_type}, {basis})"
-
-
-def score_asset(asset: dict, cfg=config) -> dict:
-    """Return a copy of `asset` with the six coordination keys added (priority_rank stays None here)."""
-    policy = cfg.PRIORITY_POLICY
-    weights = policy["weights"]
+    `now_at` is the epoch for every window quantity (an ISO string or datetime; the snapshot `as_of`
+    in `rank_snapshot`). Keys added: priority_rank, queue, priority_status, time_to_impact_min,
+    latest_start_min, slack_min, window_components, priority_policy_version, priority_reasons.
+    Missing forecast or evacuation inputs -> queue needs_review with the timing keys null and
+    `forecast_unavailable` / `evacuation_unknown` added to review_reasons when the producer did not.
+    """
+    policy = cfg.CONTACT_POLICY
+    buffer_min = float(policy["buffer_min"])
+    now = _parse_time(now_at)
+    if now is None:
+        raise ValueError(f"rank_asset needs a valid now_at (the snapshot as_of), got {now_at!r}")
+    now_iso = now.isoformat()
     out = copy.deepcopy(asset)
-    parts = {
-        "proximity": _proximity(asset, policy),
-        "size": _size(asset, policy),
-        "value": _value(asset, cfg),
-    }
-    components = {}
-    reasons = []
-    for name, (value, inputs, proxy, text) in parts.items():
-        components[name] = {"value": value, "weight": weights[name], "input": inputs, "proxy": proxy}
-        reasons.append(text)
-    if all(c["value"] is not None for c in components.values()):
-        score = round(sum(c["weight"] * c["value"] for c in components.values()), 4)
-        queue = "ranked"
-        reasons.append("score {:.4f} = ".format(score) + " + ".join(
-            f"{c['weight']}*{c['value']:.2f}" for c in components.values()))
+
+    arrival_at = asset.get("fire_arrival_at")
+    arrival_basis = asset.get("fire_arrival_basis")
+    forecast_source = asset.get("forecast_source")
+    horizon_at = asset.get("forecast_horizon_at")
+    evacuation_min = asset.get("evacuation_min")
+    evacuation_source = asset.get("evacuation_source")
+    distance = asset.get("distance_to_fire_m")
+
+    arrival_min = minutes_between(arrival_at, now) if arrival_at is not None else None
+    evac_value = None if evacuation_min is None or isinstance(evacuation_min, bool) else float(evacuation_min)
+    missing = missing_timing(arrival_min, evac_value, forecast_source, evacuation_source)
+    # contact_priority names the static fields; map them onto the snapshot review reasons
+    review_add = []
+    if any(m in ("fire_arrival_min", "forecast_source") for m in missing):
+        review_add.append(FORECAST_UNAVAILABLE)
+    if any(m in ("evacuation_min", "evacuation_source") for m in missing):
+        review_add.append(EVACUATION_UNKNOWN)
+
+    reasons: list[str] = []
+    if arrival_at is None:
+        reasons.append("arrival unknown: fire_arrival_at is null, no forecast covers this location (forecast_unavailable)")
+    elif arrival_min is None:
+        reasons.append(f"arrival unusable: fire_arrival_at {arrival_at!r} is not a valid timestamp (forecast_unavailable)")
     else:
-        score = None
-        queue = "needs_review"
-        missing = [n for n, c in components.items() if c["value"] is None]
-        reasons.append("needs review: " + ", ".join(missing) + " unknown; not scored")
-    for r in asset.get("review_reasons") or []:
+        provenance = f"{arrival_basis or 'basis unstated'}; forecast {forecast_source or 'source missing'}"
+        if horizon_at:
+            provenance += f", horizon {horizon_at}"
+        reasons.append(f"arrival {arrival_at} ({provenance}): {_fmt_min(arrival_min)} after now {now_iso}")
+        if not (forecast_source or "").strip():
+            reasons.append("forecast provenance missing: forecast_source is null, arrival cannot be used (forecast_unavailable)")
+    if evac_value is None:
+        reasons.append("evacuation unknown: evacuation_min is null; confirm the total evacuation duration "
+                       "(mobilisation + preparation/loading + movement) with the facility (evacuation_unknown)")
+    else:
+        reasons.append(f"evacuation {_fmt_min(evac_value)} ({evacuation_source or 'source missing'})")
+        if not (evacuation_source or "").strip():
+            reasons.append("evacuation provenance missing: evacuation_source is null (evacuation_unknown)")
+    reasons.append(f"buffer {_fmt_min(buffer_min)} ({policy['version']})")
+
+    components = {
+        "fire_arrival_at": arrival_at,
+        "fire_arrival_basis": arrival_basis,
+        "forecast_source": forecast_source,
+        "forecast_horizon_at": horizon_at,
+        "now_at": now_iso,
+        "evacuation_min": evac_value,
+        "evacuation_source": evacuation_source,
+        "buffer_min": buffer_min,
+        "distance_to_fire_m": distance,
+    }
+
+    if missing:
+        time_to_impact = latest_start = slack = None
+        status, queue = STATUS_REVIEW, "needs_review"
+        reasons.append("needs review: " + ", ".join(review_add) + "; not ranked")
+    else:
+        w = window_arithmetic(arrival_min, evac_value, 0.0, buffer_min)
+        time_to_impact, latest_start, slack, status = (_round9(w["time_to_impact_min"]),
+                                                       _round9(w["latest_start_min"]), w["slack_min"], w["status"])
+        queue = "ranked"
+        reasons.append(f"latest start {_fmt_min(latest_start)} after now = arrival {_fmt_min(arrival_min)} - "
+                       f"evacuation {_fmt_min(evac_value)} - buffer {_fmt_min(buffer_min)}")
+        if status == STATUS_EXHAUSTED:
+            reasons.append(f"remaining window {_fmt_min(slack)}: window_exhausted (<= 0; immediate analyst review, "
+                           f"not an evacuation instruction)")
+        else:
+            reasons.append(f"remaining window {_fmt_min(slack)}: window_open")
+    if distance is None:
+        reasons.append("distance to fire unknown: used only as a tie-breaker, does not block ranking")
+
+    review_reasons = list(asset.get("review_reasons") or [])
+    for r in review_add:
+        if r not in review_reasons:
+            review_reasons.append(r)
+    for r in review_reasons:
         reasons.append(f"review flag: {r}")
+
     out.update({
-        "priority_score": score,
+        "review_reasons": review_reasons,
+        "needs_review": bool(review_reasons),
         "priority_rank": None,
         "queue": queue,
-        "score_components": components,
+        "priority_status": status,
+        "time_to_impact_min": time_to_impact,
+        "latest_start_min": latest_start,
+        "slack_min": slack,
+        "window_components": components,
         "priority_policy_version": policy["version"],
         "priority_reasons": reasons,
     })
     return out
+
+
+def ranked_sort_key(asset: dict):
+    """Shared ordering with contact_priority: slack, arrival, known distance (null last), asset_id."""
+    return contact_sort_key(asset["slack_min"], asset["time_to_impact_min"], asset.get("distance_to_fire_m"),
+                            asset["asset_id"])
 
 
 def _needs_review_key(asset: dict):
@@ -242,23 +333,32 @@ def _needs_review_key(asset: dict):
     return (0 if distance is None else 1, float(distance) if distance is not None else 0.0, asset["asset_id"])
 
 
-def score_snapshot(snap: dict, cfg=config, overrides: list[dict] | None = None) -> dict:
-    """Score every asset of a snapshot (after applying `overrides`) and split into queues.
+def rank_snapshot(snap: dict, cfg=config, overrides: list[dict] | None = None, now_at=None) -> dict:
+    """Rank every asset of a snapshot (after applying `overrides`) by remaining evacuation window.
 
-    Returns `{"ranked", "needs_review", "flagged", "all"}`: `ranked` sorted by score desc then
-    asset_id with 1-based `priority_rank`; `needs_review` with unknown exposure first, then ascending
-    distance, then asset_id; `flagged` = the ranked assets that still carry review reasons (shown in
-    the review view too); `all` = ranked followed by needs_review (same objects).
+    `now_at` defaults to `snap["as_of"]` (CONTACT_POLICY["now"]). Returns `{"ranked", "needs_review",
+    "flagged", "all", "now_at", "policy"}`: `ranked` sorted by slack ascending, then arrival, then known
+    distance, then asset_id with 1-based `priority_rank`; `needs_review` with unknown exposure first,
+    then ascending distance, then asset_id; `flagged` = the ranked assets that still carry review
+    reasons (shown in the review view too); `all` = ranked followed by needs_review (same objects).
     """
+    if now_at is None:
+        now_at = snap.get("as_of")
+    now = _parse_time(now_at)
+    if now is None:
+        raise ValueError(f"rank_snapshot needs now_at or a valid snapshot as_of, got {now_at!r}")
     assets = apply_overrides(snap.get("assets") or [], overrides, cfg)
-    scored = [score_asset(a, cfg) for a in assets]
-    ranked = sorted((a for a in scored if a["priority_score"] is not None),
-                    key=lambda a: (-a["priority_score"], a["asset_id"]))
+    scored = [rank_asset(a, now, cfg) for a in assets]
+    ranked = sorted((a for a in scored if a["queue"] == "ranked"), key=ranked_sort_key)
     for i, a in enumerate(ranked, start=1):
         a["priority_rank"] = i
-    needs_review = sorted((a for a in scored if a["priority_score"] is None), key=_needs_review_key)
+    needs_review = sorted((a for a in scored if a["queue"] != "ranked"), key=_needs_review_key)
     flagged = [a for a in ranked if a.get("review_reasons")]
-    return {"ranked": ranked, "needs_review": needs_review, "flagged": flagged, "all": ranked + needs_review}
+    policy = dict(cfg.CONTACT_POLICY)
+    policy["ordering"] = ORDERING
+    policy["evacuation_policy_version"] = cfg.EVACUATION_POLICY["version"]
+    return {"ranked": ranked, "needs_review": needs_review, "flagged": flagged, "all": ranked + needs_review,
+            "now_at": now.isoformat(), "policy": policy}
 
 
 # ---------------------------------------------------------------------------------------------
