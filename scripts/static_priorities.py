@@ -36,7 +36,7 @@ def main():
             result = {"cases": [evaluate_case(c) for c in edge_cases(scenario)]}
             result["passed"] = all(case["passed"] for case in result["cases"])
         elif args.readiness_input:
-            readiness = json.loads(args.readiness_input.read_text())
+            readiness = json.loads(args.readiness_input.read_text(encoding="utf-8"))
             if (
                 not isinstance(readiness, dict)
                 or readiness.get("schema_version") != "household-readiness-1"
@@ -59,7 +59,7 @@ def main():
         )
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(encoded)
+            args.output.write_text(encoded, encoding="utf-8")
             print(f"Wrote {args.output}")
         else:
             print(encoded, end="")

@@ -1,0 +1,128 @@
+{
+  "schema_version": "unmute-manual-smoke-1",
+  "input_mode": "synthetic",
+  "description": "Human-spoken test scripts and expected interpretations. Expected normalized answers map call-memory yes/no/inconclusive to true/false/null; absent answers are null. These are not recorded live results or automatic evaluations.",
+  "cases": [
+    {
+      "name": "self_reported_ready",
+      "answers_in_order": [
+        "Yes, I am at Willow House in the simulation.",
+        "I confirm.",
+        "Yes, I can answer for all eight people here.",
+        "Nobody needs assistance. We can all leave without help.",
+        "Yes, we have seats for everyone in our two cars.",
+        "No, I do not want a first responder.",
+        "Yes, that summary is correct. Goodbye."
+      ],
+      "expected_normalized_answers": {
+        "identity_confirmed": true,
+        "message_received": true,
+        "whole_household_confirmed": true,
+        "can_self_evacuate": true,
+        "transport_available": true,
+        "wants_human": false,
+        "acknowledged": true
+      },
+      "checks": [
+        "Both audio directions work",
+        "Exact tester quotes support answers",
+        "No evacuation completion or real dispatch is claimed"
+      ]
+    },
+    {
+      "name": "assistance_then_human",
+      "answers_in_order": [
+        "Yes, I am at Willow House in the simulation.",
+        "I confirm.",
+        "Yes, I can answer for everyone here.",
+        "One person cannot leave without help moving. We need assistance.",
+        "No, we do not have transport.",
+        "Yes, please let me speak with a first responder.",
+        "Yes, end the test."
+      ],
+      "expected_normalized_answers": {
+        "identity_confirmed": true,
+        "message_received": true,
+        "whole_household_confirmed": true,
+        "can_self_evacuate": false,
+        "transport_available": false,
+        "wants_human": true,
+        "acknowledged": null
+      },
+      "checks": [
+        "Assistance statement remains visible",
+        "Agent explains that no real responder is contacted",
+        "Receipt does not become final readback acknowledgement"
+      ]
+    },
+    {
+      "name": "interrupt_for_person",
+      "action": "Interrupt the incident briefing by saying: I want to speak with a first responder.",
+      "expected_normalized_answers": {
+        "wants_human": true,
+        "message_received": null
+      },
+      "checks": [
+        "Agent stops its briefing and acknowledges the request",
+        "No actual transfer or assistance dispatch occurs"
+      ]
+    },
+    {
+      "name": "inconclusive_transport",
+      "action": "Complete the earlier questions, then answer the transport question and one clarification with: I do not know whether there is a vehicle available.",
+      "expected_normalized_answers": {
+        "transport_available": null
+      },
+      "checks": [
+        "Unknown remains inconclusive",
+        "No numeric confidence is invented",
+        "No statement that roads are clear is invented"
+      ]
+    },
+    {
+      "name": "wrong_location",
+      "action": "Answer the greeting: No, this is not Willow House.",
+      "expected_normalized_answers": {
+        "identity_confirmed": false,
+        "message_received": null
+      },
+      "checks": [
+        "Location-specific briefing stops",
+        "No answers are inferred for Willow House"
+      ]
+    },
+    {
+      "name": "plain_yes_to_assistance",
+      "action": "After confirming location, receipt and household scope, answer the assistance-needed question with only: Yes.",
+      "expected_normalized_answers": {
+        "can_self_evacuate": false
+      },
+      "checks": [
+        "Yes to needing assistance is recorded as no to ability to leave unaided",
+        "The exact quote is Yes., not a paraphrase"
+      ]
+    },
+    {
+      "name": "plain_no_to_assistance",
+      "action": "After confirming location, receipt and household scope, answer the assistance-needed question with only: No. If asked whether everyone can leave without help, say: Yes, everyone can leave without help.",
+      "expected_normalized_answers": {
+        "can_self_evacuate": true
+      },
+      "checks": [
+        "No to needing assistance must not become false ability",
+        "Clarification establishes the whole-household answer"
+      ]
+    },
+    {
+      "name": "correction_to_unknown",
+      "action": "Initially confirm transport is available. During readback correct this with: Actually, I do not know whether the car is available. Repeat that uncertainty if asked to clarify.",
+      "expected_normalized_answers": {
+        "transport_available": null
+      },
+      "checks": [
+        "The earlier yes is overwritten with inconclusive",
+        "The old affirmative evidence is cleared"
+      ]
+    }
+  ]
+}

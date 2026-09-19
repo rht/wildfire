@@ -1,0 +1,122 @@
+version: 1
+name: fireline-mock-interview
+entry_agent: interviewer
+
+agents:
+  interviewer:
+    instructions: instructions.md
+    think: reasoning
+    speak: assistant_voice
+    tools:
+      - end_call
+
+# Official hosted example bindings. Compilation checks syntax; deployment and
+# a spoken interaction must establish availability in the account and region.
+models:
+  think:
+    reasoning:
+      provider: google
+      model: gemini/google/gemini-3.1-flash-lite:latest
+  listen:
+    transcriber:
+      provider: deepgram
+      model: deepgram/nova:3
+      language: en
+  speak:
+    assistant_voice:
+      provider: slng
+      model: deepgram/aura:2
+      voice: aura-2-thalia-en
+
+# These describe what the tester says, not operational decisions. No inferred
+# confidence, dispatch, actual transfer or evacuation status is stored here.
+variables:
+  identity_confirmed:
+    type: str
+    source: conversation
+    description: One of yes, no, inconclusive. Whether the tester explicitly confirms the fictional location, Willow House. Unset until answered; record inconclusive if uncertain.
+  whole_household_confirmed:
+    type: str
+    source: conversation
+    description: One of yes, no, inconclusive. Whether the tester explicitly says they can answer for everyone at the fictional location. Unset until answered; record inconclusive if uncertain.
+  message_received:
+    type: str
+    source: conversation
+    description: One of yes, no, inconclusive. Whether the tester explicitly confirms receiving the incident message by saying I confirm or an unambiguous equivalent. This is not consent to recording or confirmation of evacuation.
+  can_self_evacuate:
+    type: str
+    source: conversation
+    description: One of yes, no, inconclusive. Whether everyone at the fictional location can leave without emergency assistance, according to the tester. Unset if unasked; record inconclusive if unclear.
+  transport_available:
+    type: str
+    source: conversation
+    description: One of yes, no, inconclusive. Whether suitable transport is available for everyone, according to the tester. Unset if unasked; record inconclusive if unclear.
+  wants_human:
+    type: str
+    source: conversation
+    description: One of yes, no, inconclusive. Whether the tester requests a first responder or another person, including requests made before the interview is finished.
+  acknowledged:
+    type: str
+    source: conversation
+    description: One of yes, no, inconclusive. Whether the tester agrees to the final readback of their answers. Separate from initial message receipt.
+  help_needs:
+    type: str
+    source: conversation
+    description: A short faithful summary of the tester's stated assistance needs. Never infer a diagnosis or invent needs.
+
+  identity_confirmed_evidence:
+    type: str
+    source: conversation
+    description: A short exact quote spoken by the tester supporting identity_confirmed. Leave unset when the answer is inconclusive. Never quote the assistant or invent words.
+  message_received_evidence:
+    type: str
+    source: conversation
+    description: A short exact quote spoken by the tester supporting message_received. Leave unset when the answer is inconclusive. Never quote the assistant or invent words.
+  can_self_evacuate_evidence:
+    type: str
+    source: conversation
+    description: A short exact quote spoken by the tester supporting can_self_evacuate. Leave unset when the answer is inconclusive. Never quote the assistant or invent words.
+  transport_available_evidence:
+    type: str
+    source: conversation
+    description: A short exact quote spoken by the tester supporting transport_available. Leave unset when the answer is inconclusive. Never quote the assistant or invent words.
+  wants_human_evidence:
+    type: str
+    source: conversation
+    description: A short exact quote spoken by the tester supporting wants_human. Leave unset when the answer is inconclusive. Never quote the assistant or invent words.
+  acknowledged_evidence:
+    type: str
+    source: conversation
+    description: A short exact quote spoken by the tester supporting acknowledged. Leave unset when the answer is inconclusive. Never quote the assistant or invent words.
+  help_needs_evidence:
+    type: str
+    source: conversation
+    description: A short exact quote spoken by the tester supporting help_needs. Leave unset when the answer is inconclusive. Never quote the assistant or invent words.
+  whole_household_confirmed_evidence:
+    type: str
+    source: conversation
+    description: A short exact tester quote confirming or denying their ability to answer for everyone. Leave unset when inconclusive.
+
+tools:
+  - end_call
+
+conversation:
+  greeting:
+    speaks_first: agent
+    text: "This is a simulation, not an emergency call. Hello, I am an automated voice assistant representing the fictional Demo Valley Fire Department. You can ask for a first responder at any time during this test. For this scenario, are you at Willow House?"
+  interruption:
+    enabled: true
+
+channels:
+  web:
+    kind: realtime_audio
+  phone:
+    kind: telephony
+    inbound: true
+    outbound: false
+
+capacity:
+  peak_sessions: 1
+  max_sessions: 1
+  peak_starts_per_second: 0.1
+  avg_session_duration: 4m
