@@ -1692,13 +1692,13 @@ implicit transport capacity reset. All elapsed times share one caller-owned scen
 
 Implementation sequence (execute locally; no additional implementation agents):
 
-- [ ] Add failing behavioral tests for two trucks, deadlines, capability/capacity constraints,
+- [x] Add failing behavioral tests for two trucks, deadlines, capability/capacity constraints,
   shared prerequisites, unknown readiness, route safety, geometry and no double assignment.
-- [ ] Implement pure planner and input validation in `fireline/multi_response.py`; preserve
+- [x] Implement pure planner and input validation in `fireline/multi_response.py`; preserve
   declared effects and public provenance, with explicit unassigned/review reasons.
-- [ ] Test and implement preservation of committed work during team loss, stale assignments
+- [x] Test and implement preservation of committed work during team loss, stale assignments
   and new incidents; add CLI and a clearly synthetic offline JSON demonstration.
-- [ ] Run scoped/full offline tests, request scoped review and scan only changed files with
+- [x] Run scoped/full offline tests, request scoped review and scan only changed files with
   Norma when available; fix actual findings. Publish commits and a PR, retain this worktree.
 
 ### Multi-crew public API and integration contract
@@ -1726,7 +1726,7 @@ The JSON input uses `schema_version: "multi-response-input-1"`. Required fields:
 | `actions` | `action_id`, `asset_id`, positive `duration_min`, nullable `deadline_min`, `requires` action-ID list, `capabilities` list, integer `transport_people`, boolean `readiness_required`, and `effects`. Each effect has `asset_id`, coverage in [0,1], boolean `confirmed`, and public `source` provenance. Requirements must be acyclic; effects never propagate to nearby buildings. |
 | `routes` | Directed end-to-end records: `from_node`, `to_node`, `minutes`, booleans `confirmed` and `safe`, nullable `available_until_min`, public `source`. Missing, unsafe, unconfirmed or unknown-expiry routes are unusable. Expiry must be strictly later than arrival plus buffer. No reverse leg is inferred. Route records do not produce geometry. |
 | `readiness` | Optional latest normalized outcome per asset: `asset_id`, `status`, `observed_min`, `valid_until_min`, public `source`, `request_id`. Status is `assistance_required`, `unknown`, `no_answer`, `self_evacuating`, or `completed`. This is an adapter input, not a raw provider payload. |
-| `committed` | Optional persisted task records from an earlier result, with status explicitly changed to `informed`, `en_route`, `in_progress`, or `completed`. A proposal is never a commitment by itself. Preserve the original scenario/snapshot/action version and timings. Completed records additionally require `actual_finish_min` between the scheduled start and `now_min`; a status change alone is insufficient. |
+| `committed` | Optional persisted task records from an earlier result, with status explicitly changed to `informed`, `en_route`, `in_progress`, or `completed`. A proposal is never a commitment by itself. Preserve the original scenario/snapshot/action version and timings. Completed records additionally require nonnegative `actual_finish_min` no later than `now_min`; a status change alone is insufficient. |
 
 When `readiness_required` is true, only a supplied `assistance_required` outcome observed by
 `now_min` and valid through task completion plus buffer permits a proposal. Existing outcomes
@@ -1789,3 +1789,14 @@ return trips, unloading/reusable seats, reception-place reservations, road conge
 road restrictions, simultaneous multi-team staffing, suppression simulation, optimal fleet search,
 or automatic scenario/time conversion. Capacity is a conservative cumulative budget; transport
 counts and action effects are caller-declared assumptions. All tests and the demonstration are offline.
+
+
+Multi-crew verification (2026-09-20): **644 passed, 1 skipped** in the full offline suite;
+**43** focused multi-crew tests. Scoped review identified completion-history, actual-timing and
+persisted-payload integrity defects; regression tests reproduced each before fixes. Actual
+completion may precede forecast arrival and is validated against the scenario epoch/current time.
+Norma scanned only the four changed files: test/JSON scans were clean; Markdown had no applicable
+rules. The planner retains one deliberate exact-built-in-integer count check flagged by Norma;
+booleans and custom numeric objects are not accepted as transport/headcount inputs. The existing
+`remaining_places` predicate and exact one-crew planner were not edited. Full live-coordination
+fleet/readiness wiring remains an integration dependency; the current export is a pure proposal.

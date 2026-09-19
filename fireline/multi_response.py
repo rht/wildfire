@@ -410,8 +410,8 @@ class _Planner:
             if row['status'] == 'completed':
                 actual_finish = original.get('actual_finish_min')
                 number(actual_finish, 'actual_finish_min')
-                if actual_finish > self.data['now_min'] or actual_finish < row['start_min']:
-                    raise ValueError('actual_finish_min must be between start_min and now_min')
+                if actual_finish > self.data['now_min']:
+                    raise ValueError('actual_finish_min must not exceed now_min')
                 row['actual_finish_min'] = actual_finish
                 # A current roster/capacity change cannot undo actual completed work.
                 if 'missing_asset' not in reasons:

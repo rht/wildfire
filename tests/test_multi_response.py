@@ -372,3 +372,17 @@ def test_versioned_commitment_payload_must_match_its_declared_action(field):
         first[field] = 0
     with pytest.raises(ValueError, match='committed payload'):
         plan(data)
+
+
+def test_actual_completion_can_precede_forecast_arrival_without_rewriting_plan():
+    data = scene()
+    for leg in data['routes']:
+        leg['minutes'] = 10
+    first = next(t for t in tasks(plan(data)) if t['action_id'] == 'help-A')
+    assert first['start_min'] == 10
+    first.update(status='completed', actual_finish_min=8)
+    data.update(now_min=9, committed=[first])
+    result = plan(data)
+    row = next(t for t in tasks(result) if t['action_id'] == 'help-A')
+    assert row['actual_finish_min'] == 8 and row['start_min'] == 10
+    assert result['coverage']['A'] == 1
