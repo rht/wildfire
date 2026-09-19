@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def read_json(path):
-    return json.loads(Path(path).read_text())
+    return json.loads(Path(path).read_text(encoding='utf-8'))
 
 
 def private_output(path):
@@ -90,12 +90,13 @@ def offline(args):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--mode', choices=['offline', 'check-config', 'agent-config', 'browser', 'outbound', 'poll'], default='offline')
+    p.add_argument('--mode', choices=['offline', 'check-config', 'agent-config', 'browser', 'outbound', 'poll', 'sync'], default='offline')
     p.add_argument('--case', default='baseline', help='baseline, all, or one synthetic case name')
     p.add_argument('--db', default='data/voice-demo.sqlite')
     p.add_argument('--locations', default=str(ROOT / 'fixtures/static_priority.json'))
     p.add_argument('--language', default='en')
     p.add_argument('--request-file', help='private JSON CallRequest, required for provider operations')
+    p.add_argument('--provider-call-id', help='explicit call association for sync of an existing call')
     p.add_argument('--approval-file', help='private JSON with request_id and approved_target for outbound only')
     p.add_argument('--epoch', help='common UTC scenario epoch; required for provider operations')
     p.add_argument('--output', help='new private output file; required for browser tokens and agent config')
@@ -137,7 +138,9 @@ def main(argv=None):
             store = VoiceStore(database(args.db), epoch=utc(args.epoch))
             try:
                 store.register(req)
-                if args.mode == 'poll':
+                if args.mode == 'sync':
+                    report = store.sync(client, req.request_id, provider_call_id=args.provider_call_id)
+                elif args.mode == 'poll':
                     report = dict(outcome=store.poll(client, req.request_id), live_validation=False)
                 else:
                     if args.mode == 'browser':

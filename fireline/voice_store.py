@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS voice_calls (
  status TEXT NOT NULL DEFAULT 'queued', lifecycle_at TEXT, result TEXT,
  followup_reasons TEXT NOT NULL DEFAULT '[]', transfer_status TEXT,
  dispatch_state TEXT NOT NULL DEFAULT 'not_started');
+CREATE TABLE IF NOT EXISTS voice_provider_bindings (
+ request_id TEXT PRIMARY KEY, agent_id TEXT NOT NULL, association_source TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS voice_events (
  event_id TEXT PRIMARY KEY, request_id TEXT NOT NULL, payload TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS voice_task_links (
@@ -199,11 +201,35 @@ class VoiceStore:
             self.conn.execute('INSERT INTO voice_events VALUES (?, ?, ?)', (event_id, req.request_id, '{}'))
             # Adverse facts survive older callbacks; good later answers never silently erase them.
             self._followup(record, normalized.human_followup_reasons, fresh_event=True)
+            if normalized.can_self_evacuate is False or normalized.transport_available is False:
+                self._task(req.request_id, req.asset_id, req.snapshot_id, 'arrange_assistance', fresh_event=True)
             previous = record['result']
             if previous and utc(result.observed_at) <= utc(previous['observed_at']):
                 if utc(result.observed_at) == utc(previous['observed_at']):
                     self._followup(self.get(req.request_id), ['conflicting_answers'])
                 return 'ignored'
+            if previous:
+                # Keep explicit requests for help/persons across partial or optimistic updates.
+                retained = {key: previous[key] for key, adverse in (
+                    ('can_self_evacuate', False), ('transport_available', False), ('wants_human', True))
+                    if previous.get(key) is adverse and getattr(normalized, key) is not adverse}
+                if retained:
+                    evidence = dict(normalized.evidence)
+                    verification = dict(normalized.evidence_verification)
+                    evidence_times = dict(normalized.evidence_observed_at)
+                    for key in retained:
+                        if key in previous['evidence']:
+                            evidence[key] = previous['evidence'][key]
+                            evidence_times[key] = previous.get('evidence_observed_at', {}).get(key, previous['observed_at'])
+                        verification.pop(key, None)
+                        if key in previous.get('evidence_verification', {}):
+                            verification[key] = previous['evidence_verification'][key]
+                    conflict = any(getattr(normalized, key) is not None for key in retained)
+                    normalized = replace(normalized, **retained, evidence=evidence,
+                        evidence_verification=verification, evidence_observed_at=evidence_times,
+                        contradictory=normalized.contradictory or conflict)
+                    normalized = normalize_result(req, normalized)
+                    self._followup(self.get(req.request_id), normalized.human_followup_reasons)
             self.conn.execute('UPDATE voice_calls SET result=? WHERE request_id=?',
                               (encoded(asdict(normalized)), req.request_id))
             return 'accepted'
@@ -272,6 +298,58 @@ class VoiceStore:
             status=raw_status if known else record['status'], observed_at=body['updated_at'],
             transfer_status=transfer, raw_status=None if known else 'unrecognized')
         return self.record_lifecycle(event_id='poll:' + digest(payload), **payload)
+
+    def sync(self, client, request_id, *, provider_call_id=None):
+        """Fetch call facts only; explicitly supplied IDs can bind historical calls.
+
+        Historical calls with no FireLine arguments require this explicit local
+        association once. Conflicting/partial provider arguments always fail.
+        Agent identity, association, lifecycle and answer writes are atomic.
+        """
+        from .slng_results import normalize_call
+
+        record = self.get(request_id)
+        call_id = provider_call_id or record['provider_call_id']
+        if not call_id:
+            raise ValueError('provider call is not bound')
+        body = client.get_call(call_id)  # authenticates and verifies call + agent IDs
+        arguments = body.get('arguments') or {}
+        if not isinstance(arguments, dict):
+            raise ValueError('provider request association mismatch')
+        keys = ('request_id', 'asset_id', 'snapshot_id')
+        has_association = any(key in arguments for key in keys)
+        if has_association and any(arguments.get(key) != record['request'][key] for key in keys):
+            raise ValueError('provider request association mismatch')
+        with self._transaction():
+            binding = self.conn.execute(
+                'SELECT agent_id FROM voice_provider_bindings WHERE request_id=?', (request_id,)).fetchone()
+            if binding and binding[0] != client.config.agent_id:
+                raise ValueError('provider agent association mismatch')
+            if not has_association and not binding and provider_call_id is None:
+                raise ValueError('explicit provider call association required')
+            self.bind(request_id, call_id)
+            self.conn.execute('INSERT OR IGNORE INTO voice_provider_bindings VALUES (?, ?, ?)',
+                (request_id, client.config.agent_id, 'provider_arguments' if has_association else 'explicit_request'))
+            raw_status = body.get('status')
+            known = isinstance(raw_status, str) and raw_status in STATUSES
+            transfer = None
+            for execution in body.get('tool_executions') or []:
+                if execution.get('tool_kind') == 'transfer_call':
+                    if execution.get('outcome') in ('failed', 'timed_out', 'cancelled', 'delivery_unknown'):
+                        transfer = 'failed'
+                        break
+                    transfer = 'requested'
+            lifecycle = dict(request_id=request_id, asset_id=record['request']['asset_id'],
+                snapshot_id=record['request']['snapshot_id'], provider_call_id=call_id,
+                status=raw_status if known else record['status'], observed_at=body['updated_at'],
+                transfer_status=transfer, raw_status=None if known else 'unrecognized')
+            outcome = self.record_lifecycle(event_id='poll:' + digest(lifecycle), **lifecycle)
+            result_outcome = 'pending'
+            if raw_status == 'completed':
+                result = normalize_call(CallRequest(**record['request']), body)
+                result_outcome = self.record_result(result)
+            return dict(lifecycle=outcome, result=result_outcome, provider_call_id=call_id,
+                        human_followup_required=True, dispatch=False, live_validation=False)
 
     def record_plan(self, plan, *, snapshot_id):
         """Keep uncontacted households and departure/arrival tasks in the same durable queue."""
