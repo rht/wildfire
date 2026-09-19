@@ -1133,8 +1133,8 @@ readiness PR #8 are included while retaining this branch's road warnings.
 On 2026-09-19, the approved deployment created `fireline-mock-interview-slng`.
 The example Gemini model failed with `AGENT_MODEL_UNAVAILABLE`; the Nemotron
 binding in SLNG's current [Think guide](https://docs.slng.ai/guides/agents/configure/think)
-was accepted. A follow-up GET verified the saved models and confirmed both SIP
-trunk fields are null. Browser-session creation succeeded with a 300-second
+was accepted. At initial deployment, a follow-up GET verified the saved models
+and confirmed both SIP trunk fields were null. Browser-session creation succeeded with a 300-second
 limit when supplied the required JSON body (`arguments` and `participant_name`).
 This verifies session creation, not two-way speech or captured answers.
 
@@ -1143,6 +1143,32 @@ To speak to it, open the [SLNG dashboard](https://app.slng.ai), select
 access. Follow the smoke scripts above. No Vonage call or real human handoff has
 been verified. The SLNG API key remains in the existing shared environment;
 browser connection tokens are never committed.
+
+**Vonage connection update:** the account's `vonage` connection is active with
+caller ID `+442039856256`. Attachment to the initial `eu-north` deployment failed
+because its LiveKit project was incompatible. A single CLI update setting both
+the region to `eu-central` and the outbound connection succeeded; a fresh GET
+and connection-options query confirmed it is current and selectable. Inbound
+calling remains unconfigured. One explicitly authorized outbound test was
+dispatched; API acceptance alone does not verify ringing or two-way audio.
+
+**Redeployment caveat:** Unmute 0.5.5 rejects `eu-central`, although the hosted
+agent API accepts it. Keep the compilable target in `targets.yaml` and apply
+this patch after an Unmute deployment, before attempting phone calls. The CLI
+expects `VOICEAI_API_KEY` to contain the existing SLNG key:
+
+```bash
+data/tools/voiceai-0.1.19/voiceai agents update be7b9f79-8b5c-46f0-948f-08ccc43e9397 --file - <<'JSON'
+{
+  "region": "eu-central",
+  "sip_outbound_trunk_id": "6c43b683-9bae-4cc2-af6b-850f5dbd0d05"
+}
+JSON
+```
+
+Recheck the saved region and attachment with `voiceai agents get`, and the
+connection with `voiceai trunks get vonage --direction outbound`. This patch
+does not place a call or change the carrier's credentials.
 
 The carrier route is configured in SLNG's Telephony dashboard using Vonage's
 termination host and SIP credentials, not a `carrier: vonage` Unmute setting.

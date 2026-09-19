@@ -1,4 +1,6 @@
 targets:
   slng:
     provider: slng
+    # Unmute 0.5.5 rejects eu-central, which this account's SIP trunk requires.
+    # After deployment, apply the region + trunk CLI patch documented in readme.md.
     deployment_region: eu-north
