@@ -296,11 +296,11 @@
         <div id="map"></div>
       </div>
       <div class="mapButtonBar">
-        <button id="notifyFireDeptBtn" class="primary">🚒 Notify fire dept</button>
-        <button id="notifyRadioBtn">📻 Radio</button>
-        <button id="notifyPhoneBtn">📞 Phone</button>
-        <button id="toggle3dBtn">🛰️ 3D · hotspots</button>
-        <button id="openDbBtn">📋 Institutions database →</button>
+        <button id="notifyFireDeptBtn" class="primary">Notify fire dept</button>
+        <button id="notifyRadioBtn">Radio</button>
+        <button id="notifyPhoneBtn">Phone</button>
+        <button id="toggle3dBtn">3D · hotspots</button>
+        <button id="openDbBtn">Institutions database →</button>
       </div>
     </div>
 
@@ -1015,11 +1015,11 @@ function toggleLog() { document.getElementById("changeLog").classList.toggle("op
 document.getElementById("nextUpdateBtn").addEventListener("click", nextUpdate);
 document.getElementById("changeLogBtn").addEventListener("click", toggleLog);
 document.getElementById("notifyFireDeptBtn").addEventListener("click",
-  () => notifyChannel("notifyFireDeptBtn", "🚒 Fire department notified"));
+  () => notifyChannel("notifyFireDeptBtn", "Fire department notified"));
 document.getElementById("notifyRadioBtn").addEventListener("click",
-  () => notifyChannel("notifyRadioBtn", "📻 Radio notification"));
+  () => notifyChannel("notifyRadioBtn", "Radio notification"));
 document.getElementById("notifyPhoneBtn").addEventListener("click",
-  () => notifyChannel("notifyPhoneBtn", "📞 Phone notification"));
+  () => notifyChannel("notifyPhoneBtn", "Phone notification"));
 document.getElementById("toggle3dBtn").addEventListener("click", toggle3dHotspots);
 document.getElementById("openDbBtn").addEventListener("click", showDbView);
 document.getElementById("backToMapBtn").addEventListener("click", hideDbView);
