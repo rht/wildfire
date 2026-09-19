@@ -4,7 +4,7 @@ Written 2026-09-19 on branch `claude/value-at-risk-handoff` (from `main` at `c5d
 
 ## Why
 
-`VALUE_AT_RISK.md` (research note, 2026-09-19, currently untracked in the main checkout) proposes a
+`docs/VALUE_AT_RISK.md` (research note, 2026-09-19) proposes a
 research-grade value-at-risk layer: three ledgers, an intensity-blind expected-net-value-change
 model, a fatality chain, CVaR over ensemble members, a Catastro footprint fetch, and a value of a
 statistical life for planning views. Roughly a third of that is what the hackathon build needs.
@@ -204,4 +204,4 @@ Estimated effort: half a day for steps 1 to 5 and tests, a few hours for 6 and 7
 - `scripts/make_snapshots.py` (`real_arrival`, `enrichment_config`, the 0004 builder)
 - `tests/test_forecast_input.py`, `tests/test_snapshot.py`, `tests/test_ui_state.py`
 - `readme.md` section 5, `CONTRACTS.md`
-- `VALUE_AT_RISK.md` (research note; the source for every figure above)
+- `docs/VALUE_AT_RISK.md` (research note; the source for every figure above)
