@@ -52,12 +52,21 @@ class VoiceStore:
 
     @contextmanager
     def _transaction(self):
-        self.conn.execute('BEGIN IMMEDIATE')
+        # A coordinator may group call facts, tasks and its published revision atomically.
+        nested = self.conn.in_transaction
+        self.conn.execute('SAVEPOINT voice_store' if nested else 'BEGIN IMMEDIATE')
         try:
             yield
-            self.conn.commit()
+            if nested:
+                self.conn.execute('RELEASE SAVEPOINT voice_store')
+            else:
+                self.conn.commit()
         except BaseException:
-            self.conn.rollback()
+            if nested:
+                self.conn.execute('ROLLBACK TO SAVEPOINT voice_store')
+                self.conn.execute('RELEASE SAVEPOINT voice_store')
+            else:
+                self.conn.rollback()
             raise
 
     def close(self):
