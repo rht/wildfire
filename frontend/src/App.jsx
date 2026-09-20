@@ -16,6 +16,7 @@ import BankOutlined from "@ant-design/icons/BankOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
+import { ApprovalProvider } from "./state/approvals";
 import { useDashboard } from "./state/useDashboard";
 import { Overview, Incidents } from "./pages/Overview";
 import Buildings from "./pages/Buildings";
@@ -161,129 +162,135 @@ export default function App() {
     </div>
   );
   return (
-    <div className="app-shell">
-      <aside className="desktop-sidebar">{sidebar}</aside>
-      <Drawer
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        sx={{ "& .MuiDrawer-paper": { width: 260 } }}
-      >
-        {sidebar}
-      </Drawer>
-      <div className="workspace">
-        <header className="topbar">
-          <div className="topbar-left">
-            <IconButton
-              className="mobile-menu"
-              aria-label="Open navigation"
-              onClick={() => setMobileOpen(true)}
-            >
-              <MenuOutlined />
-            </IconButton>
-          </div>
-          <div className="topbar-right">
-            <span
-              className={`connection ${status.connection === "connected" ? "ok" : ""}`}
-            >
-              <i />
-              {status.connection === "connected"
-                ? "Connected"
-                : demo
-                  ? "Design demo"
-                  : status.connection === "connecting"
-                    ? "Connecting"
-                    : "Reconnecting"}
-            </span>
-            <select
-              aria-label="Data source"
-              value={demo ? "demo" : "connected"}
-              onChange={(e) => changeSource(e.target.value)}
-            >
-              <option value="connected">Connected backend</option>
-              <option value="demo">Design demo</option>
-            </select>
-            <span className="avatar">RA</span>
-          </div>
-        </header>
-        <main key={demo ? "demo" : "connected"}>
-          {demo ? (
-            <Alert severity="info" className="mode-banner">
-              Design demo · Illustrative incidents, calls, deployments and
-              people. No operational actions have occurred.
-            </Alert>
-          ) : incidents[0]?.input_mode === "offline_demo" ? (
-            <Alert severity="info" className="mode-banner">
-              Offline backend demo · Supplied illustrative state. No real calls
-              or deployments.
-            </Alert>
-          ) : null}
-          {!demo && status.stale && (
-            <Alert severity="warning">
-              Source is stale or unavailable. Last supplied data remains
-              visible; check assessment times.
-            </Alert>
-          )}
-          {!demo && status.errors > 0 && (
-            <Alert severity="error">
-              The coordination source reported errors. Some information may be
-              incomplete.
-            </Alert>
-          )}
-          {!demo && !incidents.length ? (
-            <MainCard>
-              <Empty title="Waiting for coordination data">
-                Connect the read-only dashboard API to view current incidents.
-                You can explore the separate Design demo using the data-source
-                selector.
-              </Empty>
-            </MainCard>
-          ) : (
-            <Routes>
-              <Route path="/active-fires" element={<LegacyIncidentRoute />} />
-              <Route
-                path="/active-fires/:id/:page"
-                element={<LegacyIncidentRoute />}
-              />
-              <Route
-                path="/overview"
-                element={<Overview incidents={incidents} />}
-              />
-              <Route
-                path="/incidents"
-                element={<Incidents incidents={incidents} />}
-              />
-              <Route
-                path="/incidents/:id/:page"
-                element={<IncidentPage incidents={incidents} demo={demo} />}
-              />
-              <Route
-                path="/buildings"
-                element={<Buildings incidents={incidents} />}
-              />
-              <Route
-                path="/resources"
-                element={<Resources incidents={incidents} />}
-              />
-              <Route
-                path="/people"
-                element={<Evacuation incidents={incidents} />}
-              />
-              <Route
-                path="/log"
-                element={<ActivityLog incidents={incidents} demo={demo} />}
-              />
-              <Route path="*" element={<Navigate to="/overview" replace />} />
-            </Routes>
-          )}
-          <footer className="page-footer">
-            <span>ResponsAra · Analyst coordination</span>
-            <span>
-              {demo ? "Illustrative scenario" : "Source: coordination state"} ·
-              Read only
-            </span>
-          </footer>
-        </main>
+    <ApprovalProvider
+      key={demo ? "design_demo" : "connected"}
+      source={demo ? "design_demo" : "connected"}
+      incidents={incidents}
+    >
+      <div className="app-shell">
+        <aside className="desktop-sidebar">{sidebar}</aside>
+        <Drawer
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          sx={{ "& .MuiDrawer-paper": { width: 260 } }}
+        >
+          {sidebar}
+        </Drawer>
+        <div className="workspace">
+          <header className="topbar">
+            <div className="topbar-left">
+              <IconButton
+                className="mobile-menu"
+                aria-label="Open navigation"
+                onClick={() => setMobileOpen(true)}
+              >
+                <MenuOutlined />
+              </IconButton>
+            </div>
+            <div className="topbar-right">
+              <span
+                className={`connection ${status.connection === "connected" ? "ok" : ""}`}
+              >
+                <i />
+                {status.connection === "connected"
+                  ? "Connected"
+                  : demo
+                    ? "Design demo"
+                    : status.connection === "connecting"
+                      ? "Connecting"
+                      : "Reconnecting"}
+              </span>
+              <select
+                aria-label="Data source"
+                value={demo ? "demo" : "connected"}
+                onChange={(e) => changeSource(e.target.value)}
+              >
+                <option value="connected">Connected backend</option>
+                <option value="demo">Design demo</option>
+              </select>
+              <span className="avatar">RA</span>
+            </div>
+          </header>
+          <main key={demo ? "demo" : "connected"}>
+            {demo ? (
+              <Alert severity="info" className="mode-banner">
+                Design demo · Illustrative incidents, calls, deployments and
+                people. Confirmations here apply only to this demo.
+              </Alert>
+            ) : incidents[0]?.input_mode === "offline_demo" ? (
+              <Alert severity="info" className="mode-banner">
+                Offline backend demo · Supplied illustrative state. No real
+                calls or deployments.
+              </Alert>
+            ) : null}
+            {!demo && status.stale && (
+              <Alert severity="warning">
+                Source is stale or unavailable. Last supplied data remains
+                visible; check assessment times.
+              </Alert>
+            )}
+            {!demo && status.errors > 0 && (
+              <Alert severity="error">
+                The coordination source reported errors. Some information may be
+                incomplete.
+              </Alert>
+            )}
+            {!demo && !incidents.length ? (
+              <MainCard>
+                <Empty title="Waiting for coordination data">
+                  Connect the read-only dashboard API to view current incidents.
+                  You can explore the separate Design demo using the data-source
+                  selector.
+                </Empty>
+              </MainCard>
+            ) : (
+              <Routes>
+                <Route path="/active-fires" element={<LegacyIncidentRoute />} />
+                <Route
+                  path="/active-fires/:id/:page"
+                  element={<LegacyIncidentRoute />}
+                />
+                <Route
+                  path="/overview"
+                  element={<Overview incidents={incidents} />}
+                />
+                <Route
+                  path="/incidents"
+                  element={<Incidents incidents={incidents} />}
+                />
+                <Route
+                  path="/incidents/:id/:page"
+                  element={<IncidentPage incidents={incidents} demo={demo} />}
+                />
+                <Route
+                  path="/buildings"
+                  element={<Buildings incidents={incidents} />}
+                />
+                <Route
+                  path="/resources"
+                  element={<Resources incidents={incidents} />}
+                />
+                <Route
+                  path="/people"
+                  element={<Evacuation incidents={incidents} />}
+                />
+                <Route
+                  path="/log"
+                  element={<ActivityLog incidents={incidents} demo={demo} />}
+                />
+                <Route path="*" element={<Navigate to="/overview" replace />} />
+              </Routes>
+            )}
+            <footer className="page-footer">
+              <span>ResponsAra · Analyst coordination</span>
+              <span>
+                {demo ? "Illustrative scenario" : "Source: coordination state"}{" "}
+                · Plan review
+              </span>
+            </footer>
+          </main>
+        </div>
       </div>
-    </div>
+    </ApprovalProvider>
   );
 }

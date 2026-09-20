@@ -2727,9 +2727,9 @@ Old `#/active-fires` links redirect. People/groups include individuals.
 
 The overview lists every supplied crew across incidents, one review entry per crew;
 incident summaries scope that list. Entries open ordered steps, destinations, GPS,
-and prerequisites. Analyst confirmation is visibly unavailable pending @mirrdj's
-choice between a demo-only interaction and saved backend approvals. Review never
-asserts dispatch. Call history contains individual attempts with caller, outcome,
+and prerequisites. Explicit confirmation records analyst approval of the current
+plan version in a separate SQLite database; opening a review never asserts approval
+or dispatch. Call history contains individual attempts with caller, outcome,
 UTC date and search filters. **Voice assistant to call** shows pending locations
 in backend priority order. Call caller identity is shown only when explicit;
 unknown identity stays unavailable. Demo records explicitly distinguish agent and
@@ -2788,12 +2788,12 @@ until that data is supplied. Only Design demo fixtures include illustrative dead
 The brand subtitle is “Wildfire coordination” beneath ResponsAra. The duplicate
 topbar label and location icon are removed. The main background remains white.
 
-Proposed crew plans now show **Awaiting analyst confirmation**, an explicit
+Proposed crew plans now show **Awaiting confirmation**, an explicit
 **Review & confirm** action, and a count of plans needing confirmation. The overview
 and firefighter plan page open the same review panel with a prominent confirmation
 requirement and a dedicated final action. Plans with no proposed steps are not
-labelled as awaiting approval. Saving is still unavailable until the approval
-service is connected; no approval or dispatch is inferred from opening the review.
+labelled as awaiting approval. Saving uses the local approval endpoint; no approval
+or dispatch is inferred from opening the review.
 
 Status tags now share a fixed width across tables, including activity-log event
 types and severities. Full labels remain available on hover when truncated.
@@ -2812,3 +2812,65 @@ perimeter exists it shows the centre of its bounds, explicitly labelled “Perim
 centre”; missing coordinates are never filled from demonstration data.
 
 The Buildings & risk subtitle omits the assessment-date filter explanation.
+
+### Saved crew-plan confirmations — approved implementation
+
+@mirrdj requested implementing the disabled confirmation action. The existing
+localhost backend stores analyst approvals in a separate SQLite database;
+coordination data, task status, dispatch and prerequisite facts remain unchanged.
+Each approval records the configured local analyst name, server timestamp, source,
+incident, team and a hash of the reviewed public plan/context. A changed plan needs
+new confirmation. Design-demo and connected approvals have separate namespaces.
+The localhost application has no login system: the configured analyst label is
+local operator attribution, not an authenticated multi-user identity.
+
+Implementation plan:
+- [x] Backend: add `fireline/dashboard_approvals.py`, SQLite approval audit storage
+  and current-plan hashing. Add GET/POST `/api/crew-approvals` in the dashboard
+  server. GET requires source, incident_id, snapshot_id and revision; POST also
+  requires team_id and plan_version. Read current server-owned data and reject
+  stale versions, missing/proposal-free plans, malformed requests and cross-origin
+  writes. Persist idempotently without mutating the coordination database.
+  Tests cover reload/persistence, duplicate confirmation, stale context, source
+  isolation, origin checks and no dispatch side effects.
+- [x] Frontend: emit the Design demo dataset from the existing fixture in the build
+  for server-side verification. Add shared approval state that loads current
+  metadata, confirms explicitly, shows pending/success/error states and refreshes
+  when incident data changes. Integrate overview, firefighter and resource review
+  controls; show analyst/time, and preserve confirmation versus dispatch wording.
+  Refresh approval metadata while the app is open so other views stay consistent.
+- [x] Verify actual persistence and stale-plan rejection through the API and Chrome,
+  run Python/Node tests, lint/build and review. Restart only this session's preview
+  process on 18522 to load the new endpoint, preserving sibling demos. Record the
+  result here, commit and push the task branch.
+
+Approval API returns source/incident/revision/snapshot identifiers, configured
+`analyst`, `plans` containing `team_id`, `plan_version`, `can_confirm` and nullable
+`approval` (`approval_id`, `analyst`, `confirmed_at`, `plan_version`), plus approval
+`events`. Errors are explicit; `plan_changed` uses HTTP 409 and unavailable approval
+storage uses HTTP 503. Both reads and writes remain confined to localhost. The
+production build emits `assets/design-demo.json`; the server permits that source
+only when started with `--demo`.
+
+The server enables persistence with `--approvals-database` (default
+`data/dashboard-approvals.sqlite3`) and records the configured `--analyst` (default
+`@mirrdj`). The operational coordination database stays read-only. The UI polls
+approval metadata every five seconds, refreshes after explicit confirmation, shows
+**Confirmed by @mirrdj** and the saved time, and adds confirmations to the activity
+log. Browser tests use isolated approval databases and leave the preview's saved
+confirmations intact.
+
+Plan identity includes authoritative action versions, task details, reviewed
+locations, snapshot, epoch and input mode. Unrelated envelope-revision changes do
+not invalidate an unchanged plan, but requests must still match the current
+revision. Design-demo snapshots are bound to a SHA-256 digest of the exported
+fixture: an old browser build must reload before confirming rebuilt data. Legacy
+single-crew plans with no crew identifier remain reviewable and explicitly cannot
+be confirmed until a crew is identified. No dispatch or prerequisite confirmation
+is implied by analyst approval.
+
+Verification: 954 Python tests passed, 2 skipped; 30 Node tests passed. Frontend
+lint, formatting and production build passed. Chrome checks covered the dashboard,
+connected state, saved confirmation after server restart, cross-view and cross-tab
+updates, stale-plan rejection, audit logs and source isolation. Code review findings
+were resolved and rechecked. Pending plans display **Awaiting confirmation**.

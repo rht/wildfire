@@ -38,7 +38,7 @@ const fs = require("node:fs");
     );
     await expect(page.locator("main table")).toHaveCount(0);
     await expect(
-      page.getByText("Awaiting analyst confirmation", { exact: true }),
+      page.getByText("Awaiting confirmation", { exact: true }),
     ).toHaveCount(6);
     await expect(
       page.getByText("6 need confirmation", { exact: true }),
@@ -68,7 +68,7 @@ const fs = require("node:fs");
       page
         .getByRole("dialog")
         .getByRole("button", { name: "Confirm crew plan", exact: true }),
-    ).toBeDisabled();
+    ).toBeEnabled();
     await page.getByRole("button", { name: "Close details" }).click();
     await page.getByRole("dialog").waitFor({ state: "hidden" });
     await page
@@ -162,7 +162,7 @@ const fs = require("node:fs");
       "Fire analyst confirmation required",
     );
     await expect(page.getByRole("dialog")).toContainText(
-      "Confirmation cannot be saved yet",
+      "Confirm this crew plan as @mirrdj",
     );
     await page.getByRole("button", { name: "Close details" }).click();
     await page.getByRole("dialog").waitFor({ state: "hidden" });

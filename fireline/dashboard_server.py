@@ -13,6 +13,7 @@ from starlette.responses import FileResponse, JSONResponse, PlainTextResponse
 from starlette.routing import Route, WebSocketRoute
 from starlette.websockets import WebSocketDisconnect
 
+from .dashboard_approvals import ApprovalStore, PlanChanged, envelope, plans_for
 from .dashboard_public import public_state
 
 FRONTEND_DIST = Path(__file__).resolve().parents[1] / 'frontend' / 'dist'
@@ -65,8 +66,121 @@ class CoordinationDatabase:
             (after_revision,))]
 
 
-def create_app(store, *, poll_interval=0.5):
+def create_app(store, *, poll_interval=0.5, approvals=None, analyst='@mirrdj',
+               allow_demo_approvals=False):
     """Inject a read-only store exposing state() and updates(after_revision)."""
+    if not isinstance(analyst, str) or not analyst.strip():
+        raise ValueError('analyst must be a non-empty string')
+
+    def approval_error(code, status_code):
+        return JSONResponse({'error': code}, status_code=status_code, headers=HEADERS)
+
+    def approval_identity(values, *, query=False):
+        required = {'source', 'incident_id', 'revision', 'snapshot_id'}
+        if not query:
+            required |= {'team_id', 'plan_version'}
+        if set(values) != required:
+            raise ValueError('unexpected approval fields')
+        source = values.get('source')
+        incident_id = values.get('incident_id')
+        snapshot_id = values.get('snapshot_id')
+        revision = values.get('revision')
+        if query:
+            if not isinstance(revision, str) or not revision.isascii() or not revision.isdecimal():
+                raise ValueError('revision must be an integer')
+            revision = int(revision)
+        if (source not in ('connected', 'design_demo')
+                or any(not isinstance(value, str) or not value.strip()
+                       for value in (incident_id, snapshot_id))
+                or type(revision) is not int or revision < 0):
+            raise ValueError('invalid approval identity')
+        if not query and any(not isinstance(values.get(field), str)
+                             or not values[field].strip()
+                             for field in ('team_id', 'plan_version')):
+            raise ValueError('invalid approval plan')
+        return source, incident_id, revision, snapshot_id
+
+    def approval_state(source, incident_id):
+        if source == 'connected':
+            try:
+                return public_state(store.state())
+            except Exception as error:
+                raise OSError('connected approval state unavailable') from error
+        if not allow_demo_approvals:
+            raise PermissionError('design demo approvals are disabled')
+        try:
+            records = json.loads((FRONTEND_DIST / 'assets' / 'design-demo.json').read_text(
+                encoding='utf-8'))
+        except (OSError, UnicodeError, json.JSONDecodeError) as error:
+            raise OSError('design demo approval state unavailable') from error
+        if not isinstance(records, list):
+            raise OSError('invalid design demo export')
+        return next((record for record in records
+                     if isinstance(record, dict)
+                     and (record.get('incident_id') or record.get('id')
+                          or record.get('scenario_id')) == incident_id), None)
+
+    def current_approval(source, incident_id, revision, snapshot_id):
+        current = approval_state(source, incident_id)
+        return plans_for(current, source=source, incident_id=incident_id,
+                         revision=revision, snapshot_id=snapshot_id)
+
+    async def crew_approvals(request):
+        if approvals is None:
+            return approval_error('approval_unavailable', 503)
+        if request.method == 'GET':
+            pairs = list(request.query_params.multi_items())
+            values = dict(pairs)
+            if len(pairs) != len(values):
+                return approval_error('invalid_request', 422)
+            try:
+                source, incident_id, revision, snapshot_id = approval_identity(
+                    values, query=True)
+                plans = current_approval(source, incident_id, revision, snapshot_id)
+                result = envelope(approvals, plans, source=source, incident_id=incident_id,
+                                  revision=revision, snapshot_id=snapshot_id,
+                                  analyst=analyst)
+            except PermissionError:
+                return approval_error('source_not_allowed', 403)
+            except PlanChanged:
+                return approval_error('plan_changed', 409)
+            except (KeyError, TypeError, ValueError):
+                return approval_error('invalid_request', 422)
+            except (OSError, sqlite3.Error):
+                return approval_error('approval_unavailable', 503)
+            return JSONResponse(result, headers=HEADERS)
+
+        if request.headers.get('origin') != f'{request.url.scheme}://{request.headers.get("host")}':
+            return approval_error('origin_not_allowed', 403)
+        content_type = request.headers.get('content-type', '').split(';', 1)[0].strip().lower()
+        if content_type != 'application/json':
+            return approval_error('json_required', 415)
+        try:
+            values = await request.json()
+            if not isinstance(values, dict):
+                raise ValueError('approval body must be an object')
+            source, incident_id, revision, snapshot_id = approval_identity(values)
+            plans = current_approval(source, incident_id, revision, snapshot_id)
+            plan = next((item for item in plans if item['team_id'] == values['team_id']), None)
+            if plan is None or not plan['can_confirm']:
+                return approval_error('plan_not_confirmable', 422)
+            if plan['plan_version'] != values['plan_version']:
+                return approval_error('plan_changed', 409)
+            approvals.confirm(source=source, incident_id=incident_id,
+                              snapshot_id=snapshot_id, team_id=plan['team_id'],
+                              plan_version=plan['plan_version'], analyst=analyst)
+            result = envelope(approvals, plans, source=source, incident_id=incident_id,
+                              revision=revision, snapshot_id=snapshot_id, analyst=analyst)
+        except PermissionError:
+            return approval_error('source_not_allowed', 403)
+        except PlanChanged:
+            return approval_error('plan_changed', 409)
+        except (json.JSONDecodeError, UnicodeError, KeyError, TypeError, ValueError):
+            return approval_error('invalid_request', 422)
+        except (OSError, sqlite3.Error):
+            return approval_error('approval_unavailable', 503)
+        return JSONResponse(result, headers=HEADERS)
+
     async def state(request):
         try:
             return JSONResponse(public_state(store.state()), headers=HEADERS)
@@ -130,6 +244,8 @@ def create_app(store, *, poll_interval=0.5):
         return FileResponse(candidate, headers=HEADERS)
 
     app = Starlette(routes=[Route('/', page), Route('/api/state', state),
+                            Route('/api/crew-approvals', crew_approvals,
+                                  methods=['GET', 'POST']),
                             WebSocketRoute('/api/updates', updates),
                             Route('/assets/{path:path}', asset)])
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1', 'localhost', '[::1]', 'testserver'])
@@ -142,11 +258,19 @@ def main():
     source.add_argument('--demo', action='store_true', help='explicit offline illustration; no calls')
     source.add_argument('--database', type=Path, help='existing CoordinationStore database; read-only')
     parser.add_argument('--port', type=int, default=8521)
+    parser.add_argument('--approvals-database', type=Path,
+                        default=Path('data/dashboard-approvals.sqlite3'))
+    parser.add_argument('--analyst', default='@mirrdj')
     args = parser.parse_args()
+    if args.database and args.database.resolve() == args.approvals_database.resolve():
+        parser.error('--approvals-database must differ from the coordination --database')
     from .dashboard_demo import DemoStore
     import uvicorn
     store = DemoStore() if args.demo else CoordinationDatabase(args.database)
-    uvicorn.run(create_app(store), host='127.0.0.1', port=args.port, access_log=False)
+    approvals = ApprovalStore(args.approvals_database)
+    uvicorn.run(create_app(store, approvals=approvals, analyst=args.analyst,
+                           allow_demo_approvals=args.demo),
+                host='127.0.0.1', port=args.port, access_log=False)
 
 
 if __name__ == '__main__':

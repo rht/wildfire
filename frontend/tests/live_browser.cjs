@@ -113,6 +113,49 @@ const assert = require("node:assert/strict");
     await expect(page.locator("tbody tr").first()).toContainText(
       "Initial assessment",
     );
+    state.revision = 4;
+    state.assets = [{ asset_id: "a", name: "Legacy location" }];
+    state.plan = {
+      locations: [],
+      response: {
+        steps: [
+          {
+            asset_id: "a",
+            action_id: "legacy-step",
+            start_min: 1,
+            finish_min: 2,
+          },
+        ],
+      },
+    };
+    await page.route("**/api/crew-approvals?*", (route) =>
+      route.fulfill({
+        json: {
+          source: "connected",
+          incident_id: "test",
+          snapshot_id: "snap",
+          revision: 4,
+          analyst: "@mirrdj",
+          plans: [],
+          events: [],
+        },
+      }),
+    );
+    await page.goto(base + "/#/incidents/test/plan");
+    await page
+      .getByRole("button", {
+        name: "Review plan for Unspecified crew",
+        exact: true,
+      })
+      .click();
+    await expect(page.getByRole("dialog")).toContainText(
+      "A crew identifier and current proposed plan are needed",
+    );
+    await expect(
+      page
+        .getByRole("dialog")
+        .getByRole("button", { name: "Confirm crew plan", exact: true }),
+    ).toBeDisabled();
     assert.deepEqual(errors, []);
     assert.deepEqual(writes, []);
     console.log(

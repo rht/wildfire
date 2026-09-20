@@ -984,3 +984,8 @@ main {
   margin-top: 14px;
   font-variant-numeric: tabular-nums;
 }
+
+.crew-identity .confirmation-saved {
+  color: #389e0d;
+  font-weight: 600;
+}
