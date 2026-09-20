@@ -997,14 +997,21 @@ def check_valuation() -> dict:
     # Euro neutrality, the point of the layer: give every asset a huge confirmed valuation and re-rank.
     snap = json.loads((SNAP_DIR / "gavarres_real_0002.json").read_text(encoding="utf-8"))
     before = [a["asset_id"] for a in priority.rank_snapshot(snap, config)["ranked"]]
-    valued = copy.deepcopy(snap)
-    for a in valued["assets"]:
-        a["custom_value_method"] = "component_replacement"
-        a["custom_value_components"] = [{"label": "validate probe", "amount_eur": 4_000_000_000}]
-        a["custom_value_eur_low"] = 1_000_000_000
-        a["custom_value_eur_mid"] = 4_000_000_000
-        a["custom_value_eur_high"] = 5_000_000_000
-        a["custom_value_basis"] = "validate probe"
+    # Confirm through the real override path rather than writing the six keys on directly: _apply_one
+    # is what an analyst's click runs, and it is also what clears `valuation_unassessed`. Writing the
+    # keys by hand would build a record the product cannot produce (a confirmed figure sitting beside
+    # the reason that asks for one) and would measure the wrong thing.
+    payload = {"method": "component_replacement",
+               "components": [{"label": "validate probe A", "amount_eur": 2_000_000_000},
+                              {"label": "validate probe B", "amount_eur": 2_000_000_000}],
+               "amount_eur_low": 1_000_000_000, "amount_eur_mid": 4_000_000_000,
+               "amount_eur_high": 5_000_000_000, "note": "validate probe"}
+    overrides = [{"override_id": f"ovr-probe-{i}", "asset_id": a["asset_id"], "field": "custom_valuation",
+                  "value": payload, "source": "validate probe", "confirmed_at": snap["as_of"],
+                  "confidence": "low", "snippet": None, "url": None, "observed_at": None}
+                 for i, a in enumerate(snap["assets"])]
+    valued = dict(snap, assets=priority.apply_overrides(snap["assets"], overrides, config,
+                                                        now_at=snap["as_of"]))
     after = priority.rank_snapshot(valued, config)
     after_ids = [a["asset_id"] for a in after["ranked"]]
     same = json.dumps(before) == json.dumps(after_ids)

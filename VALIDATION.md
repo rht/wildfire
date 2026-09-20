@@ -14,10 +14,11 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 | Agent (FakeLLM) | pass | 8 runs: 4 proposals {'capacity': 2, 'asset_type': 1, 'criticality_tier': 1}, 6 escalations, 0 occupancy-from-capacity |
 | Agent (live model) | not verified |  |
 | Criticality | pass |  |
-| Latency | pass | median 0.172 s for 180 assets (target < 60 s); source age 300 s |
+| Custom valuation | pass | 12 assets of 4 unpriced classes; contact order unchanged by a confirmed figure: True; expected loss {'low': 1200000, 'mid': 7000000, 'high': 24000000} vs damage band alone {'low': 2000000, 'mid': 7000000, 'high': 15000000} |
+| Latency | pass | median 0.179 s for 180 assets (target < 60 s); source age 300 s |
 | Stale data | pass | None->unavailable, 0->current, 3599->current, 3600->stale, 21599->stale, 21600->unavailable, -60->current |
 
-9 pass, 0 fail, 1 not verified.
+10 pass, 0 fail, 1 not verified.
 
 ## Recorded outcomes
 
@@ -104,18 +105,30 @@ Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it 
 - factors (closed enum): irreplaceable_holdings, national_research_infrastructure, sole_regional_service, emergency_response_capability, hazardous_materials, network_single_point_of_failure
 - assessed classes: hospital, research_facility, university, fire_station, aerodrome; FEATURES['asset_criticality'] = True
 - inflation guard: exceptional+1 -> refused; exceptional+2 -> accepted; high+0 -> refused; routine+0 -> accepted; high+1 -> refused
-- producer: tier is null with the flag off and on (True); the reason appears only with the flag on (off ['occupancy_unknown'], on ['occupancy_unknown', 'criticality_unassessed'])
+- producer: tier is null with the flag off and on (True); the reason appears only with the flag on (off ['occupancy_unknown', 'valuation_unassessed'], on ['occupancy_unknown', 'criticality_unassessed', 'valuation_unassessed'])
 - contact order with every asset at the top tier is identical to the untiered order: True (72 ranked); strategic view holds 180, untiered snapshot holds 0
 - ranked_sort_key mentions no criticality field, and no code reads loss_multiplier (the euro ledger is not implemented): True
 - strategic assets in the committed extract: 13 {'aerodrome': 5, 'fire_station': 6, 'hospital': 1, 'research_facility': 1}; nearest to the fire in gavarres_real_0002: Parc de Bombers de Calonge i Sant Antoni 450 m; Parc de Bombers de la Vall d'Aro 4998 m; IRTA Monells (IRTA-Monells) 5004 m
 
+### Custom valuation: pass
+
+- policy custom-valuation-proto-2026-09-20: methods component_replacement (min 2 priced component(s)), service_continuity (min 1 priced component(s)), irreplaceable_holdings (min 1 priced component(s)), parent_institution_scaled (min 1 priced component(s)), not_valued (min 0 priced component(s)); a band, never a point: amount_eur_high >= 1.5x amount_eur_low; component_replacement components must sum to amount_eur_mid within 5%; ceiling 5,000,000,000 EUR
+- assessed classes: research_facility, university, aerodrome, fire_station; of these the per-class euro table (VALUE_AT_RISK_POLICY) prices none, which is why these are the classes a bespoke figure is asked for; FEATURES['custom_valuation'] = True; damage ratio applied to a confirmed figure 0.1 / 0.35 / 0.75 (low / mid / high)
+- policy guards: method not in the enum (market_appraisal) -> refused; service_continuity, band 1.0x (a point) -> refused; service_continuity, band 2.0x -> accepted; band out of order (low > mid) -> refused; service_continuity with no priced component -> refused; component_replacement with one component -> refused; component_replacement, two components summing to the mid -> accepted; component_replacement, components 30% below the mid -> refused; high above the 5,000,000,000 EUR ceiling (a misplaced decimal point) -> refused; not_valued with no amounts -> accepted; not_valued carrying an amount -> refused
+- producer: all six custom-valuation keys are null with the flag off and on (True); the reason appears only with the flag on (off ['occupancy_unknown', 'criticality_unassessed'], on ['occupancy_unknown', 'criticality_unassessed', 'valuation_unassessed']); a figure can reach an asset only through an analyst-confirmed override, like criticality_tier (True)
+- confirmed valuation of one research_facility (band 30,000,000 / 50,000,000 / 80,000,000 EUR, burn_probability 0.4): replacement_value_eur 50,000,000 (basis 'per-asset custom valuation, method component_replacement, policy custom-valuation-proto-2026-09-20 (analyst-confirmed; not a market valuation)'); expected_loss low/mid/high {'low': 1200000, 'mid': 7000000, 'high': 24000000} compounds the valuation band with the damage band, against {'low': 2000000, 'mid': 7000000, 'high': 15000000} from the damage band alone - the spread widens from 7.5x to 20.0x: True; the same record as a class-priced school (no bespoke figure) gives {'low': 240000, 'mid': 640000, 'high': 1280000} from config.VALUE_AT_RISK_POLICY, damage band only
+- strategic_queue with three same-tier assets orders ['probe:dear', 'probe:cheap', 'probe:unvalued']: the larger confirmed figure first and the unvalued asset last, ahead of the remaining window (probe:dear has the largest window of the three): True
+- contact order with a 4,000,000,000.0 EUR confirmed valuation on every one of the 180 assets is byte-identical to the unvalued order: True (72 ranked); validate_snapshot errors on the valued snapshot: none
+- priority.ranked_sort_key mentions none of ['custom_value_eur_low', 'custom_value_eur_mid', 'custom_value_eur_high', 'custom_value_method', 'custom_value_components', 'custom_value_basis', 'custom_valuation', 'amount_eur', 'replacement_value_eur', 'expected_loss'] (True), and fireline/contact_priority.py - contact_sort_key and the whole module - mentions none of them either (True): True
+- assets of an assessed class in the committed extract: 12 {'aerodrome': 5, 'fire_station': 6, 'research_facility': 1}; in gavarres_real_0002 12 carry valuation_unassessed Parc de Bombers de la Vall d'Aro (fire_station), Parc de Bombers de la Pera (fire_station), Parc de Bombers de Calonge i Sant Antoni (fire_station), Parc de Bombers de Cassà de la Selva (fire_station), Parc de Bombers de Palafrugell (fire_station), Parc de Bombers de Torroella de Montgrí (fire_station); 180/180 records carry the six keys; confirmed valuations in the committed snapshot: none (none is expected: a figure arrives only through an analyst)
+
 ### Latency: pass
 
 - input: 180 real-area assets (fixtures/real_area/assets_gavarres.json) + recorded update 20260703T100500Z_satellite-perimeters.json (deepfire:satellite-perimeters, SYNTHETIC content, observed 2026-07-03T10:00:00+00:00, received 2026-07-03T10:05:00+00:00) through fire_input.load_recorded
-- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.174, 0.145, 0.172] s; median 0.172 s
-- stages of run 1: build 0.094 s, score 0.030 s, apply+suggest 0.050 s; validate errors 0
+- processing time (receipt -> snapshot built -> scored -> tasks suggested), 3 runs: [0.179, 0.179, 0.179] s; median 0.179 s
+- stages of run 1: build 0.093 s, score 0.030 s, apply+suggest 0.056 s; validate errors 0
 - result: 0 ranked, 180 needs_review; 103 assets changed vs seq 1, 0 new suggestions on the update (ranked queue empty: no fire-spread run exists for the recorded July incident, so these inputs carry no per-location forecast arrival and every asset is a review item until a forecast covers it)
-- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.17211915797088295} (separate numbers, never combined)
+- source age (observation -> snapshot as_of 2026-07-03T10:05:00+00:00): 300 s, data_status current; metrics {'source_age_s': 300.0, 'processing_s': 0.17888049798784778} (separate numbers, never combined)
 - target < 60 s processing for the selected area: met on x86_64, Python 3.14.7
 
 ### Stale data: pass

@@ -245,13 +245,15 @@ def shipped():
 def test_approving_everything_moves_no_shipped_row(shipped):
     """Measured, not hoped for: on every shipped snapshot the contact order is unchanged.
 
-    The offline agent proposes only `capacity`, `estimated_occupancy`, `asset_type` and
-    `criticality_tier`, and none of those is in `contact_priority.contact_sort_key`: the order is
+    The offline agent proposes only `capacity`, `estimated_occupancy`, `asset_type`,
+    `criticality_tier` and `custom_valuation`, and none of those is in
+    `contact_priority.contact_sort_key`: the order is
     the remaining evacuation window, then arrival, then distance, then asset_id. Criticality is kept
     out of it on purpose (readme 6, "property value does not override contact urgency"; VALIDATION.md
-    records the same guard as "ranked_sort_key mentions no criticality field"), occupancy and capacity
-    never enter the arithmetic, and the single `asset_type` proposal on the synthetic snapshots
-    proposes `campsite` for an asset already typed `campsite`. So this is a real comparison with a
+    records the same guard as "ranked_sort_key mentions no criticality field"), a bespoke euro band is
+    kept out for the same reason and orders the strategic view only, occupancy and capacity never
+    enter the arithmetic, and the single `asset_type` proposal on the synthetic snapshots proposes
+    `campsite` for an asset already typed `campsite`. So this is a real comparison with a
     null result, not a broken preview - `test_preview_moves_rows_when_a_proposal_touches_a_sort_key_input`
     is the same machinery moving rows when a proposal does reach the sort key.
     """
@@ -262,7 +264,7 @@ def test_approving_everything_moves_no_shipped_row(shipped):
         # every ranked asset kept its rank (gavarres_real-0004 ranks nothing: no arrival at all)
         assert {a["preview_rank_delta"] for a in scored["ranked"]} <= {0}, snapshot_id
         assert set(report["by_field"]) <= {"capacity", "estimated_occupancy", "asset_type",
-                                           "criticality_tier"}, snapshot_id
+                                           "criticality_tier", "custom_valuation"}, snapshot_id
         # and yet the sweep is not a no-op: it clears review flags on every shipped snapshot
         assert report["flags_cleared"] > 0, snapshot_id
 
@@ -278,13 +280,17 @@ def test_shipped_counts_are_the_measured_ones(shipped):
             assert report["by_field"] == {"capacity": 2, "asset_type": 1, "criticality_tier": 1}
             assert (report["flags_cleared"], report["tiers_set"], report["valuations_set"]) == (2, 0, 0)
         else:
-            # 93 flagged assets -> 13 proposals, every one a criticality tier: 12 `routine` (the
-            # default) and one `elevated` for the research facility, so 13 `criticality_unassessed`
-            # flags clear and exactly one asset reaches the strategic view.
+            # 93 flagged assets -> 25 proposals: 13 criticality tiers (12 `routine`, the default, and
+            # one `elevated` for the research facility) and 12 custom valuations, one for each asset
+            # of a class the per-class euro table does not price (6 fire_station, 5 aerodrome,
+            # 1 research_facility). Only the research facility gets a real band - the corpus holds a
+            # worked example for its class - so the other 11 come back `not_valued`, the valuation
+            # analogue of the default tier. All 25 flags clear; exactly one asset reaches the
+            # strategic view and exactly one carries a bespoke figure.
             assert report["investigated"] == 93
-            assert report["proposals"] == 13
-            assert report["by_field"] == {"criticality_tier": 13}
-            assert (report["flags_cleared"], report["tiers_set"], report["valuations_set"]) == (13, 1, 0)
+            assert report["proposals"] == 25
+            assert report["by_field"] == {"criticality_tier": 13, "custom_valuation": 12}
+            assert (report["flags_cleared"], report["tiers_set"], report["valuations_set"]) == (25, 1, 1)
 
 
 def test_the_preview_counts_a_proposed_bespoke_valuation_without_confirming_it(session, monkeypatch):

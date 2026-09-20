@@ -47,7 +47,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -90,7 +91,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:10213421",
@@ -119,7 +126,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -162,7 +170,13 @@
    "municipality": "Pera, la",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:25599403",
@@ -191,7 +205,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -234,7 +249,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:3041423",
@@ -263,7 +284,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -306,7 +328,13 @@
    "municipality": "Cassà de la Selva",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:3041468",
@@ -335,7 +363,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -378,7 +407,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:3041486",
@@ -407,7 +442,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -450,7 +486,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:34473418",
@@ -479,7 +521,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -522,7 +565,13 @@
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'Heura",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:3620470",
@@ -594,7 +643,13 @@
    "municipality": "PALAMÓS",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:3620472",
@@ -666,7 +721,13 @@
    "municipality": "PALAMÓS",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:55419",
@@ -695,7 +756,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -738,7 +800,13 @@
    "municipality": null,
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:759234",
@@ -767,7 +835,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -810,7 +879,13 @@
    "municipality": "Foixà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:759245",
@@ -839,7 +914,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -882,7 +958,13 @@
    "municipality": "Fontanilles",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:759250",
@@ -911,7 +993,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -954,7 +1037,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "equipaments:759260",
@@ -983,7 +1072,8 @@
    "needs_review": true,
    "review_reasons": [
     "occupancy_unknown",
-    "criticality_unassessed"
+    "criticality_unassessed",
+    "valuation_unassessed"
    ],
    "sources": [
     {
@@ -1026,7 +1116,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000411",
@@ -1106,7 +1202,13 @@
    "municipality": "La Bisbal d'Empordà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000421",
@@ -1186,7 +1288,13 @@
    "municipality": "La Bisbal d'Empordà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000561",
@@ -1266,7 +1374,13 @@
    "municipality": "Bordils",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000688",
@@ -1346,7 +1460,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000706",
@@ -1426,7 +1546,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000718",
@@ -1506,7 +1632,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000846",
@@ -1586,7 +1718,13 @@
    "municipality": "Cassà de la Selva",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000858",
@@ -1666,7 +1804,13 @@
    "municipality": "Cassà de la Selva",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000883",
@@ -1746,7 +1890,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000895",
@@ -1826,7 +1976,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000913",
@@ -1906,7 +2062,13 @@
    "municipality": "Celrà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17000998",
@@ -1986,7 +2148,13 @@
    "municipality": "Corçà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17001024",
@@ -2066,7 +2234,13 @@
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17001231",
@@ -2146,7 +2320,13 @@
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17001292",
@@ -2226,7 +2406,13 @@
    "municipality": "Flaçà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002031",
@@ -2306,7 +2492,13 @@
    "municipality": "Llagostera",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002259",
@@ -2386,7 +2578,13 @@
    "municipality": "Mont-ras",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002481",
@@ -2466,7 +2664,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002491",
@@ -2546,7 +2750,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002508",
@@ -2626,7 +2836,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002511",
@@ -2706,7 +2922,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002521",
@@ -2786,7 +3008,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002533",
@@ -2866,7 +3094,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002545",
@@ -2946,7 +3180,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002557",
@@ -3026,7 +3266,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002569",
@@ -3106,7 +3352,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002570",
@@ -3186,7 +3438,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002594",
@@ -3266,7 +3524,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002651",
@@ -3346,7 +3610,13 @@
    "municipality": "Pals",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17002715",
@@ -3426,7 +3696,13 @@
    "municipality": "La Pera",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17003631",
@@ -3506,7 +3782,13 @@
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17003689",
@@ -3586,7 +3868,13 @@
    "municipality": "Santa Cristina d'Aro",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17003872",
@@ -3666,7 +3954,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17003896",
@@ -3746,7 +4040,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17003938",
@@ -3826,7 +4126,13 @@
    "municipality": "Ullà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17003941",
@@ -3906,7 +4212,13 @@
    "municipality": "Ullastret",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17004736",
@@ -3986,7 +4298,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17004876",
@@ -4066,7 +4384,13 @@
    "municipality": "Begur",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17005248",
@@ -4146,7 +4470,13 @@
    "municipality": "La Bisbal d'Empordà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17005315",
@@ -4217,7 +4547,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17005352",
@@ -4297,7 +4633,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17005571",
@@ -4377,7 +4719,13 @@
    "municipality": "La Bisbal d'Empordà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17005650",
@@ -4457,7 +4805,13 @@
    "municipality": "Cassà de la Selva",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17005728",
@@ -4537,7 +4891,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17005844",
@@ -4617,7 +4977,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17005856",
@@ -4697,7 +5063,13 @@
    "municipality": "Llagostera",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17005923",
@@ -4777,7 +5149,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17006061",
@@ -4857,7 +5235,13 @@
    "municipality": "Santa Cristina d'Aro",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17006587",
@@ -4937,7 +5321,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17006691",
@@ -5017,7 +5407,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17006708",
@@ -5097,7 +5493,13 @@
    "municipality": "Celrà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17006757",
@@ -5177,7 +5579,13 @@
    "municipality": "Llagostera",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17006782",
@@ -5257,7 +5665,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17006861",
@@ -5337,7 +5751,13 @@
    "municipality": "Cassà de la Selva",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17007117",
@@ -5408,7 +5828,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17007142",
@@ -5488,7 +5914,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17007300",
@@ -5568,7 +6000,13 @@
    "municipality": "La Bisbal d'Empordà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17007312",
@@ -5648,7 +6086,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17007579",
@@ -5728,7 +6172,13 @@
    "municipality": "Celrà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17007580",
@@ -5808,7 +6258,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17007841",
@@ -5879,7 +6335,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17007890",
@@ -5950,7 +6412,13 @@
    "municipality": "Celrà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008146",
@@ -6030,7 +6498,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008195",
@@ -6110,7 +6584,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008201",
@@ -6181,7 +6661,13 @@
    "municipality": "Vall-llobrega",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008328",
@@ -6261,7 +6747,13 @@
    "municipality": "Mont-ras",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008353",
@@ -6332,7 +6824,13 @@
    "municipality": "Ullastret",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008468",
@@ -6412,7 +6910,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008471",
@@ -6492,7 +6996,13 @@
    "municipality": "Celrà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008493",
@@ -6572,7 +7082,13 @@
    "municipality": "Vall-llobrega",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008501",
@@ -6652,7 +7168,13 @@
    "municipality": "Cassà de la Selva",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008523",
@@ -6732,7 +7254,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008560",
@@ -6812,7 +7340,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17008997",
@@ -6892,7 +7426,13 @@
    "municipality": "Forallac",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009114",
@@ -6972,7 +7512,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009138",
@@ -7052,7 +7598,13 @@
    "municipality": "Llagostera",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009278",
@@ -7132,7 +7684,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009424",
@@ -7212,7 +7770,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009503",
@@ -7292,7 +7856,13 @@
    "municipality": "Cruïlles, Monells i Sant Sadurní de l'He",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009576",
@@ -7372,7 +7942,13 @@
    "municipality": "Llagostera",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009621",
@@ -7452,7 +8028,13 @@
    "municipality": "Celrà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009710",
@@ -7532,7 +8114,13 @@
    "municipality": "La Bisbal d'Empordà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009734",
@@ -7612,7 +8200,13 @@
    "municipality": "Parlavà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17009862",
@@ -7683,7 +8277,13 @@
    "municipality": "Santa Cristina d'Aro",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010086",
@@ -7763,7 +8363,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010372",
@@ -7843,7 +8449,13 @@
    "municipality": "Sant Martí Vell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010384",
@@ -7923,7 +8535,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010396",
@@ -8003,7 +8621,13 @@
    "municipality": "Flaçà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010402",
@@ -8083,7 +8707,13 @@
    "municipality": "Corçà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010505",
@@ -8163,7 +8793,13 @@
    "municipality": "Pals",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010611",
@@ -8234,7 +8870,13 @@
    "municipality": "Cassà de la Selva",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010785",
@@ -8314,7 +8956,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010815",
@@ -8394,7 +9042,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010840",
@@ -8474,7 +9128,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010864",
@@ -8545,7 +9205,13 @@
    "municipality": "La Bisbal d'Empordà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010891",
@@ -8616,7 +9282,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "schools:17010992",
@@ -8696,7 +9368,13 @@
    "municipality": "Forallac",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000001",
@@ -8777,7 +9455,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000003",
@@ -8858,7 +9542,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000007",
@@ -8939,7 +9629,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000010",
@@ -9020,7 +9716,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000015",
@@ -9101,7 +9803,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000018",
@@ -9182,7 +9890,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000020",
@@ -9263,7 +9977,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000024",
@@ -9344,7 +10064,13 @@
    "municipality": "Begur",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000025",
@@ -9425,7 +10151,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000026",
@@ -9506,7 +10238,13 @@
    "municipality": "Begur",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000027",
@@ -9587,7 +10325,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000031",
@@ -9668,7 +10412,13 @@
    "municipality": "Vall-llobrega",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000032",
@@ -9749,7 +10499,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000036",
@@ -9830,7 +10586,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000037",
@@ -9911,7 +10673,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000041",
@@ -9992,7 +10760,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000054",
@@ -10073,7 +10847,13 @@
    "municipality": "Pals",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000056",
@@ -10154,7 +10934,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000057",
@@ -10235,7 +11021,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000059",
@@ -10316,7 +11108,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000064",
@@ -10397,7 +11195,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000065",
@@ -10478,7 +11282,13 @@
    "municipality": "Pals",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000066",
@@ -10559,7 +11369,13 @@
    "municipality": "Pals",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000067",
@@ -10640,7 +11456,13 @@
    "municipality": "Llagostera",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000072",
@@ -10721,7 +11543,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000073",
@@ -10802,7 +11630,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000074",
@@ -10883,7 +11717,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000076",
@@ -10964,7 +11804,13 @@
    "municipality": "Mont-ras",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000080",
@@ -11045,7 +11891,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000086",
@@ -11126,7 +11978,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000087",
@@ -11207,7 +12065,13 @@
    "municipality": "Mont-ras",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000091",
@@ -11288,7 +12152,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000101",
@@ -11369,7 +12239,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000104",
@@ -11450,7 +12326,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000106",
@@ -11531,7 +12413,13 @@
    "municipality": "Pals",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000107",
@@ -11612,7 +12500,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000108",
@@ -11693,7 +12587,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000110",
@@ -11774,7 +12674,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000111",
@@ -11855,7 +12761,13 @@
    "municipality": "Pals",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000114",
@@ -11936,7 +12848,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000142",
@@ -12017,7 +12935,13 @@
    "municipality": "Santa Cristina d'Aro",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "campsites:KG-000277",
@@ -12098,7 +13022,13 @@
    "municipality": "Santa Cristina d'Aro",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S00170",
@@ -12178,7 +13108,13 @@
    "municipality": "Cassà de la Selva",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S00178",
@@ -12258,7 +13194,13 @@
    "municipality": "Llagostera",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S00183",
@@ -12338,7 +13280,13 @@
    "municipality": "Bisbal d'Empordà, la",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S00234",
@@ -12418,7 +13366,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S00304",
@@ -12498,7 +13452,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S00658",
@@ -12578,7 +13538,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S04016",
@@ -12658,7 +13624,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S04307",
@@ -12738,7 +13710,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S04734",
@@ -12818,7 +13796,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S04763",
@@ -12898,7 +13882,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S05407",
@@ -12978,7 +13968,13 @@
    "municipality": "Llagostera",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S05481",
@@ -13058,7 +14054,13 @@
    "municipality": "Celrà",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S05682",
@@ -13138,7 +14140,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S05737",
@@ -13218,7 +14226,13 @@
    "municipality": "Bisbal d'Empordà, la",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S06385",
@@ -13298,7 +14312,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S06518",
@@ -13378,7 +14398,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S06757",
@@ -13458,7 +14484,13 @@
    "municipality": "Cassà de la Selva",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S07567",
@@ -13538,7 +14570,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S07611",
@@ -13618,7 +14656,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S07920",
@@ -13698,7 +14742,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S08013",
@@ -13778,7 +14828,13 @@
    "municipality": "Calonge i Sant Antoni",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S08573",
@@ -13858,7 +14914,13 @@
    "municipality": "Torroella de Montgrí",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S08599",
@@ -13938,7 +15000,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S08609",
@@ -14018,7 +15086,13 @@
    "municipality": "Palafrugell",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S08787",
@@ -14098,7 +15172,13 @@
    "municipality": "Bisbal d'Empordà, la",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S10380",
@@ -14178,7 +15258,13 @@
    "municipality": "Castell d'Aro, Platja d'Aro i s'Agaró",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   },
   {
    "asset_id": "care_homes:S10722",
@@ -14258,7 +15344,13 @@
    "municipality": "Palamós",
    "criticality_tier": null,
    "criticality_factors": null,
-   "criticality_basis": null
+   "criticality_basis": null,
+   "custom_value_eur_low": null,
+   "custom_value_eur_mid": null,
+   "custom_value_eur_high": null,
+   "custom_value_method": null,
+   "custom_value_components": null,
+   "custom_value_basis": null
   }
  ]
 }
