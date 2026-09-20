@@ -217,24 +217,26 @@ make fetch        # pull real Gencat registers and Open-Meteo wind into data/ (n
 make precompute   # v0 engine demo (spread CA, routing, decisions); the same uncalibrated CA enriches gavarres_real_0001..0003 (labelled, see below)
 ```
 
-The standalone design mockup has a focused DOM regression test. Install its pinned test-only
-dependency under the ignored `data/` directory, then run the test:
+The coordination dashboard retains Michella's visual design and reads backend state through
+REST/WebSocket. Install the pinned development dependencies and run its checks:
 
 ```sh
-npm install --prefix data/ui-dom-test jsdom@27.0.0
-NODE_PATH=data/ui-dom-test/node_modules node --test tests/test_ui_mockup.cjs
+npm ci
+npm test
+npm run lint
 ```
 
-The test verifies that snapshot-controlled IDs, names, types, review reasons and provenance render
-as literal text across the ranking, review queue, selected-location detail, map tooltips and change
-log. It also covers queue selection, task creation, team assignment, snapshot advance with task
-preservation and the change-log toggle. The jsdom installation is test-only and does not add a
-production JavaScript framework.
+The tests verify that snapshot-controlled IDs, names, types, review reasons and provenance render
+as literal text across ranking, review selection, location detail, map tooltips and the change log.
+They cover supplied route/fire geometry, independent call outcomes, reconnects and revision order.
+Dispatch controls remain disabled; the screen cannot create tasks, assign teams or assert an
+evacuation. The jsdom installation is test-only and adds no production JavaScript framework.
 
-Norma Livecheck returned zero findings for the mockup HTML under full coverage. The extracted
+The earlier static mockup's Norma Livecheck returned zero findings for HTML under full coverage. Its extracted
 inline JavaScript and the identical JavaScript form of the CommonJS regression test also returned
 zero findings, but with reduced coverage because one Semgrep rule failed to load. Those JavaScript
-results therefore do not establish an unqualified clean scan.
+results therefore do not establish an unqualified clean scan or cover the newer modular dashboard.
+The live-dashboard section records its separate scan scope and limitations.
 
 `CONTRACTS.md` (v1.1) holds the module APIs that implement section 5 and the coordination side.
 `fireline/` has `snapshot.py` (producer), `fire_input.py` (Deepfire poll or recorded responses, stale
@@ -2317,3 +2319,31 @@ Final compatibility check also passed against live-coordination PR #22 commit
 `946966190b85f942edf9204f1849b36f2cdd4133`: **15 API/integration tests** and the
 Chromium smoke passed. That export accepts `response_plan` for multi-crew proposals;
 the allocation overlay remains a producer-side integration dependency.
+
+### Sequential merge integration checkpoint (2026-09-20)
+
+The integrated tree includes SLNG bindings (#17), snapshot-to-queue adaptation
+(#19), multi-team proposals (#21), durable evacuation allocations (#24), call
+briefings (#20), coordination persistence (#22), and Michella's latest design
+(#9), followed by this live-dashboard integration (#23). Discovery (#18) remains
+separate under rht's ownership. Rebases retain each module's documentation and
+the selected `type(centre.remaining_places) is not int` capacity guard.
+
+The dashboard preserves the latest emoji-free buttons, fire-perimeter halo,
+escalation styling and fixed map frame, while rendering backend facts through
+the modular client. The old simulated dispatch/assignment actions are disabled.
+Verification on this combined tree: 915 Python tests passed, one skipped;
+15 Node tests and ESLint passed. The browser smoke passed against an isolated
+local demo server using Chrome: REST/WebSocket, selection, database, log and
+reconnect worked, with no mutating requests or page errors. The Python test
+environment reports an existing Starlette/AnyIO deprecation warning.
+
+Run Python checks with `PYTHONPATH=.` so subprocess CLI tests import this
+checkout. The optional browser smoke accepts `DASHBOARD_BASE_URL` and
+`DASHBOARD_BROWSER_EXECUTABLE` to test an isolated server/browser installation.
+
+Module merges do not configure a running workflow. The application still needs
+to supply the call-briefing callback to snapshot enqueueing, connect the
+allocation ledger to coordination, provide current fleet/route inputs and
+refresh the shared coordination database. Dynamic provider deployment and
+authorized end-to-end phone testing remain separate from these offline checks.

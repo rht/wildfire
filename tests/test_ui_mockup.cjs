@@ -17,14 +17,40 @@ function sample() {
 }
 function load() {
  const dom=new JSDOM(html,{runScripts:'outside-only',url:'http://localhost:8521/'}),{window}=dom;
- const markers=[],lines=[];
+ const markers=[],lines=[],geometryLayers=[];
  const layer=()=>({addTo(){return this;},clearLayers(){}});
  window.L={map:()=>({setView(){return this;},invalidateSize(){}}),tileLayer:layer,layerGroup:layer,
  circleMarker:()=>{const m={...layer(),bindTooltip(t){this.tooltip=t;return this;},on(k,f){this.click=f;return this;}};markers.push(m);return m;},
- geoJSON:(g)=>{lines.push(g);return layer();},polyline:(g)=>{lines.push(g);return layer();}};
+ geoJSON:(g,options)=>{lines.push(g);geometryLayers.push({geometry:g,options});return layer();},polyline:(g)=>{lines.push(g);return layer();}};
  window.eval(fs.readFileSync(path.join(__dirname,'../design/dashboard-view.js'),'utf8'));
- return {dom,window,document:window.document,markers,lines,view:window.DashboardView};
+ return {dom,window,document:window.document,markers,lines,geometryLayers,view:window.DashboardView};
 }
+test('supplied fire perimeter retains a white halo without introducing fixture geometry',()=>{
+ const h=load(),s=sample();h.view.render(s);assert.equal(h.geometryLayers.length,0);
+ s.fire_geometry={type:'Polygon',coordinates:[[[3.1,41.9],[3.2,41.9],[3.2,42],[3.1,41.9]]]};
+ h.view.render(s);assert.equal(h.geometryLayers.length,2);
+ for(const layer of h.geometryLayers) assert.equal(layer.geometry,s.fire_geometry);
+ assert.equal(h.geometryLayers[0].options.color,'#fff');
+ assert.equal(h.geometryLayers[0].options.fill,false);
+ assert.ok(h.geometryLayers[0].options.weight>h.geometryLayers[1].options.weight);
+ assert.equal(h.geometryLayers[1].options.color,'#ff5a3c');h.dom.window.close();
+});
+test('hostile IDs, review reasons and event notes stay literal through review selection',()=>{
+ const h=load(),s=sample(),hostile='a"><img data-injected src=x>';
+ s.assets[0].asset_id=hostile;s.assets[0].asset_type='<svg data-injected>';
+ s.contacts.ranked=s.contacts.ranked.filter(c=>c.asset_id!=='a');
+ s.contacts.review=[{asset_id:hostile,review_reasons:['<script data-injected>bad</script>']}];
+ s.calls[0].asset_id=hostile;s.calls[0].wants_human=true;
+ s.events=[{kind:'refresh',as_of:s.as_of,notes:'<img data-injected src=x>'}];
+ h.view.render(s);h.document.querySelector('.qrow').click();
+ assert.ok(h.document.getElementById('detailPanel').textContent.includes(hostile));
+ assert.match(h.document.querySelector('.qrow').textContent,/<script data-injected>/);
+ h.document.getElementById('changeLogBtn').click();
+ assert.match(h.document.getElementById('changeLog').textContent,/<img data-injected/);
+ assert.equal(h.document.querySelectorAll('[data-injected]').length,0);
+ assert.equal(h.document.querySelector('#escOpenList .escRow').dataset.assetId,hostile);
+ h.dom.window.close();
+});
 test('uses backend contact order and stable asset IDs; preserves unknowns and separate call facts',()=>{
  const h=load();h.view.render(sample());
  assert.deepEqual([...h.document.querySelectorAll('#rankedList .row')].map(x=>x.dataset.assetId),['b','a']);

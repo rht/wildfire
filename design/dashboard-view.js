@@ -51,7 +51,10 @@
   function renderMap() {
     if(!map) return;
     markers.clearLayers();routes.clearLayers();fire.clearLayers();
-    if(current.fire_geometry) L.geoJSON(current.fire_geometry,{color:'#ff5a3c'}).addTo(fire);
+    if(current.fire_geometry) {
+      L.geoJSON(current.fire_geometry,{color:'#fff',weight:6,opacity:0.85,fill:false}).addTo(fire);
+      L.geoJSON(current.fire_geometry,{color:'#ff5a3c',weight:3,fillOpacity:0.22}).addTo(fire);
+    }
     for(const a of current.assets) {
       if(!Number.isFinite(a.latitude)||!Number.isFinite(a.longitude)) continue;
       const c=contact(a.asset_id);
@@ -123,7 +126,9 @@
     for(const [id,predicate] of [['escOpenList',wantsHuman],['escMobilityList',needsAssistance]]) {
       $(id).replaceChildren();
       for(const call of calls.filter(predicate)) {
-        const a=current.assets.find(a=>a.asset_id===call.asset_id),row=el('div',a?.name||call.asset_id,'escRow');
+        const a=current.assets.find(a=>a.asset_id===call.asset_id),row=el('div',undefined,'escRow');
+        row.append(el('span',undefined,'escDot '+(id==='escOpenList'?'open':'mobility')),
+          el('span',a?.name||call.asset_id,'name'));
         row.dataset.assetId=call.asset_id;row.addEventListener('click',rowSelection);$(id).append(row);
       }
     }

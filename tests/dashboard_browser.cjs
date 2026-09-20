@@ -9,7 +9,7 @@ const assert=require('node:assert/strict');
   const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],writes=[];
   page.on('pageerror',e=>errors.push(e.message));
   page.on('request',r=>{if(!['GET','HEAD'].includes(r.method()))writes.push(r.method()+' '+r.url());});
-  await page.goto('http://127.0.0.1:8521/');
+  await page.goto(process.env.DASHBOARD_BASE_URL||'http://127.0.0.1:8521/');
   await page.locator('#rankedList .row').first().waitFor();
   await page.locator('#rankedList .row').first().click();
   assert.match(await page.locator('#detailPanel').innerText(),/Message acknowledged/);
