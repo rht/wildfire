@@ -49,7 +49,8 @@ export function customValuation(asset) {
     label: humanize(method),
     valued: method !== "not_valued" && mid !== null,
     mid,
-    band: mid === null ? null : `${money(low)} – ${money(mid)} – ${money(high)}`,
+    band:
+      mid === null ? null : `${money(low)} – ${money(mid)} – ${money(high)}`,
     components: asset.custom_value_components || [],
     basis: asset.custom_value_basis || null,
   };

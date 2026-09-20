@@ -3613,3 +3613,18 @@ desktop/tablet screenshot inspection and independent code review. Browser covera
 includes shared routes, crew-scoped selection, fixed headers, contained scrolling,
 nested review/back navigation, reordering and saved approval persistence. Physical
 iPad/Safari testing remains outside the Chrome-emulation checks.
+
+The dashboard includes a light/dark theme toggle in the workspace header and in
+full-screen plan/review headers. Light remains the default; the selected appearance
+is saved in this browser and survives reloads. If browser storage is unavailable,
+the toggle still works for the current session. Panels, tables, form controls and
+map labels follow the theme while geographic imagery and operational marker colours
+retain their meaning. Switching themes preserves the current map view and unsaved
+crew order; it does not create an approval or change coordination state.
+
+Theme verification: 73 Node tests and all ten browser regression scripts passed,
+along with lint, formatting and the production build. Browser checks cover both
+saved modes, keyboard toggling, storage failure, readable text contrast, preserved
+map/draft state and tablet containment. Desktop and tablet screenshots and an
+independent code review found no blockers. These are Chrome checks; physical
+Safari/iPad testing remains outstanding.

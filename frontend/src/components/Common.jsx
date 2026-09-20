@@ -15,6 +15,7 @@ import {
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import ArrowLeftOutlined from "@ant-design/icons/ArrowLeftOutlined";
 import { Link } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
 import { count, humanize, gps } from "../state/model.mjs";
 export function MainCard({
   title,
@@ -152,6 +153,7 @@ export function DetailDialog({
         {headerAction && (
           <div className="detail-dialog-header-action">{headerAction}</div>
         )}
+        {fullScreen && <ThemeToggle />}
         {!backNavigation && (
           <IconButton
             aria-label="Close details"
