@@ -12,6 +12,12 @@ Use [Superpowers](https://github.com/obra/superpowers) for development. Work in 
 
 ## Three-component architecture
 
+Architecture baseline recorded on 2026-09-19. The responsibility split remains current;
+the implementation inventory and gaps below describe that dated baseline. Since then,
+multi-crew planning, monetary-loss estimates, approved allocation records, call briefings,
+coordination persistence and the read-only live dashboard have landed. See the module
+sections and the 2026-09-20 integration checkpoint below for current wiring and limits.
+
 This diagram describes the agreed responsibility split and proposed extensions, not a claim that
 every arrow is implemented. **1 assesses what is exposed; 2 coordinates what to do; 3 shows the
 recommendations and captures the analyst's decisions.** AI calling belongs to component 2.
