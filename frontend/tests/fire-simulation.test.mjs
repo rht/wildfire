@@ -34,18 +34,17 @@ function centre(ring) {
   );
 }
 
-// The demo perimeters are convex; all edge cross products must have one sign.
-function inside(point, ring) {
-  const crosses = ring.slice(0, -1).map((a, index) => {
-    const b = ring[index + 1];
-    return (
-      (b[0] - a[0]) * (point[1] - a[1]) - (b[1] - a[1]) * (point[0] - a[0])
-    );
-  });
-  return (
-    crosses.every((value) => value >= -1e-12) ||
-    crosses.every((value) => value <= 1e-12)
-  );
+// Even-odd ray cast, so the demo perimeters may be concave like a real fire.
+function inside([x, y], ring) {
+  let odd = false;
+  for (let i = 0, j = ring.length - 2; i < ring.length - 1; j = i++) {
+    const [ax, ay] = ring[i],
+      [bx, by] = ring[j];
+    if (ay > y !== by > y && x < ((bx - ax) * (y - ay)) / (by - ay) + ax) {
+      odd = !odd;
+    }
+  }
+  return odd;
 }
 
 test("persisted demo perimeters expand visibly around a fixed centre into the current perimeter", () => {
@@ -67,6 +66,10 @@ test("persisted demo perimeters expand visibly around a fixed centre into the cu
       assert.equal(geometry.type, "Polygon");
       const ring = geometry.coordinates[0];
       assert.deepEqual(ring.at(-1), ring[0], "GeoJSON ring stays closed");
+      assert.ok(
+        ring.length - 1 >= 24,
+        "perimeter has an organic outline rather than a four-cornered box",
+      );
       assert.ok(
         ring.every(
           ([lon, lat]) =>

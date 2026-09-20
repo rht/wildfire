@@ -117,19 +117,9 @@ class OfflineScenario:
                 for r in self.spec["locations"]
             },
         }
+        # Fictional footprint with a realistic outline; see the fixture note.
         observation = {
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [2.99, 41.92],
-                        [3.005, 41.92],
-                        [3.005, 41.93],
-                        [2.99, 41.93],
-                        [2.99, 41.92],
-                    ]
-                ],
-            },
+            "geometry": deepcopy(self.spec["fire_perimeter"]["geometry"]),
             "geometry_kind": "perimeter",
             "observed_at": self.at(0),
             "received_at": self.at(0),

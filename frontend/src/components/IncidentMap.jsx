@@ -7,6 +7,23 @@ import { crewMapData } from "../state/crew-map.mjs";
 import MapFrame from "./MapFrame";
 import { riskHeatPoints } from "../state/risk-heat.mjs";
 import { riskHeatLayer } from "./risk-heat-layer";
+// Match the Streamlit map: label simulated burn areas and hotspot centres as such.
+const FIRE_LEGEND = {
+  simulated: "Simulated burn area",
+  hotspot_centre: "Hotspot centre",
+};
+function fireLegend(incidents) {
+  const kinds = new Set(
+    incidents
+      .filter((incident) => incident.fire_geometry)
+      .map((incident) => incident.fire_geometry_kind),
+  );
+  if (kinds.size === 1) {
+    const [kind] = kinds;
+    return FIRE_LEGEND[kind] ?? "Fire perimeter";
+  }
+  return "Fire perimeter";
+}
 export default function IncidentMap({
   incidents,
   showRoutes = false,
@@ -51,16 +68,21 @@ export default function IncidentMap({
     for (const incident of incidents) {
       if (incident.fire_geometry) {
         try {
+          // A hotspot centre arrives as a Point; draw it as a ring, not a pin.
+          const pointToLayer = (_feature, latlng) =>
+            L.circleMarker(latlng, { radius: 14 });
           const halo = L.geoJSON(incident.fire_geometry, {
             color: "#fff",
             weight: 5,
             fill: false,
+            pointToLayer,
           }).addTo(layers);
           const perimeter = L.geoJSON(incident.fire_geometry, {
             color: "#ff603e",
             weight: 2,
             fillColor: "#ff603e",
             fillOpacity: 0.3,
+            pointToLayer,
           }).addTo(layers);
           if (halo.getBounds().isValid()) {
             bounds.push(halo.getBounds());
@@ -184,7 +206,7 @@ export default function IncidentMap({
       <div className="map-legend">
         <span>
           <i className="dot fire" />
-          Fire perimeter
+          {fireLegend(incidents)}
         </span>
         <span>
           <i className="dot blue" />

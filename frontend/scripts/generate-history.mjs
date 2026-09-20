@@ -14,8 +14,9 @@ const entries = times.map((as_of, stage) => ({
       incident.snapshot_id = `${incident.id}-illustrative-history-${stage + 1}`;
       incident.revision = stage + 1;
       incident.input_mode = "offline_demo";
-      // These demo polygons are convex. Scale about the mean of their distinct
-      // vertices so successive stages are nested and share a fixed centre.
+      // The demo outline is star-shaped from the mean of its distinct vertices,
+      // so scaling about that point keeps successive stages nested around a
+      // fixed centre without needing a convex shape.
       // The fourth (current) moment keeps the original demo perimeter unchanged.
       const linearScale = (stage + 1) / (times.length + 1);
       const vertices = incident.fire_geometry.coordinates[0].slice(0, -1);

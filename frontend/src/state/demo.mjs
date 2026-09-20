@@ -1,3 +1,4 @@
+import { demoPerimeter } from "./demo-perimeter.mjs";
 import { toIncident } from "./model.mjs";
 // Entire dataset is illustrative. Loaded only when the analyst explicitly selects Design demo.
 const specs = [
@@ -198,18 +199,8 @@ export const demoIncidents = specs.map((s, index) => {
       name: r.name,
       available: false,
     })),
-    fire_geometry: {
-      type: "Polygon",
-      coordinates: [
-        [
-          [s.centre[1] - 0.02, s.centre[0] + 0.026],
-          [s.centre[1] + 0.018, s.centre[0] + 0.037],
-          [s.centre[1] + 0.041, s.centre[0] + 0.018],
-          [s.centre[1] + 0.008, s.centre[0] + 0.001],
-          [s.centre[1] - 0.02, s.centre[0] + 0.026],
-        ],
-      ],
-    },
+    fire_geometry: demoPerimeter(s.centre, index),
+    fire_geometry_kind: "perimeter",
     plan: {
       locations: assets.map((a, n) => ({
         asset_id: a.asset_id,
