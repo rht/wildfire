@@ -7,9 +7,11 @@ That once filled the analyst screen with "None None" lines, one per map point.""
 from __future__ import annotations
 
 import ast
+import json
 from pathlib import Path
 import subprocess
 import sys
+import tomllib
 
 from tests.helpers import make_asset
 
@@ -251,3 +253,57 @@ def test_header_limits_state_the_assumptions_and_the_ca_bias():
     assert "uncalibrated CA ensemble" not in text                            # a provider forecast: no CA caveat
     assert "uncalibrated CA ensemble" in value_limits(var_status(enrichment=True))
     assert value_limits({"layer": False}) == ""
+
+
+# --------------------------------------------------------------- satellite basemap (map card)
+STYLE_FILE = APP.parent / "static" / "esri-world-imagery-style.json"
+CONFIG_TOML = APP.parent.parent / ".streamlit" / "config.toml"
+
+
+class DeckSession:
+    """The three members `build_deck` reads, without a store or a database behind them."""
+
+    def __init__(self, assets):
+        self._assets = assets
+        self.snapshot = {"fire_geometry": {"type": "Point", "coordinates": [3.0, 41.9]},
+                         "fire_geometry_kind": "hotspot"}
+
+    def status(self):
+        return {"counts": {"unlocated": 0}}
+
+    def assets_in_order(self):
+        return self._assets
+
+
+def test_map_basemap_is_the_esri_satellite_style_not_streamlits_carto_substitute():
+    """The imagery is the deck's basemap style. It cannot be a deck TileLayer: deck.gl renders tile
+    sub-layers with a GeoJsonLayer unless `renderSubLayers` is replaced by a function returning a
+    BitmapLayer, and the deck.gl JSON that st.pydeck_chart speaks cannot carry a function - so a
+    TileLayer of raster tiles draws nothing at all. Leaving mapStyle unset is no good either: the
+    frontend then substitutes a Carto street basemap, which is the grey map this replaces."""
+    from fireline.app import SATELLITE_STYLE, build_deck
+    deck, unlocated = build_deck(DeckSession([make_asset()]))
+    spec = json.loads(deck.to_json())
+    assert spec["mapStyle"] == SATELLITE_STYLE and spec["mapProvider"] == "maplibre"
+    assert unlocated == 0
+    kinds = [layer["@@type"] for layer in spec["layers"]]
+    assert kinds == ["ScatterplotLayer", "ScatterplotLayer"], kinds   # hotspot ring, then the assets
+
+
+def test_satellite_style_document_declares_the_credited_esri_imagery_tiles():
+    from fireline.app import SATELLITE_CREDIT, SATELLITE_STYLE, SATELLITE_URL
+    assert SATELLITE_STYLE == f"app/static/{STYLE_FILE.name}"
+    style = json.loads(STYLE_FILE.read_text(encoding="utf-8"))
+    source = style["sources"]["esri-world-imagery"]
+    assert style["version"] == 8 and source["type"] == "raster"
+    assert source["tiles"] == [SATELLITE_URL] and "arcgisonline.com" in SATELLITE_URL
+    assert [l["source"] for l in style["layers"] if l["type"] == "raster"] == ["esri-world-imagery"]
+    for credit in (source["attribution"], SATELLITE_CREDIT):    # the source the imagery really comes from
+        assert "Esri" in credit and "Maxar" in credit and "Earthstar Geographics" in credit
+
+
+def test_static_serving_is_enabled_so_the_style_url_resolves():
+    """Streamlit serves `static/` beside the main script at `app/static/`, but only with
+    server.enableStaticServing set - without it the style URL 404s and no basemap loads."""
+    assert STYLE_FILE.parent == APP.parent / "static"
+    assert tomllib.loads(CONFIG_TOML.read_text(encoding="utf-8"))["server"]["enableStaticServing"] is True
