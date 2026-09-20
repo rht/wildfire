@@ -38,7 +38,7 @@ DEFAULT_SCENARIO = "gavarres_real"      # the real-area scenario opens first; th
 # can be read with and without them. It confirms nothing - no override reaches the store - and the fields
 # the agent proposes are mostly absent from the contact sort key (readme 6), so the order usually does not
 # move at all. The caption has to say that plainly instead of looking like a button that failed.
-APPROVE_ALL_LABEL = "Preview all proposals as approved"
+APPROVE_ALL_LABEL = "Preview proposals as approved"      # short: it sits in the narrow header slot
 APPROVE_ALL_HELP = ("A what-if view, not an approval. Every pending agent proposal is applied in memory and "
                     "the queue re-ranked; the SQLite store is untouched, no override is confirmed, and no "
                     "analyst has checked these proposals. Switch it off to return to the confirmed data.")
@@ -752,12 +752,15 @@ def select_asset(asset_id: str | None) -> None:
 
 
 def render_header(sess: Session, s: dict) -> None:
-    """The header bar on the dark shell, with the sequence's forward control at its right."""
-    head, action = st.columns([0.86, 0.14], vertical_alignment="center")
+    """The header bar on the dark shell: the approve-all preview switch and the sequence's forward
+    control sit at its right, the preview first so the forward control stays the rightmost button."""
+    head, preview, action = st.columns([0.70, 0.16, 0.14], vertical_alignment="center")
     head.html(ui_theme.header_html(
         product="Respons'Ara", tagline=TAGLINE, mode=s["input_mode"] or "unknown",
         status=s["data_status_now"] or "unknown", status_tone=STATUS_COLOUR.get(s["data_status_now"], "grey"),
         as_of=stamp(s["as_of"]), computed_at=stamp(s["computed_at"])))
+    with preview.container(key="ra-approve"):
+        render_approve_all_toggle(sess)
     with action.container(key="ra-next"):
         if st.button("Next update →", width="stretch", disabled=not sess.has_next, key="ra-next-btn",
                      help="Apply the next snapshot of this scenario (the sidebar has Previous and the "
@@ -848,8 +851,9 @@ def render_escalation_card(sess: Session) -> None:
 
 
 def render_approve_all_toggle(sess: Session) -> None:
-    """The preview switch, read beside the ranked list. `Session.set_approve_all` applies every pending
-    proposal in memory and rescores; nothing here confirms a proposal or writes to the store."""
+    """The preview switch, in the page header beside the forward control. `Session.set_approve_all`
+    applies every pending proposal in memory and rescores; nothing here confirms a proposal or
+    writes to the store."""
     on = bool(st.toggle(APPROVE_ALL_LABEL, value=bool(sess.approve_all), key="ra-approve-all",
                         help=APPROVE_ALL_HELP))
     if on != bool(sess.approve_all):
@@ -859,14 +863,11 @@ def render_approve_all_toggle(sess: Session) -> None:
 
 def render_ranked_card(sess: Session, current: str | None) -> None:
     """Ranked locations: the rank number is the button that selects the location. The approve-all
-    preview sits on the heading, where the order it might change is read."""
+    switch is in the page header; its caption stays here, where the order it might change is read."""
     ranked = sess.scored["ranked"]
     report = sess.preview_report
     with st.container(key="racard-ranked"):
-        title, control = st.columns([0.46, 0.54], vertical_alignment="center")
-        title.html(ui_theme.card_title_html("Ranked locations - analyst priority", len(ranked)))
-        with control:
-            render_approve_all_toggle(sess)
+        st.html(ui_theme.card_title_html("Ranked locations - analyst priority", len(ranked)))
         brief = approve_all_caption(report, brief=True)
         if brief:
             st.caption(brief)

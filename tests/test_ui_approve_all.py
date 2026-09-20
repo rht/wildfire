@@ -222,3 +222,112 @@ def test_the_control_cannot_be_read_as_a_real_approval(stub_streamlit):
     for phrase in ("not an approval", "in memory", "SQLite store is untouched", "no override is confirmed",
                    "no analyst has checked these proposals"):
         assert phrase in APPROVE_ALL_HELP, phrase
+
+
+def test_the_label_is_short_enough_for_the_header_slot_without_promising_an_approval():
+    """It shares the header with the forward control, so it is one short line - still a preview."""
+    assert APPROVE_ALL_LABEL.startswith("Preview") and len(APPROVE_ALL_LABEL) <= 30
+    assert "proposals" in APPROVE_ALL_LABEL
+    assert not APPROVE_ALL_LABEL.startswith("Approve")
+
+
+# --------------------------------------------------------------- where the control is rendered
+class FakeBox:
+    """A `st.container()` / column stand-in: a no-op context manager that records what it is given."""
+
+    def __init__(self, log, key):
+        self.log, self.key = log, key
+
+    def __enter__(self):
+        self.log.append(("enter", self.key))
+        return self
+
+    def __exit__(self, *exc):
+        self.log.append(("exit", self.key))
+        return False
+
+    def container(self, key=None, **kwargs):
+        return FakeBox(self.log, key)
+
+    def html(self, body, **kwargs):
+        self.log.append(("html", str(body)))
+
+    def caption(self, body, **kwargs):
+        self.log.append(("caption", str(body)))
+
+
+@pytest.fixture
+def fake_page(monkeypatch):
+    """The page primitives `render_header` and `render_ranked_card` use, recorded in call order.
+    `render_approve_all_toggle` is replaced by a recorder: this asks where it is called, not what it does."""
+    from fireline import app
+
+    log: list = []
+    toggled: list = []
+
+    def columns(spec, **kwargs):
+        log.append(("columns", tuple(spec), kwargs.get("vertical_alignment")))
+        return [FakeBox(log, f"col{i}") for i in range(len(spec))]
+
+    def button(label, **kwargs):
+        log.append(("button", label, kwargs.get("key")))
+        return False
+
+    monkeypatch.setattr(app.st, "columns", columns)
+    monkeypatch.setattr(app.st, "container", lambda key=None, **kwargs: FakeBox(log, key))
+    monkeypatch.setattr(app.st, "html", lambda body, **kwargs: log.append(("html", str(body))))
+    monkeypatch.setattr(app.st, "caption", lambda body, **kwargs: log.append(("caption", str(body))))
+    monkeypatch.setattr(app.st, "button", button)
+    monkeypatch.setattr(app, "render_approve_all_toggle", lambda sess: toggled.append(sess))
+    return {"log": log, "toggled": toggled}
+
+
+class HeaderSession(StubSession):
+    has_next = True
+
+
+STATUS = {"input_mode": "snapshot", "data_status_now": "current", "as_of": "2026-07-03T13:20:00+00:00",
+          "computed_at": "2026-07-03T13:21:00+00:00"}
+
+
+def test_the_header_renders_the_toggle_between_the_title_and_the_forward_control(fake_page):
+    """The switch lives in the page header; Next update stays the rightmost control."""
+    from fireline.app import render_header
+
+    sess = HeaderSession()
+    render_header(sess, STATUS)
+    log, keys = fake_page["log"], [row[1] for row in fake_page["log"] if row[0] == "enter"]
+    assert fake_page["toggled"] == [sess]                  # rendered exactly once, by the header
+    assert keys == ["ra-approve", "ra-next"]               # the preview first, the forward control last
+    spec = next(row for row in log if row[0] == "columns")
+    assert len(spec[1]) == 3 and spec[2] == "center"       # title, preview, forward control
+    assert spec[1] == (0.70, 0.16, 0.14) and sum(spec[1]) == pytest.approx(1.0)
+    assert ("button", "Next update \u2192", "ra-next-btn") in log
+    assert log.index(("enter", "ra-approve")) < log.index(("enter", "ra-next"))
+
+
+def test_the_ranked_card_no_longer_hosts_the_toggle_and_keeps_its_heading_row(fake_page):
+    """The card gives its heading back to the title, and keeps the caption that explains the ranking."""
+    from fireline.app import render_ranked_card
+
+    sess = StubSession()
+    sess.scored = {"ranked": []}
+    sess.preview_report = None
+    render_ranked_card(sess, None)
+    log = fake_page["log"]
+    assert fake_page["toggled"] == []                      # not here any more
+    assert not [row for row in log if row[0] == "columns"]  # the heading split existed only for it
+    assert any(row[0] == "html" and "Ranked locations - analyst priority" in row[1] for row in log)
+
+
+def test_the_ranked_card_still_carries_the_brief_preview_caption_and_the_sort_key_note(fake_page):
+    """The caption and the footnote explain the ranking, so they stay with the ranked list."""
+    from fireline.app import render_ranked_card
+
+    sess = StubSession(approve_all=True)
+    sess.scored = {"ranked": []}
+    sess.preview_report = report()
+    render_ranked_card(sess, None)
+    captions = [row[1] for row in fake_page["log"] if row[0] == "caption"]
+    assert captions == [approve_all_caption(report(), brief=True)]
+    assert any(row[0] == "html" and SORT_KEY_NOTE in row[1] for row in fake_page["log"])

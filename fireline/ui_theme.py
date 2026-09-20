@@ -149,6 +149,15 @@ CSS = f"""
 [class*="st-key-ra-next"] .stButton > button, [class*="st-key-ra-next"] > button {{
   background: #1C5C3E; color: #EAF6EF; border-color: #1C5C3E; }}
 [class*="st-key-ra-next"] .stButton > button:hover {{ background: #16704A; color: #EAF6EF; }}
+
+/* ---- the approve-all preview switch, on the dark shell beside it -------------- */
+[class*="st-key-ra-approve"] [data-testid="stWidgetLabel"] p,
+[class*="st-key-ra-approve"] label span, [class*="st-key-ra-approve"] label p {{
+  color: #CFC7BE; font-size: 11px; font-weight: 700; line-height: 1.25; }}
+[class*="st-key-ra-approve"] svg {{ fill: #9A928A; }}
+[class*="st-key-ra-approve"] label > div:first-of-type {{ background: #4A403A; }}
+[class*="st-key-ra-approve"] label:has(input:checked) > div:first-of-type,
+[class*="st-key-ra-approve"] label:has([aria-checked="true"]) > div:first-of-type {{ background: #1C5C3E; }}
 [class*="st-key-rarank-"] .stButton > button, [class*="st-key-rarank-"] > button {{
   background: transparent; color: var(--ra-muted); border: none; box-shadow: none; padding: 0;
   font-variant-numeric: tabular-nums; font-weight: 600; }}
