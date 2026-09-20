@@ -21,6 +21,7 @@ mutates its inputs.
 from __future__ import annotations
 
 import copy
+import math
 from datetime import datetime, timezone
 
 from fireline import config, snapshot
@@ -32,9 +33,14 @@ OCCUPANCY_FIELDS = ("estimated_occupancy", "capacity")
 FORECAST_UNAVAILABLE = "forecast_unavailable"
 EVACUATION_UNKNOWN = "evacuation_unknown"
 CRITICALITY_UNASSESSED = "criticality_unassessed"
+VALUATION_UNASSESSED = "valuation_unassessed"
 # `criticality_tier` carries {"tier": str, "factors": [str]} rather than a bare string, so a tier can
 # never be confirmed without the factors that justify it (config.CRITICALITY_POLICY["min_factors"]).
-OVERRIDE_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min", "criticality_tier")
+# `custom_valuation` likewise carries a payload, not a number, so a bespoke euro figure can never be
+# confirmed without the method and the priced components that justify it
+# (config.CUSTOM_VALUATION_POLICY). Neither field appears in `ranked_sort_key`.
+OVERRIDE_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min", "criticality_tier",
+                   "custom_valuation")
 STATUS_OPEN, STATUS_EXHAUSTED, STATUS_REVIEW = "window_open", "window_exhausted", "needs_review"
 ORDERING = "slack ascending; forecast arrival ascending; distance ascending; asset ID"
 
@@ -145,6 +151,100 @@ def criticality_value(value, cfg=config) -> tuple[str, list[str]]:
     return tier, factors
 
 
+def _eur(value, label: str):
+    """A finite, non-negative euro amount, or raise. Bools are not numbers."""
+    if isinstance(value, bool) or value is None:
+        raise ValueError(f"{label} must be a number, got {value!r}")
+    try:
+        amount = float(str(value).replace(",", ".") if isinstance(value, str) else value)
+    except (TypeError, ValueError):
+        raise ValueError(f"{label} must be a number, got {value!r}") from None
+    if not math.isfinite(amount) or amount < 0:
+        raise ValueError(f"{label} must be finite and >= 0, got {value!r}")
+    return amount
+
+
+def custom_valuation_value(value, cfg=config) -> dict:
+    """Validate a `custom_valuation` override value; returns the normalised payload or raises ValueError.
+
+    The payload is `{"method": str, "components": [{"label": str, "amount_eur": number}, ...],
+    "amount_eur_low": n, "amount_eur_mid": n, "amount_eur_high": n, "note": str | None}`.
+
+    The guards, all from `config.CUSTOM_VALUATION_POLICY`, exist so a bespoke figure cannot be softer
+    than the class figure it replaces:
+
+    * `method` is a closed enum, like the criticality factors.
+    * `not_valued` is the ordinary answer and carries no amounts at all - it records that the agent
+      looked and found nothing, which is different from never having looked.
+    * every other method needs a band, `0 <= low <= mid <= high`, with `high >= low * min_band_ratio`.
+      A single number would claim a precision no quoted reference supports.
+    * a method that claims to add components up needs at least `min_components` priced components, and
+      for `component_replacement` they must sum to `amount_eur_mid` within `component_sum_tolerance`.
+    * `max_eur` is a misplaced-decimal-point guard, not a judgement about what a building is worth.
+    """
+    policy = cfg.CUSTOM_VALUATION_POLICY
+    if not isinstance(value, dict):
+        raise ValueError("a custom_valuation override needs {'method': ..., 'amount_eur_low/mid/high': ..., "
+                         f"'components': [...]}}, got {type(value).__name__}")
+    method = value.get("method")
+    if method not in policy["methods"]:
+        raise ValueError(f"custom valuation method must be one of {list(policy['methods'])}, got {method!r}")
+
+    raw_components = value.get("components")
+    if raw_components is None:
+        raw_components = []
+    if not isinstance(raw_components, list):
+        raise ValueError("custom valuation components must be a list of "
+                         "{'label': str, 'amount_eur': number} objects")
+    components = []
+    for i, c in enumerate(raw_components):
+        if not isinstance(c, dict):
+            raise ValueError(f"custom valuation component {i} must be an object with 'label' and 'amount_eur'")
+        label = str(c.get("label") or "").strip()
+        if not label:
+            raise ValueError(f"custom valuation component {i} needs a non-empty 'label'")
+        components.append({"label": label, "amount_eur": _eur(c.get("amount_eur"), f"component {label!r} amount_eur")})
+
+    note = value.get("note")
+    note = None if note is None else str(note).strip() or None
+
+    if method == "not_valued":
+        if any(value.get(f"amount_eur_{k}") is not None for k in ("low", "mid", "high")) or components:
+            raise ValueError("method 'not_valued' records that no bespoke figure is supported, so it "
+                             "carries no amounts and no components; drop them or name another method")
+        return {"method": method, "components": [], "amount_eur_low": None, "amount_eur_mid": None,
+                "amount_eur_high": None, "note": note}
+
+    low = _eur(value.get("amount_eur_low"), "amount_eur_low")
+    mid = _eur(value.get("amount_eur_mid"), "amount_eur_mid")
+    high = _eur(value.get("amount_eur_high"), "amount_eur_high")
+    if not low <= mid <= high:
+        raise ValueError(f"custom valuation needs amount_eur_low <= amount_eur_mid <= amount_eur_high, "
+                         f"got {low:g} / {mid:g} / {high:g}")
+    ratio = float(policy["min_band_ratio"])
+    if high < low * ratio:
+        raise ValueError(f"a bespoke valuation is a band, not a point: amount_eur_high must be at least "
+                         f"{ratio:g}x amount_eur_low, got {low:g} and {high:g}")
+    ceiling = float(policy["max_eur"])
+    if high > ceiling:
+        raise ValueError(f"custom valuation amount_eur_high {high:g} is above the policy ceiling "
+                         f"{ceiling:g}; check for a misplaced decimal point")
+
+    need = policy["min_components"].get(method, 0)
+    if len(components) < need:
+        raise ValueError(f"custom valuation method {method!r} needs at least {need} priced "
+                         f"component(s), got {len(components)}")
+    if method == "component_replacement" and components:
+        total = sum(c["amount_eur"] for c in components)
+        tolerance = float(policy["component_sum_tolerance"])
+        if mid <= 0 or abs(total - mid) > tolerance * mid:
+            raise ValueError(f"method 'component_replacement' states that the components are the value, so "
+                             f"they must sum to amount_eur_mid within {tolerance:.0%}: components sum to "
+                             f"{total:g}, amount_eur_mid is {mid:g}")
+    return {"method": method, "components": components, "amount_eur_low": low, "amount_eur_mid": mid,
+            "amount_eur_high": high, "note": note}
+
+
 def _apply_one(asset: dict, override: dict, cfg, now_at=None) -> None:
     field = override["field"]
     value = override["value"]
@@ -155,6 +255,8 @@ def _apply_one(asset: dict, override: dict, cfg, now_at=None) -> None:
         raise ValueError(f"override field must be one of {list(OVERRIDE_FIELDS)}, got {field!r}")
     if field == "criticality_tier":
         tier, factors = criticality_value(value, cfg)
+    if field == "custom_valuation":
+        valuation = custom_valuation_value(value, cfg)
     confirmed_at = _parse_time(override.get("confirmed_at"))
     # Conflict: a provider value for the same field observed after the analyst confirmed the override.
     conflict = False
@@ -222,6 +324,18 @@ def _apply_one(asset: dict, override: dict, cfg, now_at=None) -> None:
         asset["criticality_factors"] = factors
         asset["criticality_basis"] = f"{cfg.CRITICALITY_POLICY['version']}; {source_label}"
         reasons = [r for r in reasons if r != CRITICALITY_UNASSESSED]
+    elif field == "custom_valuation":
+        # `custom_valuation` is the name of the override, not of a snapshot field: the payload fans out
+        # into the six CUSTOM_VALUATION_KEYS, so drop the raw dict the generic write left behind.
+        asset.pop("custom_valuation", None)
+        asset["custom_value_method"] = valuation["method"]
+        asset["custom_value_components"] = valuation["components"]
+        for level in ("low", "mid", "high"):
+            asset[f"custom_value_eur_{level}"] = valuation[f"amount_eur_{level}"]
+        asset["custom_value_basis"] = (f"{cfg.CUSTOM_VALUATION_POLICY['version']}; method "
+                                       f"{valuation['method']}; {source_label}"
+                                       + (f"; {valuation['note']}" if valuation["note"] else ""))
+        reasons = [r for r in reasons if r != VALUATION_UNASSESSED]
     elif field == "evacuation_min":
         if value is not None:
             asset["evacuation_min"] = float(value)
@@ -475,8 +589,10 @@ def strategic_queue(assets, cfg=config) -> list[dict]:
     A separate view, never the contact queue. readme 6 keeps property value out of contact urgency,
     so this never reorders `rank_snapshot`: the contact queue answers "who do I phone first to get
     people out", and this answers "where would the loss outlast the incident". Ordered by tier, then
-    by the same remaining window the contact queue uses (nulls last), then `asset_id`, so the most
-    critical asset with the least time left is first.
+    by a confirmed bespoke valuation (`custom_value_eur_mid`, largest first, unvalued last), then by
+    the same remaining window the contact queue uses (nulls last), then `asset_id`. Tier is the
+    ordinal answer to that question and the bespoke figure is the cardinal refinement of the same
+    answer, so both sort ahead of urgency here - and only here.
     """
     policy = cfg.CRITICALITY_POLICY
     default, tiers = policy["default_tier"], policy["tiers"]
@@ -484,8 +600,11 @@ def strategic_queue(assets, cfg=config) -> list[dict]:
 
     def key(a):
         rank = tiers.get(a.get("criticality_tier"), {}).get("rank", 0)
+        value = a.get("custom_value_eur_mid")
+        value = None if isinstance(value, bool) else value
         slack = a.get("slack_min")
-        return (-rank, slack is None, slack if slack is not None else 0.0, a["asset_id"])
+        return (-rank, value is None, -float(value) if value is not None else 0.0,
+                slack is None, slack if slack is not None else 0.0, a["asset_id"])
 
     return sorted(picked, key=key)
 

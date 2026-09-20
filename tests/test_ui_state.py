@@ -422,6 +422,79 @@ def test_status_value_at_risk_totals_follow_a_confirmed_override(tmp_path, db):
     assert s.status()["value_at_risk"]["people_exposed"] == 150.0      # 300 x 0.5, re-derived by the override
 
 
+VALUATION = {"method": "component_replacement",
+             "components": [{"label": "computing installation", "amount_eur": 9_000_000},
+                            {"label": "building shell", "amount_eur": 3_000_000}],
+             "amount_eur_low": 8_000_000, "amount_eur_mid": 12_000_000, "amount_eur_high": 20_000_000,
+             "note": "the machines dominate the shell"}
+
+
+def test_a_confirmed_bespoke_valuation_leaves_excluded_eur_and_is_counted():
+    """The four classes the class table cannot price are `excluded_eur` until an analyst confirms a
+    bespoke figure; confirming one re-derives the euros from it, so the asset leaves that count and is
+    reported separately - the totals say how much of them rests on a per-asset assumption."""
+    from fireline import priority
+
+    asset = var_asset("a:rf", asset_type="research_facility", estimated_occupancy=120,
+                      burn_probability=0.4, review_reasons=["valuation_unassessed"])
+    before = ui_state.value_at_risk_totals([asset])
+    assert before["excluded_eur"] == 1 and before["custom_valued"] == 0
+    assert before["expected_loss_eur_mid"] == 0          # nothing to sum: the class table prices no
+                                                        # building of this class at all
+
+    confirmed = priority.apply_overrides([asset], [{
+        "asset_id": "a:rf", "field": "custom_valuation", "value": VALUATION, "source": "ca.wikipedia.org",
+        "snippet": "x", "confidence": "medium", "confirmed_at": "2026-07-03T12:00:00+00:00"}],
+        config, now_at=AS_OF)[0]
+    after = ui_state.value_at_risk_totals([confirmed])
+    assert after["excluded_eur"] == 0 and after["custom_valued"] == 1
+    assert after["custom_valuation_policy_version"] == config.CUSTOM_VALUATION_POLICY["version"]
+    # the loss band compounds the valuation band with the assumed damage band, not the damage band alone
+    ratio = config.CUSTOM_VALUATION_POLICY["damage_ratio"]
+    assert after["expected_loss_eur_low"] == round(0.4 * ratio["d_low"] * 8_000_000)
+    assert after["expected_loss_eur_high"] == round(0.4 * ratio["d_high"] * 20_000_000)
+
+
+def test_a_confirmed_not_valued_answer_is_not_counted_as_a_bespoke_figure():
+    """`not_valued` records that the agent looked and found nothing: the review flag clears, no euro
+    figure lands, and the asset stays in `excluded_eur` where it belongs."""
+    from fireline import priority
+
+    asset = var_asset("a:rf", asset_type="research_facility", estimated_occupancy=120,
+                      burn_probability=0.4, review_reasons=["valuation_unassessed"])
+    confirmed = priority.apply_overrides([asset], [{
+        "asset_id": "a:rf", "field": "custom_valuation", "source": "s", "snippet": "x",
+        "confidence": "low", "confirmed_at": "2026-07-03T12:00:00+00:00",
+        "value": {"method": "not_valued"}}], config, now_at=AS_OF)[0]
+    totals = ui_state.value_at_risk_totals([confirmed])
+    assert totals["custom_valued"] == 0 and totals["excluded_eur"] == 1
+    assert "valuation_unassessed" not in confirmed["review_reasons"]
+
+
+def test_status_counts_the_assets_still_waiting_on_a_valuation(tmp_path, db):
+    """The strategic caption names both unassessed counts, so the status has to carry both."""
+    d = tmp_path / "val_snapshots"
+    d.mkdir()
+    snap = make_snapshot([var_asset("a:rf", name="Facility", asset_type="research_facility",
+                                    estimated_occupancy=120, burn_probability=0.4,
+                                    review_reasons=["valuation_unassessed", "criticality_unassessed"]),
+                          var_asset("a:school", name="School", estimated_occupancy=100,
+                                    burn_probability=0.5)],
+                         scenario_id="val_test", sequence=1)
+    (d / "val_0001.json").write_text(json.dumps(snap), encoding="utf-8")
+    s = Session(db_path=db, snapshot_dirs=(d,), clock=lambda: NOW)
+    s.select_scenario("val_test")
+    assert s.status()["counts"]["valuation_unassessed"] == 1
+    assert s.status()["value_at_risk"]["custom_valued"] == 0
+
+    s.store.confirm_override("a:rf", "custom_valuation", VALUATION, source="ca.wikipedia.org",
+                             snippet="el centre allotja el supercomputador", confidence="medium",
+                             previous=None)
+    s.rescore()
+    assert s.status()["counts"]["valuation_unassessed"] == 0
+    assert s.status()["value_at_risk"]["custom_valued"] == 1
+
+
 COMMITTED_TOTALS = {
     "synthetic_gavarres-0001": (438, 0, 0, 6_519_500, 2_711_000, 12_268_000, 6, 6, 12),
     "synthetic_gavarres-0002": (505.8, 89, 89, 7_623_000, 3_169_000, 14_367_000, 6, 6, 12),

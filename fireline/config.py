@@ -18,6 +18,7 @@ FEATURES = {
     "decisions": False,           # confine / evacuate rule; `recommendation` stays null otherwise
     "forecast_enrichment": False, # fill burn_probability / arrival_* on snapshot assets from a raster
     "asset_criticality": True,   # per-asset criticality tier proposed by the agent (CRITICALITY_POLICY)
+    "custom_valuation": True,    # per-asset bespoke euro figure proposed by the agent (CUSTOM_VALUATION_POLICY)
     "value_at_risk": False,       # people exposed / at risk and expected loss in euros per location (assumed values)
 }
 
@@ -170,6 +171,67 @@ CRITICALITY_POLICY = {
     # hundreds of near-identical schools and campsites, and asking the model about each of them
     # costs tokens to learn nothing. An analyst can still point the agent at any asset by hand.
     "assess_classes": ("hospital", "research_facility", "university", "fire_station", "aerodrome"),
+}
+
+# Per-asset custom valuation (readme 4 "Value", handoff 004). `VALUE_AT_RISK_POLICY` above prices an
+# average building of a class: an assumed replacement cost times an assumed built area. Four classes
+# have no row there at all - research_facility, university, aerodrome, fire_station - because within
+# those classes one building is not like another. A national supercomputing centre and a university
+# annexe are both `research_facility`, and a euros-per-square-metre table prices them the same; the
+# machines, the data and the service the building carries are the value, and the shell is a rounding
+# error. This policy is the escape hatch: the investigation agent may propose ONE bespoke figure for
+# ONE building from evidence it quotes, and an analyst confirms it before anything is shown.
+#
+# What this is not. It is not a market valuation, not an insurer's figure and not a measured number:
+# every figure is as good as the reference the agent quoted, and the band is wide on purpose. It never
+# reaches the contact queue - readme 6 keeps property value out of contact urgency, and a bespoke euro
+# figure orders the strategic view and nothing else. The producer never asserts one; it arrives only
+# through an analyst-confirmed override, exactly as `criticality_tier` does.
+CUSTOM_VALUATION_POLICY = {
+    "version": "custom-valuation-proto-2026-09-20",
+    # Classes the class table cannot price, and therefore the only classes that enter the queue while
+    # FEATURES["custom_valuation"] is on. Every other class keeps the class answer: the registers hold
+    # hundreds of near-identical schools and campsites, and valuing each by hand costs tokens to
+    # reproduce a number the table already gives. An analyst can still point the agent at any asset.
+    "assess_classes": ("research_facility", "university", "aerodrome", "fire_station"),
+    # Closed enum: the agent may name only these methods, and the evidence it quotes must state the
+    # figures the method consumes (scripts/validate.py `_supported`).
+    "methods": {
+        "component_replacement":
+            "sum of separately priced components - the installation, the building shell, the fit-out - "
+            "when the evidence prices them separately and the components dominate the shell",
+        "service_continuity":
+            "the cost of the service being unavailable while it is rebuilt, when the evidence states a "
+            "rebuild time and an annual budget or throughput",
+        "irreplaceable_holdings":
+            "a stated floor for holdings that cannot be rebuilt at any price; the figure is the cost of "
+            "the closest available substitute, never a price for the holdings themselves",
+        "parent_institution_scaled":
+            "a parent body's published figure scaled to this site by a stated, quoted share (staff, "
+            "floor area or budget); take the low end when the share itself is estimated",
+        "not_valued":
+            "the class table cannot price this building and the evidence does not support a bespoke "
+            "figure either; the ordinary answer, and a good one",
+    },
+    # Inflation guard, the analogue of CRITICALITY_POLICY["min_factors"]: a method that claims to add
+    # components up may not be proposed with fewer than this many priced components, so a bespoke
+    # figure can never rest on one round number.
+    "min_components": {"component_replacement": 2, "service_continuity": 1,
+                       "irreplaceable_holdings": 1, "parent_institution_scaled": 1, "not_valued": 0},
+    # A bespoke figure is a band, never a point: `high` must exceed `low` by at least this factor. A
+    # single number would claim a precision no quoted reference supports.
+    "min_band_ratio": 1.5,
+    # `component_replacement` states that the components are the value, so they must add up to the mid
+    # figure within this relative tolerance. The other methods scale or substitute and do not.
+    "component_sum_tolerance": 0.05,
+    # Sanity ceiling. Nothing in the Gavarres area is worth more than this; a proposal above it is a
+    # misplaced decimal point, not a valuation, and is refused rather than shown to an analyst.
+    "max_eur": 5_000_000_000,
+    # Classes with no VALUE_AT_RISK_POLICY row also have no damage ratio. This assumed band applies to
+    # a confirmed custom valuation, and it is deliberately wider than any class row above: a bespoke
+    # figure carries the uncertainty of the valuation AND of the damage, and the expected-loss band
+    # compounds both (low x d_low, high x d_high) instead of the damage band alone.
+    "damage_ratio": {"d_low": 0.10, "d_mid": 0.35, "d_high": 0.75},
 }
 
 # Four analyst actions and the capability tags each needs (readme 7).

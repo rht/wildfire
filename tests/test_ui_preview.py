@@ -114,7 +114,7 @@ def test_report_carries_every_key(session):
     report = session.set_approve_all(True)
     assert set(report) == {"on", "llm_label", "investigated", "proposals", "by_field", "ranked_before",
                            "ranked_after", "rows_moved", "entered_ranked", "left_ranked", "flags_cleared",
-                           "tiers_set"}
+                           "tiers_set", "valuations_set"}
     assert report["on"] is True
     assert report["llm_label"] == ui_state.FAKE_LABEL_NO_KEY      # conftest strips the API keys
     assert report["investigated"] == 1                            # only C carries an actionable review reason
@@ -276,7 +276,7 @@ def test_shipped_counts_are_the_measured_ones(shipped):
             assert report["investigated"] == 7
             assert report["proposals"] == 4
             assert report["by_field"] == {"capacity": 2, "asset_type": 1, "criticality_tier": 1}
-            assert (report["flags_cleared"], report["tiers_set"]) == (2, 0)
+            assert (report["flags_cleared"], report["tiers_set"], report["valuations_set"]) == (2, 0, 0)
         else:
             # 93 flagged assets -> 13 proposals, every one a criticality tier: 12 `routine` (the
             # default) and one `elevated` for the research facility, so 13 `criticality_unassessed`
@@ -284,7 +284,40 @@ def test_shipped_counts_are_the_measured_ones(shipped):
             assert report["investigated"] == 93
             assert report["proposals"] == 13
             assert report["by_field"] == {"criticality_tier": 13}
-            assert (report["flags_cleared"], report["tiers_set"]) == (13, 1)
+            assert (report["flags_cleared"], report["tiers_set"], report["valuations_set"]) == (13, 1, 0)
+
+
+def test_the_preview_counts_a_proposed_bespoke_valuation_without_confirming_it(session, monkeypatch):
+    """`valuations_set` is the valuation sibling of `tiers_set`: how many buildings a full approval
+    would put a bespoke euro band on. A confirmed `not_valued` is not one of them - it is the
+    valuation analogue of the default tier, an answer that records a look and sets no figure - and
+    nothing here reaches the store or the contact order either way."""
+    valuation = {"method": "component_replacement",
+                 "components": [{"label": "computing installation", "amount_eur": 9_000_000},
+                                {"label": "building shell", "amount_eur": 3_000_000}],
+                 "amount_eur_low": 8_000_000, "amount_eur_mid": 12_000_000,
+                 "amount_eur_high": 20_000_000, "note": None}
+    monkeypatch.setattr(agent, "investigate_all",
+                        fake_sweep((A, "custom_valuation", valuation),
+                                   (B, "custom_valuation", {"method": "not_valued"})))
+    before = order(session)
+    report = session.set_approve_all(True)
+
+    assert report["valuations_set"] == 1                     # A only; B's `not_valued` sets no figure
+    assert report["by_field"] == {"custom_valuation": 2}
+    assert order(session) == before                          # no euro figure is in the contact sort key
+    previewed = {a["asset_id"]: a for a in session.scored["all"]}
+    assert previewed[A]["custom_value_eur_mid"] == 12_000_000
+    assert previewed[A]["custom_value_method"] == "component_replacement"
+    # this scenario is built without the value-at-risk layer, so there is no class figure to replace:
+    # `_rederive_value_at_risk` is a no-op on an asset that carries none of the eight keys.
+    assert "replacement_value_eur" not in previewed[A]
+    assert previewed[B]["custom_value_method"] == "not_valued"
+    assert previewed[B]["custom_value_eur_mid"] is None
+    assert session.store.overrides() == []                   # a preview confirms nothing
+
+    session.set_approve_all(False)
+    assert "custom_value_method" not in session.asset(A) or session.asset(A)["custom_value_method"] is None
 
 
 def test_preview_manufactures_no_override_conflict(shipped):

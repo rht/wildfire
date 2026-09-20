@@ -307,3 +307,190 @@ def test_static_serving_is_enabled_so_the_style_url_resolves():
     server.enableStaticServing set - without it the style URL 404s and no basemap loads."""
     assert STYLE_FILE.parent == APP.parent / "static"
     assert tomllib.loads(CONFIG_TOML.read_text(encoding="utf-8"))["server"]["enableStaticServing"] is True
+
+
+# --------------------------------------------------------------- per-asset custom valuation
+def valued_asset(**payload):
+    """A `research_facility` with an analyst-confirmed bespoke valuation, built the way the page gets
+    one: through `priority.apply_overrides` with `field="custom_valuation"`, so the six snapshot keys
+    and the re-derived euros come from the real guard rather than from a hand-written dict."""
+    from fireline import priority
+
+    value = {"method": "component_replacement",
+             "components": [{"label": "computing installation", "amount_eur": 9_000_000},
+                            {"label": "building shell", "amount_eur": 3_000_000}],
+             "amount_eur_low": 8_000_000, "amount_eur_mid": 12_000_000, "amount_eur_high": 20_000_000,
+             "note": "the machines dominate the shell"}
+    value.update(payload)
+    asset = make_asset(asset_id="a:rf", asset_type="research_facility", value_at_risk=True,
+                       estimated_occupancy=120, burn_probability=0.4, capacity=None,
+                       forecast_source="fixture:test", evacuation_min=90.0, evacuation_source="policy",
+                       review_reasons=["valuation_unassessed"])
+    return priority.apply_overrides([asset], [{
+        "asset_id": "a:rf", "field": "custom_valuation", "override_id": "ovr-1", "value": value,
+        "source": "ca.wikipedia.org", "snippet": "el centre allotja el supercomputador",
+        "confidence": "medium", "confirmed_at": "2026-07-03T12:00:00+00:00",
+    }], config, now_at="2026-07-03T08:00:00+00:00")[0]
+
+
+def test_value_frame_names_the_bespoke_figure_as_an_assumption_that_replaced_the_class_one():
+    """The per-asset detail has to be unmistakable: a bespoke valuation is an analyst-confirmed
+    assumption, not a market valuation, and it replaced a class figure this class never had."""
+    from fireline.app import CUSTOM_VALUATION_CAUTION, value_frame
+
+    frame = value_frame(valued_asset())
+    rows = dict(zip(frame["component"], frame["value"]))
+    basis = dict(zip(frame["component"], frame["basis / source"]))
+    assert list(frame["component"])[1:3] == ["custom valuation method",
+                                             "custom valuation band (low - mid - high)"]
+    assert rows["custom valuation method"] == "component replacement"
+    assert rows["custom valuation band (low - mid - high)"] == \
+        "EUR 8,000,000 - EUR 12,000,000 - EUR 20,000,000"
+    assert basis["custom valuation band (low - mid - high)"] == CUSTOM_VALUATION_CAUTION
+    assert "not a market valuation" in CUSTOM_VALUATION_CAUTION
+    # the class figure it replaced, said plainly, and the class table that prices nothing here
+    assert "ASSUMED bespoke figure replaced the per-class one" in basis["replacement value"]
+    assert "research_facility" in basis["replacement value"]
+    assert rows["replacement value"] == "EUR 12,000,000"
+    # the damage band is the wider custom one, not the "-" the class table would have given
+    assert rows["damage ratio low / mid / high"] == "0.1 / 0.35 / 0.75"
+    assert config.CUSTOM_VALUATION_POLICY["version"] in basis["damage ratio low / mid / high"]
+    assert "compounds" in basis["expected loss"] and "d_low" in basis["expected loss"]
+
+
+def test_value_frame_is_unchanged_for_an_asset_with_no_bespoke_valuation():
+    """The two valuation rows appear only when there is one: an ordinary class-valued asset keeps the
+    exact table it had, damage-ratio basis included."""
+    from fireline.app import value_frame
+
+    a = make_asset(value_at_risk=True, estimated_occupancy=200, burn_probability=0.5, capacity=None,
+                   forecast_source="fixture:test")
+    frame = value_frame(a)
+    assert list(frame["component"]) == ["people exposed", "replacement value",
+                                        "damage ratio low / mid / high", "expected loss",
+                                        "people at risk (p50)", "people at risk (p10)"]
+    assert "bespoke" not in " ".join(frame["basis / source"]).lower()
+
+
+def test_a_confirmed_not_valued_reads_as_a_look_that_found_nothing():
+    """`not_valued` is the ordinary answer and a good one: the rows say the agent looked, and no euro
+    figure appears - which is different from an asset nobody assessed."""
+    from fireline.app import custom_value_label, valuation_band_text, value_frame
+
+    asset = valued_asset(method="not_valued", components=[], amount_eur_low=None,
+                         amount_eur_mid=None, amount_eur_high=None)
+    rows = dict(zip(value_frame(asset)["component"], value_frame(asset)["value"]))
+    assert rows["custom valuation method"] == "not valued"
+    assert rows["custom valuation band (low - mid - high)"] == \
+        "no bespoke figure (the agent looked; the evidence supports none)"
+    assert rows["replacement value"] == "not valued"
+    assert custom_value_label(asset) == "not valued (looked; no figure)"
+    assert "valuation_unassessed" not in asset["review_reasons"]     # the look cleared the flag
+    unassessed = make_asset(value_at_risk=True)
+    assert custom_value_label(unassessed) == "not assessed"
+    assert valuation_band_text(unassessed) == "not assessed"
+
+
+def test_strategic_frame_shows_the_bespoke_value_beside_the_tier_as_a_display_string():
+    """The strategic view is ordered tier then `custom_value_eur_mid`, so the euro column belongs
+    there - as text, so nothing can sort the table into a different ranking."""
+    from fireline.app import CUSTOM_VALUE_COLUMN, strategic_frame
+
+    asset = dict(valued_asset(), criticality_tier="high",
+                 criticality_factors=["national_research_infrastructure"],
+                 criticality_basis="criticality-proto; analyst override: x", slack_min=30.0)
+    frame = strategic_frame([asset])
+    assert CUSTOM_VALUE_COLUMN in frame.columns and "valuation method" in frame.columns
+    row = frame.iloc[0]
+    assert row[CUSTOM_VALUE_COLUMN] == "EUR 12,000,000 (assumed)"       # a string, never a number
+    assert isinstance(row[CUSTOM_VALUE_COLUMN], str)
+    assert row["valuation method"] == "component replacement"
+    assert config.CUSTOM_VALUATION_POLICY["version"] in row["valuation basis"]
+
+
+class _RecordingStreamlit:
+    """Enough of `st` for the proposal card: everything it writes, in order."""
+
+    def __init__(self):
+        self.written: list[str] = []
+        self.frames: list = []
+
+    def markdown(self, text, **kw):
+        self.written.append(str(text))
+
+    caption = markdown
+
+    def dataframe(self, frame, **kw):
+        self.frames.append(frame)
+
+
+def test_the_valuation_proposal_card_shows_the_band_components_and_what_confirming_means():
+    """A `custom_valuation` payload is an object, so the generic `{value!r}` line renders an
+    unreadable dict. The card has to show the method, the band, the priced components, the note and
+    the quoted evidence - and say that confirming it replaces the class figure."""
+    import fireline.app as app_module
+    from fireline.app import CUSTOM_VALUATION_CAUTION
+
+    recorder = _RecordingStreamlit()
+    proposal = {"proposal_id": "prop-1", "asset_id": "a:rf", "field": "custom_valuation",
+                "confidence": "medium", "source": "ca.wikipedia.org",
+                "url": "https://ca.wikipedia.org/wiki/x",
+                "quoted_snippet": "el centre allotja el supercomputador",
+                "value": {"method": "component_replacement",
+                          "components": [{"label": "computing installation", "amount_eur": 9_000_000},
+                                         {"label": "building shell", "amount_eur": 3_000_000}],
+                          "amount_eur_low": 8_000_000, "amount_eur_mid": 12_000_000,
+                          "amount_eur_high": 20_000_000, "note": "the machines dominate the shell"}}
+    original, app_module.st = app_module.st, recorder
+    try:
+        app_module.render_valuation_proposal(proposal)
+    finally:
+        app_module.st = original
+
+    text = "\n".join(recorder.written)
+    assert "{" not in text and "amount_eur_mid" not in text          # not a dict dump
+    assert "prop-1" in text and "component replacement" in text and "medium" in text
+    assert "EUR 8,000,000 - EUR 12,000,000 - EUR 20,000,000" in text
+    assert "replaces the per-class replacement cost" in text
+    assert "the machines dominate the shell" in text                 # the agent's note
+    assert "el centre allotja el supercomputador" in text            # the quoted evidence
+    assert CUSTOM_VALUATION_CAUTION in recorder.written
+    assert len(recorder.frames) == 1
+    components = recorder.frames[0]
+    assert list(components["priced component"]) == ["computing installation", "building shell"]
+    assert list(components["amount"]) == ["EUR 9,000,000", "EUR 3,000,000"]
+
+
+def test_the_valuation_proposal_card_reads_a_not_valued_proposal_as_an_answer():
+    import fireline.app as app_module
+
+    recorder = _RecordingStreamlit()
+    proposal = {"proposal_id": "prop-2", "asset_id": "a:rf", "field": "custom_valuation",
+                "confidence": "low", "source": "ca.wikipedia.org", "url": None,
+                "quoted_snippet": "no hi ha cap xifra publicada",
+                "value": {"method": "not_valued", "components": [], "amount_eur_low": None,
+                          "amount_eur_mid": None, "amount_eur_high": None, "note": None}}
+    original, app_module.st = app_module.st, recorder
+    try:
+        app_module.render_valuation_proposal(proposal)
+    finally:
+        app_module.st = original
+
+    text = "\n".join(recorder.written)
+    assert "no bespoke figure" in text and "the ordinary answer" in text
+    assert "valuation_unassessed" in text and "without putting any euro figure" in text
+    assert recorder.frames == []                                     # no component table to show
+
+
+def test_render_agent_uses_the_valuation_card_only_for_a_custom_valuation_proposal():
+    """The generic rendering stays for every other field: the branch is on the field name, not on the
+    shape of the value."""
+    source = APP.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    body = next(n for n in ast.walk(tree)
+                if isinstance(n, ast.FunctionDef) and n.name == "render_agent")
+    branch = next(n for n in ast.walk(body)
+                  if isinstance(n, ast.If) and "custom_valuation" in ast.get_source_segment(source, n.test))
+    called = [c.func.id for c in ast.walk(branch) if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)]
+    assert "render_valuation_proposal" in called
+    assert "{p['value']!r}" in ast.get_source_segment(source, branch.orelse[0])

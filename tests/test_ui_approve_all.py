@@ -35,7 +35,8 @@ def report(**extra) -> dict:
     """A `Session.preview_report`: every key always present (the module contract)."""
     r = {"on": True, "llm_label": "FakeLLM", "investigated": 4, "proposals": 13,
          "by_field": {"criticality_tier": 13}, "ranked_before": 72, "ranked_after": 72,
-         "rows_moved": 0, "entered_ranked": [], "left_ranked": [], "flags_cleared": 0, "tiers_set": 13}
+         "rows_moved": 0, "entered_ranked": [], "left_ranked": [], "flags_cleared": 0, "tiers_set": 13,
+         "valuations_set": 0}
     r.update(extra)
     return r
 
@@ -148,6 +149,20 @@ def test_by_field_text_lists_every_field_the_proposals_would_write():
     assert by_field_text({"criticality_tier": 13}) == "criticality_tier 13"
     assert by_field_text({"capacity": 2, "asset_type": 1}) == "asset_type 1, capacity 2"
     assert by_field_text({}) == "no field" and by_field_text(None) == "no field"
+
+
+def test_by_field_text_says_what_a_custom_valuation_count_counts():
+    """`custom_valuation` is one override field whose payload fans out into six snapshot keys, so the
+    bare "custom_valuation 3" reads like three fields rather than three buildings given a euro band."""
+    text = by_field_text({"custom_valuation": 3, "capacity": 2})
+    assert text == "capacity 2, custom_valuation 3 (bespoke euro band(s), one per building)"
+
+
+def test_the_caption_counts_bespoke_valuations_beside_the_tiers_and_keeps_them_out_of_the_order():
+    text = approve_all_caption(report(by_field={"custom_valuation": 2}, proposals=2, valuations_set=2))
+    assert "2 bespoke valuation(s) set" in text and "assumed figures" in text
+    assert "no euro figure is in the contact sort key either" in text
+    assert "Contact order: unchanged" in text
 
 
 # --------------------------------------------------------------- the control itself

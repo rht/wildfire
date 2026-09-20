@@ -17,6 +17,50 @@ export const money = (value) =>
         currency: "EUR",
         maximumFractionDigits: 0,
       }).format(value);
+/**
+ * A per-asset bespoke valuation (the six `custom_value_*` snapshot keys), or null when the asset
+ * carries none. It is an ASSUMED figure: the investigation agent proposed it from quoted evidence and
+ * an analyst confirmed it, replacing the per-class replacement cost for that one building. It is never
+ * a market valuation, and it orders nothing the contact queue reads.
+ *
+ * `valued` is false for the confirmed `not_valued` method, which is a real answer - the agent looked
+ * and the evidence supported no figure - and reads differently from an asset nobody has assessed.
+ */
+export function customValuation(asset) {
+  const method = asset?.custom_value_method;
+  if (!method) return null;
+  const [low, mid, high] = ["low", "mid", "high"].map((k) =>
+    number(asset[`custom_value_eur_${k}`]),
+  );
+  return {
+    method,
+    label: humanize(method),
+    valued: method !== "not_valued" && mid !== null,
+    mid,
+    band: mid === null ? null : `${money(low)} – ${money(mid)} – ${money(high)}`,
+    components: asset.custom_value_components || [],
+    basis: asset.custom_value_basis || null,
+  };
+}
+export const CUSTOM_VALUATION_CAUTION =
+  "Assumed per-asset figure: proposed by the investigation agent from quoted evidence and confirmed by an analyst. Not a market valuation and not an insurer's figure; the band is wide on purpose. It replaces the per-class replacement cost for this building and never reorders the contact queue.";
+/**
+ * Detail-dialog rows for a bespoke valuation: method, band and basis, or [] when there is none.
+ * Three numbers, never one - the band is the figure.
+ */
+export function valuationFacts(asset) {
+  const valuation = customValuation(asset);
+  if (!valuation) return [];
+  return [
+    ["Bespoke valuation method", valuation.label],
+    [
+      "Bespoke valuation band (low – mid – high)",
+      valuation.band ||
+        "No bespoke figure — assessed, and the evidence supports none",
+    ],
+    ["Bespoke valuation basis", valuation.basis || "Not supplied"],
+  ];
+}
 export const stamp = (value) =>
   value && Number.isFinite(Date.parse(value))
     ? new Date(value).toISOString().replace("T", " ").replace(".000Z", " UTC")

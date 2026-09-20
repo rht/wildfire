@@ -1,7 +1,7 @@
-"""Agent layer: five tools + one bounded investigation loop (CONTRACTS section 6, readme 8).
+"""Agent layer: six tools + one bounded investigation loop (CONTRACTS section 6, readme 8).
 
 Deterministic ranking by remaining evacuation window for the common case, agent for the flagged
-cases, analyst decides. The agent only ever acts through the five tools below and never changes an
+cases, analyst decides. The agent only ever acts through the six tools below and never changes an
 asset itself:
 
 - `get_asset`        read the ranked record (numbers rounded so they can be quoted verbatim)
@@ -28,19 +28,20 @@ from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
-from . import config, priority
+from . import config, priority, valuation_reference
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_REGISTERS = ROOT / "fixtures" / "registers.json"
 FIXTURE_EVIDENCE = ROOT / "fixtures" / "evidence.json"
 DATA_REGISTERS_DIR = ROOT / "data" / "registers"
 
-PROPOSAL_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min", "criticality_tier")
+PROPOSAL_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min", "criticality_tier",
+                   "custom_valuation")
 OCCUPANCY_FIELDS = ("estimated_occupancy", "capacity")
 CONFIDENCE_LEVELS = ("low", "medium", "high")
 REVIEW_REASONS = ("location_unknown", "occupancy_unknown", "occupancy_seasonal", "class_ambiguous",
                   "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown",
-                  "criticality_unassessed")
+                  "criticality_unassessed", "valuation_unassessed")
 
 POSTCHECK_FAILED_TEXT = ("Recommendation, not an order. Agent message withheld: number post-check failed "
                          "(the draft quoted a number that is not in any tool result). See the proposals "
@@ -302,7 +303,7 @@ def _muni_matches(wanted: str, actual: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# The five tools
+# The six tools
 # ---------------------------------------------------------------------------
 _ASSET_FIELDS = ("asset_id", "name", "asset_type", "municipality", "latitude", "longitude", "capacity",
                  "estimated_occupancy", "occupancy_basis", "value_score", "intersects_fire", "queue",
@@ -366,6 +367,11 @@ def lookup_facility(query: str, municipality: str | None = None, limit: int = 20
     return out[:limit]
 
 
+def lookup_valuation_reference(asset_type: str | None = None, query: str = "", limit: int = 4) -> list[dict]:
+    """Quotable cost references for a class the class table does not price (offline corpus)."""
+    return valuation_reference.lookup(asset_type, query, limit)
+
+
 def lookup_notability(query: str, limit: int = 3) -> list[dict]:
     """Cached encyclopaedia evidence about an institution, for the criticality question only.
 
@@ -413,6 +419,11 @@ def _check_value(field_name: str, value):
         if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
             raise ValueError(f"evacuation_min must be a number of minutes >= 0, got {value!r}")
         return float(value)
+    if field_name == "custom_valuation":
+        # priority.custom_valuation_value owns the method enum, the band guard, the component-sum rule
+        # and the ceiling, so the agent and an analyst confirmation cannot disagree about what a
+        # bespoke figure means - the same arrangement as criticality_tier below.
+        return priority.custom_valuation_value(value, config)
     if field_name == "criticality_tier":
         # priority.criticality_value owns the enum, the closed factor list and the minimum factor
         # count per tier, so the agent and an analyst confirmation cannot disagree about what a
@@ -496,12 +507,13 @@ def escalate(asset_id: str, question: str, options: list[str], default: str,
 
 
 # Read-only lookups over cached evidence: they see no workbench and cannot change anything.
-STATELESS_TOOLS = ("lookup_facility", "lookup_notability")
+STATELESS_TOOLS = ("lookup_facility", "lookup_notability", "lookup_valuation_reference")
 
 TOOL_FUNCTIONS = {
     "get_asset": get_asset,
     "lookup_facility": lookup_facility,
     "lookup_notability": lookup_notability,
+    "lookup_valuation_reference": lookup_valuation_reference,
     "propose_update": propose_update,
     "escalate": escalate,
 }
@@ -558,6 +570,27 @@ TOOLS: list[dict] = [
         },
     },
     {
+        "name": "lookup_valuation_reference",
+        "description": "Quotable cost references for a class the per-class euro table does not price "
+                       "(research_facility, university, aerodrome, fire_station). Returns statements you "
+                       "may quote verbatim and figures you may use, with a `basis` field: 'published' is "
+                       "a cited external table, 'assumed' is this project's own placeholder and says so "
+                       "inside the statement. Filter by asset_type and nudge with a query describing what "
+                       "the building actually contains. An empty result means the corpus has nothing for "
+                       "this class: propose method 'not_valued' rather than invent a figure. Quote from "
+                       "`statement` verbatim, and state no number that is not in a result.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "asset_type": {"type": ["string", "null"],
+                               "description": "The asset's class, from get_asset."},
+                "query": {"type": "string",
+                          "description": "What the building contains, e.g. 'compute racks laboratory'."},
+            },
+            "required": ["asset_type"],
+        },
+    },
+    {
         "name": "propose_update",
         "description": "Propose a sourced update of one field for the analyst to confirm. Nothing is "
                        "applied until confirmed. Fields: capacity (an integer from evidence stating "
@@ -565,7 +598,7 @@ TOOLS: list[dict] = [
                        "actual headcount today), asset_type (a class the evidence states), evacuation_min "
                        "(total evacuation duration in minutes ONLY from evidence stating how long a full "
                        "evacuation of this facility takes, e.g. its evacuation plan or the facility itself), "
-                       "criticality_tier (an object, see below). "
+                       "criticality_tier (an object, see below), custom_valuation (an object, see below). "
                        "quoted_snippet must quote the evidence verbatim; pass its url and observed_at when known.",
         "input_schema": {
             "type": "object",
@@ -577,7 +610,15 @@ TOOLS: list[dict] = [
                                          "minutes >= 0 for evacuation_min; for criticality_tier an object "
                                          '{"tier": one of ' + str(list(config.CRITICALITY_POLICY["tiers"])) +
                                          ', "factors": a list from ' +
-                                         str(list(config.CRITICALITY_POLICY["factors"])) + "}."},
+                                         str(list(config.CRITICALITY_POLICY["factors"])) + "}; "
+                                         'for custom_valuation an object {"method": one of ' +
+                                         str(list(config.CUSTOM_VALUATION_POLICY["methods"])) +
+                                         ', "components": [{"label": str, "amount_eur": number}], '
+                                         '"amount_eur_low": number, "amount_eur_mid": number, '
+                                         '"amount_eur_high": number, "note": str}. Method "not_valued" '
+                                         "carries no amounts and no components; every other method needs "
+                                         "all three amounts, low <= mid <= high, with high at least "
+                                         + f"{config.CUSTOM_VALUATION_POLICY['min_band_ratio']:g}x low."},
                 "source": {"type": "string", "description": "Register name or page the snippet comes from."},
                 "quoted_snippet": {"type": "string", "description": "Verbatim snippet from the evidence."},
                 "confidence": {"type": "string", "enum": list(CONFIDENCE_LEVELS)},
@@ -750,7 +791,7 @@ def postcheck_numbers(final_text: str, tool_results: list[str], asset_id: str = 
 # ---------------------------------------------------------------------------
 # Investigation loop
 # ---------------------------------------------------------------------------
-SYSTEM_PROMPT = """You are the investigation agent of ResponsAra, a wildfire values-at-risk coordination layer for the analyst on duty. Code has already ranked every asset by its remaining evacuation window (forecast fire arrival minus the total evacuation duration and a buffer, relative to the snapshot time); assets without a forecast or an evacuation estimate sit in the review queue. You handle one flagged asset at a time with five tools: get_asset, lookup_facility, lookup_notability, propose_update, escalate.
+SYSTEM_PROMPT = """You are the investigation agent of ResponsAra, a wildfire values-at-risk coordination layer for the analyst on duty. Code has already ranked every asset by its remaining evacuation window (forecast fire arrival minus the total evacuation duration and a buffer, relative to the snapshot time); assets without a forecast or an evacuation estimate sit in the review queue. You handle one flagged asset at a time with six tools: get_asset, lookup_facility, lookup_notability, lookup_valuation_reference, propose_update, escalate.
 
 Rules (binding):
 1. Tool results only. Every number you state must come verbatim from a tool result in this conversation. Call get_asset first. Never estimate, round differently, or recall a figure from memory. If you have no tool result for a number, do not state it.
@@ -758,7 +799,7 @@ Rules (binding):
 3. Capacity is not occupancy. A register or page stating places, capacity, capacitat or total_places is evidence for the field `capacity`. It is never evidence for `estimated_occupancy`, which needs a source stating how many people are actually present (a headcount). If you only have a capacity, propose capacity and escalate the headcount question.
 4. Match before you trust. Use lookup_facility with the asset's name and municipality; accept a candidate only when name and municipality both match. Quote the evidence verbatim in quoted_snippet and pass its url and observed_at when the candidate has them.
 5. Never issue an order. Start your final message with "Recommendation, not an order." Keep it to a few lines: what you found, what you proposed with what evidence (pending confirmation), what you escalated with which default.
-6. Value never outranks people. A criticality tier describes what would be lost along with a building. It never changes who is contacted first, and you never argue from it that one site should be reached before another.
+6. Value never outranks people. A criticality tier and a custom valuation both describe what would be lost along with a building. Neither changes who is contacted first, and you never argue from either that one site should be reached before another. A euro figure is not a reason to evacuate anyone sooner.
 7. Stay within the step budget. Do the minimum that resolves or escalates each review reason, then stop. Leave what you cannot support unresolved rather than guessing.
 
 Review-reason playbook:
@@ -774,6 +815,7 @@ Review-reason playbook:
   (b) lookup_notability on the facility name. If nothing matches, try the parent institution or the acronym inside the name - "IRTA Monells" is a site of "IRTA". A record about the parent body IS evidence about this site when the site is plainly one of its establishments: say in your message that you are relying on the parent, and take one tier lower than the parent alone would justify. It is NOT evidence when the record describes a different place - a record about a city airport says nothing about a small heliport, and there you fall back to (a).
   Pick the LOWEST tier the quoted text supports, and name only factors the text states: irreplaceable_holdings, national_research_infrastructure, sole_regional_service, emergency_response_capability, hazardous_materials, network_single_point_of_failure. "high" needs one factor, "exceptional" needs two and is for national infrastructure or holdings that cannot be rebuilt; a facility that is merely large, old, famous or expensive is not exceptional. Propose "routine" with no factors when neither (a) nor (b) gives you anything - that is the ordinary answer and a good one. Escalate instead of guessing only when the evidence conflicts.
 
+- valuation_unassessed: the per-class euro table prices no building of this class, because within this class one building is not like another. Decide whether THIS building needs a figure of its own, and produce one only from quoted references. Call get_asset, then lookup_valuation_reference with the asset's class and a query describing what the building actually contains; lookup_notability tells you what the institution is and how big it is. Then propose custom_valuation with the method the evidence actually supports: component_replacement when the references price the parts separately and the parts dominate the shell (a computing centre is its machines, not its floor area); service_continuity when you have a rebuild time and an annual budget; irreplaceable_holdings for a stated floor on holdings that cannot be rebuilt; parent_institution_scaled when you are scaling a parent body's published figure by a share you can quote. Give a band, never one number: amount_eur_low and amount_eur_high must differ, and a wide band that reflects what you actually know is a better answer than a narrow one you cannot support. Every figure must be arithmetic over numbers that appear in your tool results. When the references give you nothing usable, propose method "not_valued" with no amounts - that is the ordinary answer and a good one, and it records that you looked. Escalate instead of guessing only when the evidence conflicts.
 - forecast_unavailable: no spread forecast covers this location; the window cannot be computed. You cannot supply a forecast arrival (do not propose one). Escalate whether the analyst wants the location kept in the review queue pending a forecast, default "keep in review".
 """
 
@@ -808,7 +850,13 @@ def llm_mode(llm) -> str:
     return "custom"
 
 
-def investigate(workbench: Workbench, asset_id: str, llm=None, max_steps: int = 6) -> dict:
+# 8, not 6: an asset can carry occupancy_unknown, criticality_unassessed and valuation_unassessed
+# at once, and the last two each cost a lookup call plus a proposal call. At 6 the valuation step
+# was cut off by the cap on exactly the assets the layer exists for.
+DEFAULT_MAX_STEPS = 8
+
+
+def investigate(workbench: Workbench, asset_id: str, llm=None, max_steps: int = DEFAULT_MAX_STEPS) -> dict:
     """One bounded investigate-propose-or-escalate loop for a single asset. Returns the record
     described in CONTRACTS 6: tool_calls, final_text, proposals_added, questions_added, postcheck_ok,
     llm_mode (+ asset_id, name, review_reasons, steps)."""
@@ -905,7 +953,7 @@ def flagged_asset_ids(workbench: Workbench) -> list[str]:
 review_order = flagged_asset_ids
 
 
-def investigate_all(workbench: Workbench, llm=None, max_steps: int = 6) -> list[dict]:
+def investigate_all(workbench: Workbench, llm=None, max_steps: int = DEFAULT_MAX_STEPS) -> list[dict]:
     """Investigate every asset with review reasons, needs_review queue first, then flagged ranked
     assets by priority. One record per asset."""
     if llm is None:

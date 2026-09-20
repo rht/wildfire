@@ -30,7 +30,26 @@ import {
   count,
   stamp,
   humanize,
+  customValuation,
+  valuationFacts,
+  CUSTOM_VALUATION_CAUTION,
 } from "../state/model.mjs";
+/**
+ * The valuation cell's second line: where the euro figure came from. A bespoke figure is an
+ * analyst-confirmed assumption about ONE building, not the per-class replacement cost, and the table
+ * has to say which of the two it is showing.
+ */
+function BespokeNote({ asset }) {
+  const valuation = customValuation(asset);
+  if (!valuation) return null;
+  return (
+    <div className="small-muted">
+      {valuation.valued
+        ? `Bespoke · ${valuation.label} · assumed`
+        : "Assessed · no bespoke figure"}
+    </div>
+  );
+}
 const defaults = {
   incident: "",
   from: "",
@@ -172,6 +191,7 @@ export default function Buildings({ incidents, incident }) {
                   </TableCell>
                   <TableCell className="nowrap">
                     {money(r.replacement_value_eur)}
+                    <BespokeNote asset={r} />
                   </TableCell>
                   <TableCell className="nowrap">
                     {money(r.expected_loss_eur_mid)}
@@ -222,6 +242,7 @@ export default function Buildings({ incidents, incident }) {
                 ["Occupancy basis", selected.occupancy_basis],
                 ["Replacement value", money(selected.replacement_value_eur)],
                 ["Valuation basis", selected.replacement_value_basis],
+                ...valuationFacts(selected),
                 ["Expected loss", money(selected.expected_loss_eur_mid)],
                 [
                   "Loss range",
@@ -242,6 +263,11 @@ export default function Buildings({ incidents, incident }) {
                 ],
               ]}
             />
+            {customValuation(selected) && (
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                {CUSTOM_VALUATION_CAUTION}
+              </Alert>
+            )}
             <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>
               Sources & evidence
             </Typography>

@@ -70,6 +70,12 @@ def value_at_risk_totals(assets) -> dict:
     and they differ (an `occupancy_unknown` asset is out of the people totals but not the euros; a class
     the policy does not value is the reverse). The rule is `scripts/make_snapshots.py value_totals`.
 
+    `custom_valued` counts the located assets carrying an analyst-confirmed bespoke valuation
+    (`snapshot.custom_valuation_band`, so a confirmed `not_valued` is not one). Such an asset is out of
+    `excluded_eur`, because its bespoke mid replaced the class replacement cost it never had and
+    `snapshot.derive_value_at_risk` re-derived the euro fields from it; the count says how much of the
+    euro total rests on a per-asset assumption rather than on the class table.
+
     `layer` is False when the snapshot carries none of the eight keys, so a header can say the layer is
     off instead of reporting zeros. `covered` / `reached` separate a forecast that reaches nothing from a
     missing forecast: a located asset with a `forecast_source` is covered, and one with a positive
@@ -92,8 +98,21 @@ def value_at_risk_totals(assets) -> dict:
         "horizon_at": max(horizons) if horizons else None,
         "enrichment": any(ENRICHMENT_LABEL in (a.get("forecast_source") or "") for a in covered),
         "policy_version": config.VALUE_AT_RISK_POLICY["version"],
+        "custom_valued": sum(1 for a in located if snapshot.custom_valuation_band(a) is not None),
+        "custom_valuation_policy_version": config.CUSTOM_VALUATION_POLICY["version"],
     })
     return out
+
+
+def _valuation_key(asset) -> tuple | None:
+    """A confirmed bespoke valuation as a comparable tuple, or None when the asset carries no band.
+
+    `snapshot.custom_valuation_band` already returns None for a confirmed `not_valued`, so this is the
+    identity of "this asset carries a bespoke euro figure, and it is this one" - enough to tell a
+    preview that would set a band from one that would only re-state the band already confirmed.
+    """
+    band = snapshot.custom_valuation_band(asset or {})
+    return None if band is None else (band["method"], band["low"], band["mid"], band["high"])
 
 
 def db_path_from_env() -> Path:
@@ -436,6 +455,13 @@ class Session:
         tiers_set = sum(1 for aid, a in after.items()
                         if a.get("criticality_tier") not in (None, default_tier)
                         and a.get("criticality_tier") != before.get(aid, {}).get("criticality_tier"))
+        # The valuation sibling of `tiers_set`. `custom_valuation_band` is None for the confirmed
+        # `not_valued` answer, which is the valuation analogue of the default tier: the agent looked and
+        # found nothing, so the asset gains a cleared review flag and no euro figure. Counted here are
+        # only the proposals that would put a bespoke band on an asset that did not have that band.
+        valuations_set = sum(1 for aid, a in after.items()
+                             if _valuation_key(a) is not None
+                             and _valuation_key(a) != _valuation_key(before.get(aid, {})))
         # `investigated` is the sweep's own asset list (agent.flagged_asset_ids over the baseline),
         # recomputed rather than cached: it is the same list investigate_all walked.
         investigated = len(agent.flagged_asset_ids(
@@ -453,6 +479,7 @@ class Session:
             "left_ranked": sorted(ranked_ids_before - ranked_ids_after),
             "flags_cleared": flags_cleared,
             "tiers_set": tiers_set,
+            "valuations_set": valuations_set,
         }
 
     # -- agent ------------------------------------------------------------------------------
@@ -570,6 +597,8 @@ class Session:
             "strategic": len(self.scored.get("strategic") or []) if self.scored else 0,
             "criticality_unassessed": sum(1 for a in self.scored["all"]
                                           if "criticality_unassessed" in a["review_reasons"]) if self.scored else 0,
+            "valuation_unassessed": sum(1 for a in self.scored["all"]
+                                        if snapshot.VALUATION_UNASSESSED in a["review_reasons"]) if self.scored else 0,
             "open_tasks": len(self.open_tasks()),
             "pending_proposals": len(self.pending_proposals()),
             "open_questions": len(self.open_questions()),

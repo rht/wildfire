@@ -10,18 +10,22 @@ old contract is preserved at the end for reference.
 
 ```
 fireline/
-  config.py      Policies and flags: VALUE_POLICY, VALUE_AT_RISK_POLICY, EVACUATION_POLICY, CONTACT_POLICY, FRESHNESS, FEATURES (+ v0 params)
+  config.py      Policies and flags: VALUE_POLICY, VALUE_AT_RISK_POLICY, CRITICALITY_POLICY, CUSTOM_VALUATION_POLICY,
+                 EVACUATION_POLICY, CONTACT_POLICY, FRESHNESS, FEATURES (+ v0 params)
   forecast_input.py  Per-location fire arrival estimates: Deepfire fire-spread or a labelled recorded/synthetic file
   snapshot.py    Producer: build_snapshot(), asset_exposure(), validate_snapshot(), read/write
   fire_input.py  Fire updates: Deepfire poll or recorded responses -> FireUpdate; dedupe; data_status; latency
   priority.py    Consumer: SnapshotSequence guard, apply_overrides(), rank_snapshot(), queues (evacuation window)
   tasks.py       SQLite TaskStore: tasks, roster, confirmed overrides, snapshot bookkeeping, events
-  agent.py       Four tools (get_asset, lookup_facility, propose_update, escalate) + investigate loop
+  agent.py       Six tools (get_asset, lookup_facility, lookup_notability, lookup_valuation_reference,
+                 propose_update, escalate) + investigate loop
   llm.py         NebiusLLM, AnthropicLLM and FakeLLM (same .create interface); live_llm() picks by key
   app.py         Streamlit: map, ranked table, review queue, details + timing breakdown, tasks, change log
   feeds.py       HTTP/cache layer, Gencat registers, Open-Meteo, DeepfireClient (unchanged API)
   notability.py  Wikipedia/Wikidata notability corpus: fetch_notability() (network, via the feeds cache)
                  and lookup() (offline search of fixtures/notability.json)
+  valuation_reference.py  Quotable cost references for the custom-valuation layer: lookup() over
+                 fixtures/valuation_references.json, offline only (no network half, unlike notability.py)
   --- v0 modules, gated by config.FEATURES, not used by the v4 path by default ---
   grid.py spread.py exposure.py decide.py routing.py fire_state.py scenario.py
 fixtures/
@@ -35,6 +39,8 @@ fixtures/
   evidence.json             Cached facility pages / register rows for lookup_facility (section 6)
   notability.json           Wikipedia/Wikidata intro extracts for named institutions, quotable offline
                             evidence for the per-asset criticality layer (fireline/notability.py)
+  valuation_references.json Quotable cost lines (published tables and labelled project assumptions) for the
+                            per-asset custom-valuation layer (fireline/valuation_reference.py)
   real_area/                Cached Equipaments/schools extract for the fixed Gavarres area (section 2.4)
 scripts/
   make_snapshots.py         Build fixture + real-area snapshots (no network)
@@ -49,7 +55,8 @@ tests/                      pytest, no network, no LLM
 - Coordinates exchanged as WGS84 (`longitude`, `latitude`; GeoJSON is lon/lat order). Distances in
   metres computed in EPSG:25831 (`grid.lonlat_to_xy`).
 - Unknown is `null`, never zero. Every key listed for a record is always present, except the optional
-  value-at-risk keys of section 2.2, which `validate_snapshot` requires all eight of or none of.
+  key groups of section 2.2, each present in full or not at all: the eight value-at-risk keys, the three
+  criticality keys and the six custom-valuation keys.
 - Records are plain dicts; pandas only in the UI.
 - Stable ids: `asset_id = f"{source}:{source_id}"` (e.g. `fixture:can_xic`, `equipaments:3620043`,
   `schools:17001234`). Coordinates are attributes, not identity.
@@ -97,6 +104,16 @@ tests/                      pytest, no network, no LLM
   "forecast_horizon_at": str | None, "forecast_source": str | None,
   "fire_arrival_at": str | None, "fire_arrival_basis": str | None,   # v1.1: selected arrival estimate + its semantics
   "evacuation_min": float | None, "evacuation_source": str | None,   # v1.1: total evacuation duration (minutes) + basis
+  # per-asset criticality (optional as a group, FEATURES["asset_criticality"]): all three null together
+  "criticality_tier": str | None,                   # config.CRITICALITY_POLICY["tiers"]; analyst-confirmed only
+  "criticality_factors": [str] | None,              # closed enum, CRITICALITY_POLICY["factors"]
+  "criticality_basis": str | None,                  # policy version + the confirming override
+  # per-asset custom valuation (optional as a group, FEATURES["custom_valuation"]): all six null together
+  "custom_value_eur_low": float | int | None, "custom_value_eur_mid": float | int | None,
+  "custom_value_eur_high": float | int | None,      # a band, never a point; analyst-confirmed only
+  "custom_value_method": str | None,                # config.CUSTOM_VALUATION_POLICY["methods"]
+  "custom_value_components": [ {"label": str, "amount_eur": float} ] | None,   # the priced parts, [] for not_valued
+  "custom_value_basis": str | None,                 # policy version + method + the confirming override
   # value-at-risk layer (optional, FEATURES["value_at_risk"]): all eight keys present together or all absent
   "replacement_value_eur": float | int | None, "replacement_value_basis": str | None,   # config.VALUE_AT_RISK_POLICY; null together
   "expected_loss_eur_low": float | None, "expected_loss_eur_mid": float | None, "expected_loss_eur_high": float | None,
@@ -104,7 +121,8 @@ tests/                      pytest, no network, no LLM
   "people_at_risk_p50": int | None, "people_at_risk_p10": int | None,   # whole estimated_occupancy, or 0
   "needs_review": bool, "review_reasons": [str],   # location_unknown, occupancy_unknown, occupancy_seasonal,
                                                    # class_ambiguous, value_unknown, exposure_unknown,
-                                                   # forecast_unavailable, evacuation_unknown (v1.1)
+                                                   # forecast_unavailable, evacuation_unknown (v1.1),
+                                                   # criticality_unassessed, valuation_unassessed
   "sources": [ {"fields": [str], "source": str, "observed_at": str | None, "available_at": str | None,
                 "fetched_at": str | None, "notes": str | None} ],
   "municipality": str | None,             # convenience, not in readme; may be null
@@ -186,6 +204,53 @@ to the whole `estimated_occupancy`, and non-null only with `estimated_occupancy`
 `forecast_source` all set; `expected_loss_eur_*` nonnegative and finite, null iff `burn_probability` or
 `replacement_value_eur` is null, and `expected_loss_eur_low <= _mid <= _high` when all three are set.
 Records without the keys (schema 1.0 and 1.1 files alike) stay valid.
+
+Per-asset criticality and custom valuation (readme 4 and 5.2, handoffs 003 and 004), behind
+`config.FEATURES["asset_criticality"]` and `config.FEATURES["custom_valuation"]`.
+`snapshot.CRITICALITY_KEYS` names three keys and `snapshot.CUSTOM_VALUATION_KEYS` six; each group is
+present in full or absent in full, and within a group the keys are null together on an asset nobody has
+assessed. The intent is the v1.1 timing keys' one: a snapshot written before either layer existed stays
+valid. *Known gap (2026-09-20):* `validate_snapshot`'s missing-key check exempts `CRITICALITY_KEYS` only,
+so a snapshot written before the custom-valuation layer is reported as `missing keys` for all six until it
+is rebuilt, and `_custom_valuation_errors`' all-absent branch is unreachable (handoff 004, known limits). **The producer
+never asserts either one.** A tier and a bespoke euro figure reach an asset only through an
+analyst-confirmed override (section 4: `priority.OVERRIDE_FIELDS` carries `criticality_tier` and
+`custom_valuation`), so `make snapshots` stays deterministic and LLM-free. With a flag on, an asset of an
+assessed class carries `criticality_unassessed` / `valuation_unassessed` in `review_reasons` until an
+analyst confirms one; both are in `agent.REVIEW_REASONS`.
+
+`custom_valuation` is the name of the override, not of a field: its payload `{"method", "components",
+"amount_eur_low", "amount_eur_mid", "amount_eur_high", "note"}` is validated by
+`priority.custom_valuation_value` and fanned out into the six keys. The guards, all from
+`config.CUSTOM_VALUATION_POLICY`, exist so a bespoke figure cannot be softer than the class figure it
+replaces: `method` is a closed enum (`component_replacement`, `service_continuity`,
+`irreplaceable_holdings`, `parent_institution_scaled`, `not_valued`); `not_valued` is the ordinary answer
+and carries no amounts and no components, recording that the agent looked; every other method needs
+`0 <= low <= mid <= high` with `high >= min_band_ratio x low` (1.5), at least `min_components` priced
+components, and for `component_replacement` components summing to `amount_eur_mid` within
+`component_sum_tolerance` (5%); `amount_eur_high` above `max_eur` is refused as a misplaced decimal point,
+not judged. `assess_classes` is exactly the four classes `VALUE_AT_RISK_POLICY` has no row for
+(`research_facility`, `university`, `aerodrome`, `fire_station`); a class the table does price keeps the
+class answer.
+
+What a confirmed valuation changes, and all it changes. In `snapshot.derive_value_at_risk`,
+`custom_value_eur_mid` replaces the class `replacement_value_eur` and `replacement_value_basis` names the
+per-asset valuation and its method, and `expected_loss_eur_<level>` becomes `burn_probability x d_<level>
+x custom_value_eur_<level>` with the damage ratios from `CUSTOM_VALUATION_POLICY["damage_ratio"]`
+(0.10 / 0.35 / 0.75, since these classes have no class row) — so the band compounds the valuation
+uncertainty with the damage uncertainty instead of stating the damage band alone. `custom_value_eur_mid`
+also orders `priority.strategic_queue` after the tier. It reaches nothing else: `priority.ranked_sort_key`
+and `contact_priority.contact_sort_key` do not read it, and `scripts/validate.py` `check_valuation`
+measures that a huge confirmed valuation on every asset leaves the ranked contact order byte-identical.
+Nothing here is a market valuation or an insurer's figure; a figure is only as good as the reference the
+agent quoted and the analyst accepted.
+
+`validate_snapshot` checks, when the six keys are present (all six, or none): `custom_value_method` in the
+policy enum; a non-empty `custom_value_basis` whenever a method is set, and everything null when it is
+not; `not_valued` carrying no amounts and no components; otherwise a full band of nonnegative finite
+numbers with `custom_value_eur_low <= _mid <= _high`; and components that are `{"label", "amount_eur"}`
+objects with a non-empty label and a nonnegative finite amount. Whether the figure is *right* is the
+analyst's call, not a validation.
 
 ### 2.3 API
 
@@ -405,20 +470,28 @@ unassigned and blocked.
 
 ## 6. Agent — `fireline/agent.py`
 
-Four tools, each a plain function with a JSON schema in `TOOLS`:
+Six tools, each a plain function with a JSON schema in `TOOLS`:
 
 ```python
 get_asset(asset_id, workbench) -> dict            # scored asset record (trimmed, numbers rounded) + open tasks + overrides
 lookup_facility(query, municipality=None) -> list[dict]   # fixtures/evidence.json + fixtures/registers.json + data/registers/*.json
     # candidate: {evidence_id, name, municipality, register|url, capacity, snippet, observed_at, fetched_at, score, fields}
+lookup_notability(query, limit=3) -> list[dict]           # fixtures/notability.json; the criticality question only, never the network
+lookup_valuation_reference(asset_type=None, query="", limit=4) -> list[dict]   # fixtures/valuation_references.json; quotable cost lines
+    # reference: {reference_id, applies_to, title, statement, unit, amount_eur, basis, source, url, observed_at}
+    # basis "published" (cited external table) or "assumed" (project placeholder, marked [assumed] inside the statement)
 propose_update(asset_id, field, value, source, quoted_snippet, confidence, url=None, observed_at=None, workbench) -> proposal
-    # field in ("estimated_occupancy", "capacity", "asset_type"); NOT applied; status "pending"
+    # field in agent.PROPOSAL_FIELDS = ("estimated_occupancy", "capacity", "asset_type", "evacuation_min",
+    #                                   "criticality_tier", "custom_valuation"); NOT applied; status "pending"
+    # criticality_tier value: {"tier", "factors"}; custom_valuation value: {"method", "components",
+    #   "amount_eur_low/mid/high", "note"} — both validated by the same priority.* function an analyst confirmation uses
 escalate(asset_id, question, options, default, workbench) -> question record (status "open"); nothing applied
 ```
 
 `Workbench` (in agent.py): `assets: dict[asset_id -> scored asset]`, `tasks: TaskStore | None`,
 `proposals: list`, `questions: list`, `change_log: list[str]`. `agent.investigate(workbench, asset_id,
-llm=None, max_steps=6) -> record` with `tool_calls, final_text, proposals_added, questions_added,
+llm=None, max_steps=agent.DEFAULT_MAX_STEPS) -> record` (8, not 6: one asset can carry
+`occupancy_unknown`, `criticality_unassessed` and `valuation_unassessed` at once) with `tool_calls, final_text, proposals_added, questions_added,
 postcheck_ok, llm_mode: "live"|"fake"|"prerecorded"`. Number post-check kept. Confirmation is the
 analyst's: `tasks.TaskStore.confirm_override(..., proposal_id=)` then rescoring; `agent.confirm_proposal
 (workbench, proposal_id)` does that and marks the proposal `confirmed`; `reject_proposal` marks it

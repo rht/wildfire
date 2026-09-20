@@ -412,6 +412,44 @@ class FakeLLM:
             "quoted_snippet": snippet, "confidence": "medium",
             "url": rec.get("url"), "observed_at": rec.get("fetched_at")})
 
+    def _propose_valuation(self, aid: str, refs: list, atype: str) -> ToolUseBlock:
+        """A bespoke figure replayed from a committed worked example, or `not_valued`.
+
+        Deterministic and evidence-bound like `_propose_criticality`: it never composes a figure of its
+        own. A reference that carries `components` with a low/high band IS a worked example, and the
+        proposal restates exactly its numbers, quoting its statement verbatim, so both the number
+        post-check and the live `_supported` check pass. With no such reference the answer is
+        `not_valued`, which is the ordinary answer and records that the corpus was searched.
+        """
+        worked = next((r for r in refs if isinstance(r, dict) and r.get("components")
+                       and r.get("amount_eur_low") is not None and r.get("amount_eur_high") is not None), None)
+        if worked is None:
+            snippet = next((r.get("statement") for r in refs
+                            if isinstance(r, dict) and r.get("statement")), f"asset_type {atype}")
+            cut = snippet.find(". ")
+            return ToolUseBlock(self._next_id(), "propose_update", {
+                "asset_id": aid, "field": "custom_valuation",
+                "value": {"method": "not_valued", "components": [], "amount_eur_low": None,
+                          "amount_eur_mid": None, "amount_eur_high": None,
+                          "note": f"no worked cost reference for class {atype}"},
+                "source": f"valuation reference corpus; class {atype}",
+                "quoted_snippet": snippet[:cut + 1] if cut > 0 else snippet[:240],
+                "confidence": "medium", "url": None, "observed_at": None})
+        statement = worked.get("statement") or ""
+        cut = statement.find(". ")
+        return ToolUseBlock(self._next_id(), "propose_update", {
+            "asset_id": aid, "field": "custom_valuation",
+            "value": {"method": "component_replacement",
+                      "components": [dict(c) for c in worked["components"]],
+                      "amount_eur_low": worked["amount_eur_low"],
+                      "amount_eur_mid": worked["amount_eur"],
+                      "amount_eur_high": worked["amount_eur_high"],
+                      "note": f"replayed from reference {worked.get('reference_id')} "
+                              f"(basis {worked.get('basis')})"},
+            "source": f"{worked.get('title')} [{worked.get('reference_id')}]",
+            "quoted_snippet": statement[:cut + 1] if cut > 0 else statement[:240],
+            "confidence": "low", "url": worked.get("url"), "observed_at": worked.get("observed_at")})
+
     def _escalate(self, aid: str, question: str, options: list[str], default: str) -> ToolUseBlock:
         return ToolUseBlock(self._next_id(), "escalate", {
             "asset_id": aid, "question": question, "options": options, "default": default})
@@ -501,6 +539,15 @@ class FakeLLM:
             notes = _loads(next((d[2] for d in done if d[0] == "lookup_notability"), "null")) or []
             rec = notes[0] if isinstance(notes, list) and notes else None
             return [self._propose_criticality(aid, rec, atype)]
+
+        # Step 6b: valuation_unassessed -> search the cost corpus for this class, then restate the
+        # worked example it holds. No worked reference is the ordinary answer and means not_valued.
+        if "valuation_unassessed" in codes and "custom_valuation" not in proposed:
+            if "lookup_valuation_reference" not in done_names:
+                return [ToolUseBlock(self._next_id(), "lookup_valuation_reference",
+                                     {"asset_type": atype, "query": name})]
+            refs = _loads(next((d[2] for d in done if d[0] == "lookup_valuation_reference"), "null")) or []
+            return [self._propose_valuation(aid, refs if isinstance(refs, list) else [], atype)]
 
         # Step 6: exposure_unknown -> escalate (nothing the agent can supply).
         if "exposure_unknown" in codes and "location_unknown" not in codes and not asked_about("exposure"):
