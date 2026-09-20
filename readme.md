@@ -2575,7 +2575,12 @@ Verification: all 356 tests pass, including 47 readiness tests. Subclass and enu
 
 Formal registration is unavailable through the exposed Norma MCP: no finding-scoped defense/exception endpoint is listed, and repository lookup reports no linked matching repository. The available applied-actions endpoint records fixed, prevented or verified-compliant rules, so it is not used for this retained finding. The defense approved by @mirrdj is documented, not registered as an exception. The implementation and subtype-rejection regressions were already incorporated through PR #22; this integration preserves that newer code, road warnings and assistance evidence. The remaining branch documentation is merged under the separate 2026-09-20 authorization.
 
-## Norma feature-branch maintenance — 2026-09-19
+## Historical Norma feature-branch maintenance — 2026-09-19
+
+This section and its JSON ledgers preserve the exact 2026-09-19 audit state.
+Branch heads, test counts, open-PR status, deferred work and authorization statements
+below are historical. The later 2026-09-20 sequential integration supersedes that
+status; the original evidence is retained without claiming a new Norma scan.
 
 PR #3 was verified merged at `587f5bd53eb41bd04d693e49a60940b6a62530f1` before this phase began. This continuation rebases active, unmerged feature branches onto that main, checks only their added/modified supported files with MCP Livecheck, fixes applicable findings without suppressions, tests and pushes with explicit SHA-bound leases. Feature branches are not authorized for merge. Fully merged historical branches are excluded and `codex/qualityclouds-audit` remains frozen.
 
