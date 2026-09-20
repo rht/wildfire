@@ -338,7 +338,11 @@ class CoordinationStore:
                     assessment = replace(assessment, wants_human=True, confidence=None)
                 assessments.setdefault(req['asset_id'], []).append(assessment)
             summary = _call_summary(record, assessment)
-            summary['queue_state'] = queue_states.get(req['request_id'])
+            queue_state = queue_states.get(req['request_id'])
+            # Bound/imported and synthetic calls have already left queue admission.
+            if queue_state is not None and record['dispatch_state'] != 'not_started':
+                queue_state = 'started'
+            summary['queue_state'] = queue_state
             summaries.append(summary)
             records.append(record)
         return _merge_assessments(assessments), summaries, records, errors

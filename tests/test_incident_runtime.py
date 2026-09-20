@@ -40,6 +40,7 @@ def test_one_fire_discovers_assesses_queues_and_publishes_two_algorithms(tmp_pat
     state = runtime.simulate("A", "no_answer")
     a = next(c for c in state["calls"] if c["asset_id"] == "A")
     assert a["status"] == "no_answer" and a["can_self_evacuate"] is None
+    assert a["queue_state"] == "started"
     assert any(
         t["asset_id"] == "A" and t["kind"] == "human_callback" for t in state["tasks"]
     )

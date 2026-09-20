@@ -3110,7 +3110,7 @@ an unnamed SQLite timeout, unnecessary copies and nonessential exact-type checks
 were corrected. Dashboard login requires HTTPS and sets a Secure session cookie.
 The original `centre.remaining_places` plain-integer defense is unchanged.
 
-The **new selected defense is `workers=1`** in `incident_server.py`. This is a
+A further retained decision is **`workers=1`** in `incident_server.py`. This is a
 correctness constraint: `asyncio.Lock` and the lifespan's background task are local
 to one process. Starting additional Uvicorn workers would create independent
 coordinators and admission loops. Raising throughput requires a different worker
@@ -3118,6 +3118,7 @@ architecture; it is not a configuration knob in this implementation. The test
 `test_fire_requests_wait_for_running_tick_before_mutating_incident` verifies
 serialization, and the demo CLI test verifies the single-worker launch setting.
 
+The **new selected defense is the coordination CLI `print(encoded(state))`**.
 CLI `print` findings are retained because these commands intentionally return JSON
 on stdout; replacing their protocol response with a logger would break consumers.
 The coordination CLI regression parses stdout and verifies repeatable state. The
