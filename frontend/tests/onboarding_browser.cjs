@@ -102,6 +102,18 @@ const root = path.resolve(__dirname, "..");
     await next.click();
 
     await expect(stepCard).toHaveText("3. Call list");
+    // The call list starts empty and one number is required to leave the step.
+    await expect(
+      page
+        .getByText("Phone numbers, one per line", { exact: true })
+        .locator("..")
+        .locator("textarea"),
+    ).toHaveValue("");
+    await next.click();
+    await expect(stepCard).toHaveText("3. Call list");
+    await expect(page.getByRole("alert").first()).toContainText(
+      "Supply at least one phone number",
+    );
     await fill(
       "Phone numbers, one per line",
       ["+34600000001", "+34600000002", "+34600000003", "+34600000004"].join(
@@ -119,20 +131,32 @@ const root = path.resolve(__dirname, "..");
     await next.click();
 
     await expect(stepCard).toHaveText("4. Crews");
+    // No unit type is assumed: every count starts at zero and at least one is required.
+    for (const type of ["Ground crew", "Fire engine", "Helicopter"])
+      await expect(page.getByLabel(`${type} count`)).toHaveValue("0");
+    await next.click();
+    await expect(stepCard).toHaveText("4. Crews");
+    await expect(page.getByRole("alert").first()).toContainText(
+      "Set a crew count above zero",
+    );
     await page.getByLabel("Ground crew count").fill("3");
-    await page.getByLabel("Fire engine count").fill("0");
-    await page.getByLabel("Evacuation bus count").fill("0");
     await page.getByLabel("Helicopter count").fill("1");
     await page
       .getByLabel("Helicopter starting location")
       .selectOption("territory");
     await next.click();
 
-    await expect(stepCard).toHaveText("5. Review");
+    await expect(stepCard).toHaveText("5. Start demo");
     await expect(progress).toHaveAttribute("aria-valuenow", "100");
-    await expect(page.getByText("generated locations")).toBeVisible();
+    // The last step starts the demo; it does not preview the dashboard.
+    await expect(page.locator("main .incident-map")).toHaveCount(0);
+    await expect(
+      page.getByText("2 fires, 4 numbers to call and 4 crews", {
+        exact: false,
+      }),
+    ).toBeVisible();
 
-    await page.getByRole("button", { name: "Build dashboard" }).click();
+    await page.getByRole("button", { name: "Start demo", exact: true }).click();
     await page
       .getByRole("heading", { name: "Operations overview", exact: true })
       .waitFor();
@@ -167,10 +191,8 @@ const root = path.resolve(__dirname, "..");
     await expect(page.locator("main .MuiCard-root h2").first()).toHaveText(
       "1. Jurisdiction",
     );
-    await page.getByRole("button", { name: "Clear session data" }).click();
-    await expect(
-      page.getByRole("button", { name: "Clear session data" }),
-    ).toHaveCount(0);
+    await page.getByRole("button", { name: "End demo" }).click();
+    await expect(page.getByRole("button", { name: "End demo" })).toHaveCount(0);
     await page.getByRole("button", { name: "Back to dashboard" }).click();
     await expect(page.getByText("Session demo", { exact: true })).toHaveCount(
       0,

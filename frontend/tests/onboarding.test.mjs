@@ -21,9 +21,56 @@ import {
 } from "../src/state/model.mjs";
 
 const AT = "2026-09-20T10:30:00.000Z";
-const draft = (overrides) => ({ ...defaultDraft(), ...overrides });
+// A complete draft the tests own, so they do not depend on what the form pre-fills.
+const COMPLETE = {
+  department: "Bombers de la Bisbal",
+  fires: "41.9400, 3.0400\n41.8600, 2.9100",
+  station: "41.9600, 3.0380",
+  phones: "+34600111222\n+34600333444\n+34600555666\n+34600777888",
+  crews: {
+    ...defaultDraft().crews,
+    ground_crew: { count: 3, placement: "station" },
+    fire_engine: { count: 2, placement: "station" },
+    evacuation_bus: { count: 1, placement: "station" },
+  },
+};
+const draft = (overrides) => ({ ...COMPLETE, ...overrides });
 const config = (overrides) =>
   buildConfig(draft(overrides), { createdAt: AT }).config;
+
+test("the form starts with no call list and no crews, and says so", () => {
+  const { config: bare, problems } = buildConfig(defaultDraft(), {
+    createdAt: AT,
+  });
+  assert.equal(bare.phones.length, 0);
+  assert.equal(bare.crews.length, 0);
+  assert.deepEqual(problems, [
+    {
+      step: "calls",
+      message: "Supply at least one phone number for the voice agent to call.",
+    },
+    {
+      step: "crews",
+      message: "Set a crew count above zero for at least one type.",
+    },
+  ]);
+  assert.equal(isConfig(bare), false);
+  // One number is enough to satisfy the call list.
+  assert.deepEqual(
+    buildConfig(
+      {
+        ...defaultDraft(),
+        phones: "+34600111222",
+        crews: {
+          ...defaultDraft().crews,
+          ground_crew: { count: 1, placement: "station" },
+        },
+      },
+      { createdAt: AT },
+    ).problems,
+    [],
+  );
+});
 
 test("a GPS pair per line inside Catalonia is one fire", () => {
   const { points, problems } = parseCoordinates(
@@ -82,7 +129,7 @@ test("an incomplete configuration reports what is missing and is not storable", 
 
 test("station coordinates are required only when a crew type starts there", () => {
   const roaming = {
-    ...defaultDraft().crews,
+    ...COMPLETE.crews,
     ground_crew: { count: 2, placement: "territory" },
     fire_engine: { count: 0, placement: "territory" },
     evacuation_bus: { count: 0, placement: "station" },
@@ -198,7 +245,7 @@ test("the crew roster matches the requested counts per type", () => {
   const supplied = config({
     fires: "41.9400, 3.0400\n41.8600, 2.9100",
     crews: {
-      ...defaultDraft().crews,
+      ...COMPLETE.crews,
       ground_crew: { count: 3, placement: "station" },
       helicopter: { count: 2, placement: "territory" },
       fire_engine: { count: 0, placement: "station" },
@@ -224,7 +271,7 @@ test("crews start at the station or inside the jurisdiction envelope, as chosen"
   const supplied = config({
     station: "41.9600, 3.0380",
     crews: {
-      ...defaultDraft().crews,
+      ...COMPLETE.crews,
       ground_crew: { count: 4, placement: "station" },
       fire_engine: { count: 4, placement: "territory" },
       evacuation_bus: { count: 0, placement: "station" },
@@ -286,7 +333,7 @@ test("generated state drives the dashboard views it is built for", () => {
   for (const type of CREW_TYPES) {
     const single = config({
       crews: {
-        ...defaultDraft().crews,
+        ...COMPLETE.crews,
         ...Object.fromEntries(
           CREW_TYPES.map((entry) => [
             entry.id,

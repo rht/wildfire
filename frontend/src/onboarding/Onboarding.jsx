@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -14,8 +14,6 @@ import {
 } from "@mui/material";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import { MainCard, PageHeading } from "../components/Common";
-import IncidentMap from "../components/IncidentMap";
-import { count } from "../state/model.mjs";
 import {
   CATALONIA,
   CREW_TYPES,
@@ -27,7 +25,6 @@ import {
   problemsFor,
   summarise,
 } from "./config.mjs";
-import { onboardingIncidents } from "./generate.mjs";
 import "./onboarding.css";
 
 // A fixed instant keeps the preview stable while the form is edited; the saved
@@ -56,11 +53,13 @@ const STEPS = [
     blurb: "How many of each type, and where they start.",
   },
   {
-    id: "review",
-    title: "Review",
-    blurb: "What the dashboard will be built from.",
+    id: "start",
+    title: "Start demo",
+    blurb: "Run a simulated response on what you entered.",
   },
 ];
+
+const FINAL = STEPS.at(-1).id;
 
 function Problems({ title, problems }) {
   if (!problems.length) return null;
@@ -170,21 +169,22 @@ export default function Onboarding({ config, onSave, onClear }) {
   const current = STEPS[step];
   const blocking = problemsFor(built.problems, current.id);
   const states = Object.fromEntries(
-    STEPS.map((entry) => [
-      entry.id,
-      problemsFor(built.problems, entry.id).length
-        ? attempted.has(entry.id)
-          ? "invalid"
-          : "todo"
-        : "complete",
-    ]),
+    STEPS.map((entry) => {
+      // The final step cannot start the demo until every other step is satisfied.
+      const outstanding =
+        entry.id === FINAL
+          ? built.problems.length
+          : problemsFor(built.problems, entry.id).length;
+      return [
+        entry.id,
+        outstanding
+          ? attempted.has(entry.id)
+            ? "invalid"
+            : "todo"
+          : "complete",
+      ];
+    }),
   );
-  const preview = useMemo(
-    () => (ready ? onboardingIncidents(built.config) : []),
-    // The generated preview depends only on the canonical configuration.
-    [ready, JSON.stringify(built.config)],
-  );
-
   const advance = (next) => {
     if (next > step && blocking.length) {
       setAttempted((previous) => new Set(previous).add(current.id));
@@ -217,7 +217,7 @@ export default function Onboarding({ config, onSave, onClear }) {
     <div className="onboarding">
       <PageHeading
         title="Demo onboarding"
-        description="Describe a jurisdiction and this builds a dashboard from it. Nothing here is dispatched, called or saved to the backend."
+        description="Describe a jurisdiction, then run a simulated response on it. Nothing here is dispatched, called or saved to the backend."
       />
       <Progress step={step} states={states} onSelect={advance} />
 
@@ -402,45 +402,27 @@ export default function Onboarding({ config, onSave, onClear }) {
           </>
         )}
 
-        {current.id === "review" &&
+        {current.id === "start" &&
           (ready ? (
             <>
-              <div className="onboarding-summary">
-                <div>
-                  <strong>{count(totals.fires)}</strong>
-                  <span>{totals.fires === 1 ? "fire" : "fires"}</span>
-                </div>
-                <div>
-                  <strong>{count(totals.phones)}</strong>
-                  <span>numbers to call</span>
-                </div>
-                <div>
-                  <strong>{count(totals.crews)}</strong>
-                  <span>crews</span>
-                </div>
-                <div>
-                  <strong>
-                    {count(
-                      preview.reduce(
-                        (total, incident) => total + incident.assets.length,
-                        0,
-                      ),
-                    )}
-                  </strong>
-                  <span>generated locations</span>
-                </div>
-              </div>
-              <IncidentMap incidents={preview} interactive={false} />
+              <Typography>
+                {totals.fires} fire{totals.fires === 1 ? "" : "s"},{" "}
+                {totals.phones} number{totals.phones === 1 ? "" : "s"} to call
+                and {totals.crews} crew{totals.crews === 1 ? "" : "s"} for{" "}
+                {built.config.department}.
+              </Typography>
               <Alert severity="info" sx={{ mt: 2 }}>
-                Every generated location, occupancy figure, value, risk score,
-                call and crew plan is synthetic. The configuration is held for
-                this browser session only; clear it and the dashboard returns to
-                its configured data source.
+                Starting the demo opens the dashboard on this jurisdiction so
+                you can work it as if it were live. Every location, occupancy
+                figure, value, risk score, call and crew plan is simulated; no
+                call is placed and no crew is dispatched. It is held for this
+                browser session only — end it and the dashboard returns to its
+                configured data source.
               </Alert>
             </>
           ) : (
             <Alert severity="warning">
-              <strong>Finish these steps before building the dashboard</strong>
+              <strong>Finish these steps before starting the demo</strong>
               <ul>
                 {STEPS.filter(
                   (entry) => problemsFor(built.problems, entry.id).length,
@@ -478,11 +460,11 @@ export default function Onboarding({ config, onSave, onClear }) {
           </Button>
         ) : (
           <Button variant="contained" disabled={!ready} onClick={apply}>
-            {config ? "Rebuild dashboard" : "Build dashboard"}
+            {config ? "Restart demo" : "Start demo"}
           </Button>
         )}
         <span className="onboarding-actions-spacer" />
-        {config && <Button onClick={reset}>Clear session data</Button>}
+        {config && <Button onClick={reset}>End demo</Button>}
         <Button onClick={() => navigate("/overview")}>Back to dashboard</Button>
       </div>
     </div>

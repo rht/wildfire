@@ -3608,15 +3608,22 @@ while session data is in use. Everything it produces lives in `frontend/src/onbo
 (`config.mjs` parsing and validation, `generate.mjs` data generation, `session.js`
 session storage, `Onboarding.jsx` the form, `onboarding.css` its styles).
 
-The form is a five-step wizard — one section per step, Back and Next, and a single
-progress bar with the step list above it. Next validates the step it is on: if
-something is missing it names it in place and stays put rather than advancing, while
-parse problems (a pair outside Catalonia, an unreadable number) are always listed line
-by line with the offending text. Completed steps are marked, any step can be revisited
-from the progress list without losing what was entered, and the final Review step shows
-the counts and a map of what will be generated before anything is built. Validation that
-spans steps — station coordinates are required only when a crew type starts there — is
-reported on the step that can fix it.
+The form is a five-step wizard — Jurisdiction, Fires, Call list, Crews, Start demo —
+one section per step, Back and Next, and a single progress bar with the step list above
+it. Next validates the step it is on: if something is missing it names it in place and
+stays put rather than advancing, while parse problems (a pair outside Catalonia, an
+unreadable number) are always listed line by line with the offending text. Completed
+steps are marked, and any step can be revisited from the progress list without losing
+what was entered. Validation that spans steps — station coordinates are required only
+when a crew type starts there — is reported on the step that can fix it.
+
+The call list and the crew roster start empty: nothing is generated from numbers or unit
+types nobody entered, and neither step can be left until at least one number and at
+least one crew are supplied. The final step only starts the demo — one line confirming
+what will be simulated, and the button. It does not preview the dashboard; the point is
+to run the response, not to read a summary of it. Starting opens the dashboard on the
+described jurisdiction to be worked as if it were live; ending the demo returns it to
+its configured data source.
 
 The wizard collects five inputs:
 
@@ -3663,16 +3670,17 @@ the call queue, and the number on file to the call detail dialog, so the supplie
 list is visible where the agent would work it; both read "Not supplied" for backend data
 that carries no number.
 
-Verification: 80 Node tests passed (11 new onboarding tests covering coordinate and
+Verification: 81 Node tests passed (12 new onboarding tests covering coordinate and
 number parsing, required-input reporting, configuration round-trips, one incident per
 pair, determinism, number distribution, crew counts per type and placement inside the
 station radius or the envelope, and the generated state driving `callRows`, `metrics`,
 `evacuationTotals` and `responseTeams`). Lint, Prettier and the production build passed.
 Ten Chrome regression scripts passed, including a new `onboarding_browser.cjs` that
 checks the page is absent from the navigation, walks all five steps with the progress bar
-advancing, confirms an unsatisfiable step reports its error and refuses to advance, that
-Back and Next preserve entered values, builds the dashboard, verifies incident, crew and
-call-queue counts, and confirms the session survives a reload and that clearing it returns
-the dashboard to its configured source. Screenshots of the
+advancing, confirms an empty call list, an empty crew roster and a coordinate outside
+Catalonia each report their error and refuse to advance, that Back and Next preserve
+entered values, that the final step previews no dashboard, starts the demo, verifies
+incident, crew and call-queue counts, and confirms the session survives a reload and that
+ending the demo returns the dashboard to its configured source. Screenshots of the
 form, overview, resources and call queue were inspected. Backend source files are
 unchanged.

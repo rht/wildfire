@@ -192,21 +192,16 @@ export function parsePhones(text) {
   return { numbers, problems };
 }
 
+// The call list and the crew roster are the jurisdiction's own facts: they start
+// empty so nothing is generated from numbers or units nobody entered.
 export function defaultDraft() {
   return {
     department: "Bombers de la Bisbal",
     fires: "41.9400, 3.0400\n41.8600, 2.9100",
     station: "41.9600, 3.0380",
-    phones: "+34600111222\n+34600333444\n+34600555666\n+34600777888",
+    phones: "",
     crews: Object.fromEntries(
-      CREW_TYPES.map((type) => [
-        type.id,
-        {
-          count:
-            { ground_crew: 3, fire_engine: 2, evacuation_bus: 1 }[type.id] ?? 0,
-          placement: "station",
-        },
-      ]),
+      CREW_TYPES.map((type) => [type.id, { count: 0, placement: "station" }]),
     ),
   };
 }

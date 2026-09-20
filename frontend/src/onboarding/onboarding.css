@@ -57,28 +57,6 @@
   padding: 1px 4px;
   border-radius: 3px;
 }
-.onboarding-summary {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  margin-bottom: 20px;
-}
-.onboarding-summary > div {
-  padding: 14px 16px;
-  border: 1px solid #e6ebf1;
-  border-radius: 4px;
-  background: #fafafa;
-}
-.onboarding-summary strong {
-  display: block;
-  font-size: 22px;
-  line-height: 1.2;
-  font-variant-numeric: tabular-nums;
-}
-.onboarding-summary span {
-  color: #595959;
-  font-size: 12px;
-}
 .onboarding-actions {
   display: flex;
   flex-wrap: wrap;
