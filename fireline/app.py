@@ -24,9 +24,17 @@ GREY = [198, 192, 186, 225]
 RED, ORANGE, YELLOW = [232, 62, 46, 240], [240, 150, 40, 240], [236, 208, 60, 240]
 FIRE_FILL, FIRE_LINE = [198, 48, 38, 95], [255, 96, 74, 255]
 # Esri World Imagery: the satellite basemap of the mockup, public XYZ tiles with no API key.
+# It is the deck's MapLibre basemap style, not a deck TileLayer. deck.gl's TileLayer defaults
+# renderSubLayers to a GeoJsonLayer, and a raster basemap needs that prop replaced by a function
+# returning a BitmapLayer - which the deck.gl JSON dialect st.pydeck_chart speaks cannot carry, so a
+# TileLayer of image tiles silently draws nothing. SATELLITE_STYLE names the style document instead;
+# server.enableStaticServing (.streamlit/config.toml) publishes fireline/static/ at app/static/, and
+# the URL stays relative so it resolves against whatever base URL the app is served from.
+SATELLITE_STYLE = "app/static/esri-world-imagery-style.json"
 SATELLITE_URL = ("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/"
-                 "tile/{z}/{y}/{x}")
-SATELLITE_CREDIT = "Basemap Esri World Imagery (Esri, Maxar, Earthstar Geographics) - reference only."
+                 "tile/{z}/{y}/{x}")    # the tiles that style declares; tests keep the two in step
+SATELLITE_CREDIT = ("Basemap tiles Esri World Imagery - source: Esri, Maxar, Earthstar Geographics, "
+                    "and the GIS User Community - reference only.")
 TAGLINE = ("Which infrastructure, people and assets are in danger - and which hospital, which school, "
            "needs a call first.")
 SMALL_WINDOW_MIN = config.CONTACT_POLICY["attention_min"]   # "small window" threshold shared with task flagging
@@ -246,8 +254,8 @@ def polygon_rows(geometry: dict, geometry_kind: str | None = None) -> list[dict]
 
 def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
     snap, status = sess.snapshot, sess.status()
-    # Satellite basemap first so every other layer draws over it; no key, no style server.
-    layers = [pdk.Layer("TileLayer", data=SATELLITE_URL, min_zoom=0, max_zoom=19, tile_size=256)]
+    # The satellite imagery is the basemap (SATELLITE_STYLE, applied below), under every deck layer.
+    layers = []
     lons, lats = [], []
     geometry = snap.get("fire_geometry")
     if geometry and geometry.get("type") in ("Polygon", "MultiPolygon"):
@@ -290,7 +298,10 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
     clat = sum(lats) / len(lats) if lats else 41.9
     view = pdk.ViewState(longitude=clon, latitude=clat, zoom=10.5, pitch=0)
     tooltip = {"html": "<b>{title}</b><br/>{tip}", "style": {"whiteSpace": "pre-line"}}
-    deck = pdk.Deck(layers=layers, initial_view_state=view, tooltip=tooltip, map_style=None)
+    # map_provider="maplibre" keeps Streamlit from substituting its Carto basemap, which is what
+    # map_style=None used to get us: a grey street map with nothing satellite about it.
+    deck = pdk.Deck(layers=layers, initial_view_state=view, tooltip=tooltip,
+                    map_provider="maplibre", map_style=SATELLITE_STYLE)
     return deck, status["counts"]["unlocated"]
 
 
