@@ -156,7 +156,7 @@ const assert = require("node:assert/strict");
         .getByRole("dialog")
         .getByRole("button", { name: "Confirm crew plan", exact: true }),
     ).toBeDisabled();
-    await page.getByRole("dialog").getByRole("button", { name: "Close" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Close details" }).click();
     state.revision = 5;
     state.teams = [{ team_id: "crew-1", name: "Crew map test" }];
     state.assets = [
@@ -179,13 +179,13 @@ const assert = require("node:assert/strict");
     };
     stream.send(JSON.stringify(state));
     await page.getByRole("button", { name: "Review plan for Crew map test", exact: true }).click();
-    const map = page.getByLabel("Plan map for Crew map test", { exact: true });
+    const map = page.getByRole("dialog").getByLabel("Plan map for Crew map test", { exact: true });
     await expect(map).toBeVisible();
     await expect(map.locator(".crew-stop-pin")).toHaveText(["1", "2", "3"]);
     await expect(map.locator(".crew-position-pin")).toHaveCount(1);
     await expect(map.locator('path[stroke-dasharray="8 7"]')).toHaveCount(3);
-    await expect(page.getByRole("dialog")).toContainText("GPS: 41.00000, 2.00000");
-    await expect(page.getByRole("dialog")).toContainText("Observed: 2026-09-20 10:30:00 UTC");
+    await expect(page.getByRole("dialog")).toContainText("GPS: 41.00, 2.00");
+    await expect(page.getByRole("dialog")).toContainText("Observed: " + await page.evaluate(() => new Intl.DateTimeFormat(undefined, {year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",timeZoneName:"short"}).format(new Date("2026-09-20T10:30:00Z"))));
     await expect(page.getByRole("dialog")).toContainText("Source: Operations <img data-injected>");
     assert.equal(await page.locator("[data-injected]").count(), 0);
     await map.scrollIntoViewIfNeeded();
@@ -199,7 +199,7 @@ const assert = require("node:assert/strict");
     await expect(map.locator('path[stroke-dasharray="8 7"]')).toHaveCount(2);
     await expect(page.getByRole("dialog")).toContainText("Current crew location not supplied.");
     await expect(page.getByRole("dialog")).toContainText("Path not supplied for stops: 2.");
-    await page.getByRole("dialog").getByRole("button", { name: "Close" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Close details" }).click();
     await page.goto(base + "/#/incidents/test/evacuation");
     await expect(page.getByRole("heading", { name: "Identified groups", exact: true })).toBeVisible();
     assert.deepEqual(errors, []);

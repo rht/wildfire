@@ -146,6 +146,13 @@ def response_from_snapshot(snapshot, scenario, operations, voice, now, epoch):
     plan = plan_multi_response(data, graph=graph if not data['routes'] else None)
     for team in plan['teams']:
         team['current_location'] = positions.get(team['team_id'])
+        context = team.get('planning_context')
+        if bound and context:
+            start = context['start']
+            supplied = operations.get('road_nodes', {}).get(start['node_id'])
+            if supplied is not None:
+                lon, lat = _lonlat(supplied, 'supplied operational start node')
+                start.update(longitude=lon, latitude=lat, source='supplied operational start node')
     covered = {a['asset_id'] for a in actions}
     for aid in sorted(ids-covered):
         plan['review'].append({'asset_id': aid,'reason': 'operational_inputs_missing_or_stale'})

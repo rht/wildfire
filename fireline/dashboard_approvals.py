@@ -8,6 +8,8 @@ from pathlib import Path
 import sqlite3
 from uuid import uuid4
 
+from .dashboard_public import _CALL_FIELDS, _clean
+
 
 _TASK_FIELDS = (
     'action_id', 'task_id', 'asset_id', 'site_id', 'action', 'status',
@@ -17,13 +19,11 @@ _TASK_FIELDS = (
     'route_status', 'route_id', 'route_road_ids', 'from_node', 'to_node',
     'destination_id', 'path_lonlat', 'path_nodes', 'effects', 'readiness',
     'transport_people',
+    'readiness_required', 'ordering_evidence', 'ordering_reason', 'action_name',
+    'actual_finish_min', 'team_id', 'scenario_id', 'snapshot_id',
 )
-_TEAM_FIELDS = ('locked', 'remaining_transport_capacity')
-_ASSET_FIELDS = ('asset_id', 'name', 'latitude', 'longitude')
-_LOCATION_FIELDS = (
-    'asset_id', 'destination_id', 'destination_name', 'evacuation_status',
-    'assistance_review_required',
-)
+_TEAM_FIELDS = ('locked', 'remaining_transport_capacity', 'planning_context',
+                'starting_location', 'current_location', 'current_position', 'ordering_reason')
 
 
 class PlanChanged(ValueError):
@@ -85,11 +85,19 @@ def plans_for(state, *, source, incident_id, revision, snapshot_id):
             'epoch': state.get('epoch'),
             'input_mode': state.get('input_mode'),
             'team_id': team_id,
-            'team': _selected(team, _TEAM_FIELDS),
+            'team': _clean(_selected(team, _TEAM_FIELDS)),
+            'roster': _clean(next((row for row in roster if isinstance(row, Mapping)
+                                  and row.get('team_id') == team_id), {})),
+            'related_work': [_clean(_selected(task, _TASK_FIELDS))
+                             for other in response_teams if isinstance(other, Mapping)
+                             and other.get('team_id') != team_id
+                             for task in other.get('tasks', []) if isinstance(task, Mapping)],
             'tasks': public_tasks,
-            'assets': [_selected(assets[asset_id], _ASSET_FIELDS)
+            'calls': [_clean(_selected(call, _CALL_FIELDS)) for call in state.get('calls', [])
+                      if isinstance(call, Mapping) and call.get('asset_id') in asset_ids],
+            'assets': [_clean(assets[asset_id])
                        for asset_id in asset_ids if asset_id in assets],
-            'locations': [_selected(locations[asset_id], _LOCATION_FIELDS)
+            'locations': [_clean(locations[asset_id])
                           for asset_id in asset_ids if asset_id in locations],
         }
         encoded = json.dumps(reviewed, ensure_ascii=True, allow_nan=False,
@@ -123,6 +131,16 @@ class ApprovalStore:
                     UNIQUE(source, incident_id, team_id, plan_version)
                 )
             ''')
+            columns = {row[1] for row in database.execute(
+                'PRAGMA table_info(dashboard_crew_approvals)')}
+            migrations = {
+                'base_plan_version': 'ALTER TABLE dashboard_crew_approvals ADD COLUMN base_plan_version TEXT',
+                'review_version': 'ALTER TABLE dashboard_crew_approvals ADD COLUMN review_version TEXT',
+                'reviewed_plan': 'ALTER TABLE dashboard_crew_approvals ADD COLUMN reviewed_plan TEXT',
+            }
+            for column, statement in migrations.items():
+                if column not in columns:
+                    database.execute(statement)
 
     @contextmanager
     def _connect(self):
@@ -134,35 +152,43 @@ class ApprovalStore:
             database.close()
 
     def confirm(self, *, source, incident_id, snapshot_id, team_id,
-                plan_version, analyst):
+                plan_version, analyst, review_version=None, reviewed_plan=None):
         approval_id = str(uuid4())
         confirmed_at = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
         with self._connect() as database:
             database.execute('''
                 INSERT INTO dashboard_crew_approvals
                     (approval_id, source, incident_id, snapshot_id, team_id,
-                     plan_version, analyst, confirmed_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                     plan_version, analyst, confirmed_at, base_plan_version,
+                     review_version, reviewed_plan)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(source, incident_id, team_id, plan_version) DO NOTHING
             ''', (approval_id, source, incident_id, snapshot_id, team_id,
-                  plan_version, analyst, confirmed_at))
+                  review_version or plan_version, analyst, confirmed_at,
+                  plan_version if review_version else None, review_version,
+                  json.dumps(reviewed_plan, allow_nan=False) if review_version else None))
             row = database.execute('''
                 SELECT approval_id, analyst, confirmed_at, plan_version
                 FROM dashboard_crew_approvals
                 WHERE source=? AND incident_id=? AND team_id=? AND plan_version=?
-            ''', (source, incident_id, team_id, plan_version)).fetchone()
+            ''', (source, incident_id, team_id, review_version or plan_version)).fetchone()
         return dict(zip(('approval_id', 'analyst', 'confirmed_at', 'plan_version'), row))
 
     def approval(self, *, source, incident_id, team_id, plan_version):
         with self._connect() as database:
             row = database.execute('''
-                SELECT approval_id, analyst, confirmed_at, plan_version
+                SELECT approval_id, analyst, confirmed_at,
+                       COALESCE(base_plan_version, plan_version), review_version, reviewed_plan
                 FROM dashboard_crew_approvals
-                WHERE source=? AND incident_id=? AND team_id=? AND plan_version=?
-            ''', (source, incident_id, team_id, plan_version)).fetchone()
+                WHERE source=? AND incident_id=? AND team_id=?
+                  AND (plan_version=? OR base_plan_version=?) ORDER BY sequence DESC LIMIT 1
+            ''', (source, incident_id, team_id, plan_version, plan_version)).fetchone()
         if row is None:
             return None
-        return dict(zip(('approval_id', 'analyst', 'confirmed_at', 'plan_version'), row))
+        result = dict(zip(('approval_id', 'analyst', 'confirmed_at', 'plan_version'), row[:4]))
+        if row[4]:
+            result.update(review_version=row[4], reviewed_plan=json.loads(row[5]))
+        return result
 
     def events(self, *, source, incident_id):
         with self._connect() as database:
@@ -183,17 +209,20 @@ class ApprovalStore:
 
 
 def envelope(approvals, plans, *, source, incident_id, revision, snapshot_id, analyst):
+    reviewed_plans = []
+    for plan in plans:
+        approval = approvals.approval(source=source, incident_id=incident_id,
+                                      team_id=plan['team_id'], plan_version=plan['plan_version'])
+        row = dict(plan, approval=approval)
+        if approval and 'reviewed_plan' in approval:
+            row['reviewed_plan'] = approval.pop('reviewed_plan')
+        reviewed_plans.append(row)
     return {
         'source': source,
         'incident_id': incident_id,
         'revision': revision,
         'snapshot_id': snapshot_id,
         'analyst': analyst,
-        'plans': [{
-            **plan,
-            'approval': approvals.approval(
-                source=source, incident_id=incident_id, team_id=plan['team_id'],
-                plan_version=plan['plan_version']),
-        } for plan in plans],
+        'plans': reviewed_plans,
         'events': approvals.events(source=source, incident_id=incident_id),
     }

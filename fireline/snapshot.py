@@ -51,7 +51,9 @@ DATA_STATUSES = ("current", "stale", "unavailable")
 GEOMETRY_KINDS = ("perimeter", "hotspot_centre", "simulated")   # simulated: model burned area, not observed
 REVIEW_REASONS = ("location_unknown", "occupancy_unknown", "occupancy_seasonal", "class_ambiguous",
                   "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown",
-                  "criticality_unassessed", "valuation_unassessed")
+                  "criticality_unassessed", "valuation_unassessed", "llm_assessment_failed",
+                  "llm_assessment_unavailable", "llm_assessment_needs_review",
+                  "llm_evacuation_context_missing")
 EVACUATION_UNKNOWN = "evacuation_unknown"
 POINT_FALLBACK_NOTE = "point fallback: facility footprint missing"
 HOTSPOT_NOTE = "fire geometry is a hotspot centre, not a surveyed perimeter"

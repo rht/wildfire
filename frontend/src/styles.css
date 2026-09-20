@@ -2,8 +2,9 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  color: #262626;
+  color: #20262d;
   background: #ffffff;
+  color-scheme: light;
 }
 * {
   box-sizing: border-box;
@@ -12,7 +13,7 @@ body {
   margin: 0;
 }
 a {
-  color: #1677ff;
+  color: #a84609;
   text-decoration: none;
 }
 a:hover {
@@ -27,7 +28,7 @@ button:focus-visible,
 a:focus-visible,
 select:focus-visible,
 input:focus-visible {
-  outline: 3px solid #91caff;
+  outline: 3px solid #b34a08;
   outline-offset: 3px;
 }
 .app-shell {
@@ -37,8 +38,8 @@ input:focus-visible {
   position: fixed;
   inset: 0 auto 0 0;
   width: 248px;
-  border-right: 1px solid #e6ebf1;
-  background: #fff;
+  border-right: 1px solid #dce1e5;
+  background: #ffffff;
   z-index: 1200;
 }
 .sidebar-content {
@@ -52,7 +53,7 @@ input:focus-visible {
   gap: 10px;
   align-items: center;
   padding: 27px 14px 31px;
-  color: #262626;
+  color: #20262d;
   font-size: 23px;
   font-weight: 600;
   letter-spacing: -0.6px;
@@ -64,17 +65,17 @@ input:focus-visible {
   display: block;
   font-size: 11px;
   font-weight: 400;
-  color: #8c8c8c;
+  color: #606b75;
   letter-spacing: 0;
   margin-top: 2px;
 }
 .brand-symbol {
-  color: #1677ff;
+  color: #a84609;
   font-size: 29px;
 }
 .nav-label {
   font-size: 12px;
-  color: #8c8c8c;
+  color: #606b75;
   padding: 9px 16px 13px;
 }
 .nav-item {
@@ -83,7 +84,7 @@ input:focus-visible {
   gap: 13px;
   padding: 12px 16px;
   border-radius: 4px;
-  color: #595959;
+  color: #4f5b66;
   font-size: 14px;
   margin: 3px 0;
 }
@@ -92,12 +93,12 @@ input:focus-visible {
 }
 .nav-item:hover,
 .nav-incident:hover {
-  background: #fafafa;
+  background: #f5f7f8;
   text-decoration: none;
 }
 .nav-item.active {
-  background: #e6f4ff;
-  color: #1677ff;
+  background: #fff0e5;
+  color: #a84609;
 }
 .incident-label {
   margin-top: 25px;
@@ -105,8 +106,8 @@ input:focus-visible {
   justify-content: space-between;
 }
 .incident-label > span {
-  color: #595959;
-  background: #f5f5f5;
+  color: #4f5b66;
+  background: #edf0f2;
   border-radius: 3px;
   padding: 0 6px;
 }
@@ -115,28 +116,28 @@ input:focus-visible {
   gap: 11px;
   align-items: center;
   padding: 12px 16px;
-  color: #595959;
+  color: #4f5b66;
   font-size: 12px;
 }
 .nav-incident small {
   display: block;
   font-size: 10px;
-  color: #8c8c8c;
+  color: #606b75;
   margin-top: 4px;
 }
 .nav-incident.selected {
-  background: #f0f5ff;
+  background: #fff0e5;
   border-radius: 4px;
-  color: #1677ff;
+  color: #a84609;
 }
 .sidebar-footer {
   margin: auto 15px 22px;
   padding-top: 60px;
-  color: #595959;
+  color: #4f5b66;
   font-size: 12px;
 }
 .sidebar-footer p {
-  color: #8c8c8c;
+  color: #606b75;
   font-size: 11px;
   max-width: 180px;
   line-height: 1.6;
@@ -160,8 +161,8 @@ input:focus-visible {
 }
 .topbar {
   height: 76px;
-  background: white;
-  border-bottom: 1px solid #e6ebf1;
+  background: #ffffff;
+  border-bottom: 1px solid #dce1e5;
   padding: 0 30px;
   display: flex;
   align-items: center;
@@ -174,23 +175,23 @@ input:focus-visible {
   align-items: center;
   gap: 15px;
   font-size: 13px;
-  color: #595959;
+  color: #4f5b66;
 }
 .topbar-left .anticon {
   font-size: 18px;
-  color: #8c8c8c;
+  color: #606b75;
 }
 .topbar select {
-  border: 1px solid #d9d9d9;
+  border: 1px solid #a0aab3;
   border-radius: 4px;
-  background: #fff;
+  background: #ffffff;
   padding: 8px 10px;
-  color: #595959;
+  color: #4f5b66;
   font-size: 12px;
 }
 .avatar {
-  background: #e6f4ff;
-  color: #1677ff;
+  background: #fff0e5;
+  color: #a84609;
   border-radius: 4px;
   padding: 9px;
   font-weight: 600;
@@ -206,7 +207,7 @@ input:focus-visible {
 .connection i {
   width: 6px;
   height: 6px;
-  background: #d48806;
+  background: #855100;
   border-radius: 50%;
 }
 .connection.ok i {
@@ -256,7 +257,7 @@ main {
 }
 .metric > a:hover {
   text-decoration: none;
-  background: #fcfdff;
+  background: #f5f7f8;
 }
 .metric-top {
   display: flex;
@@ -264,30 +265,30 @@ main {
   justify-content: space-between;
   gap: 8px;
   font-size: 13px;
-  color: #595959;
+  color: #4f5b66;
 }
 .metric-icon {
   font-size: 19px;
   padding: 6px;
-  background: #e6f4ff;
+  background: #fff0e5;
   border-radius: 4px;
   box-sizing: content-box;
   flex-shrink: 0;
 }
 .metric-icon.red {
-  background: #fff1f0;
-  color: #cf1322;
+  background: #fff0ee;
+  color: #bb2926;
 }
 .metric-icon.orange {
-  background: #fff7e6;
-  color: #d48806;
+  background: #fff5dd;
+  color: #855100;
 }
 .metric-icon.blue {
-  color: #1677ff;
+  color: #a84609;
 }
 .metric-icon.green {
-  background: #f6ffed;
-  color: #389e0d;
+  background: #edf7ee;
+  color: #28733a;
 }
 .metric-value {
   font-size: 29px;
@@ -298,24 +299,25 @@ main {
 }
 .metric-note {
   font-size: 11px;
-  color: #8c8c8c;
+  color: #606b75;
   line-height: 1.6;
   max-width: 230px;
 }
 .metric-open {
   display: block;
   font-size: 11px;
-  color: #1677ff;
+  color: #a84609;
   margin-top: 9px;
 }
 .overview-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.85fr) minmax(290px, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
   gap: 24px;
 }
 .small-muted {
   font-size: 11px;
-  color: #8c8c8c;
+  color: #606b75;
   font-weight: 400;
   line-height: 1.5;
   margin-top: 3px;
@@ -324,15 +326,15 @@ main {
   position: relative;
 }
 .incident-map {
-  height: 435px;
-  background: #e6ebf1;
+  height: 310px;
+  background: #dce1e5;
 }
 .map-legend {
   display: flex;
   gap: 18px;
   padding: 14px 20px;
   font-size: 11px;
-  color: #595959;
+  color: #4f5b66;
   flex-wrap: wrap;
 }
 .map-legend span {
@@ -355,8 +357,8 @@ main {
 }
 .attention-count {
   font-size: 12px;
-  color: #d48806;
-  background: #fff7e6;
+  color: #855100;
+  background: #fff5dd;
   border-radius: 4px;
   padding: 3px 8px;
 }
@@ -364,28 +366,28 @@ main {
   display: flex;
   gap: 10px;
   padding: 15px 0;
-  border-bottom: 1px solid #f0f0f0;
-  color: #262626;
+  border-bottom: 1px solid #dce1e5;
+  color: #20262d;
   font-size: 12px;
 }
 .attention-item:hover {
   text-decoration: none;
-  color: #1677ff;
+  color: #a84609;
 }
 .attention-item p {
   font-size: 11px;
   line-height: 1.55;
-  color: #595959;
+  color: #4f5b66;
   margin: 5px 0;
 }
 .attention-item small {
   font-size: 10px;
-  color: #8c8c8c;
+  color: #606b75;
 }
 .attention-icon {
   border-radius: 50%;
-  background: #fff7e6;
-  color: #d48806;
+  background: #fff5dd;
+  color: #855100;
   width: 25px;
   height: 25px;
   flex-shrink: 0;
@@ -423,15 +425,15 @@ main {
 }
 .filter-field > span {
   font-size: 12px;
-  color: #595959;
+  color: #4f5b66;
 }
 .filter-field input,
 .filter-field select {
   height: 38px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #a0aab3;
   border-radius: 4px;
-  background: #fff;
-  color: #262626;
+  background: #ffffff;
+  color: #20262d;
   padding: 8px 10px;
   font-size: 12px;
   min-width: 0;
@@ -447,13 +449,13 @@ main {
   margin: 0;
 }
 .facts > div {
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #dce1e5;
   padding: 12px 0;
   min-width: 0;
 }
 .facts dt {
   font-size: 12px;
-  color: #8c8c8c;
+  color: #606b75;
   margin-bottom: 5px;
 }
 .facts dd {
@@ -462,8 +464,8 @@ main {
   overflow-wrap: anywhere;
 }
 .evidence {
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
+  background: #f5f7f8;
+  border: 1px solid #dce1e5;
   padding: 16px;
   border-radius: 4px;
   margin-top: 12px;
@@ -471,16 +473,16 @@ main {
 }
 .evidence p {
   margin: 7px 0;
-  color: #595959;
+  color: #4f5b66;
   overflow-wrap: anywhere;
 }
 .evidence small {
-  color: #8c8c8c;
+  color: #606b75;
 }
 .empty {
   text-align: center;
   padding: 40px 18px;
-  color: #595959;
+  color: #4f5b66;
 }
 .empty p {
   max-width: 600px;
@@ -492,7 +494,7 @@ main {
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: #8c8c8c;
+  color: #606b75;
   margin-top: 5px;
   gap: 12px;
 }
@@ -506,19 +508,19 @@ main {
   gap: 20px;
   margin: 25px 0;
   font-size: 11px;
-  color: #595959;
+  color: #4f5b66;
 }
 .incident-card-stats strong {
   display: block;
   font-size: 22px;
-  color: #262626;
+  color: #20262d;
   font-weight: 600;
   margin-bottom: 3px;
 }
 .breadcrumb {
   display: flex;
   gap: 10px;
-  color: #8c8c8c;
+  color: #606b75;
   font-size: 12px;
   margin-bottom: 10px;
 }
@@ -530,24 +532,24 @@ main {
 }
 .incident-tabs {
   display: flex;
-  border-bottom: 1px solid #e6ebf1;
+  border-bottom: 1px solid #dce1e5;
   gap: 20px;
   overflow-x: auto;
   white-space: nowrap;
 }
 .incident-tabs a {
   padding: 0 1px 15px;
-  color: #595959;
+  color: #4f5b66;
   font-size: 13px;
   border-bottom: 2px solid transparent;
 }
 .incident-tabs a.active {
-  border-bottom-color: #1677ff;
-  color: #1677ff;
+  border-bottom-color: #a84609;
+  color: #a84609;
 }
 .incident-tabs a:hover {
   text-decoration: none;
-  color: #1677ff;
+  color: #a84609;
 }
 .queue-filters {
   display: grid;
@@ -580,22 +582,22 @@ main {
   width: 27px;
   height: 27px;
   border-radius: 4px;
-  background: #f0f5ff;
-  color: #1677ff;
+  background: #fff0e5;
+  color: #a84609;
 }
 .reason {
   font-size: 12px;
-  color: #ad6800;
+  color: #855100;
   margin: 3px 0;
 }
 .call-record {
-  border-top: 1px solid #e6ebf1;
+  border-top: 1px solid #dce1e5;
   margin-top: 20px;
   padding-top: 8px;
 }
 .plan-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 24px;
   align-items: start;
 }
@@ -616,9 +618,9 @@ main {
 .step-number {
   width: 28px;
   height: 28px;
-  background: #e6f4ff;
-  border: 1px solid #bae0ff;
-  color: #1677ff;
+  background: #fff0e5;
+  border: 1px solid #80532d;
+  color: #a84609;
   border-radius: 50%;
   text-align: center;
   line-height: 26px;
@@ -642,25 +644,25 @@ main {
   gap: 17px;
   margin: 15px 0;
   flex-wrap: wrap;
-  color: #8c8c8c;
+  color: #606b75;
   font-size: 11px;
 }
 .timing-strip b {
   display: block;
-  color: #262626;
+  color: #20262d;
   margin-top: 4px;
   font-size: 12px;
   font-weight: 500;
 }
 .dependency {
-  background: #fffbe6;
-  border: 1px solid #ffe58f;
+  background: #fff8e8;
+  border: 1px solid #d0ad6e;
   border-radius: 4px;
   padding: 10px 12px;
   font-size: 11px;
   line-height: 1.7;
   margin-bottom: 13px;
-  color: #874d00;
+  color: #855100;
 }
 .dependency strong {
   display: block;
@@ -670,12 +672,12 @@ main {
   font-size: 13px;
 }
 .blocked-item p {
-  color: #595959;
+  color: #4f5b66;
   font-size: 12px;
 }
 .sequence {
   font-size: 12px;
-  color: #8c8c8c;
+  color: #606b75;
 }
 .leaflet-container {
   font-family: "Public Sans", sans-serif;
@@ -692,11 +694,12 @@ main {
 }
 @media (min-width: 1700px) {
   main {
+    width: 100%;
     max-width: 1800px;
     margin: auto;
   }
   .incident-map {
-    height: 490px;
+    height: 350px;
   }
 }
 @media (max-width: 1200px) {
@@ -717,7 +720,7 @@ main {
     padding: 18px;
   }
   .overview-grid {
-    grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
   .incident-cards {
     grid-template-columns: 1fr 1fr;
@@ -728,11 +731,8 @@ main {
   .queue-filters {
     gap: 12px;
   }
-  .plan-layout {
-    grid-template-columns: 1fr;
-  }
 }
-@media (max-width: 960px) {
+@media (max-width: 767px) {
   .desktop-sidebar {
     display: none;
   }
@@ -753,7 +753,7 @@ main {
     grid-template-columns: 1fr;
   }
   .incident-map {
-    height: 380px;
+    height: 300px;
   }
   .topbar-left > span:not(.anticon) {
     display: none;
@@ -820,7 +820,7 @@ main {
     display: none;
   }
   .incident-map {
-    height: 340px;
+    height: 280px;
   }
   .page-heading h1,
   .incident-heading h3 {
@@ -884,7 +884,7 @@ main {
   margin-bottom: 0;
 }
 .fire-map-pin {
-  background: white;
+  background: #ffffff;
   border: 1px solid #ff603e;
   border-radius: 6px;
   box-shadow: 0 2px 6px #0003;
@@ -901,7 +901,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: 500px;
+  max-height: none;
   overflow: auto;
 }
 .crew-plan-entry.MuiButton-root {
@@ -909,15 +909,15 @@ main {
   justify-content: space-between;
   gap: 12px;
   width: 100%;
-  padding: 14px 0;
+  padding: 20px 4px;
   border-radius: 0;
-  border-bottom: 1px solid #f0f0f0;
-  color: #262626;
+  border-bottom: 1px solid #dce1e5;
+  color: #20262d;
   text-align: left;
   font-size: 12px;
 }
 .crew-plan-entry span {
-  color: #595959;
+  color: #4f5b66;
   font-weight: 400;
 }
 .gps {
@@ -939,10 +939,10 @@ main {
   min-width: 0;
 }
 .crew-identity strong {
-  color: #262626;
+  color: #20262d;
 }
 .crew-identity small {
-  font-size: 10px;
+  font-size: 11px;
 }
 .crew-plan-entry .crew-urgency {
   flex-shrink: 0;
@@ -958,25 +958,26 @@ main {
 .crew-confirmation-intro {
   padding: 10px 12px;
   margin-bottom: 8px;
-  border-left: 3px solid #d48806;
-  background: #fffbe6;
-  color: #614700;
+  border-left: 3px solid #855100;
+  background: #fff8e8;
+  color: #855100;
   font-size: 12px;
 }
 .crew-identity .confirmation-pending {
-  color: #ad6800;
+  color: #855100;
   font-weight: 600;
 }
 .crew-plan-entry .crew-step-count {
-  color: #1677ff;
+  color: #a84609;
   font-weight: 600;
-  max-width: 78px;
+  max-width: 140px;
+  font-size: 12px;
 }
 .crew-confirmation-action {
   padding: 20px;
   margin-top: 20px;
-  border: 1px solid #ffe58f;
-  background: #fffbe6;
+  border: 1px solid #d0ad6e;
+  background: #fff8e8;
   border-radius: 4px;
 }
 
@@ -994,7 +995,7 @@ main {
 }
 
 .crew-identity .confirmation-saved {
-  color: #389e0d;
+  color: #28733a;
   font-weight: 600;
 }
 
@@ -1002,7 +1003,7 @@ main {
   margin-bottom: 24px;
 }
 .crew-route-map {
-  height: 340px;
+  height: 280px;
   width: 100%;
   border-radius: 6px;
 }
@@ -1011,7 +1012,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1677ff;
+  background: #a84609;
   color: #fff;
   border: 2px solid #fff;
   border-radius: 50%;
@@ -1021,4 +1022,1001 @@ main {
 .crew-position-pin {
   background: #237804;
   border-radius: 5px;
+}
+
+/* Response workspace: confirmation is the primary work area. */
+.brand {
+  padding: 25px 14px;
+}
+.brand-wordmark {
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  white-space: nowrap;
+}
+.brand-wordmark > span {
+  color: #a84609;
+  background: linear-gradient(110deg, #e75632, #ffb02e);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.mission-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border: 1px solid #913524;
+  background: #fff;
+  color: #20262d;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mission-badge svg {
+  width: 43px;
+  height: 22px;
+  fill: none;
+  stroke: #ed9b35;
+  stroke-width: 1.5;
+}
+.metric-value {
+  font-variant-numeric: tabular-nums;
+}
+.metric-icon {
+  background: transparent;
+}
+.crew-plan-entry .crew-identity strong {
+  font-size: 16px;
+}
+.crew-plan-entry .crew-identity small {
+  font-size: 12px;
+}
+.crew-confirmation-intro {
+  padding: 15px 16px;
+  font-size: 13px;
+}
+.crew-confirmation-action {
+  padding: 28px;
+  border-left: 4px solid #855100;
+}
+.crew-confirmation-action .MuiButton-contained {
+  min-height: 46px;
+  min-width: 200px;
+  font-weight: 600;
+}
+.map-frame {
+  position: relative;
+  background: #eef1f3;
+}
+.map-viewport {
+  overflow: hidden;
+  perspective: 1000px;
+}
+.map-camera {
+  transform-origin: 50% 65%;
+  transition: transform 250ms ease;
+}
+.map-camera.is-tilted {
+  transform: rotateX(38deg) scale(1.4);
+}
+.map-controls {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-top: 1px solid #dce1e5;
+  position: relative;
+  background: #ffffff;
+}
+.map-controls > div {
+  display: flex;
+  gap: 4px;
+}
+.map-controls .MuiButton-root {
+  min-width: 38px;
+  color: #35414b;
+}
+.map-controls .MuiButton-root[aria-pressed="true"] {
+  background: #ffeddd;
+  color: #a84609;
+}
+.map-credit {
+  padding: 0 14px 8px;
+  background: #ffffff;
+  color: #4f5b66;
+  font-size: 10px;
+}
+.leaflet-container {
+  background: #ffffff;
+}
+.leaflet-tooltip {
+  background: #ffffff;
+  color: #20262d;
+  border-color: #a0aab3;
+}
+.leaflet-tooltip-top:before {
+  border-top-color: #a0aab3;
+}
+.leaflet-tooltip-bottom:before {
+  border-bottom-color: #a0aab3;
+}
+.leaflet-tooltip-left:before {
+  border-left-color: #a0aab3;
+}
+.leaflet-tooltip-right:before {
+  border-right-color: #a0aab3;
+}
+.crew-stop-pin {
+  background: #216d97;
+}
+@media (max-width: 767px) {
+  .overview-grid {
+    display: flex;
+    flex-direction: column;
+  }
+  .overview-grid > * {
+    width: 100%;
+  }
+  .overview-grid > :last-child {
+    order: -1;
+  }
+  .mission-badge {
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+  .mission-badge svg {
+    width: 25px;
+  }
+}
+@media (max-width: 540px) {
+  .topbar {
+    height: auto;
+    min-height: 96px;
+    flex-wrap: wrap;
+    padding: 10px 14px;
+  }
+  .topbar-left {
+    flex: 1;
+  }
+  .topbar-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .crew-plan-entry.MuiButton-root {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .crew-plan-entry .crew-identity {
+    flex-basis: 50%;
+  }
+  .crew-plan-entry .crew-step-count {
+    margin-left: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-camera {
+    transition: none;
+  }
+}
+.timeline-controls {
+  padding: 14px 18px;
+  border: 1px solid #dce1e5;
+  border-radius: 5px;
+  background: #ffffff;
+}
+.timeline-heading {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 13px;
+}
+.timeline-heading > span {
+  color: #4f5b66;
+  font-size: 12px;
+}
+.timeline-track {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+.timeline-track input {
+  min-width: 30px;
+  flex: 1;
+  accent-color: #a84609;
+}
+.timeline-caption {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #4f5b66;
+}
+.timeline-notice {
+  color: #855100;
+  font-size: 12px;
+  margin-top: 10px;
+}
+.timeline-controls.reviewing {
+  border-color: #d0ad6e;
+}
+@media (max-width: 540px) {
+  .timeline-track {
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+  .timeline-caption {
+    flex-direction: column;
+    gap: 3px;
+  }
+}
+.crew-review-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.crew-review-steps {
+  min-width: 0;
+}
+.crew-review-steps .call-record:first-child {
+  margin-top: 0;
+}
+@media (max-width: 767px) {
+  .crew-review-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* iPad-first workspace: fixed frames, independent scrolling and touch controls. */
+.app-shell {
+  height: 100dvh;
+  overflow: hidden;
+}
+.workspace {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  flex-shrink: 0;
+  height: 60px;
+  padding: 0 16px;
+}
+main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px 16px;
+  gap: 10px;
+}
+.metric-grid,
+.overview-grid,
+.plan-layout,
+.crew-review-layout {
+  gap: 12px;
+}
+.metric > a,
+.metric-body,
+.metric.compact > a,
+.metric.compact .metric-body {
+  padding: 12px;
+  min-height: 94px;
+}
+.metric-value {
+  margin: 6px 0 0;
+  font-size: 26px;
+}
+.metric-top {
+  font-size: 12px;
+}
+.timeline-controls {
+  padding: 7px 12px;
+  flex-shrink: 0;
+}
+.timeline-track {
+  margin: 0;
+  gap: 6px;
+}
+.timeline-track input {
+  height: 44px;
+}
+.overview-grid {
+  flex: 1;
+  min-height: 330px;
+  align-items: stretch;
+}
+.overview-grid > .MuiCard-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.overview-grid > .MuiCard-root > .MuiCardHeader-root {
+  flex-shrink: 0;
+}
+.overview-grid .MuiCardContent-root {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.crew-plan-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.crew-plan-entry.MuiButton-root {
+  padding: 12px 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.crew-plan-entry .crew-identity {
+  flex-basis: 50%;
+}
+.crew-plan-entry .crew-step-count {
+  margin-left: auto;
+}
+.crew-confirmation-intro {
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+.overview-grid .map-wrap,
+.overview-grid .map-frame {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.overview-grid .map-viewport {
+  flex: 1;
+  min-height: 150px;
+}
+.overview-grid .map-camera,
+.overview-grid .incident-map {
+  height: 100%;
+}
+.map-controls {
+  flex-shrink: 0;
+  padding: 4px;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.map-controls .MuiButton-root {
+  min-width: 44px;
+  min-height: 44px;
+}
+.map-legend {
+  gap: 10px;
+  padding: 8px 12px;
+}
+.map-credit {
+  padding-bottom: 5px;
+}
+.mission-badge {
+  padding: 6px 10px;
+  gap: 8px;
+  font-size: 13px;
+  border-color: #d6aa92;
+}
+.mission-badge svg {
+  width: 30px;
+  stroke: #a84609;
+}
+.header-brand {
+  display: none;
+  color: #20262d;
+}
+.topbar-left,
+.topbar-right {
+  gap: 10px;
+}
+.topbar select,
+.filter-field input,
+.filter-field select {
+  min-height: 44px;
+}
+.nav-item,
+.incident-tabs a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.incident-tabs a {
+  padding: 8px 1px;
+}
+.filters {
+  gap: 10px;
+}
+.table-scroll {
+  max-height: 60dvh;
+  overscroll-behavior: contain;
+}
+.table-scroll thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.crew-review-steps {
+  max-height: 55dvh;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.crew-confirmation-action {
+  padding: 16px;
+  margin-top: 12px;
+}
+.crew-route-review {
+  margin-bottom: 0;
+}
+@media (max-width: 1366px) {
+  .desktop-sidebar {
+    display: none;
+  }
+  .workspace {
+    margin-left: 0;
+  }
+  .topbar .mobile-menu {
+    display: inline-flex;
+  }
+  .header-brand {
+    display: block;
+  }
+  .header-brand .brand-wordmark {
+    font-size: 22px;
+  }
+  .avatar {
+    display: none;
+  }
+}
+@media (min-width: 768px) {
+  .overview-grid {
+    height: 0;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .crew-review-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+@media (max-width: 900px) {
+  .topbar .connection {
+    display: none;
+  }
+  .mission-badge svg {
+    display: none;
+  }
+  .topbar select {
+    max-width: 160px;
+  }
+  .overview-grid .MuiCardHeader-root {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+@media (max-width: 767px) {
+  .overview-grid {
+    flex: none;
+    min-height: 0;
+  }
+  .overview-grid > .MuiCard-root {
+    height: 410px;
+  }
+  .overview-grid > :last-child {
+    order: 0;
+  }
+  .plan-layout {
+    grid-template-columns: 1fr;
+  }
+  .crew-review-steps {
+    max-height: none;
+    overflow: visible;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 540px) {
+  .topbar {
+    min-height: 102px;
+    padding: 6px 12px;
+  }
+  .topbar-left {
+    gap: 8px;
+  }
+  .mission-badge {
+    font-size: 11px;
+    padding: 6px;
+  }
+  .header-brand .brand-wordmark {
+    font-size: 20px;
+  }
+  .topbar-right {
+    justify-content: flex-end;
+  }
+  .topbar .connection {
+    display: flex;
+  }
+  main {
+    padding: 10px;
+  }
+}
+
+.map-viewport {
+  position: relative;
+}
+.risk-heat-canvas {
+  position: absolute;
+  pointer-events: none;
+  z-index: 450;
+}
+.heat-legend {
+  position: absolute;
+  z-index: 500;
+  left: 10px;
+  bottom: 10px;
+  width: 240px;
+  max-width: calc(100% - 20px);
+  padding: 8px 10px;
+  background: #ffffffed;
+  color: #20262d;
+  border: 1px solid #cad1d7;
+  border-radius: 4px;
+  pointer-events: none;
+  font-size: 11px;
+}
+.heat-scale {
+  height: 8px;
+  margin: 6px 0 3px;
+  background: linear-gradient(
+    90deg,
+    rgb(36, 109, 186),
+    rgb(249, 199, 79),
+    rgb(194, 34, 37)
+  );
+}
+.heat-scale-labels {
+  display: flex;
+  justify-content: space-between;
+}
+.heat-legend small {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+}
+
+.metric-grid {
+  width: min(100%, 940px);
+  flex-shrink: 0;
+}
+.incident-tabs ~ .metric-grid {
+  width: 100%;
+}
+.metric > a,
+.metric-body,
+.metric.compact > a,
+.metric.compact .metric-body {
+  min-height: 88px;
+  padding: 10px;
+}
+.metric-icon {
+  font-size: 16px;
+  padding: 2px;
+}
+.metric-detail {
+  margin-top: 4px;
+  font-size: 10px;
+  color: #4f5b66;
+}
+.assistance-breakdown {
+  display: flex;
+  gap: 3px 10px;
+  flex-wrap: wrap;
+}
+.priority-cell {
+  width: 110px;
+  min-width: 110px !important;
+}
+.priority-cell .small-muted {
+  min-width: 85px;
+}
+/* Keep page cards intact; overflow belongs to main and each table viewport. */
+main > * {
+  flex-shrink: 0;
+}
+
+/* Full-screen crew review: fixed actions above independently scrollable panels. */
+.crew-plan-review-dialog .MuiDialog-paper {
+  margin: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none !important;
+  max-height: none;
+  border-radius: 0;
+}
+.crew-plan-review-dialog .detail-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-height: 68px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #dce1e5;
+  background: white;
+  z-index: 3;
+}
+.crew-plan-review-dialog .detail-dialog-title {
+  flex: 1;
+  min-width: 0;
+}
+.crew-plan-review-dialog .detail-dialog-header-action {
+  flex-shrink: 0;
+}
+.crew-plan-review-dialog .MuiDialogContent-root {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  padding: 16px 20px;
+}
+.crew-review-summary {
+  flex-shrink: 0;
+  max-height: 28dvh;
+  overflow: auto;
+  margin-bottom: 12px;
+}
+.crew-plan-review-dialog .crew-review-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+}
+.crew-plan-review-dialog .crew-route-review,
+.crew-plan-review-dialog .crew-review-steps {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+  margin: 0;
+}
+.crew-plan-review-dialog .crew-route-review .map-frame {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 340px;
+}
+.crew-plan-review-dialog .crew-route-review .map-viewport {
+  flex: 1;
+  min-height: 240px;
+}
+.crew-plan-review-dialog .crew-route-review .map-camera,
+.crew-plan-review-dialog .crew-route-map {
+  height: 100%;
+}
+.crew-plan-review-dialog .crew-review-table-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.crew-plan-review-dialog .crew-stop-table-wrap {
+  max-height: none;
+  flex: 1;
+  min-height: 0;
+}
+.crew-plan-review-dialog .crew-stop-table {
+  min-width: 860px;
+  width: 100%;
+}
+.crew-plan-review-dialog .crew-stop-heading {
+  min-width: 145px;
+}
+.crew-plan-review-dialog .crew-stop-table td,
+.crew-plan-review-dialog .crew-stop-table th {
+  padding: 10px;
+}
+.crew-stop-table-wrap {
+  width: 100%;
+  max-height: 42dvh;
+  overflow: auto;
+  border: 1px solid #dce1e5;
+  border-radius: 5px;
+  overscroll-behavior: contain;
+}
+.crew-stop-table {
+  min-width: 1080px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.crew-stop-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f0f3f5;
+}
+.crew-stop-table td,
+.crew-stop-table th {
+  vertical-align: top;
+  padding: 10px 12px;
+}
+.crew-stop-row.is-active > td,
+.crew-stop-row:focus-within > td {
+  background: #fff2e7;
+  box-shadow:
+    inset 0 2px #b94b00,
+    inset 0 -2px #b94b00;
+}
+.crew-stop-heading {
+  min-width: 175px;
+  font-weight: 600;
+}
+.crew-stop-fact {
+  min-width: 120px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.crew-stop-order-controls,
+.crew-review-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.crew-stop-order-controls .MuiButton-root {
+  min-width: 44px;
+  min-height: 44px;
+}
+.crew-review-toolbar {
+  align-items: center;
+  margin-bottom: 12px;
+}
+.crew-review-state {
+  margin: 12px 0;
+}
+.crew-start-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: #163d59;
+  border: 2px solid white;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px #0005;
+  font-weight: 700;
+}
+.crew-stop-pin button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  min-width: 24px;
+}
+.crew-stop-pin.is-active,
+.crew-start-pin.is-active {
+  outline: 3px solid #b94b00;
+  outline-offset: 3px;
+}
+.crew-stop-pin button.is-active,
+.crew-stop-pin button:focus-visible {
+  background: #b94b00;
+  color: white;
+  outline: 2px solid white;
+}
+@media (max-width: 1023px) {
+  .crew-plan-review-dialog .MuiDialogContent-root {
+    overflow: auto;
+    padding: 12px;
+  }
+  .crew-plan-review-dialog .crew-review-layout {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    min-height: auto;
+  }
+  .crew-plan-review-dialog .crew-route-review,
+  .crew-plan-review-dialog .crew-review-steps {
+    overflow: visible;
+  }
+  .crew-plan-review-dialog .crew-route-review .map-frame {
+    flex: none;
+    min-height: 0;
+  }
+  .crew-plan-review-dialog .crew-route-map {
+    height: 260px;
+  }
+  .crew-plan-review-dialog .crew-stop-table-wrap {
+    max-height: 60dvh;
+  }
+  .crew-review-summary {
+    max-height: none;
+    overflow: visible;
+  }
+}
+@media (max-width: 540px) {
+  .crew-plan-review-dialog .detail-dialog-header {
+    gap: 6px;
+    padding: 8px;
+  }
+  .crew-plan-review-dialog .detail-dialog-title {
+    font-size: 14px;
+  }
+  .crew-plan-review-dialog .detail-dialog-header-action .MuiButton-root {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+
+.crew-stop-fact > span,
+.crew-stop-fact > strong {
+  display: block;
+}
+.crew-stop-fact > span {
+  color: #606b75;
+  font-size: 11px;
+}
+.crew-stop-fact > strong {
+  font-weight: 500;
+}
+.crew-stop-fact + .crew-stop-fact {
+  margin-top: 6px;
+}
+.crew-stop-row.is-active > th,
+.crew-stop-row:focus-within > th {
+  background: #fff2e7;
+  box-shadow:
+    inset 0 2px #b94b00,
+    inset 0 -2px #b94b00;
+}
+.crew-stop-table caption {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #606b75;
+}
+.crew-itinerary {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.crew-itinerary .crew-route-map {
+  height: 240px;
+}
+.crew-stop-pin button {
+  min-width: 28px;
+  min-height: 28px;
+}
+
+.crew-stop-table th {
+  text-align: left;
+}
+.crew-route-map .leaflet-tooltip {
+  width: max-content;
+  max-width: 280px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* The incident plan shares the full-screen review layout on tablets and desktop. */
+.incident-plan-dialog .MuiDialogContent-root {
+  overflow: hidden;
+  min-height: 0;
+}
+.incident-plan-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+}
+.incident-plan-actions > .MuiButton-root {
+  flex-shrink: 0;
+  min-height: 44px;
+}
+.incident-plan-summary {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+  font-size: 12px;
+  line-height: 18px;
+}
+.incident-plan-dialog .incident-crew-plan {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  align-items: stretch;
+}
+.incident-plan-dialog .incident-crew-plan > .crew-route-review {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+}
+.incident-plan-dialog .incident-crew-plan .map-frame {
+  flex: 1;
+  min-height: 0;
+}
+.incident-plan-dialog .incident-crew-plan .map-viewport {
+  min-height: 100px;
+}
+.incident-plan-dialog .incident-crew-plan .crew-route-map {
+  height: 100%;
+  min-height: 0;
+}
+.incident-plan-dialog .plan-teams {
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  height: 100%;
+  overflow: auto;
+  gap: 20px;
+  overscroll-behavior: contain;
+}
+.crew-table-section {
+  min-width: 860px;
+  flex-shrink: 0;
+  border-top: 5px solid;
+  border-radius: 5px;
+}
+.crew-table-section .MuiCard-root {
+  overflow: visible;
+}
+.crew-table-section .MuiCardHeader-root {
+  position: sticky;
+  top: 0;
+  height: 44px;
+  padding: 8px 12px;
+  background: white;
+  z-index: 4;
+}
+.incident-plan-dialog .crew-stop-table-wrap {
+  max-height: none;
+  overflow: visible;
+  border: 0;
+}
+.incident-plan-dialog .crew-stop-table {
+  width: 100%;
+  min-width: 860px;
+}
+.incident-plan-dialog .crew-stop-table thead th {
+  top: 45px;
+  z-index: 3;
+}
+.incident-plan-dialog .crew-stop-heading {
+  min-width: 145px;
+}
+.incident-plan-dialog .crew-stop-table td,
+.incident-plan-dialog .crew-stop-table th {
+  padding: 10px;
+}
+.crew-overview-approval {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #28733a;
+}
+@media (max-width: 1023px) {
+  .incident-plan-dialog .detail-dialog-header {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .incident-plan-dialog .detail-dialog-title {
+    font-size: 15px;
+  }
+  .incident-plan-dialog .detail-dialog-header-action {
+    max-width: 65%;
+  }
+  .incident-plan-dialog .MuiDialogContent-root {
+    padding: 12px;
+  }
+  .incident-plan-dialog .incident-crew-plan {
+    gap: 12px;
+  }
 }

@@ -51,6 +51,43 @@ def bind_call(r, vonage=False):
     return record["request"]
 
 
+def test_results_only_worker_publishes_completed_call_assistance_to_backend(tmp_path):
+    from pathlib import Path
+    from fireline.dashboard_public import public_state
+
+    r = runtime(tmp_path, call_mode='sync_only')
+    r.trigger(demo_trigger(NOW))
+    req = bind_call(r)
+    coordinator = r._coordinator(r._load())
+    coordinator.voice.record_lifecycle(event_id='carrier-completed',
+        request_id=req['request_id'], asset_id=req['asset_id'], snapshot_id=req['snapshot_id'],
+        provider_call_id=CALL, status='completed', observed_at=NOW.isoformat())
+    coordinator.close()
+    body = json.loads(Path('fixtures/voice/slng_completed.json').read_text(encoding='utf-8'))
+    body.update(id=CALL, agent_id=AGENT, updated_at=NOW.isoformat(), finalized_at=NOW.isoformat(),
+        arguments={k: req[k] for k in ('request_id', 'asset_id', 'snapshot_id')})
+    r.client = provider_client(Transport(body))
+    r.tick()
+    with TestClient(app(r)) as c:
+        response = c.get('/api/state')
+        assert response.status_code == 200
+        state = response.json()
+    call = next(x for x in state['calls'] if x['request_id'] == req['request_id'])
+    assert call['status'] == 'completed'
+    assert call['reported_needs_assistance'] is True
+    location = next(x for x in state['plan']['locations'] if x['asset_id'] == req['asset_id'])
+    assert location['reported_needs_assistance'] is True
+    assert location['evacuation_status'] == 'not_confirmed'
+    assert location['mode'] != 'self_evacuate'
+    assert any(t['asset_id'] == req['asset_id'] and t['kind'] == 'arrange_assistance'
+               and t['status'] != 'done' for t in state['tasks'])
+    assert next(g for g in state['peopleClusters'] if g['asset_id'] == req['asset_id'])['status'] == 'needs_assistance'
+    assert all(method == 'GET' for method, *_ in r.client.transport.calls)
+    assert public_state(r.tick()) == state
+    restarted = IncidentRuntime(tmp_path, settings() | {'call_mode': 'sync_only'})
+    assert public_state(restarted.state())['calls'] == state['calls']
+
+
 def test_fire_authentication_duplicate_trigger_and_dashboard_stream(tmp_path):
     r = runtime(tmp_path)
     with TestClient(app(r, poll_interval=0.01)) as c:
@@ -84,6 +121,18 @@ def test_fire_authentication_duplicate_trigger_and_dashboard_stream(tmp_path):
                 t["kind"] == "human_callback" and t["asset_id"] == "A"
                 for t in latest["tasks"]
             )
+
+
+def test_connected_incident_dashboard_has_separate_persistent_approval_store(tmp_path):
+    r = runtime(tmp_path)
+    with TestClient(app(r)) as client:
+        state = client.post('/api/fire', json=demo_trigger(NOW), headers=AUTH).json()
+        response = client.get('/api/crew-approvals', params={
+            'source': 'connected', 'incident_id': state.get('incident_id') or state['scenario_id'],
+            'snapshot_id': state['snapshot_id'], 'revision': str(state['revision'])})
+        assert response.status_code == 200
+        assert response.json()['events'] == []
+        assert (tmp_path / 'dashboard-approvals.sqlite3').is_file()
 
 
 def test_interview_receiver_authenticates_and_refreshes_public_state(tmp_path):
@@ -334,9 +383,9 @@ def test_fire_requests_wait_for_running_tick_before_mutating_incident(tmp_path):
             assert release_tick.wait(2)
             return super().tick()
 
-        def trigger(self, value):
+        def activate_trigger(self, value):
             trigger_entered.set()
-            return super().trigger(value)
+            return super().activate_trigger(value)
 
     r = ObservedRuntime(tmp_path, settings())
     server = importlib.import_module("fireline.incident_server").create_app(

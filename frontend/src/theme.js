@@ -2,32 +2,38 @@ import { createTheme } from "@mui/material/styles";
 import typography from "../vendor/mantis/typography";
 export const theme = createTheme({
   palette: {
-    primary: { main: "#1677ff" },
-    background: { default: "#ffffff", paper: "#fff" },
-    text: { primary: "#262626", secondary: "#595959" },
-    divider: "#f0f0f0",
-    error: { main: "#cf1322" },
-    warning: { main: "#d48806" },
-    success: { main: "#389e0d" },
+    mode: "light",
+    primary: { main: "#a84609", contrastText: "#ffffff" },
+    background: { default: "#ffffff", paper: "#ffffff" },
+    text: { primary: "#20262d", secondary: "#4f5b66" },
+    divider: "#dce1e5",
+    error: { main: "#bb2926" },
+    warning: { main: "#855100", contrastText: "#ffffff" },
+    success: { main: "#28733a" },
+    info: { main: "#176b89" },
   },
   typography: typography('"Public Sans", sans-serif'),
-  shape: { borderRadius: 4 },
+  shape: { borderRadius: 5 },
   components: {
+    MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
     MuiButton: {
       defaultProps: { disableElevation: true },
-      styleOverrides: { root: { textTransform: "none" } },
+      styleOverrides: { root: { textTransform: "none", minHeight: 44 } },
+    },
+    MuiIconButton: {
+      styleOverrides: { root: { minWidth: 44, minHeight: 44 } },
     },
     MuiCard: {
       styleOverrides: {
-        root: { boxShadow: "none", border: "1px solid #e6ebf1" },
+        root: { boxShadow: "none", border: "1px solid #dce1e5" },
       },
     },
     MuiTableCell: {
       styleOverrides: {
-        head: { background: "#fafafa", fontWeight: 600, color: "#595959" },
+        head: { background: "#f5f7f8", fontWeight: 600, color: "#35414b" },
         root: {
-          borderBottom: "1px solid #f0f0f0",
-          padding: "14px 16px",
+          borderBottom: "1px solid #dce1e5",
+          padding: "10px 12px",
           fontSize: 13,
         },
       },

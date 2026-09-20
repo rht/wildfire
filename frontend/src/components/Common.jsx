@@ -13,6 +13,7 @@ import {
   Button,
 } from "@mui/material";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
+import ArrowLeftOutlined from "@ant-design/icons/ArrowLeftOutlined";
 import { Link } from "react-router-dom";
 import { count, humanize, gps } from "../state/model.mjs";
 export function MainCard({
@@ -30,13 +31,13 @@ export function MainCard({
             title={title}
             action={action}
             slotProps={{ title: { variant: "subtitle1", component: "h2" } }}
-            sx={{ p: 2.5 }}
+            sx={{ p: 1.5 }}
           />
           <Divider />
         </>
       )}
       {content ? (
-        <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
+        <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
           {children}
         </CardContent>
       ) : (
@@ -49,6 +50,7 @@ export function Metric({
   label,
   value,
   valueText,
+  detail,
   note,
   to,
   icon: Icon,
@@ -63,6 +65,7 @@ export function Metric({
         {Icon && <Icon aria-hidden="true" className={`metric-icon ${tone}`} />}
       </div>
       <div className="metric-value">{valueText ?? count(value)}</div>
+      {detail && <div className="metric-detail">{detail}</div>}
       {!compact && note && <div className="metric-note">{note}</div>}
       {to && !compact && <span className="metric-open">View details</span>}
     </>
@@ -109,18 +112,55 @@ export function Empty({ title = "No records available", children }) {
     </div>
   );
 }
-export function DetailDialog({ title, open, onClose, children }) {
+export function DetailDialog({
+  title,
+  open,
+  onClose,
+  children,
+  maxWidth = "md",
+  className,
+  fullScreen = false,
+  headerAction,
+  backNavigation = false,
+}) {
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle sx={{ pr: 7 }}>
-        {title}
-        <IconButton
-          aria-label="Close details"
-          onClick={onClose}
-          sx={{ position: "absolute", right: 12, top: 12 }}
-        >
-          <CloseOutlined />
-        </IconButton>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      fullScreen={fullScreen}
+      maxWidth={maxWidth}
+      className={className}
+    >
+      <DialogTitle
+        className={fullScreen ? "detail-dialog-header" : undefined}
+        sx={backNavigation ? undefined : { pr: 7 }}
+      >
+        {backNavigation && (
+          <IconButton
+            className="detail-dialog-back"
+            aria-label="Close details"
+            title="Back to workspace"
+            onClick={onClose}
+          >
+            <ArrowLeftOutlined />
+          </IconButton>
+        )}
+        <span className={fullScreen ? "detail-dialog-title" : undefined}>
+          {title}
+        </span>
+        {headerAction && (
+          <div className="detail-dialog-header-action">{headerAction}</div>
+        )}
+        {!backNavigation && (
+          <IconButton
+            aria-label="Close details"
+            onClick={onClose}
+            sx={{ position: "absolute", right: 12, top: 12 }}
+          >
+            <CloseOutlined />
+          </IconButton>
+        )}
       </DialogTitle>
       <DialogContent dividers>{children}</DialogContent>
     </Dialog>

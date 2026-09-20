@@ -14,6 +14,7 @@ from starlette.routing import Route, WebSocketRoute
 from starlette.websockets import WebSocketDisconnect
 
 from .dashboard_approvals import ApprovalStore, PlanChanged, envelope, plans_for
+from .dashboard_plan_review import InvalidOrder, preview_order
 from .dashboard_public import public_state
 
 FRONTEND_DIST = Path(__file__).resolve().parents[1] / 'frontend' / 'dist'
@@ -75,10 +76,14 @@ def create_app(store, *, poll_interval=0.5, approvals=None, analyst='@mirrdj',
     def approval_error(code, status_code):
         return JSONResponse({'error': code}, status_code=status_code, headers=HEADERS)
 
-    def approval_identity(values, *, query=False):
+    def approval_identity(values, *, query=False, preview=False):
         required = {'source', 'incident_id', 'revision', 'snapshot_id'}
         if not query:
             required |= {'team_id', 'plan_version'}
+            if preview:
+                required.add('action_ids')
+            elif 'action_ids' in values or 'review_version' in values:
+                required |= {'action_ids', 'review_version'}
         if set(values) != required:
             raise ValueError('unexpected approval fields')
         source = values.get('source')
@@ -98,6 +103,9 @@ def create_app(store, *, poll_interval=0.5, approvals=None, analyst='@mirrdj',
                              or not values[field].strip()
                              for field in ('team_id', 'plan_version')):
             raise ValueError('invalid approval plan')
+        if 'review_version' in values and (not isinstance(values['review_version'], str)
+                                           or not values['review_version'].strip()):
+            raise ValueError('invalid review version')
         return source, incident_id, revision, snapshot_id
 
     def approval_state(source, incident_id):
@@ -159,22 +167,55 @@ def create_app(store, *, poll_interval=0.5, approvals=None, analyst='@mirrdj',
             values = await request.json()
             if not isinstance(values, dict):
                 raise ValueError('approval body must be an object')
-            source, incident_id, revision, snapshot_id = approval_identity(values)
-            plans = current_approval(source, incident_id, revision, snapshot_id)
+            is_preview = request.url.path == '/api/crew-plan-preview'
+            source, incident_id, revision, snapshot_id = approval_identity(values, preview=is_preview)
+            current = approval_state(source, incident_id)
+            plans = plans_for(current, source=source, incident_id=incident_id,
+                              revision=revision, snapshot_id=snapshot_id)
             plan = next((item for item in plans if item['team_id'] == values['team_id']), None)
             if plan is None or not plan['can_confirm']:
                 return approval_error('plan_not_confirmable', 422)
             if plan['plan_version'] != values['plan_version']:
                 return approval_error('plan_changed', 409)
+            preview = None
+            if is_preview or 'review_version' in values:
+                previous = approvals.approval(source=source, incident_id=incident_id,
+                                              team_id=plan['team_id'], plan_version=plan['plan_version'])
+                if (not is_preview and previous
+                        and previous.get('review_version') == values['review_version']
+                        and previous.get('reviewed_plan', {}).get('action_ids') == values['action_ids']
+                        and previous['reviewed_plan'].get('revision') == revision):
+                    return JSONResponse(envelope(approvals, plans, source=source,
+                        incident_id=incident_id, revision=revision, snapshot_id=snapshot_id,
+                        analyst=analyst), headers=HEADERS)
+                preview = preview_order(current, source=source, incident_id=incident_id,
+                                        revision=revision, snapshot_id=snapshot_id,
+                                        team_id=plan['team_id'], plan_version=plan['plan_version'],
+                                        action_ids=values['action_ids'],
+                                        prior_approval_id=previous['approval_id'] if previous else None)
+                if is_preview:
+                    return JSONResponse(preview, headers=HEADERS)
+                if preview['review_version'] != values['review_version']:
+                    return approval_error('plan_changed', 409)
+                if not preview['can_confirm']:
+                    return JSONResponse({'error': 'plan_not_confirmable',
+                                         'blockers': preview['blockers']},
+                                        status_code=422, headers=HEADERS)
             approvals.confirm(source=source, incident_id=incident_id,
                               snapshot_id=snapshot_id, team_id=plan['team_id'],
-                              plan_version=plan['plan_version'], analyst=analyst)
+                              plan_version=plan['plan_version'], analyst=analyst,
+                              review_version=preview['review_version'] if preview else None,
+                              reviewed_plan=preview['reviewed_plan'] if preview else None)
             result = envelope(approvals, plans, source=source, incident_id=incident_id,
                               revision=revision, snapshot_id=snapshot_id, analyst=analyst)
         except PermissionError:
             return approval_error('source_not_allowed', 403)
         except PlanChanged:
             return approval_error('plan_changed', 409)
+        except InvalidOrder as error:
+            return JSONResponse({'error': 'invalid_order',
+                                 'blockers': [{'code': 'invalid_order', 'reason': str(error)}]},
+                                status_code=422, headers=HEADERS)
         except (json.JSONDecodeError, UnicodeError, KeyError, TypeError, ValueError):
             return approval_error('invalid_request', 422)
         except (OSError, sqlite3.Error):
@@ -246,6 +287,7 @@ def create_app(store, *, poll_interval=0.5, approvals=None, analyst='@mirrdj',
     app = Starlette(routes=[Route('/', page), Route('/api/state', state),
                             Route('/api/crew-approvals', crew_approvals,
                                   methods=['GET', 'POST']),
+                            Route('/api/crew-plan-preview', crew_approvals, methods=['POST']),
                             WebSocketRoute('/api/updates', updates),
                             Route('/assets/{path:path}', asset)])
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1', 'localhost', '[::1]', 'testserver'])

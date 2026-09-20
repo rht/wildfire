@@ -68,6 +68,10 @@ def test_observed_crew_location_is_preserved_without_mutating_operations(voice):
 
 def test_start_node_coordinates_do_not_imply_crew_current_location(voice):
     result = plan(voice)
+    start = result['teams'][0].get('planning_context', {}).get('start', {})
+    assert start.get('latitude') == 42.01
+    assert start.get('longitude') == 3.01
+    assert start.get('source') == 'supplied operational start node'
     assert result["teams"][0]["current_location"] is None
     assert len(tasks(result)) == 1
 

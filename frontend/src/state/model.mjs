@@ -8,14 +8,26 @@ export const humanize = (value) =>
         .replace(/^./, (c) => c.toUpperCase())
     : "Not supplied";
 export const count = (value) =>
-  number(value) === null ? "—" : new Intl.NumberFormat("en-GB").format(value);
+  number(value) === null
+    ? "—"
+    : new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(
+        value,
+      );
 export const money = (value) =>
   number(value) === null
     ? "—"
     : new Intl.NumberFormat("en-GB", {
         style: "currency",
         currency: "EUR",
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }).format(value);
+export const percentage = (value) =>
+  number(value) === null
+    ? "—"
+    : new Intl.NumberFormat("en-GB", {
+        style: "percent",
+        maximumFractionDigits: 2,
       }).format(value);
 /**
  * A per-asset bespoke valuation (the six `custom_value_*` snapshot keys), or null when the asset
@@ -63,8 +75,22 @@ export function valuationFacts(asset) {
 }
 export const stamp = (value) =>
   value && Number.isFinite(Date.parse(value))
-    ? new Date(value).toISOString().replace("T", " ").replace(".000Z", " UTC")
+    ? new Intl.DateTimeFormat(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZoneName: "short",
+      }).format(new Date(value))
     : "Not supplied";
+export function distanceToFire(value) {
+  if (number(value) === null || value < 0) return "Not supplied";
+  return value < 1000
+    ? `${count(value)} m`
+    : `${new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(value / 1000)} km`;
+}
 export function toIncident(state) {
   return {
     ...state,
@@ -299,7 +325,11 @@ export function buildingRows(incidents) {
   );
 }
 export function withinDate(value, from, to) {
-  const date = value?.slice(0, 10);
+  const parsed = new Date(value);
+  const date =
+    value && Number.isFinite(parsed.getTime())
+      ? `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`
+      : null;
   return (!from || (date && date >= from)) && (!to || (date && date <= to));
 }
 export function filterBuildings(
@@ -404,7 +434,7 @@ export function gps(point) {
     lon !== null &&
     Math.abs(lat) <= 90 &&
     Math.abs(lon) <= 180
-    ? `${lat.toFixed(5)}, ${lon.toFixed(5)}`
+    ? `${lat.toFixed(2)}, ${lon.toFixed(2)}`
     : "Not supplied";
 }
 export function callActor(call) {

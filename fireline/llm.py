@@ -174,8 +174,9 @@ class NebiusLLM:
 
     def create(self, system: str, messages: list[dict], tools: list[dict]) -> FakeResponse:
         body = {"model": self.model, "messages": to_openai_messages(system, messages),
-                "tools": to_openai_tools(tools), "temperature": self.temperature,
-                "max_tokens": self.max_tokens}
+                "temperature": self.temperature, "max_tokens": self.max_tokens}
+        if tools:
+            body["tools"] = to_openai_tools(tools)
         response = self.session.post(f"{self.base_url}/chat/completions", json=body,
                                      headers={"Authorization": f"Bearer {self.api_key}"},
                                      timeout=TIMEOUT_S)

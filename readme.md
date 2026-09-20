@@ -2856,7 +2856,7 @@ a call, acknowledging instructions, or reserving reception capacity is not arriv
 
 For a configured incident, use `serve --settings PRIVATE_SETTINGS.json --data-dir DIR`.
 Settings contain `input_mode` (`live`, `recorded`, or `synthetic`), `call_mode`
-(`disabled` by default, `live`, or synthetic-only `simulate_no_answer`),
+(`disabled` by default, `live`, `sync_only`, or synthetic-only `simulate_no_answer`),
 `search_radius_m` (positive, at most 50,000), optional `catalog_file`,
 `operations`, private `contacts`, exact snapshot/asset/phone `approvals`, and
 `call_limits: {"max_concurrent_calls": 5, "max_call_starts_per_second": 1}`.
@@ -2864,6 +2864,60 @@ Catalog paths are relative to the settings file. Only `live` inputs can enable
 live dispatch. All workers for a provider account must share the existing queue
 budget; run this service with **one process**, persistent disk and one incident
 per directory. A two-second worker tick may further constrain call start rate.
+
+`sync_only` fetches results for already-bound calls and republishes coordination
+state, without starting calls. Both `live` and `sync_only` load the configured
+SLNG client. Completed calls remain eligible for result fetching until SLNG
+returns `finalized_at` and the corresponding result is persisted successfully.
+This matters when a carrier completion event arrives before answer extraction.
+Final extraction may enrich memory without advancing the provider's update
+timestamp. Such finalized answers replace the interim record while preserving
+earlier adverse reports. Older ignored responses cannot mark newer results final,
+including on duplicate delivery. Finalization survives restart; failed fetches
+remain retryable. Awaiting results
+does not consume a phone concurrency slot. A provider that never finalizes will
+remain eligible for fetching and human review.
+
+The worker stores answers and follow-up tasks in the incident directory's
+`coordination.sqlite`, then refreshes the same state served by `/api/state` and
+`/api/updates`. A completed call reporting inability to self-evacuate or lack of
+transport produces `reported_needs_assistance=true` and an open
+`arrange_assistance` task. Call completion does not confirm evacuation. Missing
+answers in a later call do not clear an earlier assistance request. Finalized
+but incomplete interviews remain review work rather than inferred yes/no answers.
+
+### Phone-result backend connection (2026-09-20)
+
+The two authorized fictional phone tests were imported into a **recorded Willow
+House drill**, keeping their provider call IDs and evidence provenance. This is
+a separate incident association; the original private call database is preserved.
+The drill has no real fire, no known occupancy, and illustrative coordinates.
+Its running backend at `http://127.0.0.1:18551` serves the normal dashboard and
+API from `data/willow-house-backend/coordination.sqlite` in the
+`slng-backend-results` worktree. It runs in `sync_only` mode. The ignored local
+launcher is `data/serve_phone_drill.py`; service tokens and call reports remain
+private and are not committed.
+
+Verified against the running API and the dashboard's actual state-model code:
+two completed calls, inability to self-evacuate, no transport, assistance required,
+and open assistance/human follow-up work. The second call has unknown answers;
+the earlier assistance need remains visible. Neither departure nor arrival is
+confirmed. The recorded drill has no configured crew dispatch.
+
+Implementation checklist:
+- [x] Reproduce the completed-before-answers polling gap.
+- [x] Persist successful provider finalization and retry late results across restart.
+- [x] Add results-only worker mode and verify the backend assistance/task projection.
+- [x] Import the existing tests with explicit drill associations and check the API.
+- [x] Run the full Python suite (**1,144 passed, 2 skipped**) and build the frontend.
+- [x] Complete independent review and fix the same-timestamp finalization edge case.
+
+Norma checked the four changed production files. The initial store, queue and runtime
+checks were clean. The service retained its three previously reviewed findings for CLI
+stdout and mandatory single-worker startup (see the existing audit defenses);
+no new finding was introduced in that pass. The store recheck after the independent
+review fix returned a service error; tests and independent re-review passed.
+Details and source hashes: `reports/norma-backend-results.json`.
 
 Omit `catalog_file` to query Gencat registered facilities around the fire geometry.
 This is not a complete private-house inventory. Unclassified facilities remain
@@ -2948,8 +3002,8 @@ connectivity check around a test coordinate, not an active-fire validation.
 ## React incident dashboard — codex/ui-session (2026-09-20)
 
 **Approved design:** @mirrdj requested replacing the plain HTML dashboard with
-Mantis's React/MUI design: light sidebar, Public Sans typography, compact white
-cards, blue navigation, a map replacing the large chart, and separate pages.
+Mantis's React/MUI foundations, now with a black emergency-response theme, Public Sans typography and compact
+cards, ember navigation accents, a map replacing the large chart, and separate pages.
 Streamlit remains a separate Python application. All web frontend code, vendor
 attribution, package/lock files, assets, build configuration and browser/Node tests
 live in `frontend/`. Python serves its production build; existing demo processes
@@ -3017,7 +3071,7 @@ and frontend-directory additions.
 
 ### Preview, usage and verification
 
-Latest UI refinements requested by @mirrdj: white page background; **Incidents**
+Earlier UI refinements requested by @mirrdj (the black theme below supersedes the white background): **Incidents**
 throughout navigation and labels, including smoke events; remove the overview
 subtitle and explanations under its four cards; move the incident table to
 **Incidents** (`#/incidents`). Each incident summary has four cards: GPS coordinates, deployed resources,
@@ -3030,7 +3084,7 @@ incident summaries scope that list. Entries open ordered steps, destinations, GP
 and prerequisites. Explicit confirmation records analyst approval of the current
 plan version in a separate SQLite database; opening a review never asserts approval
 or dispatch. Call history contains individual attempts with caller, outcome,
-UTC date and search filters. **Voice assistant to call** shows locations with no call
+Local-date and search filters. **Voice assistant to call** shows locations with no call
 records or a supplied unstarted queued request, in backend priority order. Terminal
 attempts do not imply a retry. Call caller identity is shown only when explicit;
 unknown identity stays unavailable. Demo records explicitly distinguish agent and
@@ -3087,7 +3141,7 @@ Current backend task records omit deadlines, so connected urgency remains unknow
 until that data is supplied. Only Design demo fixtures include illustrative deadlines.
 
 The brand subtitle is “Wildfire coordination” beneath ResponsAra. The duplicate
-topbar label and location icon are removed. The main background remains white.
+topbar label and location icon are removed. The subsequent emergency-response refresh uses a black background.
 
 Proposed crew plans now show **Awaiting confirmation**, an explicit
 **Review & confirm** action, and a count of plans needing confirmation. The overview
@@ -3285,3 +3339,277 @@ membership, and still exits on completion. Runtime publication remains owned by
 `codex/end-to-end`; frontend consumes the field directly from REST/WebSocket data.
 Cancellation update verification passed: 36 Node tests, lint, formatting, production
 build and all four Chrome regression scripts, including saved confirmations.
+
+### iPad-first response workspace
+
+@mirrdj's latest direction supersedes the earlier black theme: the application,
+widgets and dialogs use a white background with dark text, ember accents and
+legible warning/error colours. ResponsAra retains the reference wordmark and
+Nobody left behind badge. iPads use drawer navigation, compact KPI cards and
+44px minimum primary touch controls. Map and crew-plan frames remain **50/50**
+from 768px wide in portrait and landscape; phones stack them. The header stays
+in place, crew lists and tables scroll inside their frames, and review steps
+scroll alongside the crew map. Dates and date filters use the browser's local
+timezone; stored timestamps remain ISO instants. Building tables hide
+**Assessed at**, retain assessment filters/details and show **Distance to fire**
+from supplied `distance_to_fire_m`.
+
+The shared 2D/**3D tilt** control uses CSS perspective, matching the legacy map;
+it is not terrain elevation. Incident maps also offer a **Heat map** toggle with
+an in-map **Building risk · 0–100** scale. Colours use only supplied numeric
+`risk_score` values and valid location GPS. Unscored locations are omitted; an
+empty layer says why. The soft halos indicate assessed location risk, not measured
+fire temperature, interpolated fire intensity or a fire-spread prediction.
+
+The fourth overview KPI is **Assistance logs**: unique location records (stable `asset_id`, including across incidents)
+with a reported assistance need or an explicit assistance review. Confirmed need
+means `needsAssistance === true` without a conflicting assistance report/review;
+pending review means explicit `assistance_review_required` or conflicting
+assistance reports, including contradictory needs across incidents. These categories are disjoint and do not assert delivery,
+transport assignment or evacuation completion. The card opens the people/location
+page. Unassessed locations are not silently counted as assistance requests.
+
+Identified people/groups and locations have a numbered priority column sorted by
+supplied remaining evacuation window (`contacts.ranked[].slack_min`, shortest
+first). Resources have a numbered priority column sorted by the minimum known
+unfinished-task `deadline_min - finish_min` margin. Completed tasks are excluded;
+partial timing stays labeled. Missing timing stays visible and unranked. This is
+presentation ordering, not a replacement crew optimizer or a dispatch action.
+
+### Persisted time travel
+
+Run `npm --prefix frontend run generate:history` to generate the explicitly synthetic
+`frontend/fixtures/design-history.json`. It contains three earlier demo moments;
+the build appends the current demo as the fourth. Earlier perimeters expand at
+25%, 50% and 75% of the current polygon’s linear dimensions, followed by the
+unchanged current perimeter. The timeline labels each stage as illustrative
+simulated spread: it is not a predictive fire model or live observation, and
+building risk/distance values are not recomputed. Per-stage simulation provenance
+is persisted with the geometry. The generated earlier records
+have their own contemporaneous provenance and no invented historical call or dispatch
+records. Vite serves this history in development and emits it as a static JSON asset
+for the production dashboard. It is a saved drill fixture, not operational evidence.
+
+Connected public snapshots are archived in IndexedDB on the same browser/device,
+isolated by data source, incident, epoch and input mode. They survive reloads; they
+are not a shared server archive and do not recover earlier backend snapshots that
+this browser has never received. The generated design-demo history is available
+immediately without waiting for updates. Previous/Next and the time slider select
+saved full views, while incoming updates continue to be saved. Returning to current
+shows the latest received state. Historical views disable approval loads/saves and
+exclude current approval-event overlays; they never rewind the operational store.
+If browser storage is unavailable, the timeline explicitly reports that limitation.
+
+Verification of the current iPad-first workspace: 47 Node tests passed; lint,
+formatting and production build passed. Eight Chrome regression scripts passed,
+including touch viewports 768×1024, 1024×768, 820×1180 and 1366×1024, white
+surfaces, fixed equal panels, reachable final table rows, heat-scale rendering,
+3D tilt/zoom, priorities, assistance deduplication, visible simulated perimeter
+expansion, persisted-history reloads, historical confirmation guards, local dates,
+call-queue handling and saved approvals. Review findings about cross-incident
+assistance duplication and clipped table cards were fixed and regression-tested.
+Screenshots were inspected. Chrome emulation does not replace a physical iPad /
+Safari check. Backend source files and existing preview processes remain unchanged.
+
+The separate tmux session `wildfire-time-travel` implemented the saved simulation
+stages in this UI worktree and remains available (`tmux attach -t wildfire-time-travel`).
+
+
+### Crew-plan review table and validated stop order — approved implementation
+
+The analyst opens a full-screen review with a back arrow and a fixed confirmation
+button in the top bar. On wide screens the map is on the left and the table is on
+the right in independently scrollable panels; narrower screens stack the panels.
+The table's first row is the supplied crew starting point,
+followed by numbered destinations in visit order. Each destination shows the action,
+assistance and self-evacuation evidence, risk, valuation, expected people, travel,
+arrival/finish/deadline and the actual ordering rationale. Missing evidence remains
+unknown; assistance does not by itself establish immobility. The map and table
+highlight the same stop on hover/focus/tap and show its name. Planned starting
+points and reported current positions retain distinct source/time labels.
+
+Proposed destinations may move up/down. Started/committed tasks cannot move.
+A changed order is a draft until the server recomputes its supplied route legs,
+timing, prerequisites, capacity and deadlines. Missing routing/validation evidence
+blocks approval of that draft. Approval records the exact validated version and
+analyst; it does not dispatch crews or change movement/completion facts. Reloads
+and other tabs show the saved reviewed order. Source or planning-context changes
+invalidate stale previews and confirmations. Existing original-plan confirmations
+remain compatible. Public contact redaction and Norma evidence remain unchanged.
+
+Implementation sequence and verification:
+
+- [x] Backend: failing tests for legal/illegal order permutations, immutable work,
+  route/timing recalculation, missing evidence, version conflicts and persistence;
+  implement narrow preview/confirmation contracts and public planning evidence.
+  Run the focused dashboard/planner Python suites.
+- [x] Review UI: implement starting-point row, numbered stop table, sourced facts,
+  move controls, validation/error/stale states and explicit approval; verify
+  ordering, unknowns and draft-versus-confirmed state in browser regressions.
+- [x] Map: retain qualified supplied geometry, show start-to-stop legs and
+  direction, and synchronize hover/focus/tap with the corresponding table row.
+  Run crew-map unit tests and browser checks for matching names/highlights.
+- [x] Integration: verify synthetic demo and connected adapter behavior, restart
+  persistence, source isolation and no dispatch writes; run Node, Python, lint,
+  build and applicable browser suites, obtain independent code review, push a PR.
+
+Development base: origin/main b34cd92 on codex/ui-session. The user approved this
+design and explicitly required the starting point as the table's first entry.
+
+
+Crew-order API: `POST /api/crew-plan-preview` accepts exactly `source`,
+`incident_id`, `revision`, `snapshot_id`, `team_id`, the current base `plan_version`
+and all current `action_ids` in requested order. It returns those identifiers,
+`review_version`, `can_confirm`, public `blockers` and `reviewed_plan` with the
+recalculated tasks, planning context and remaining transport capacity. Preview
+creates no approval or operational event. Confirm using the existing
+`POST /api/crew-approvals` identity plus both `action_ids` and `review_version`;
+the server recomputes the preview before saving. Invalid permutations return
+422; stale evidence or another saved approval returns 409. Infeasible previews
+remain visible with `can_confirm: false`; they cannot be confirmed. GET approvals
+retains the base `plan_version` and adds a saved `reviewed_plan` and
+`approval.review_version` when an edited order has been approved. Legacy original
+order confirmations remain supported. Incident-server approvals use the separate
+`dashboard-approvals.sqlite3` in the incident directory.
+
+The optional response-team `planning_context` carries a supplied start node,
+coordinates/source when known, availability, capabilities, initial transport
+capacity, elapsed-time horizon/buffer, completed prerequisite evidence and directed
+qualified routes among assigned destinations. Tasks carry duration, effective
+deadline, capabilities, readiness requirements and the planner's actual
+`ordering_evidence`: downstream assisted/people/value benefit, feasible candidate
+count and stable tie-break. These heuristic values are not predicted rescue
+outcomes or replacement-cost estimates. Risk and valuation are displayed as
+separate facts, not invented explanations for the optimizer's order. UI numeric
+labels use at most two decimal places (GPS labels use two); source numbers,
+validation calculations and map coordinates retain full precision.
+
+Validation conservatively blocks an order with unfinished dependencies on another
+crew until coordinated replanning is supplied. Qualified graph paths are frozen at
+planning time with the earliest finite edge closure; validation does not search for
+another route and may reject an order that a later replan could support. Missing
+path geometry remains missing. Completed historical work retains its evidence and
+capacity/dependency effects without moving the crew away from its supplied current
+planning start. Synthetic demo routes and starts are explicitly labelled as
+illustrative and are not live operational data. Approval does not dispatch a team
+or establish that it has moved.
+
+### Per-location LLM assessment in the fire-trigger pipeline
+
+`IncidentRuntime` now assesses **every discovered location** with the LLM before
+activating its snapshot for contact ranking and crew planning. This is separate
+from the workbench investigator that creates pending analyst proposals. The new
+stage estimates operational importance, replacement value and conditional damage
+fractions, contextual vulnerability, possible mobility concerns and, where the
+required evidence exists, a missing evacuation duration.
+
+Configure the incident service settings:
+
+```json
+{
+  "llm_assessment": {
+    "mode": "live",
+    "concurrency": 2,
+    "min_confidence": 0.7
+  }
+}
+```
+
+Live incidents default to this configuration. Recorded and synthetic incidents
+retain `mode: "disabled"` unless explicitly configured. `mode: "fake"` is an
+explicit synthetic-only test option that produces unknown estimates for review.
+The existing environment loader selects Nebius (`NEBIUS_API_KEY`) first, otherwise
+Anthropic (`ANTHROPIC_API_KEY`), using `FIRELINE_MODEL` when set. Missing credentials
+never silently select a fake model. No phone numbers or private interview records
+are included in model inputs. The model assesses supplied evidence; it does not
+browse the web or retrieve additional facility records during this stage.
+
+Each asset gains an optional `llm_assessment` record: policy, model, mode,
+snapshot/asset identifiers, status and a structured assessment with confidence,
+reasoning, assumptions, evidence-field references, value score, replacement value,
+damage fractions, risk score, mobility concern and evacuation-duration estimate.
+Statuses are `assessed`, `needs_review`, `failed` or `unavailable`. The record and
+redacted explanation survive the public REST/WebSocket projection; fixed activity
+events report completion status per location. Raw provider errors are withheld.
+
+Accepted estimates above the configured confidence threshold populate the existing
+`value_score` and `replacement_value_eur` fields. Expected monetary loss is computed
+in code as supplied burn probability × model-estimated damage fraction × estimated
+replacement value. The crew planner consumes `value_score`; monetary loss remains
+a displayed estimate, not a new crew-ranking objective. `risk_score` is labelled
+**LLM vulnerability estimate**, not a calibrated fire probability. Fire arrival,
+burn probability, actual headcounts and confirmed assistance remain source-owned.
+A model mobility concern never establishes a confirmed assisted-person count.
+
+A missing evacuation duration may be estimated only with known occupancy and a
+snapshot-matched, confirmed timed evacuation route; it cannot be shorter than the
+longest supplied candidate route travel time. Existing operational durations are
+preserved, including totals supplied on confirmed routes (the conservative maximum
+when several candidate routes are supplied). The resulting duration enters the existing evacuation-window contact
+ranking, with the configured buffer unchanged. Unknown or low-confidence data
+remains reviewable; a self-reported model confidence is not a calibration guarantee.
+Failed/low-confidence assessments retain the original sourced/policy fields and
+carry an explicit review reason, so their fallback values are not labelled as
+successful LLM estimates.
+
+Model calls run with bounded concurrency (1–8), outside the incident mutation
+lock, so existing voice callbacks and ticks can continue. A separate fire lock
+serializes fire preparations; activation rejects a prepared snapshot if the active
+incident changed. The HTTP fire request waits for the batch; the CLI now accepts
+`--timeout SECONDS` (default 600). A client timeout does not prove the server stopped;
+retry the same trigger ID and identical payload. The old active snapshot remains
+visible until the new assessment is validated and activated. Results are cached
+locally in `llm_assessments.sqlite` by exact inputs, policy, configuration and model;
+failed results are not automatically retried in a loop. New inputs/model settings
+produce a new assessment key. No new dispatch authority or analyst approval action
+is introduced.
+
+Implementation sequence completed: strict assessor and replay tests; both-planner
+integration tests; callback-concurrency/stale-activation checks; Nebius plain-JSON
+request regression. Live testing used three public Gencat facilities near 42° N,
+3° E, without triggering calls. Nebius responded after its empty-tools request
+compatibility issue was fixed. Two responses validated but had low confidence
+(0.35 and 0.30); one response was rejected. A separate check of that location
+returned a valid response with confidence 0.35. These are evidence of provider
+connectivity and uncertainty handling, not validation of valuation accuracy.
+
+Crew-plan UI, manual reordering/approval and protection/assistance benefit changes
+remain owned by their separate session. This branch changes only their input data.
+
+Final verification for this integration: **1,152 Python tests passed, one skipped**,
+with the existing Starlette/AnyIO deprecation warning. New-module and runtime/server
+Ruff checks passed. Independent review found and verified fixes for preserving
+operational route evacuation totals and the established meaning of null forecast
+quantiles; the focused assessment suite has 14 passing tests. No real calls or
+crew dispatch were performed. The previously committed Norma report is unchanged
+and does not claim to scan this new branch.
+
+
+Crew-review integration verification after merging origin/main `242b52b`: **1,202
+Python tests passed, one skipped**, with the existing Starlette/AnyIO deprecation
+warning; **69 Node tests passed**. Lint, formatting and production build passed.
+All nine browser regression scripts passed, including full-screen fixed actions,
+map/table selection, valid and blocked permutations, real cross-tab invalidation,
+revalidation, saved order after restart/reload, historical read-only state and
+responsive containment. Desktop and tablet screenshots were inspected. Independent
+review verified fixes for completed-history departure position, exported deadline
+semantics, floating-point comparison tolerance and stale-preview recovery, and
+reviewed the latest-main conflict resolution. No dispatch was performed. Physical
+iPad/Safari testing remains outside the Chrome-emulation checks. PR: #32.
+
+
+The incident Firefighter plan opens full-screen with a fixed back/review header.
+One map on the left shows every crew's supplied route and starting point, with
+crew colours matched to clearly separated visit tables on the right. Each table
+starts with its crew's starting point and shows its saved approved visit order.
+Map selections reveal the matching crew row; co-located points remain individually
+selectable. Review buttons open each crew's existing reorder/confirmation view;
+closing it returns to the shared plan. Blockers remain incident-wide.
+
+The screen and map fit the viewport at desktop and tablet portrait/landscape sizes;
+only the table pane scrolls vertically or horizontally for its full evidence.
+Verified with 73 Node tests, lint/format/build, the crew-order browser regression,
+desktop/tablet screenshot inspection and independent code review. Browser coverage
+includes shared routes, crew-scoped selection, fixed headers, contained scrolling,
+nested review/back navigation, reordering and saved approval persistence. Physical
+iPad/Safari testing remains outside the Chrome-emulation checks.

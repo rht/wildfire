@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Button,
   Typography,
@@ -24,7 +24,7 @@ import {
   Metric,
 } from "../components/Common";
 import CrewPlans from "../components/CrewPlans";
-import IncidentMap from "../components/IncidentMap";
+import CrewItinerary from "../components/CrewItinerary";
 import {
   gps,
   callActor,
@@ -38,6 +38,19 @@ import {
   evacuationTotals,
   readinessFacts,
 } from "../state/model.mjs";
+import {
+  locationPriority,
+  resourcePriority,
+  priorityList,
+} from "../state/priority.mjs";
+function PriorityCell({ row }) {
+  return (
+    <TableCell className="priority-cell">
+      {row.priorityRank && <strong className="rank">{row.priorityRank}</strong>}
+      <div className="small-muted">{row.priority.label}</div>
+    </TableCell>
+  );
+}
 const callerLabel = (value) =>
   ({ agent: "Voice assistant", human: "Human", unknown: "Not supplied" })[
     value
@@ -360,100 +373,59 @@ export function Calls({ incident }) {
   );
 }
 export function ResponsePlan({ incident }) {
+  const navigate = useNavigate();
+  const [showBlockers, setShowBlockers] = useState(false);
   const teams = responseTeams(incident),
     response = incident.plan.response;
+  const crewName = (team) =>
+    incident.teams.find((item) => item.team_id === team.team_id)?.name ||
+    team.team_id;
   return (
     <>
-      <PageHeading
+      <DetailDialog
+        open
+        fullScreen
+        backNavigation
         title="Firefighter plan"
-        description="Team-by-team steps, destinations and dependencies, in the order supplied by coordination."
-      />
-      <Alert severity="warning">
-        <strong>Fire analyst confirmation required.</strong> Review and confirm
-        each proposed crew plan. Approval is separate from dispatch.
-      </Alert>
-      {!response ? (
-        <MainCard>
+        className="crew-plan-review-dialog incident-plan-dialog"
+        onClose={() => navigate(`/incidents/${incident.id}/summary`)}
+        headerAction={
+          <div className="incident-plan-actions">
+            {teams.map((team) => (
+              <CrewPlans
+                key={team.team_id}
+                incidents={[incident]}
+                teamId={team.team_id}
+                buttonLabel={`Review ${crewName(team)}`}
+              />
+            ))}
+            {response && (
+              <Button onClick={() => setShowBlockers(true)}>Blockers</Button>
+            )}
+          </div>
+        }
+      >
+        <div className="incident-plan-summary">
+          {incident.name} · Proposed routes and crew visit order. Approval is
+          separate from dispatch.
+        </div>
+        {!response ? (
           <Empty title="No response plan supplied">
             A plan will appear when coordination provides current crews, routes
             and feasible actions.
           </Empty>
-        </MainCard>
-      ) : (
-        <>
-          <div className="plan-layout">
-            <div className="plan-teams">
-              {teams.map((team) => (
-                <MainCard
-                  title={
-                    incident.teams.find((t) => t.team_id === team.team_id)
-                      ?.name || team.team_id
-                  }
-                  action={
-                    <CrewPlans incidents={[incident]} teamId={team.team_id} />
-                  }
-                  key={team.team_id}
-                >
-                  {(team.tasks || []).length ? (
-                    (team.tasks || []).map((step, index) => {
-                      const asset = incident.assets.find(
-                        (a) => a.asset_id === step.asset_id,
-                      );
-                      return (
-                        <div
-                          className="plan-step"
-                          key={step.action_id || index}
-                        >
-                          <div className="step-number">{index + 1}</div>
-                          <div className="step-body">
-                            <div className="step-title">
-                              <strong>
-                                {asset?.name ||
-                                  step.asset_id ||
-                                  "Destination not supplied"}
-                              </strong>
-                              <Status value={step.status || "proposed"} />
-                            </div>
-                            <Coordinates location={asset} />
-                            <Typography color="text.secondary">
-                              {humanize(step.action || step.action_id)}
-                            </Typography>
-                            <div className="timing-strip">
-                              <span>
-                                Depart <b>{count(step.depart_min)} min</b>
-                              </span>
-                              <span>
-                                Start <b>{count(step.start_min)} min</b>
-                              </span>
-                              <span>
-                                Finish <b>{count(step.finish_min)} min</b>
-                              </span>
-                            </div>
-                            {step.prerequisites?.length > 0 && (
-                              <div className="dependency">
-                                <strong>Prerequisites</strong>
-                                {step.prerequisites.map((p) => (
-                                  <div key={p}>{humanize(p)}</div>
-                                ))}
-                              </div>
-                            )}
-                            <div className="small-muted">
-                              Route: {step.route_source || "Not supplied"}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <Empty title="No steps assigned" />
-                  )}
-                </MainCard>
-              ))}
-            </div>
-            <MainCard title="Proposed routes" content={false}>
-              <IncidentMap incidents={[incident]} showRoutes />
-            </MainCard>
-          </div>
+        ) : teams.length ? (
+          <CrewItinerary key={incident.id} incident={incident} teams={teams} />
+        ) : (
+          <Empty title="No crew plans supplied" />
+        )}
+      </DetailDialog>
+      <DetailDialog
+        open={showBlockers && !!response}
+        onClose={() => setShowBlockers(false)}
+        title="Blockers & uncovered locations"
+      >
+        {response && (
           <MainCard title="Blockers & uncovered locations">
             {Object.entries(response.unserved || {}).map(([id, reason]) => (
               <div className="blocked-item" key={id}>
@@ -496,8 +468,8 @@ export function ResponsePlan({ incident }) {
               </Typography>
             ))}
           </MainCard>
-        </>
-      )}
+        )}
+      </DetailDialog>
     </>
   );
 }
@@ -507,15 +479,31 @@ export function Evacuation({ incident, incidents }) {
   const scope = (incident ? [incident] : incidents).filter(
       (i) => !incidentFilter || i.id === incidentFilter,
     ),
-    groups = scope.flatMap((i) =>
-      (i.peopleClusters || []).map((g) => ({
-        ...g,
-        location:
-          gps(g) !== "Not supplied"
-            ? g
-            : i.assets.find((a) => a.asset_id === g.asset_id),
-        incident_name: i.name,
-      })),
+    groups = priorityList(
+      scope.flatMap((i) =>
+        (i.peopleClusters || []).map((g) => ({
+          ...g,
+          priority:
+            g.status === "arrived"
+              ? { order: Infinity, label: "Arrival reported" }
+              : locationPriority(i, g.asset_id),
+          location:
+            gps(g) !== "Not supplied"
+              ? g
+              : i.assets.find((a) => a.asset_id === g.asset_id),
+          incident_name: i.name,
+          incident_id: i.id,
+        })),
+      ),
+    ),
+    locations = priorityList(
+      scope.flatMap((i) =>
+        callRows(i).map((row) => ({
+          ...row,
+          incident: i,
+          priority: locationPriority(i, row.asset_id),
+        })),
+      ),
     ),
     totals = incident
       ? evacuationTotals(incident)
@@ -540,7 +528,7 @@ export function Evacuation({ incident, incidents }) {
           note="Requires assisted evacuation"
         />
         <Metric
-          label="People awaiting assessment"
+          label="People awaiting call assessment"
           value={totals.unknown}
           note="Ability or progress not confirmed"
         />
@@ -586,6 +574,7 @@ export function Evacuation({ incident, incidents }) {
               <TableHead>
                 <TableRow>
                   {[
+                    "Priority",
                     "Person / group / location",
                     "Incident",
                     "People",
@@ -607,7 +596,8 @@ export function Evacuation({ incident, incidents }) {
                         .includes(search.toLowerCase()),
                   )
                   .map((g) => (
-                    <TableRow key={g.id}>
+                    <TableRow key={`${g.incident_id}:${g.id}`}>
+                      <PriorityCell row={g} />
                       <TableCell>
                         {g.name}
                         <Coordinates location={g.location} />
@@ -638,6 +628,7 @@ export function Evacuation({ incident, incidents }) {
             <TableHead>
               <TableRow>
                 {[
+                  "Priority",
                   "Location",
                   "Estimated occupancy",
                   "Reported ability",
@@ -653,75 +644,73 @@ export function Evacuation({ incident, incidents }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {scope.flatMap((i) =>
-                callRows(i)
-                  .filter(
-                    (r) =>
-                      !search ||
-                      `${r.name} ${r.asset_id}`
-                        .toLowerCase()
-                        .includes(search.toLowerCase()),
-                  )
-                  .map((r) => {
-                    const p = i.plan.locations?.find(
-                        (l) => l.asset_id === r.asset_id,
-                      ),
-                      readiness = readinessFacts(i, r);
-                    return (
-                      <TableRow key={`${i.id}:${r.asset_id}`}>
-                        <TableCell>
-                          {r.name}
-                          <Coordinates location={r} />
-                        </TableCell>
-                        <TableCell>{count(r.estimated_occupancy)}</TableCell>
-                        <TableCell>{fact(readiness.canSelfEvacuate)}</TableCell>
-                        <TableCell>{fact(readiness.needsAssistance)}</TableCell>
-                        <TableCell>
-                          {fact(readiness.transportAvailable)}
-                        </TableCell>
-                        <TableCell>
-                          {fact(readiness.departureConfirmed)}
-                        </TableCell>
-                        <TableCell>
-                          {fact(readiness.arrivalConfirmed)}
-                        </TableCell>
-                        <TableCell>
-                          {p?.destination_name || "Not supplied"}
-                          {p?.destination_name && (
-                            <Coordinates
-                              location={i.assets.find(
-                                (a) =>
-                                  a.asset_id === p.destination_id ||
-                                  a.asset_id === p.centre_id,
-                              )}
-                            />
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {readiness.assistanceReviewRequired && (
-                            <div className="reason">
-                              Assistance review pending
-                            </div>
-                          )}
-                          {readiness.conflicts.length > 0 && (
-                            <div className="reason">
-                              Conflicting reports:{" "}
-                              {readiness.conflicts.map(humanize).join(", ")}
-                            </div>
-                          )}
-                          <div className="small-muted">
-                            Evidence: {readiness.source || "Not supplied"}
+              {locations
+                .filter(
+                  (r) =>
+                    !search ||
+                    `${r.name} ${r.asset_id}`
+                      .toLowerCase()
+                      .includes(search.toLowerCase()),
+                )
+                .map((r) => {
+                  const i = r.incident;
+                  const p = i.plan.locations?.find(
+                      (l) => l.asset_id === r.asset_id,
+                    ),
+                    readiness = readinessFacts(i, r);
+                  return (
+                    <TableRow key={`${i.id}:${r.asset_id}`}>
+                      <PriorityCell row={r} />
+                      <TableCell>
+                        {r.name}
+                        <Coordinates location={r} />
+                      </TableCell>
+                      <TableCell>{count(r.estimated_occupancy)}</TableCell>
+                      <TableCell>{fact(readiness.canSelfEvacuate)}</TableCell>
+                      <TableCell>{fact(readiness.needsAssistance)}</TableCell>
+                      <TableCell>
+                        {fact(readiness.transportAvailable)}
+                      </TableCell>
+                      <TableCell>
+                        {fact(readiness.departureConfirmed)}
+                      </TableCell>
+                      <TableCell>{fact(readiness.arrivalConfirmed)}</TableCell>
+                      <TableCell>
+                        {p?.destination_name || "Not supplied"}
+                        {p?.destination_name && (
+                          <Coordinates
+                            location={i.assets.find(
+                              (a) =>
+                                a.asset_id === p.destination_id ||
+                                a.asset_id === p.centre_id,
+                            )}
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {readiness.assistanceReviewRequired && (
+                          <div className="reason">
+                            Assistance review pending
                           </div>
-                          {readiness.requestIds.length > 0 && (
-                            <div className="small-muted">
-                              Requests: {readiness.requestIds.join(", ")}
-                            </div>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  }),
-              )}
+                        )}
+                        {readiness.conflicts.length > 0 && (
+                          <div className="reason">
+                            Conflicting reports:{" "}
+                            {readiness.conflicts.map(humanize).join(", ")}
+                          </div>
+                        )}
+                        <div className="small-muted">
+                          Evidence: {readiness.source || "Not supplied"}
+                        </div>
+                        {readiness.requestIds.length > 0 && (
+                          <div className="small-muted">
+                            Requests: {readiness.requestIds.join(", ")}
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </div>
@@ -734,27 +723,32 @@ export function Resources({ incidents }) {
     [type, setType] = useState(""),
     [deployment, setDeployment] = useState(""),
     [incidentFilter, setIncidentFilter] = useState("");
-  const rows = incidents.flatMap((i) =>
-    (
-      i.resources ||
-      i.teams.map((t) => ({
-        ...t,
-        id: t.team_id,
-        name: t.name,
-        type: t.capabilities?.join(", "),
-        status: null,
-        available: t.available,
-        source: t.source,
-      }))
-    ).map((r) => ({
-      ...r,
-      incident: i,
-      incident_name: i.name,
-      incident_id: i.id,
-      plannedTeam: responseTeams(i).find(
-        (team) => team.team_id === (r.team_id || r.id),
-      ),
-    })),
+  const rows = priorityList(
+    incidents.flatMap((i) =>
+      (
+        i.resources ||
+        i.teams.map((t) => ({
+          ...t,
+          id: t.team_id,
+          name: t.name,
+          type: t.capabilities?.join(", "),
+          status: null,
+          available: t.available,
+          source: t.source,
+        }))
+      ).map((r) => ({
+        ...r,
+        incident: i,
+        incident_name: i.name,
+        incident_id: i.id,
+        priority: resourcePriority(
+          responseTeams(i).find((team) => team.team_id === (r.team_id || r.id)),
+        ),
+        plannedTeam: responseTeams(i).find(
+          (team) => team.team_id === (r.team_id || r.id),
+        ),
+      })),
+    ),
   );
   return (
     <>
@@ -818,6 +812,7 @@ export function Resources({ incidents }) {
             <TableHead>
               <TableRow>
                 {[
+                  "Priority",
                   "Resource",
                   "Type / capabilities",
                   "Incident",
@@ -844,6 +839,7 @@ export function Resources({ incidents }) {
                 )
                 .map((r) => (
                   <TableRow key={`${r.incident_id}:${r.id}`}>
+                    <PriorityCell row={r} />
                     <TableCell>
                       <strong>{r.name}</strong>
                       <Coordinates location={r} />

@@ -5,6 +5,7 @@ import { HashRouter } from "react-router-dom";
 import "@fontsource/public-sans/400.css";
 import "@fontsource/public-sans/500.css";
 import "@fontsource/public-sans/600.css";
+import "@fontsource/public-sans/800.css";
 import { theme } from "./theme";
 import App from "./App";
 import "./styles.css";

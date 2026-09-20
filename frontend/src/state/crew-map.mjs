@@ -7,9 +7,57 @@ const position = (point) =>
     ? [point.latitude, point.longitude]
     : null;
 
+export const crewStopId = (task, index) =>
+  task.action_id || `__stop__:${task.asset_id || "unknown"}:${index}`;
+
+// Arrow anchors lie on supplied segments; they never bridge missing route legs.
+export function crewRouteArrows(path) {
+  const arrows = [];
+  for (let index = 1; index < path.length; index += 1) {
+    const [lat1, lon1] = path[index - 1];
+    const [lat2, lon2] = path[index];
+    if (lat1 === lat2 && lon1 === lon2) continue;
+    const mercatorY = (lat) =>
+      Math.log(
+        Math.tan(
+          Math.PI / 4 + (Math.min(85, Math.max(-85, lat)) * Math.PI) / 360,
+        ),
+      );
+    const rotation =
+      (Math.atan2(
+        mercatorY(lat1) - mercatorY(lat2),
+        ((lon2 - lon1) * Math.PI) / 180,
+      ) *
+        180) /
+      Math.PI;
+    arrows.push({ position: [(lat1 + lat2) / 2, (lon1 + lon2) / 2], rotation });
+  }
+  // Keep long detailed road geometries legible at the crew overview scale.
+  return arrows.filter(
+    (_, index) => index % Math.max(1, Math.ceil(arrows.length / 12)) === 0,
+  );
+}
+
 export function crewMapData(team = {}, assets = []) {
   const currentPosition = position(team.current_location);
+  const plannedStart = team.starting_location ?? team.planning_context?.start;
+  const plannedPosition = position(plannedStart);
+  const startLocation = plannedPosition ? plannedStart : team.current_location;
+  const startPosition = plannedPosition || currentPosition;
   return {
+    start: startPosition
+      ? {
+          ...startLocation,
+          id: "__start__",
+          name:
+            startLocation.name ||
+            (plannedPosition
+              ? "Planned starting point"
+              : "Reported crew location"),
+          kind: plannedPosition ? "planned" : "reported",
+          position: startPosition,
+        }
+      : null,
     current: currentPosition
       ? { ...team.current_location, position: currentPosition }
       : null,
@@ -28,6 +76,7 @@ export function crewMapData(team = {}, assets = []) {
       const path = validPath ? supplied.map(([lon, lat]) => [lat, lon]) : [];
       const destination = position(asset);
       return {
+        id: crewStopId(task, index),
         number: index + 1,
         name: asset?.name || task.asset_id || "Destination not supplied",
         position: destination || path.at(-1) || null,
@@ -37,5 +86,67 @@ export function crewMapData(team = {}, assets = []) {
         path,
       };
     }),
+  };
+}
+
+// JSON tuples preserve identifier boundaries even when names contain separators.
+export const crewMapStopId = (teamId, stopId) =>
+  JSON.stringify([teamId, stopId]);
+
+export function crewMapsData(teams = [], assets = []) {
+  const palette = ["#4da3ff", "#ff944d", "#c497ff", "#4ed3b3", "#f0d35b"];
+  const crews = teams.map((team, index) => {
+    const data = crewMapData(team, assets);
+    const metadata = {
+      crewIndex: index,
+      crewId: team.team_id,
+      crewName: team.name || team.team_id || "Unspecified crew",
+      color: palette[index % palette.length],
+    };
+    const point = (item, pointKind) => ({
+      ...item,
+      ...metadata,
+      pointKind,
+      stopId: item.id,
+      id: crewMapStopId(team.team_id, item.id),
+    });
+    return {
+      ...metadata,
+      start: data.start ? point(data.start, "start") : null,
+      current: data.current
+        ? point(
+            {
+              ...data.current,
+              id: "__current__",
+              name: "Reported crew location",
+              kind: "reported",
+            },
+            "current",
+          )
+        : null,
+      stops: data.stops.map((stop) => point(stop, "stop")),
+    };
+  });
+  const starts = crews.flatMap((crew) => (crew.start ? [crew.start] : []));
+  const currentLocations = crews.flatMap((crew) =>
+    crew.current ? [crew.current] : [],
+  );
+  const stops = crews.flatMap((crew) => crew.stops);
+  const separateCurrent = crews.flatMap((crew) =>
+    crew.current && crew.start?.kind === "planned" ? [crew.current] : [],
+  );
+  const groups = new Map();
+  for (const point of [...starts, ...stops, ...separateCurrent]) {
+    if (!point.position) continue;
+    const key = point.position.join(",");
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(point);
+  }
+  return {
+    crews,
+    starts,
+    currentLocations,
+    stops,
+    pointGroups: [...groups.values()],
   };
 }

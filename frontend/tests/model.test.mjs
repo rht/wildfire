@@ -319,9 +319,9 @@ test("GPS preserves WGS84 order and rejects missing or invalid positions", async
   const { gps } = await import(path);
   assert.equal(
     gps({ latitude: 41.953, longitude: 3.022 }),
-    "41.95300, 3.02200",
+    "41.95, 3.02",
   );
-  assert.equal(gps({ latitude: 0, longitude: 0 }), "0.00000, 0.00000");
+  assert.equal(gps({ latitude: 0, longitude: 0 }), "0.00, 0.00");
   for (const point of [
     {},
     { latitude: null, longitude: 3 },
@@ -525,4 +525,50 @@ test('queue membership excludes cancelled, held and started requests despite que
     calls: [{asset_id: 'a', status: 'no_answer', dispatch_state: 'bound', queue_state: 'pending'}],
   }))[0];
   assert.equal(terminal.toCall, false, 'stale pending membership must not requeue a terminal attempt');
+});
+
+test('distance to fire formats supplied metres without inventing missing distances', async () => {
+  const { distanceToFire } = await import(path);
+  assert.equal(distanceToFire(0), '0 m');
+  assert.equal(distanceToFire(425), '425 m');
+  assert.equal(distanceToFire(1250), '1.25 km');
+  for (const value of [null, undefined, -1, NaN, '1250']) assert.equal(distanceToFire(value), 'Not supplied');
+});
+
+test('local date display and filters agree across the UTC day boundary', async () => {
+  const {stamp, withinDate} = await import(path);
+  const previous = process.env.TZ;
+  process.env.TZ = 'America/Los_Angeles';
+  try {
+    assert.equal(withinDate('2026-09-20T00:30:00Z', '2026-09-19', '2026-09-19'), true);
+    assert.equal(withinDate('2026-09-20T00:30:00Z', '2026-09-20', ''), false);
+    assert.equal(stamp('2026-09-20T00:30:00Z'), new Intl.DateTimeFormat(undefined, {year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'}).format(new Date('2026-09-20T00:30:00Z')));
+    assert.equal(stamp(null), 'Not supplied');
+  } finally { if(previous === undefined) delete process.env.TZ; else process.env.TZ=previous; }
+});
+
+test('generated historical fixtures do not expose future observations or final call-derived plans', () => {
+  const history = JSON.parse(fs.readFileSync(new URL('../fixtures/design-history.json', import.meta.url), 'utf8'));
+  assert.equal(history.generated, true);
+  assert.equal(history.entries.length, 3);
+  for(const entry of history.entries) for(const incident of entry.incidents) {
+    assert.equal(incident.calls.length, 0);
+    assert.equal(incident.plan.response, null);
+    for(const asset of incident.assets) for(const source of asset.sources || []) assert.ok(Date.parse(source.observed_at) <= Date.parse(entry.as_of));
+    for(const location of incident.plan.locations) {assert.deepEqual(location.reasons, []); assert.equal(location.destination_name, null);}
+  }
+});
+
+
+test("displayed decimals use at most two places without changing numeric evidence", async () => {
+  const { count, money, percentage, number, gps } = await import("../src/state/model.mjs");
+  const value = 1234.56789;
+  assert.equal(count(value), "1,234.57");
+  assert.equal(count(12), "12");
+  assert.equal(money(value), "€1,234.57");
+  assert.equal(percentage(0.123456), "12.35%");
+  assert.equal(gps({latitude: 41.953456, longitude: 3.022345}), "41.95, 3.02");
+  assert.equal(number(value), value);
+  assert.equal(count(null), "—");
+  assert.equal(percentage(null), "—");
 });
