@@ -1,0 +1,899 @@
+{
+  "schema_version": 1,
+  "phase": "feature-branch-file-livechecks",
+  "date": "2026-09-19",
+  "repository": "https://github.com/rht/wildfire",
+  "base_main": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+  "rate_limits": {
+    "per_minute_per_user": 30,
+    "per_day_per_org": 5000
+  },
+  "account_tier": null,
+  "remaining_quota": null,
+  "account_limitation": "No actual account tier or remaining-quota endpoint is exposed; shared organization usage is unknown.",
+  "call_start_times": [
+    "2026-09-19T18:32:35.891Z",
+    "2026-09-19T18:32:35.893Z",
+    "2026-09-19T18:32:35.896Z",
+    "2026-09-19T18:32:35.900Z",
+    "2026-09-19T18:33:24.426Z",
+    "2026-09-19T18:33:24.426Z",
+    "2026-09-19T18:33:24.429Z",
+    "2026-09-19T18:33:24.434Z",
+    "2026-09-19T18:33:24.440Z",
+    "2026-09-19T18:33:24.446Z",
+    "2026-09-19T18:34:21.742Z",
+    "2026-09-19T18:34:21.744Z",
+    "2026-09-19T18:34:21.748Z",
+    "2026-09-19T18:34:21.751Z",
+    "2026-09-19T18:35:42.602Z",
+    "2026-09-19T18:38:50.943Z",
+    "2026-09-19T18:38:50.944Z",
+    "2026-09-19T18:38:50.948Z",
+    "2026-09-19T18:44:19.515Z",
+    "2026-09-19T18:44:54.052Z",
+    "2026-09-19T18:44:54.057Z",
+    "2026-09-19T18:44:54.064Z",
+    "2026-09-19T18:44:54.068Z",
+    "2026-09-19T18:44:54.073Z",
+    "2026-09-19T18:46:13.279Z",
+    "2026-09-19T18:46:13.280Z",
+    "2026-09-19T18:46:13.280Z",
+    "2026-09-19T18:48:31.969Z",
+    "2026-09-19T18:48:31.969Z",
+    "2026-09-19T18:48:31.969Z"
+  ],
+  "attempts": [
+    {
+      "branch": "codex/calling-research",
+      "worktree": "calling-research",
+      "file": "scripts/check_calling_host.py",
+      "sha256": "21012d70268f267171674606ab4a04754e2e77e8d0741966404ad66a9f6ff638",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/workflow-setup",
+      "worktree": "norma-workflow-setup",
+      "file": "design/ui-mockup.html",
+      "sha256": "7ac8de22fba4725a304957e287f05ff0d731393a06aa30a014c11c22dec3cfb9",
+      "method": "live_check",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "vite-missing-sri": {
+            "rule_name": "CDN Script Tag Without Subresource Integrity",
+            "severity": "MEDIUM",
+            "impact_area": "security",
+            "description": "Detects <script src=\"...\"> tags pointing to CDN URLs that do not include an integrity attribute. Without SRI, a compromised CDN can serve malicious JavaScript to all users without detection.",
+            "remediation_action": "Generate SRI hashes using srihash.org or the openssl command. Add integrity=\"sha384-<hash>\" and crossorigin=\"anonymous\" to all CDN script and link tags.",
+            "good_code": "<!-- index.html — with Subresource Integrity -->\n<script\n  src=\"https://cdn.jsdelivr.net/npm/some-lib@1.0.0/dist/lib.min.js\"\n  integrity=\"sha384-abc123...\"\n  crossorigin=\"anonymous\">\n</script>",
+            "bad_code": "<!-- index.html — CDN script without integrity check -->\n<script src=\"https://cdn.jsdelivr.net/npm/some-lib@1.0.0/dist/lib.min.js\"></script>\n<!-- If jsdelivr is compromised, attacker code runs in all user sessions -->",
+            "estimated_time_to_fix": 20
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "vite-missing-sri",
+            "file": "design/ui-mockup.html",
+            "line": 8,
+            "column": 1,
+            "snippet": "<script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script>"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "codex/calling-research",
+      "worktree": "calling-research",
+      "file": "tests/test_calling_host.py",
+      "sha256": "210dd2a7c2165919c1d1d61ffa80518a6ec846da168d1a500adb648e647f41ec",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/fix-map-tooltip-html",
+      "worktree": "norma-map-tooltip",
+      "file": "fireline/app.py",
+      "sha256": "7689a439bdb3cff7855303c344412cf18eb4dce992c7fe16363d69058071a2a3",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "worktree": "norma-ca-calibration",
+      "file": "reports/ca-calibration.json",
+      "sha256": "d1fb1cac40ba9eb4c5fb1366ab82ffb1a1fbd6ced1be3a54edf1e915e4405fc3",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "nodejs-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "worktree": "norma-ca-calibration",
+      "file": "tests/test_calibrate.py",
+      "sha256": "f781b951993bbe8d540693e3f5fd9c15c0783f431c369072d367ae0f7b62b9da",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "worktree": "norma-ca-calibration",
+      "file": "fireline/calibrate.py",
+      "sha256": "370bfc82bc1cdfa49f2e4eff41e9571ae12151305a91e9a58a1abb6008168c8b",
+      "method": "live_check",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "fa-sec-path-traversal": {
+            "rule_name": "Path traversal via user input",
+            "severity": "HIGH",
+            "impact_area": "security",
+            "description": "User-provided filename passed directly into open()/Path() — attacker can read arbitrary files.",
+            "remediation_action": "Use Path().resolve() and check parent.",
+            "good_code": "@app.get(\"/file\")\nasync def f(name: str):\n    p = (Path(\"/data\")/name).resolve()\n    if Path(\"/data\").resolve() not in p.parents:\n        raise HTTPException(400)\n    return p.read_text()",
+            "bad_code": "@app.get(\"/file\")\nasync def f(name: str):\n    return open(f\"/data/{name}\").read()",
+            "estimated_time_to_fix": 15
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "fa-sec-path-traversal",
+            "file": "fireline/calibrate.py",
+            "line": 82,
+            "column": 22,
+            "snippet": "    rec = json.loads(Path(path_str).read_text())"
+          },
+          {
+            "rule_id": "fa-sec-path-traversal",
+            "file": "fireline/calibrate.py",
+            "line": 132,
+            "column": 25,
+            "snippet": "    series = json.loads(Path(path_str).read_text())"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "worktree": "norma-ca-calibration",
+      "file": "tests/test_spread.py",
+      "sha256": "9b833d8f2d52b23176a6f26c2323f72e23165097d1944ffdef685fe2fa4054c3",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "worktree": "norma-ca-calibration",
+      "file": "fireline/spread.py",
+      "sha256": "18738cbd00857cd27ccf43cecb8e49643328b3b6ca6fe1f836a6ee8e45921ed7",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "worktree": "norma-ca-calibration",
+      "file": "scripts/calibrate_ca.py",
+      "sha256": "6502f460b31241687b1931648ca68997bc948f6e66084367905773fef5373517",
+      "method": "live_check",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-scal-subprocess-no-timeout": {
+            "rule_name": "subprocess without timeout=",
+            "severity": "HIGH",
+            "impact_area": "scalability",
+            "description": "Runs an external command without a time limit. If the command hangs, the whole service hangs.",
+            "remediation_action": "Pass timeout=.",
+            "good_code": "process = subprocess.Popen([\"python\", \"script.py\"])\nstdout, stderr = process.communicate(timeout=30)",
+            "bad_code": "subprocess.run([\"git\",\"fetch\"])",
+            "estimated_time_to_fix": 5
+          },
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-scal-subprocess-no-timeout",
+            "file": "scripts/calibrate_ca.py",
+            "line": 352,
+            "column": 14,
+            "snippet": "    commit = subprocess.run([\"git\", \"rev-parse\", \"HEAD\"], cwd=ROOT, capture_output=True,\n                            text=True).stdout.strip() or None"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/calibrate_ca.py",
+            "line": 167,
+            "column": 23,
+            "snippet": "    rows = json.loads(ASSETS_FILE.read_text())[\"assets\"]"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/calibrate_ca.py",
+            "line": 416,
+            "column": 5,
+            "snippet": "    args.json.write_text(json.dumps(payload, indent=2, sort_keys=False) + \"\\n\")"
+          }
+        ],
+        "issues_returned": 3,
+        "total_issues": 3,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "fixtures/evacuation_readiness.json",
+      "sha256": "35acf1e19c0956d0ab22a31105c4bf63573322d792f1561c73419120ab97f5d7",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "nodejs-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "tests/test_evacuation_readiness.py",
+      "sha256": "b76debf9163cab47f125eb368b0850becf58ab4f4b702281b01ae5237ab56e0d",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "scripts/static_priorities.py",
+      "sha256": "856e1993beafb1237d19d1e009caebe0a663b0c1c3fdd851f64443963b66e2e8",
+      "method": "live_check",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "scripts/static_priorities.py",
+            "line": 39,
+            "column": 36,
+            "snippet": "            readiness = json.loads(args.readiness_input.read_text())"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "fireline/evacuation_readiness.py",
+      "sha256": "e69a2aed4396affbc6b9c31488cf0bd32464ae9e4b6571b9c3ed88fa3a2b23cf",
+      "method": "live_check",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-arch-type-eq": {
+            "rule_name": "type(x) == X",
+            "severity": "HIGH",
+            "impact_area": "architecture",
+            "description": "Checks an object's type too strictly; rejects valid subtypes that should also be accepted.",
+            "remediation_action": "Use isinstance.",
+            "good_code": "if isinstance(x, int): ...",
+            "bad_code": "if type(x) == int: ...",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-arch-type-eq",
+            "file": "fireline/evacuation_readiness.py",
+            "line": 103,
+            "column": 12,
+            "snippet": "        if type(centre.remaining_places) is not int or centre.remaining_places < 0:"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/workflow-setup",
+      "worktree": "norma-workflow-setup",
+      "file": "design/ui-mockup.inline-1.js",
+      "source_file": "design/ui-mockup.html",
+      "start_tag_line": 207,
+      "sha256": "60475cbc9951be6d5ecad2601832c7b6f179cb88f94c1cc1833a178f288c0eec",
+      "method": "extracted_inline_live_check",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "js-inner-html-assignment": {
+            "rule_name": "Direct innerHTML / outerHTML Assignment",
+            "severity": "HIGH",
+            "impact_area": "security",
+            "description": "Detects direct DOM innerHTML or outerHTML assignments outside of React render. AI-scaffolded apps that mix imperative DOM manipulation with React bypass React's built-in XSS escaping, exposing the app to injection attacks.",
+            "remediation_action": "Use React state and JSX for all DOM updates. If direct DOM manipulation is unavoidable, sanitise the value with DOMPurify.sanitize() before assignment.",
+            "good_code": "// Use React state instead\nconst [preview, setPreview] = useState('')\n\n// In JSX — React escapes by default\n<div>{preview}</div>\n\n// If you truly need HTML, sanitise first:\n<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(preview) }} />",
+            "bad_code": "// Bypasses React escaping — XSS risk\ndocument.getElementById('preview').innerHTML = templateString\n\nconst el = document.querySelector('.content')\nel.outerHTML = apiResponse.html",
+            "estimated_time_to_fix": 20
+          },
+          "js-scl-foreach-async": {
+            "rule_name": "Array.forEach() With Async Callback",
+            "severity": "MEDIUM",
+            "impact_area": "scalability",
+            "description": "Detects Array.prototype.forEach() with an async callback; forEach is synchronous and ignores returned promises.",
+            "remediation_action": "Use for...of (sequential) or map()+Promise.all() with p-limit (bounded parallel).",
+            "good_code": "for (const id of userIds) { await fetch(`/api/users/${id}/provision`); }",
+            "bad_code": "userIds.forEach(async (id) => { await fetch(`/api/users/${id}/provision`); });",
+            "estimated_time_to_fix": 15
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "js-inner-html-assignment",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 132,
+            "column": 5,
+            "snippet": "    row.innerHTML = `\n      <div class=\"rank\">${i + 1}</div>\n      <div class=\"bar\">\n        <span class=\"b-prox\" style=\"width:${x.s.proximity * 100}%\"></span>\n        <span class=\"b-size\" style=\"width:${x.s.size * 100}%\"></span>\n        <span class=\"b-val\" style=\"width:${x.s.value * 100}%\"></span>\n      </div>\n      <div class=\"info\">\n        <div class=\"name\">${x.a.name} ${task ? `<span class=\"task-flag\">${task.status}</span>` : \"\"}</div>\n        <div class=\"sub\">${x.a.asset_type} · ${Math.round(x.a.distance_to_fire_m)} m to fire</div>\n      </div>\n      <div class=\"score\">${x.s.total.toFixed(2)}</div>`;"
+          },
+          {
+            "rule_id": "js-inner-html-assignment",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 148,
+            "column": 3,
+            "snippet": "  q.innerHTML = review.length\n    ? `<div class=\"panelHead\" style=\"border-top:none\">Needs-review queue (${review.length})</div>` +\n      review.map(a => `<div class=\"qrow\" onclick=\"selectAsset('${a.asset_id}')\" style=\"cursor:pointer\">\n        <span>${a.name}</span><span class=\"qreason\">${(a.review_reasons || [\"exposure_unknown\"]).join(\", \")}</span></div>`).join(\"\")\n    : \"\";"
+          },
+          {
+            "rule_id": "js-inner-html-assignment",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 159,
+            "column": 3,
+            "snippet": "  document.getElementById(\"changeLog\").innerHTML = changeLog.slice().reverse()\n    .map(l => `<div class=\"cl-entry\">${l}</div>`).join(\"\") || '<div class=\"cl-entry\">No changes yet.</div>';"
+          },
+          {
+            "rule_id": "js-inner-html-assignment",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 245,
+            "column": 3,
+            "snippet": "  panel.innerHTML = `\n    <h3>${a.name}</h3>\n    <div class=\"kind\">${a.asset_type} · asset_id <code>${a.asset_id}</code></div>\n    ${scoreHtml}\n    ${reviewHtml}\n    <div class=\"kv\">\n      <div class=\"k\">capacity</div><div class=\"v ${a.capacity == null ? \"null\" : \"\"}\">${a.capacity ?? \"null (unknown)\"}</div>\n      <div class=\"k\">estimated occupancy</div><div class=\"v ${a.estimated_occupancy == null ? \"null\" : \"\"}\">${a.estimated_occupancy ?? \"null (unknown)\"}</div>\n      <div class=\"k\">occupancy basis</div><div class=\"v\">${a.occupancy_basis ?? \"—\"}</div>\n      <div class=\"k\">distance to fire</div><div class=\"v\">${a.distance_to_fire_m != null ? Math.round(a.distance_to_fire_m) + \" m\" : \"unknown\"}${a.intersects_fire ? \" (intersects)\" : \"\"}</div>\n      <div class=\"k\">value basis</div><div class=\"v\">${a.value_basis ?? \"—\"}</div>\n    </div>\n    <div class=\"panelHead\" style=\"padding-left:0\">Evidence &amp; provenance</div>\n    ${sourcesHtml}\n    <div class=\"panelHead\" style=\"padding-left:0\">Follow-up task</div>\n    <div class=\"taskActions\">${actionsHtml}</div>\n    ${assignHtml}\n  `;"
+          },
+          {
+            "rule_id": "js-scl-foreach-async",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 114,
+            "column": 3,
+            "snippet": "  current.assets.forEach(a => {\n    const s = scoreAsset(a);\n    if (a.needs_review || s === null) review.push(a);\n    if (s !== null) scored.push({ a, s });\n  });"
+          },
+          {
+            "rule_id": "js-scl-foreach-async",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 127,
+            "column": 3,
+            "snippet": "  scored.forEach((x, i) => {\n    const row = document.createElement(\"div\");\n    row.className = \"row\" + (x.a.asset_id === selectedId ? \" selected\" : \"\");\n    row.onclick = () => selectAsset(x.a.asset_id);\n    const task = taskState[x.a.asset_id];\n    row.innerHTML = `\n      <div class=\"rank\">${i + 1}</div>\n      <div class=\"bar\">\n        <span class=\"b-prox\" style=\"width:${x.s.proximity * 100}%\"></span>\n        <span class=\"b-size\" style=\"width:${x.s.size * 100}%\"></span>\n        <span class=\"b-val\" style=\"width:${x.s.value * 100}%\"></span>\n      </div>\n      <div class=\"info\">\n        <div class=\"name\">${x.a.name} ${task ? `<span class=\"task-flag\">${task.status}</span>` : \"\"}</div>\n        <div class=\"sub\">${x.a.asset_type} · ${Math.round(x.a.distance_to_fire_m)} m to fire</div>\n      </div>\n      <div class=\"score\">${x.s.total.toFixed(2)}</div>`;\n    list.appendChild(row);\n  });"
+          },
+          {
+            "rule_id": "js-scl-foreach-async",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 189,
+            "column": 3,
+            "snippet": "  all.forEach(({ a, total }) => {\n    const color = total === null ? \"#a8471f\" : tierColor(total);\n    const marker = L.circleMarker([a.latitude, a.longitude], {\n      radius: total === null ? 8 : 6 + total * 6, color: \"#fff\", weight: 1.5, fillColor: color, fillOpacity: 0.95,\n    }).addTo(markerLayer);\n    marker.bindTooltip(`<b>${a.name}</b><br/>${total === null ? \"needs review\" : \"priority \" + total.toFixed(2)}`, { className: \"fire-tip\" });\n    marker.on(\"click\", () => selectAsset(a.asset_id));\n  });"
+          }
+        ],
+        "issues_returned": 7,
+        "total_issues": 7,
+        "capped": false,
+        "coverage": {
+          "reduced": true,
+          "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+        },
+        "rulesets_evaluated": [
+          "javascript-norma-ruleset",
+          "nodejs-norma-ruleset",
+          "react-norma-ruleset",
+          "supabase-norma-ruleset",
+          "typescript-norma-ruleset",
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "scripts/static_priorities.py",
+      "sha256": "b40d87eee71a07b1c0ccf3db824ced2107c7c68a389c405b38f988f409ad9f28",
+      "method": "live_check",
+      "result": {
+        "outcome": "error",
+        "reason": "The live check could not be completed; retry shortly."
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "fireline/evacuation_readiness.py",
+      "sha256": "d05131a74ca895f89ce5ca5dddf5a26938c7b6eb7bee48a306a212b24b272876",
+      "method": "live_check",
+      "result": {
+        "outcome": "error",
+        "reason": "The live check could not be completed; retry shortly."
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "tests/test_evacuation_readiness.py",
+      "sha256": "7ce52f31493fc9c9de571d140e6f8c3a77daaa354a45675e704796acd75613ea",
+      "method": "live_check",
+      "result": {
+        "outcome": "error",
+        "reason": "The live check could not be completed; retry shortly."
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "fireline/evacuation_readiness.py",
+      "sha256": "d05131a74ca895f89ce5ca5dddf5a26938c7b6eb7bee48a306a212b24b272876",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "scripts/static_priorities.py",
+      "sha256": "b40d87eee71a07b1c0ccf3db824ced2107c7c68a389c405b38f988f409ad9f28",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "codex/evacuation-readiness",
+      "worktree": "evacuation-readiness",
+      "file": "tests/test_evacuation_readiness.py",
+      "sha256": "7ce52f31493fc9c9de571d140e6f8c3a77daaa354a45675e704796acd75613ea",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "worktree": "norma-ca-calibration",
+      "file": "tests/test_calibrate.py",
+      "sha256": "e6d44dca285c3325c4d13c21f7be4e83a1822361db07f4a07a7acc44de33fc90",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "worktree": "norma-ca-calibration",
+      "file": "fireline/calibrate.py",
+      "sha256": "18011b82718c048468c42b848c03c3a0da1cf80696106c31cf48e8f153f89d84",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/ca-calibration",
+      "worktree": "norma-ca-calibration",
+      "file": "scripts/calibrate_ca.py",
+      "sha256": "a9132bc9cb596a7baa67ab200e39812c0a86040c0c9271f3bac6b1b143c41ded",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/workflow-setup",
+      "worktree": "norma-workflow-setup",
+      "file": "design/ui-mockup.html",
+      "sha256": "ebcb01d7fd5ff85e6c6905280d59640120dc801754f0b8d24c8ee7ba38aef769",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/workflow-setup",
+      "worktree": "norma-workflow-setup",
+      "file": "design/ui-mockup.inline-1.js",
+      "source_file": "design/ui-mockup.html",
+      "start_tag_line": 207,
+      "sha256": "6c9be64af9f7314d2bc43fa70f8fb7f4655f0cc7b05f0c0b580a28c84ed1ba7e",
+      "method": "extracted_inline_live_check",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "js-function-in-loop": {
+            "rule_name": "Function defined inside a loop",
+            "severity": "MEDIUM",
+            "impact_area": "performance",
+            "description": "Defining a function (arrow, expression, or declaration) inside a for/while loop allocates a fresh function object on each iteration. Over large iteration counts this thrashes the GC and inflates heap usage.",
+            "remediation_action": "Move the function definition outside the loop and pass loop-scoped values as arguments.",
+            "good_code": "function handleItemClick(item) { process(item); }\nfor (let i = 0; i < items.length; i++) {\n  button.addEventListener('click', () => handleItemClick(items[i]));\n}",
+            "bad_code": "for (let i = 0; i < items.length; i++) {\n  button.addEventListener('click', () => process(items[i]));\n}",
+            "estimated_time_to_fix": 10
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "js-function-in-loop",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 167,
+            "column": 35,
+            "snippet": "    row.addEventListener(\"click\", () => selectAsset(x.a.asset_id));"
+          },
+          {
+            "rule_id": "js-function-in-loop",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 205,
+            "column": 42,
+            "snippet": "      queueRow.addEventListener(\"click\", () => selectAsset(a.asset_id));"
+          },
+          {
+            "rule_id": "js-function-in-loop",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 260,
+            "column": 24,
+            "snippet": "    marker.on(\"click\", () => selectAsset(a.asset_id));"
+          },
+          {
+            "rule_id": "js-function-in-loop",
+            "file": "design/ui-mockup.inline-1.js",
+            "line": 369,
+            "column": 38,
+            "snippet": "    button.addEventListener(\"click\", () => pickAction(id, action));"
+          }
+        ],
+        "issues_returned": 4,
+        "total_issues": 4,
+        "capped": false,
+        "coverage": {
+          "reduced": true,
+          "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+        },
+        "rulesets_evaluated": [
+          "javascript-norma-ruleset",
+          "nodejs-norma-ruleset",
+          "react-norma-ruleset",
+          "supabase-norma-ruleset",
+          "typescript-norma-ruleset",
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/workflow-setup",
+      "worktree": "norma-workflow-setup",
+      "file": "tests/test_ui_mockup.virtual.js",
+      "source_file": "tests/test_ui_mockup.cjs",
+      "sha256": "09d85773fc7fcd3b588618eef7e8f40c637cfa04e6a0094f8591e56683b2fa56",
+      "method": "extension_mapped_live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": true,
+          "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+        },
+        "rulesets_evaluated": [
+          "javascript-norma-ruleset",
+          "nodejs-norma-ruleset",
+          "react-norma-ruleset",
+          "supabase-norma-ruleset",
+          "typescript-norma-ruleset",
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/workflow-setup",
+      "worktree": "norma-workflow-setup",
+      "file": "design/ui-mockup.html",
+      "sha256": "3e04c7a0d65c0257a107b91b606bd8302140a70486f057d5a626ac26ab8104e6",
+      "method": "live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/workflow-setup",
+      "worktree": "norma-workflow-setup",
+      "file": "tests/test_ui_mockup.virtual.js",
+      "source_file": "tests/test_ui_mockup.cjs",
+      "sha256": "57717415e78d3391a0c1f09dd2466ef28de720ce699b8de74a799e2c6724f81d",
+      "method": "extension_mapped_live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": true,
+          "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+        },
+        "rulesets_evaluated": [
+          "javascript-norma-ruleset",
+          "nodejs-norma-ruleset",
+          "react-norma-ruleset",
+          "supabase-norma-ruleset",
+          "typescript-norma-ruleset",
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "branch": "claude/workflow-setup",
+      "worktree": "norma-workflow-setup",
+      "file": "design/ui-mockup.inline-1.js",
+      "source_file": "design/ui-mockup.html",
+      "start_tag_line": 207,
+      "sha256": "51426552875c256a816e35d48afa042ad37a5fe594e1e1a418b25d3968e98ac1",
+      "method": "extracted_inline_live_check",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": true,
+          "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+        },
+        "rulesets_evaluated": [
+          "javascript-norma-ruleset",
+          "nodejs-norma-ruleset",
+          "react-norma-ruleset",
+          "supabase-norma-ruleset",
+          "typescript-norma-ruleset",
+          "vite-norma-ruleset"
+        ]
+      }
+    }
+  ]
+}
