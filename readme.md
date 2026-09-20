@@ -14,11 +14,23 @@ Use [Superpowers](https://github.com/obra/superpowers) for development. Work in 
 
 `frontend/pipeline/` is a standalone 16:9 explainer in the website's ResponsAra
 brand, using its theme, Public Sans and Ant Design icons. It explains **Assess
-risk & value → Prioritise action → Analyst’s plan** in about 115 words. The wider
+risk & value → Prioritise action → Analyst’s plan** in 140 words. The wider
 center panel separates least-time-left call priority from crew sequence planning;
 valuation estimates, sourced evidence, unknowns, route/time/capacity constraints
 and analyst review remain explicit. The feedback loop connects calls and changing
 fire conditions to the plan. It loads no incident data or operational API.
+
+Technology badges sit at their responsibilities: LLMs on Nebius Token Factory
+for assessment, SLNG voice and Vonage telephony for calls, Python planning for
+crews, and React/Leaflet for the analyst. Labelled arrows show validated location
+data (JSON) entering coordination, then plans/outcomes reaching the dashboard via
+REST and WebSocket updates. The first handoff is a shared validated snapshot and
+adapter boundary, not a REST service or message broker. Dashboard transport uses
+`/api/state` for initial state and `/api/updates` for live updates.
+
+`fireline/llm.py` retains its existing OpenAI-compatible Nebius AI Studio endpoint;
+no backend API is changed. The badge uses the requested current product name:
+[Nebius describes Token Factory as the evolution of AI Studio](https://nebius.com/newsroom/nebius-launches-nebius-token-factory-to-deliver-production-ai-inference-at-scale).
 
 This describes the intended integrated architecture; crew lookahead and enhanced
 urgent-review behavior include the planner enhancements developed in PR #36.

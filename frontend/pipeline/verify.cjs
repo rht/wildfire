@@ -28,12 +28,20 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
     ).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     const text = await page.locator(".pitch-slide text").allTextContents();
-    expect(text.join(" ").trim().split(/\s+/).length).toBeLessThanOrEqual(130);
+    expect(text.join(" ").trim().split(/\s+/).length).toBeLessThanOrEqual(150);
     for (const title of [
       "Assess risk & value",
       "Prioritise action",
       "Analyst’s plan",
-      "Calls + changing fire conditions update the plan",
+      "LLMs · Nebius Token Factory",
+      "SLNG voice · Vonage telephony",
+      "Python planning",
+      "React + Leaflet",
+      "Validated location data",
+      "(JSON)",
+      "Plans + outcomes",
+      "(REST / WebSocket)",
+      "Call answers + new conditions → updated priorities",
     ])
       expect(text).toContain(title);
     expect(text.join(" ").trim().split(/\s+/).length).toBeGreaterThanOrEqual(
@@ -60,6 +68,43 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
           })
           .map((el) => el.textContent),
       ),
+    ).toEqual([]);
+    // Technology labels must fit their badges, and no two labels may overlap.
+    expect(
+      await page.locator(".tech-badge").evaluateAll((badges) =>
+        badges
+          .filter((badge) => {
+            const frame = badge.querySelector("rect").getBoundingClientRect();
+            const text = badge.querySelector("text").getBoundingClientRect();
+            return (
+              text.left < frame.left ||
+              text.right > frame.right ||
+              text.top < frame.top ||
+              text.bottom > frame.bottom
+            );
+          })
+          .map((badge) => badge.textContent),
+      ),
+    ).toEqual([]);
+    expect(
+      await page.locator(".pitch-slide text").evaluateAll((elements) => {
+        const conflicts = [];
+        for (let i = 0; i < elements.length; i++) {
+          const a = elements[i].getBoundingClientRect();
+          for (let j = i + 1; j < elements.length; j++) {
+            const b = elements[j].getBoundingClientRect();
+            if (
+              Math.min(a.right, b.right) > Math.max(a.left, b.left) &&
+              Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top)
+            )
+              conflicts.push([
+                elements[i].textContent,
+                elements[j].textContent,
+              ]);
+          }
+        }
+        return conflicts;
+      }),
     ).toEqual([]);
     for (const width of [1600, 1280, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });
@@ -123,10 +168,18 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
       "Assess risk & value",
       "Prioritise action",
       "Analyst’s plan",
-      "Calls + changing fire conditions update the plan",
+      "LLMs · Nebius Token Factory",
+      "SLNG voice · Vonage telephony",
+      "Python planning",
+      "React + Leaflet",
+      "Validated location data",
+      "(JSON)",
+      "Plans + outcomes",
+      "(REST / WebSocket)",
+      "Call answers + new conditions → updated priorities",
     ])
       expect(pdfText).toContain(title);
-    expect(pdfText).not.toMatch(/PNG image|Vector PDF|schema|WebSocket|PR #/);
+    expect(pdfText).not.toMatch(/PNG image|Vector PDF|schema|PR #/);
     for (const name of ["PNG image", "Vector PDF"]) {
       const [download] = await Promise.all([
         page.waitForEvent("download"),

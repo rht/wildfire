@@ -19,27 +19,30 @@ const steps = [
     icon: EnvironmentOutlined,
     x: 80,
     width: 410,
+    badges: [
+      { x: 28, y: 110, width: 354, text: "LLMs · Nebius Token Factory" },
+    ],
     blocks: [
       {
-        y: 135,
+        y: 177,
         lines: ["Discover nearby buildings,", "infrastructure and people."],
       },
       {
-        y: 214,
+        y: 250,
         lines: [
           "LLM estimates monetary value,",
           "importance and vulnerability.",
         ],
       },
       {
-        y: 293,
+        y: 323,
         lines: [
           "Sourced exposure, mobility",
           "and evacuation time",
           "inform urgency.",
         ],
       },
-      { y: 413, lines: ["Unknowns stay visible."], accent: true },
+      { y: 437, lines: ["Unknowns stay visible."], accent: true },
     ],
   },
   {
@@ -47,19 +50,23 @@ const steps = [
     icon: NodeIndexOutlined,
     x: 530,
     width: 580,
+    badges: [
+      { x: 110, y: 111, width: 352, text: "SLNG voice · Vonage telephony" },
+      { x: 110, y: 261, width: 176, text: "Python planning" },
+    ],
     blocks: [
-      { y: 126, lines: ["Calls"], label: true },
+      { y: 133, lines: ["Calls"], label: true },
       {
-        y: 159,
+        y: 173,
         lines: [
           "Least time left first:",
           "time until fire − evacuation time",
           "− safety buffer",
         ],
       },
-      { y: 274, lines: ["Crews"], label: true },
+      { y: 283, lines: ["Crews"], label: true },
       {
-        y: 307,
+        y: 319,
         lines: [
           "Compare short sequences of stops.",
           "Help first: people needing assistance,",
@@ -67,7 +74,7 @@ const steps = [
           "Use safe routes, travel/help time & capacity.",
         ],
       },
-      { y: 437, lines: ["Late or unsafe → urgent review."], accent: true },
+      { y: 445, lines: ["Late or unsafe → urgent review."], accent: true },
     ],
   },
   {
@@ -75,16 +82,17 @@ const steps = [
     icon: DashboardOutlined,
     x: 1150,
     width: 370,
+    badges: [{ x: 28, y: 110, width: 181, text: "React + Leaflet" }],
     blocks: [
       {
-        y: 135,
+        y: 177,
         lines: [
           "Where crews go.",
           "Where people evacuate.",
           "Who needs follow-up.",
         ],
       },
-      { y: 295, lines: ["Analyst reviews", "and approves."], label: true },
+      { y: 333, lines: ["Analyst reviews", "and approves."], label: true },
     ],
   },
 ];
@@ -110,16 +118,20 @@ function PitchSlide() {
     >
       <title id="slide-title">From fire alert to coordinated response</title>
       <desc id="slide-description">
-        Discover nearby buildings, infrastructure and people. LLM estimates
-        monetary value and vulnerability; sourced exposure, mobility and
-        evacuation time inform urgency. Unknowns stay visible. Calls prioritise
-        the least time left: time until fire minus evacuation time minus safety
-        buffer. Crews compare short sequences, prioritising assisted people,
-        then total people, then operational value, accounting for travel/help
-        time, safe routes and capacity. Late or unsafe actions need urgent
-        review. The analyst reviews crew routes, evacuation destinations and
-        follow-up, then approves. Calls and changing fire conditions update the
-        plan.
+        Assessment uses LLMs on Nebius Token Factory. Validated location data
+        passes as JSON to coordination. Calls use SLNG voice and Vonage
+        telephony. Crews use deterministic Python planning. Plans and outcomes
+        reach the React and Leaflet analyst view through REST and WebSocket
+        updates. Discover nearby buildings, infrastructure and people. LLM
+        estimates monetary value and vulnerability; sourced exposure, mobility
+        and evacuation time inform urgency. Unknowns stay visible. Calls
+        prioritise the least time left: time until fire minus evacuation time
+        minus safety buffer. Crews compare short sequences, prioritising
+        assisted people, then total people, then operational value, accounting
+        for travel/help time, safe routes and capacity. Late or unsafe actions
+        need urgent review. The analyst reviews crew routes, evacuation
+        destinations and follow-up, then approves. Calls and changing fire
+        conditions update the plan.
       </desc>
       <defs>
         <linearGradient id="brand-orange">
@@ -227,18 +239,43 @@ function PitchSlide() {
             {index === 1 && (
               <line
                 x1="28"
-                y1="240"
+                y1="253"
                 x2={step.width - 28}
-                y2="240"
+                y2="253"
                 stroke={colors.divider}
               />
             )}
+            {step.badges.map((badge) => (
+              <g
+                key={badge.text}
+                className="tech-badge"
+                data-technology={badge.text}
+              >
+                <rect
+                  x={badge.x}
+                  y={badge.y}
+                  width={badge.width}
+                  height="32"
+                  rx="4"
+                  fill="#fff0e5"
+                />
+                <text
+                  x={badge.x + 12}
+                  y={badge.y + 22}
+                  fontSize="18"
+                  fontWeight="600"
+                  fill={colors.primary.main}
+                >
+                  {badge.text}
+                </text>
+              </g>
+            ))}
             {step.blocks.map((block) =>
               block.lines.map((line, i) => (
                 <text
                   key={line}
                   x="28"
-                  y={block.y + i * 31}
+                  y={block.y + i * 30}
                   fontSize={block.accent ? 20 : 22}
                   fontWeight={block.label || block.accent ? 600 : 400}
                   fill={
@@ -259,9 +296,34 @@ function PitchSlide() {
           strokeWidth="2"
           markerEnd="url(#arrow)"
         >
-          <path d="M498 548 H521" />
-          <path d="M1118 548 H1141" />
+          <path
+            className="data-connector"
+            d="M430 325 V305 Q430 295 440 295 H810 Q820 295 820 305 V317"
+          />
+          <path
+            className="data-connector"
+            d="M1020 325 V305 Q1020 295 1030 295 H1325 Q1335 295 1335 305 V317"
+          />
           <path d="M1335 803 V839 Q1335 849 1325 849 H295 Q285 849 285 839 V803" />
+        </g>
+        <g
+          className="communication-labels"
+          textAnchor="middle"
+          fontSize="19"
+          fill={colors.text.secondary}
+        >
+          <text x="625" y="248">
+            Validated location data
+          </text>
+          <text x="625" y="273" fontSize="18">
+            (JSON)
+          </text>
+          <text x="1178" y="248">
+            Plans + outcomes
+          </text>
+          <text x="1178" y="273" fontSize="18">
+            (REST / WebSocket)
+          </text>
         </g>
         <rect
           x="492"
@@ -278,7 +340,7 @@ function PitchSlide() {
           fontWeight="600"
           fill={colors.primary.main}
         >
-          Calls + changing fire conditions update the plan
+          Call answers + new conditions → updated priorities
         </text>
       </g>
     </svg>
