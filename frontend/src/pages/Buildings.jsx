@@ -28,6 +28,7 @@ import {
   filterBuildings,
   money,
   count,
+  percentage,
   stamp,
   humanize,
   distanceToFire,
@@ -182,7 +183,7 @@ export default function Buildings({ incidents, incident }) {
                     </span>
                     <div className="small-muted">
                       {r.risk_score !== null
-                        ? `Score ${r.risk_score} · supplied`
+                        ? `Score ${count(r.risk_score)} · supplied`
                         : "Score not supplied"}
                     </div>
                   </TableCell>
@@ -255,7 +256,7 @@ export default function Buildings({ incidents, incident }) {
                   "Burn probability",
                   selected.burn_probability == null
                     ? "Not supplied"
-                    : `${Math.round(selected.burn_probability * 100)}%`,
+                    : percentage(selected.burn_probability),
                 ],
                 ["Criticality", humanize(selected.criticality_tier)],
                 ["Operational value score", count(selected.value_score)],

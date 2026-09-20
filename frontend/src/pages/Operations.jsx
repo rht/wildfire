@@ -24,7 +24,7 @@ import {
   Metric,
 } from "../components/Common";
 import CrewPlans from "../components/CrewPlans";
-import IncidentMap from "../components/IncidentMap";
+import CrewItinerary from "../components/CrewItinerary";
 import {
   gps,
   callActor,
@@ -383,13 +383,21 @@ export function Calls({ incident }) {
   );
 }
 export function ResponsePlan({ incident }) {
+  const [selection, setSelection] = useState(null);
   const teams = responseTeams(incident),
     response = incident.plan.response;
+  const selectedTeam =
+    (selection?.incidentId === incident.id &&
+      teams.find((team) => team.team_id === selection.teamId)) ||
+    teams[0];
+  const crewName = (team) =>
+    incident.teams.find((item) => item.team_id === team.team_id)?.name ||
+    team.team_id;
   return (
     <>
       <PageHeading
         title="Firefighter plan"
-        description="Team-by-team steps, destinations and dependencies, in the order supplied by coordination."
+        description="Starting points and ordered visits, with supplied priority evidence and analyst review."
       />
       <Alert severity="warning">
         <strong>Fire analyst confirmation required.</strong> Review and confirm
@@ -404,79 +412,42 @@ export function ResponsePlan({ incident }) {
         </MainCard>
       ) : (
         <>
-          <div className="plan-layout">
-            <div className="plan-teams">
-              {teams.map((team) => (
+          {selectedTeam ? (
+            <div className="crew-plan-layout">
+              <div className="filters">
+                <FilterSelect
+                  label="Crew"
+                  value={selectedTeam.team_id}
+                  onChange={(teamId) =>
+                    setSelection({ incidentId: incident.id, teamId })
+                  }
+                  options={teams.map((team) => [team.team_id, crewName(team)])}
+                />
+              </div>
+              <div className="plan-teams">
                 <MainCard
-                  title={
-                    incident.teams.find((t) => t.team_id === team.team_id)
-                      ?.name || team.team_id
-                  }
+                  key={`${incident.id}:${selectedTeam.team_id}`}
+                  title={crewName(selectedTeam)}
                   action={
-                    <CrewPlans incidents={[incident]} teamId={team.team_id} />
+                    <CrewPlans
+                      incidents={[incident]}
+                      teamId={selectedTeam.team_id}
+                    />
                   }
-                  key={team.team_id}
                 >
-                  {(team.tasks || []).length ? (
-                    (team.tasks || []).map((step, index) => {
-                      const asset = incident.assets.find(
-                        (a) => a.asset_id === step.asset_id,
-                      );
-                      return (
-                        <div
-                          className="plan-step"
-                          key={step.action_id || index}
-                        >
-                          <div className="step-number">{index + 1}</div>
-                          <div className="step-body">
-                            <div className="step-title">
-                              <strong>
-                                {asset?.name ||
-                                  step.asset_id ||
-                                  "Destination not supplied"}
-                              </strong>
-                              <Status value={step.status || "proposed"} />
-                            </div>
-                            <Coordinates location={asset} />
-                            <Typography color="text.secondary">
-                              {humanize(step.action || step.action_id)}
-                            </Typography>
-                            <div className="timing-strip">
-                              <span>
-                                Depart <b>{count(step.depart_min)} min</b>
-                              </span>
-                              <span>
-                                Start <b>{count(step.start_min)} min</b>
-                              </span>
-                              <span>
-                                Finish <b>{count(step.finish_min)} min</b>
-                              </span>
-                            </div>
-                            {step.prerequisites?.length > 0 && (
-                              <div className="dependency">
-                                <strong>Prerequisites</strong>
-                                {step.prerequisites.map((p) => (
-                                  <div key={p}>{humanize(p)}</div>
-                                ))}
-                              </div>
-                            )}
-                            <div className="small-muted">
-                              Route: {step.route_source || "Not supplied"}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <Empty title="No steps assigned" />
-                  )}
+                  <CrewItinerary
+                    incident={incident}
+                    team={selectedTeam}
+                    name={crewName(selectedTeam)}
+                  />
                 </MainCard>
-              ))}
+              </div>
             </div>
-            <MainCard title="Proposed routes" content={false}>
-              <IncidentMap incidents={[incident]} showRoutes />
+          ) : (
+            <MainCard>
+              <Empty title="No crew plans supplied" />
             </MainCard>
-          </div>
+          )}
           <MainCard title="Blockers & uncovered locations">
             {Object.entries(response.unserved || {}).map(([id, reason]) => (
               <div className="blocked-item" key={id}>

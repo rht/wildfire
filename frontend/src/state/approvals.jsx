@@ -1,3 +1,4 @@
+import { validateCrewPreview } from "./crew-order-api.mjs";
 import {
   createContext,
   useContext,
@@ -22,6 +23,12 @@ const explanation = (code) =>
       "The plan changed. Reload the dashboard to review the latest plan before confirming.",
     plan_not_confirmable: "This crew has no proposed plan to confirm.",
     origin_not_allowed: "Confirmation must be sent from this dashboard.",
+    invalid_order:
+      "That order cannot be used. Keep committed work fixed and include each proposed stop once.",
+    review_changed:
+      "The revised plan changed. Validate the stop order again before confirming.",
+    order_not_confirmable:
+      "This order is not feasible. Review the route, timing and prerequisite blockers.",
     approval_unavailable:
       "Confirmations are temporarily unavailable. Try again.",
   })[code] || "Could not save or load confirmations. Try again.";
@@ -85,10 +92,12 @@ export function ApprovalProvider({
       );
       const data = await responseData(response, expected);
       if (mounted.current && requests.current.get(key) === serial)
-        setEntries((previous) => ({
-          ...previous,
-          [key]: { phase: "ready", data, error: null },
-        }));
+        setEntries((previous) =>
+          previous[key]?.phase === "ready" &&
+          JSON.stringify(previous[key].data) === JSON.stringify(data)
+            ? previous
+            : { ...previous, [key]: { phase: "ready", data, error: null } },
+        );
     } catch (error) {
       if (
         !controller.signal.aborted &&
@@ -131,7 +140,46 @@ export function ApprovalProvider({
       saving: !!saving[`${contextKey(incident)}:${teamId}`],
     };
   }
-  async function confirm(incident, teamId, reviewedVersion) {
+  async function preview(incident, teamId, reviewedVersion, actionIds) {
+    if (readOnly)
+      throw new Error("Return to current state before changing a plan.");
+    const entry = info(incident, teamId);
+    if (entry.phase !== "ready" || entry.plan?.plan_version !== reviewedVersion)
+      throw new Error(explanation("plan_changed"));
+    const expected = requestFields(source, incident);
+    const controller = new AbortController();
+    controllers.current.add(controller);
+    try {
+      const response = await fetch("/api/crew-plan-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...expected,
+          team_id: teamId,
+          plan_version: reviewedVersion,
+          action_ids: actionIds,
+        }),
+        signal: AbortSignal.any([
+          controller.signal,
+          AbortSignal.timeout(10000),
+        ]),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(explanation(data.error));
+      return validateCrewPreview(
+        data,
+        {
+          ...expected,
+          team_id: teamId,
+          plan_version: reviewedVersion,
+        },
+        actionIds,
+      );
+    } finally {
+      controllers.current.delete(controller);
+    }
+  }
+  async function confirm(incident, teamId, reviewedVersion, review = null) {
     if (readOnly)
       throw new Error("Return to current state before confirming a plan.");
     if (offline) throw new Error(OFFLINE);
@@ -146,7 +194,16 @@ export function ApprovalProvider({
       throw new Error(
         "The plan changed. Reload the dashboard to review the latest plan before confirming.",
       );
-    if (entry.plan.approval) return;
+    if (
+      review &&
+      (!review.can_confirm || review.plan_version !== reviewedVersion)
+    )
+      throw new Error(explanation("review_changed"));
+    if (
+      entry.plan.approval &&
+      (!review || entry.plan.approval.review_version === review.review_version)
+    )
+      return;
     if (saving[saveKey]) return;
     // Ignore earlier polling responses while this explicit mutation is in flight.
     const serial = (requests.current.get(key) || 0) + 1;
@@ -163,6 +220,12 @@ export function ApprovalProvider({
           ...expected,
           team_id: teamId,
           plan_version: reviewedVersion,
+          ...(review
+            ? {
+                action_ids: review.reviewed_plan.action_ids,
+                review_version: review.review_version,
+              }
+            : {}),
         }),
         signal: AbortSignal.any([
           controller.signal,
@@ -220,7 +283,7 @@ export function ApprovalProvider({
 
   return (
     <ApprovalContext.Provider
-      value={{ info, confirm, refresh: load, logIncidents }}
+      value={{ info, confirm, preview, refresh: load, logIncidents }}
     >
       {children}
     </ApprovalContext.Provider>

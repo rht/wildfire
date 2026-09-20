@@ -1625,3 +1625,280 @@ main {
 main > * {
   flex-shrink: 0;
 }
+
+/* Full-screen crew review: fixed actions above independently scrollable panels. */
+.crew-plan-review-dialog .MuiDialog-paper {
+  margin: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none !important;
+  max-height: none;
+  border-radius: 0;
+}
+.crew-plan-review-dialog .detail-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-height: 68px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #dce1e5;
+  background: white;
+  z-index: 3;
+}
+.crew-plan-review-dialog .detail-dialog-title {
+  flex: 1;
+  min-width: 0;
+}
+.crew-plan-review-dialog .detail-dialog-header-action {
+  flex-shrink: 0;
+}
+.crew-plan-review-dialog .MuiDialogContent-root {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  padding: 16px 20px;
+}
+.crew-review-summary {
+  flex-shrink: 0;
+  max-height: 28dvh;
+  overflow: auto;
+  margin-bottom: 12px;
+}
+.crew-plan-review-dialog .crew-review-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+}
+.crew-plan-review-dialog .crew-route-review,
+.crew-plan-review-dialog .crew-review-steps {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+  margin: 0;
+}
+.crew-plan-review-dialog .crew-route-review .map-frame {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 340px;
+}
+.crew-plan-review-dialog .crew-route-review .map-viewport {
+  flex: 1;
+  min-height: 240px;
+}
+.crew-plan-review-dialog .crew-route-review .map-camera,
+.crew-plan-review-dialog .crew-route-map {
+  height: 100%;
+}
+.crew-plan-review-dialog .crew-review-table-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.crew-plan-review-dialog .crew-stop-table-wrap {
+  max-height: none;
+  flex: 1;
+  min-height: 0;
+}
+.crew-plan-review-dialog .crew-stop-table {
+  min-width: 860px;
+  width: 100%;
+}
+.crew-plan-review-dialog .crew-stop-heading {
+  min-width: 145px;
+}
+.crew-plan-review-dialog .crew-stop-table td,
+.crew-plan-review-dialog .crew-stop-table th {
+  padding: 10px;
+}
+.crew-stop-table-wrap {
+  width: 100%;
+  max-height: 42dvh;
+  overflow: auto;
+  border: 1px solid #dce1e5;
+  border-radius: 5px;
+  overscroll-behavior: contain;
+}
+.crew-stop-table {
+  min-width: 1080px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.crew-stop-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f0f3f5;
+}
+.crew-stop-table td,
+.crew-stop-table th {
+  vertical-align: top;
+  padding: 10px 12px;
+}
+.crew-stop-row.is-active > td,
+.crew-stop-row:focus-within > td {
+  background: #fff2e7;
+  box-shadow:
+    inset 0 2px #b94b00,
+    inset 0 -2px #b94b00;
+}
+.crew-stop-heading {
+  min-width: 175px;
+  font-weight: 600;
+}
+.crew-stop-fact {
+  min-width: 120px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.crew-stop-order-controls,
+.crew-review-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.crew-stop-order-controls .MuiButton-root {
+  min-width: 44px;
+  min-height: 44px;
+}
+.crew-review-toolbar {
+  align-items: center;
+  margin-bottom: 12px;
+}
+.crew-review-state {
+  margin: 12px 0;
+}
+.crew-start-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: #163d59;
+  border: 2px solid white;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px #0005;
+  font-weight: 700;
+}
+.crew-stop-pin button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  min-width: 24px;
+}
+.crew-stop-pin.is-active,
+.crew-start-pin.is-active {
+  outline: 3px solid #b94b00;
+  outline-offset: 3px;
+}
+.crew-stop-pin button.is-active,
+.crew-stop-pin button:focus-visible {
+  background: #b94b00;
+  color: white;
+  outline: 2px solid white;
+}
+@media (max-width: 1023px) {
+  .crew-plan-review-dialog .MuiDialogContent-root {
+    overflow: auto;
+    padding: 12px;
+  }
+  .crew-plan-review-dialog .crew-review-layout {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    min-height: auto;
+  }
+  .crew-plan-review-dialog .crew-route-review,
+  .crew-plan-review-dialog .crew-review-steps {
+    overflow: visible;
+  }
+  .crew-plan-review-dialog .crew-route-review .map-frame {
+    flex: none;
+    min-height: 0;
+  }
+  .crew-plan-review-dialog .crew-route-map {
+    height: 260px;
+  }
+  .crew-plan-review-dialog .crew-stop-table-wrap {
+    max-height: 60dvh;
+  }
+  .crew-review-summary {
+    max-height: none;
+    overflow: visible;
+  }
+}
+@media (max-width: 540px) {
+  .crew-plan-review-dialog .detail-dialog-header {
+    gap: 6px;
+    padding: 8px;
+  }
+  .crew-plan-review-dialog .detail-dialog-title {
+    font-size: 14px;
+  }
+  .crew-plan-review-dialog .detail-dialog-header-action .MuiButton-root {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+
+.crew-stop-fact > span,
+.crew-stop-fact > strong {
+  display: block;
+}
+.crew-stop-fact > span {
+  color: #606b75;
+  font-size: 11px;
+}
+.crew-stop-fact > strong {
+  font-weight: 500;
+}
+.crew-stop-fact + .crew-stop-fact {
+  margin-top: 6px;
+}
+.crew-stop-row.is-active > th,
+.crew-stop-row:focus-within > th {
+  background: #fff2e7;
+  box-shadow:
+    inset 0 2px #b94b00,
+    inset 0 -2px #b94b00;
+}
+.crew-stop-table caption {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #606b75;
+}
+.crew-itinerary {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.crew-itinerary .crew-route-map {
+  height: 240px;
+}
+.crew-stop-pin button {
+  min-width: 28px;
+  min-height: 28px;
+}
+
+.crew-stop-table th {
+  text-align: left;
+}
+.crew-route-map .leaflet-tooltip {
+  width: max-content;
+  max-width: 280px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

@@ -299,7 +299,12 @@ class _Planner:
                    from_node=state['node'], to_node=target['node_id'], depart_min=depart,
                    travel_min=leg['minutes'], start_min=start, finish_min=finish,
                    prerequisites=sorted(action['requires']), effects=_public_effects(action),
-                   transport_people=action['transport_people'], route_source=leg['source'])
+                   transport_people=action['transport_people'], route_source=leg['source'],
+                   duration_min=action['duration_min'], deadline_min=deadline,
+                   required_capabilities=sorted(action['capabilities']),
+                   readiness_required=action['readiness_required'], route_status='qualified')
+        if isinstance(action.get('action'), str) and action['action'].strip():
+            row['action'] = action['action']
         if outcome:
             row['readiness'] = {k: outcome[k] for k in ('asset_id', 'status', 'observed_min',
                                 'valid_until_min', 'source', 'request_id')}
@@ -453,7 +458,13 @@ class _Planner:
                         candidates.append((self.priority(action, row), row))
             if not candidates:
                 break
-            _, row = min(candidates, key=lambda candidate: candidate[0])
+            priority, row = min(candidates, key=lambda candidate: candidate[0])
+            row['ordering_evidence'] = dict(
+                method='deterministic prerequisite-aware greedy heuristic',
+                assisted_gain=-priority[0], people_gain=-priority[1], value_gain=-priority[2],
+                candidate_count=len(candidates), selection_rank=len(self.reserved) + 1,
+                tie_break='earliest finish, action ID, team ID',
+                reason='Highest lexicographic downstream assisted, people and value benefit among feasible candidates')
             self.reserved.add(row['action_id'])
             self.done[row['action_id']] = row['finish_min']
             self.credit(row)
@@ -474,12 +485,74 @@ class _Planner:
                     snapshot_id=self.data['snapshot_id'], now_min=self.data['now_min'],
                     optimal=False, dispatch=False, method='deterministic prerequisite-aware greedy heuristic',
                     teams=[dict(team_id=key, tasks=state['tasks'], locked=state['locked'],
-                                remaining_transport_capacity=state['capacity'])
+                                remaining_transport_capacity=state['capacity'],
+                                planning_context=self.review_context(key))
                            for key, state in sorted(self.states.items())],
                     coverage=self.coverage, objective={key+'_units': sum(
                         self.coverage[aid] * asset[key] for aid, asset in self.assets.items()
                         if asset[key] is not None) for key in DIMENSIONS},
                     unassigned=unassigned, review=self.review + unassigned)
+
+    def review_context(self, team_id):
+        """Freeze public start/route evidence for conservative permutation validation."""
+        team = self.teams.get(team_id)
+        if team is None:
+            return None
+        start = dict(node_id=team['start_node_id'],
+                     available_min=max(self.data['now_min'], team['available_from_min']))
+        graph = self.routes.graph
+        if graph is not None and team['start_node_id'] in graph.g:
+            try:
+                lon, lat = graph.node_lonlat(team['start_node_id'])
+                start.update(longitude=lon, latitude=lat, source='supplied planning road node')
+            except KeyError:
+                pass
+        routes = []
+        nodes = sorted({team['start_node_id'], *[task['to_node']
+                       for task in self.states[team_id]['tasks']]})
+        if graph is None:
+            for route in sorted(self.data['routes'], key=lambda r: (r['from_node'], r['to_node'])):
+                if route['from_node'] not in nodes or route['to_node'] not in nodes:
+                    continue
+                row = dict(from_node=route['from_node'], to_node=route['to_node'],
+                           travel_min=route['minutes'], route_source=route['source'],
+                           route_status='qualified' if route['safe'] and route['confirmed'] else 'unqualified',
+                           safe=route['safe'], confirmed=route['confirmed'],
+                           available_until_min=route['available_until_min'])
+                routes.append(row)
+        else:
+            for source in nodes:
+                for target in nodes:
+                    if source == target:
+                        continue
+                    leg = self.routes.leg(source, target, start['available_min'])
+                    if leg is None:
+                        continue
+                    path = leg['path_nodes']
+                    # Minimum edge closure is conservative for every later departure.
+                    row = dict(from_node=source, to_node=target, travel_min=leg['minutes'],
+                               route_source=leg['source'], route_status='qualified',
+                               safe=True, confirmed=True, available_until_min=min(
+                                   graph.g[u][v]['cut_min'] for u, v in zip(path, path[1:])))
+                    for key in ('path_nodes', 'path_lonlat'):
+                        if key in leg:
+                            row[key] = leg[key]
+                    routes.append(row)
+        # Zero travel only when the original planner also uses the same supplied node.
+        for node in nodes:
+            if not any(r['from_node'] == node and r['to_node'] == node for r in routes):
+                routes.append(dict(from_node=node, to_node=node, travel_min=0,
+                                   route_source='same supplied node', route_status='qualified',
+                                   safe=True, confirmed=True,
+                                   available_until_min=self.data['horizon_min']))
+        return dict(start=start, routes=routes, capabilities=sorted(team['capabilities']),
+                    available=team['available'], transport_capacity=team['transport_capacity'],
+                    now_min=self.data['now_min'], buffer_min=self.data['buffer_min'],
+                    horizon_min=self.data['horizon_min'], available_until_min=team['available_until_min'],
+                    prerequisites=[dict(action_id=row['action_id'], status='completed',
+                                        finish_min=row['actual_finish_min'])
+                                   for state in self.states.values() for row in state['tasks']
+                                   if row['status'] == 'completed' and 'actual_finish_min' in row])
 
 
 def plan_multi_response(data, *, graph=None):

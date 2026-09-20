@@ -8,14 +8,26 @@ export const humanize = (value) =>
         .replace(/^./, (c) => c.toUpperCase())
     : "Not supplied";
 export const count = (value) =>
-  number(value) === null ? "—" : new Intl.NumberFormat("en-GB").format(value);
+  number(value) === null
+    ? "—"
+    : new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(
+        value,
+      );
 export const money = (value) =>
   number(value) === null
     ? "—"
     : new Intl.NumberFormat("en-GB", {
         style: "currency",
         currency: "EUR",
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }).format(value);
+export const percentage = (value) =>
+  number(value) === null
+    ? "—"
+    : new Intl.NumberFormat("en-GB", {
+        style: "percent",
+        maximumFractionDigits: 2,
       }).format(value);
 export const stamp = (value) =>
   value && Number.isFinite(Date.parse(value))
@@ -378,7 +390,7 @@ export function gps(point) {
     lon !== null &&
     Math.abs(lat) <= 90 &&
     Math.abs(lon) <= 180
-    ? `${lat.toFixed(5)}, ${lon.toFixed(5)}`
+    ? `${lat.toFixed(2)}, ${lon.toFixed(2)}`
     : "Not supplied";
 }
 export function callActor(call) {
