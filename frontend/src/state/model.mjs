@@ -406,23 +406,45 @@ export function incidentGps(incident) {
       basis: "Incident point · lat, lon",
     };
   const points = [];
-  const visit = (coordinates) => {
-    if (!Array.isArray(coordinates)) return false;
-    if (typeof coordinates[0] === "number") {
-      const point = { latitude: coordinates[1], longitude: coordinates[0] };
-      if (gps(point) === "Not supplied") return false;
-      points.push(point);
-      return true;
-    }
-    return coordinates.length > 0 && coordinates.every(visit);
+  const validRing = (ring) => {
+    if (!Array.isArray(ring) || ring.length < 4) return false;
+    if (
+      !ring.every(
+        (position) =>
+          Array.isArray(position) &&
+          position.length >= 2 &&
+          position.every(Number.isFinite) &&
+          gps({ latitude: position[1], longitude: position[0] }) !==
+            "Not supplied",
+      )
+    )
+      return false;
+    const first = ring[0],
+      last = ring.at(-1);
+    if (
+      first.length !== last.length ||
+      !first.every((value, index) => value === last[index])
+    )
+      return false;
+    for (const position of ring)
+      points.push({ latitude: position[1], longitude: position[0] });
+    return true;
   };
+  const validPolygon = (coordinates) =>
+    Array.isArray(coordinates) &&
+    coordinates.length > 0 &&
+    coordinates.every(validRing);
   const geometry =
     incident?.fire_geometry?.type === "Feature"
       ? incident.fire_geometry.geometry
       : incident?.fire_geometry;
   if (
-    ["Polygon", "MultiPolygon"].includes(geometry?.type) &&
-    visit(geometry.coordinates) &&
+    (geometry?.type === "Polygon"
+      ? validPolygon(geometry.coordinates)
+      : geometry?.type === "MultiPolygon" &&
+        Array.isArray(geometry.coordinates) &&
+        geometry.coordinates.length > 0 &&
+        geometry.coordinates.every(validPolygon)) &&
     points.length
   ) {
     const latitudes = points.map((p) => p.latitude),

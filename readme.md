@@ -2759,7 +2759,7 @@ on 18521 and Streamlit on 18511 remain running in their original worktrees. Port
 8511 and discovery PR18 were not touched. No live calls, dispatch or operational
 writes were performed.
 
-Verification: `npm --prefix frontend test` **29 passed**; frontend lint, formatting
+Verification: `npm --prefix frontend test` **30 passed**; frontend lint, formatting
 and production build passed. Chrome tests cover desktop/mobile navigation, fire
 scoping, filters, valuation details, call follow-up reasons, log order, real
 REST/WebSocket connection, and live/demo separation. A controlled WebSocket test

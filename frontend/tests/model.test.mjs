@@ -433,3 +433,42 @@ test("incident GPS prefers supplied point and labels a derived perimeter centre"
     null,
   );
 });
+
+test("GPS centre rejects malformed/open polygon rings and accepts MultiPolygon", async () => {
+  const { incidentGps } = await import(path);
+  for (const coordinates of [
+    [2, 41],
+    [[[2, 41]]],
+    [
+      [
+        [2, 41],
+        [3, 42],
+        [3, 41],
+        [4, 41],
+      ],
+    ],
+  ]) {
+    assert.equal(
+      incidentGps({ fire_geometry: { type: "Polygon", coordinates } }).point,
+      null,
+    );
+  }
+  assert.deepEqual(
+    incidentGps({
+      fire_geometry: {
+        type: "MultiPolygon",
+        coordinates: [
+          [
+            [
+              [2, 40],
+              [4, 40],
+              [4, 42],
+              [2, 40],
+            ],
+          ],
+        ],
+      },
+    }).point,
+    { latitude: 41, longitude: 3 },
+  );
+});
