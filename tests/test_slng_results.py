@@ -185,6 +185,30 @@ def test_invalid_finalization_rolls_back_answers_and_remains_eligible():
     assert s.conn.execute('SELECT count(*) FROM voice_result_finalizations').fetchone()[0] == 0
 
 
+def test_older_finalized_delivery_cannot_stop_sync_after_duplicate_retry():
+    s = store(now=EPOCH + timedelta(minutes=1))
+    s.register(request())
+    newer = dict(payload(), updated_at=(EPOCH + timedelta(minutes=1)).isoformat(), memory_variables=[])
+    s.sync(client(Transport(newer)), 'req-B', provider_call_id=CALL)
+    older = dict(payload(), finalized_at=EPOCH.isoformat())
+    assert s.sync(client(Transport(older)), 'req-B')['result'] == 'ignored'
+    assert s.sync(client(Transport(older)), 'req-B')['result'] == 'duplicate'
+    assert s.conn.execute('SELECT count(*) FROM voice_result_finalizations').fetchone()[0] == 0
+
+
+def test_same_timestamp_finalization_preserves_earlier_assistance_evidence():
+    s = store()
+    s.register(request())
+    s.sync(client(Transport(payload())), 'req-B', provider_call_id=CALL)
+    final = dict(payload(), memory_variables=[], finalized_at=EPOCH.isoformat())
+    s.sync(client(Transport(final)), 'req-B')
+    saved = s.get('req-B')['result']
+    assert saved['can_self_evacuate'] is False
+    assert saved['wants_human'] is True
+    assert saved['evidence']['can_self_evacuate'] == 'I need help to leave.'
+    assert s.conn.execute('SELECT count(*) FROM voice_result_finalizations').fetchone()[0] == 1
+
+
 @pytest.mark.parametrize('report', ['malformed', {'chat_history': []},
     {'chat_history': {'items': {}}}, {'chat_history': {'items': ['malformed']}}])
 def test_malformed_transcript_is_controlled_and_atomic(report):

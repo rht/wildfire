@@ -2862,7 +2862,11 @@ state, without starting calls. Both `live` and `sync_only` load the configured
 SLNG client. Completed calls remain eligible for result fetching until SLNG
 returns `finalized_at` and the corresponding result is persisted successfully.
 This matters when a carrier completion event arrives before answer extraction.
-Finalization survives restart; failed fetches remain retryable. Awaiting results
+Final extraction may enrich memory without advancing the provider's update
+timestamp. Such finalized answers replace the interim record while preserving
+earlier adverse reports. Older ignored responses cannot mark newer results final,
+including on duplicate delivery. Finalization survives restart; failed fetches
+remain retryable. Awaiting results
 does not consume a phone concurrency slot. A provider that never finalizes will
 remain eligible for fetching and human review.
 
@@ -2897,12 +2901,15 @@ Implementation checklist:
 - [x] Persist successful provider finalization and retry late results across restart.
 - [x] Add results-only worker mode and verify the backend assistance/task projection.
 - [x] Import the existing tests with explicit drill associations and check the API.
-- [x] Run the full Python suite (**1,141 passed, 2 skipped**) and build the frontend.
+- [x] Run the full Python suite (**1,144 passed, 2 skipped**) and build the frontend.
+- [x] Complete independent review and fix the same-timestamp finalization edge case.
 
-Norma checked the four changed production files. The store, queue and runtime
-were clean. The service retained its three previously reviewed findings for CLI
+Norma checked the four changed production files. The initial store, queue and runtime
+checks were clean. The service retained its three previously reviewed findings for CLI
 stdout and mandatory single-worker startup (see the existing audit defenses);
-no new finding was introduced. Details: `reports/norma-backend-results.json`.
+no new finding was introduced in that pass. The store recheck after the independent
+review fix returned a service error; tests and independent re-review passed.
+Details and source hashes: `reports/norma-backend-results.json`.
 
 Omit `catalog_file` to query Gencat registered facilities around the fire geometry.
 This is not a complete private-house inventory. Unclassified facilities remain

@@ -319,6 +319,27 @@ def test_completed_call_fetch_failure_remains_retryable(tmp_path):
     assert q.status()['active'] == 0
 
 
+def test_finalized_assistance_with_unchanged_timestamp_replaces_empty_memory(tmp_path):
+    q, s, now = setup_queue(tmp_path)
+    enqueue(q)
+    started = q.dispatch_next(provider())
+    body = json.loads(Path('fixtures/voice/slng_completed.json').read_text(encoding='utf-8'))
+    body.update(id=started['provider_call_id'], updated_at=now[0].isoformat(),
+        arguments=dict(request_id='req-A', asset_id='A', snapshot_id='snapshot-demo'))
+    q.sync_active(client(Transport(dict(body, memory_variables=[], finalized_at=None))))
+    assert s.get('req-A')['result']['can_self_evacuate'] is None
+    # SLNG can enrich memory without advancing the coarse record timestamp.
+    body['finalized_at'] = now[0].isoformat()
+    q.sync_active(client(Transport(body)))
+    q.sync_active(client(Transport(body)))
+    assert s.get('req-A')['result']['can_self_evacuate'] is False
+    from fireline.coordination import _call_summary
+    record = s.get('req-A')
+    assert _call_summary(record, s.assessment('req-A'))['reported_needs_assistance'] is True
+    assert s.conn.execute('SELECT count(*) FROM voice_result_finalizations').fetchone()[0] == 1
+    s.close()
+
+
 def test_three_per_second_pacing_and_clock_rollback(tmp_path):
     q, s, now = setup_queue(tmp_path, concurrent=3, rate=3)
     enqueue(q)

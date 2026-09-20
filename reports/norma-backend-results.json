@@ -117,5 +117,13 @@
       }
     }
   ],
-  "retained_findings": "incident_server.py: two CLI stdout findings and mandatory workers=1. Existing documented audit defenses remain applicable. CLI command output is intentional; multiple server processes would violate the local admission lock."
+  "retained_findings": "incident_server.py: two CLI stdout findings and mandatory workers=1. Existing documented audit defenses remain applicable. CLI command output is intentional; multiple server processes would violate the local admission lock.",
+  "final_store_recheck": {
+    "file": "fireline/voice_store.py",
+    "sha256": "1f5de410e5625579916b7ca2aaf87b507cf7e6d92235717160021e18f1fddf14",
+    "check": {
+      "outcome": "error",
+      "reason": "The live check could not be completed; retry shortly."
+    }
+  }
 }

@@ -188,7 +188,7 @@ class VoiceStore:
                               (status, observed_at, request_id))
             return 'accepted'
 
-    def record_result(self, result, *, delivery_id=None):
+    def record_result(self, result, *, delivery_id=None, finalized_update=False):
         self._time(result.observed_at)
         with self._transaction():
             record = self.get(result.request_id)
@@ -206,7 +206,8 @@ class VoiceStore:
             if normalized.can_self_evacuate is False or normalized.transport_available is False:
                 self._task(req.request_id, req.asset_id, req.snapshot_id, 'arrange_assistance', fresh_event=True)
             previous = record['result']
-            if previous and utc(result.observed_at) <= utc(previous['observed_at']):
+            if previous and (utc(result.observed_at) < utc(previous['observed_at']) or
+                    (utc(result.observed_at) == utc(previous['observed_at']) and not finalized_update)):
                 if utc(result.observed_at) == utc(previous['observed_at']):
                     self._followup(self.get(req.request_id), ['conflicting_answers'])
                 return 'ignored'
@@ -355,10 +356,17 @@ class VoiceStore:
             result_outcome = 'pending'
             if raw_status == 'completed':
                 result = normalize_call(CallRequest(**record['request']), body)
-                result_outcome = self.record_result(result)
                 finalized_at = body.get('finalized_at')
-                if finalized_at is not None and result_outcome in ('accepted', 'duplicate'):
+                if finalized_at is not None:
                     self._time(finalized_at)
+                # Final extraction may enrich an unchanged provider record timestamp.
+                # Separate its delivery identity from a previously ignored interim report.
+                delivery = 'slng-final:' + digest(asdict(result)) if finalized_at is not None else None
+                result_outcome = self.record_result(result, delivery_id=delivery,
+                    finalized_update=finalized_at is not None)
+                stored = self.get(request_id)['result']
+                if (finalized_at is not None and result_outcome in ('accepted', 'duplicate')
+                        and stored and utc(result.observed_at) >= utc(stored['observed_at'])):
                     self.conn.execute(
                         'INSERT OR REPLACE INTO voice_result_finalizations VALUES (?, ?)',
                         (request_id, finalized_at))
