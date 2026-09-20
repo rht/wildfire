@@ -166,7 +166,8 @@ def test_custom_buffer_and_real_coordinate_projection(queue):
     snap = produced_snapshot()
     result = enqueue(queue, snap, buffer_min=12)
     cfg = SimpleNamespace(CONTACT_POLICY={**config.CONTACT_POLICY, 'buffer_min': 12},
-                          EVACUATION_POLICY=config.EVACUATION_POLICY)
+                          EVACUATION_POLICY=config.EVACUATION_POLICY,
+                          CRITICALITY_POLICY=config.CRITICALITY_POLICY)
     expected = rank_snapshot(snap, cfg=cfg, now_at=at(20))
     assert [r['slack_min'] for r in result['ranked']] == [r['slack_min'] for r in expected['ranked']]
     # Capture the queue boundary: only actual coordinates may be projected.
