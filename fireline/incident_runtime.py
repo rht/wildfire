@@ -35,7 +35,7 @@ SQLITE_BUSY_TIMEOUT_SECONDS = 10
 class IncidentRuntime:
     """Create per operation/thread. The server serializes writes with one worker lock."""
 
-    def __init__(self, directory, settings, *, clock=None, client=None, fetcher=None):
+    def __init__(self, directory, settings, *, clock=None, client=None, fetcher=None, assessment_backend=None):
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.settings = deepcopy(settings)
@@ -56,6 +56,10 @@ class IncidentRuntime:
             raise ValueError("call mode does not match input mode")
         self.clock = clock or (lambda: datetime.now(UTC))
         self.client, self.fetcher = client, fetcher
+        self.assessment_backend = assessment_backend
+        from .llm_assessment import options
+        self.assessment_options = options(settings.get("llm_assessment", {
+            "mode": "live" if self.mode == "live" else "disabled"}))
         self.database = self.directory / "coordination.sqlite"
         self.control = self.directory / "runtime.sqlite"
         with self._db() as db:
@@ -130,6 +134,10 @@ class IncidentRuntime:
         }
 
     def trigger(self, trigger):
+        return self.activate_trigger(self.prepare_trigger(trigger))
+
+    def prepare_trigger(self, trigger):
+        """Provider work only; the server runs this outside its mutation lock."""
         if trigger.get("input_mode", self.mode) != self.mode:
             raise ValueError("trigger input mode does not match runtime")
         identifier(trigger["trigger_id"], "trigger_id")
@@ -144,7 +152,7 @@ class IncidentRuntime:
         if existing:
             if existing[0] != fingerprint:
                 raise ValueError("trigger identity reused")
-            return self.refresh()
+            return {"replay": True}
         fire = trigger["fire"]
         as_of = (
             utc(self.clock().isoformat())
@@ -184,6 +192,10 @@ class IncidentRuntime:
         operations = deepcopy(
             trigger.get("operations", self.settings.get("operations", {}))
         )
+        from .llm_assessment import assess_snapshot
+        result["snapshot"] = assess_snapshot(
+            result["snapshot"], operations, self.directory / "llm_assessments.sqlite",
+            self.assessment_options, backend=self.assessment_backend)
         next_saved = {
             "snapshot": result["snapshot"],
             "discovery": result["discovery"],
@@ -200,6 +212,22 @@ class IncidentRuntime:
         from .priority_models import validate_scenario
 
         validate_scenario(scenario)
+        return {"saved": next_saved, "trigger_id": trigger["trigger_id"],
+                "fingerprint": fingerprint,
+                "previous_snapshot_id": saved["snapshot"]["snapshot_id"] if saved else None}
+
+    def activate_trigger(self, prepared):
+        """Activate under the coordinator lock; reject stale prepared assessments."""
+        if prepared.get("replay"):
+            return self.refresh()
+        next_saved = prepared["saved"]
+        saved = self._load()
+        current_id = saved["snapshot"]["snapshot_id"] if saved else None
+        if current_id != prepared["previous_snapshot_id"]:
+            raise ValueError("incident changed while the LLM assessment was running")
+        if saved and utc(next_saved["clock_at"]) < utc(saved["clock_at"]):
+            raise ValueError("incident clock changed while the LLM assessment was running")
+        as_of = self._now(next_saved)
         # Validate the full projection against disposable copies before accepting it.
         # Once accepted, trigger + assessment are one durable checkpoint. Refresh is
         # idempotent and resumes cross-database projections after interruption.
@@ -220,14 +248,20 @@ class IncidentRuntime:
                 "INSERT OR REPLACE INTO runtime VALUES(1,?)", (encoded(next_saved),)
             )
             db.execute(
-                "INSERT INTO triggers VALUES(?,?)", (trigger["trigger_id"], fingerprint)
+                "INSERT INTO triggers VALUES(?,?)", (prepared["trigger_id"], prepared["fingerprint"])
             )
             event = {
                 "kind": "fire_assessed",
                 "as_of": as_of.isoformat(),
-                "notes": f"Identified {len(result['snapshot']['assets'])} locations; snapshot {result['snapshot']['snapshot_id']}",
+                "notes": f"Identified {len(next_saved['snapshot']['assets'])} locations; snapshot {next_saved['snapshot']['snapshot_id']}",
             }
             db.execute("INSERT INTO stages(body) VALUES(?)", (encoded(event),))
+            for asset in next_saved["snapshot"]["assets"]:
+                assessment = asset.get("llm_assessment")
+                if assessment:
+                    event = {"kind": "location_assessed", "as_of": as_of.isoformat(),
+                             "notes": f"LLM assessment {assessment['status']} for {asset['asset_id']}"}
+                    db.execute("INSERT INTO stages(body) VALUES(?)", (encoded(event),))
         return self.refresh()
 
     def _allocation_inputs(self, saved, scenario):
