@@ -226,41 +226,135 @@ export const demoIncidents = specs.map((s, index) => {
       response: {
         schema_version: "multi-response-plan-1",
         dispatch: false,
-        teams: resources.slice(0, 2).map((r, n) => ({
-          team_id: r.id,
-          tasks: [
-            {
-              action_id: `${s.id}-assist-${n}`,
-              asset_id: assets[n].asset_id,
-              status: "proposed",
-              depart_min: 0,
-              travel_min: 8 + n * 3,
-              start_min: 8 + n * 3,
-              finish_min: 35 + n * 5,
-              deadline_min: 35 + n * 5 + [5, 12, 30][index] + n * 8,
-              prerequisites: n
-                ? ["Reception capacity confirmed"]
-                : ["Accessible transport confirmed"],
-              route_source: "Illustrative route",
-              path_lonlat: [
-                [s.centre[1] - 0.035, s.centre[0] - 0.03],
-                [s.centre[1] - 0.01, s.centre[0] - 0.01],
-                [assets[n].longitude, assets[n].latitude],
-              ],
-            },
-            {
-              action_id: `${s.id}-check-${n}`,
-              asset_id: assets[n + 2].asset_id,
-              status: "proposed",
-              depart_min: 35 + n * 5,
-              start_min: 43 + n * 5,
-              finish_min: 55 + n * 5,
-              deadline_min: 90 + n * 5,
-              prerequisites: [],
-              route_source: null,
-            },
-          ],
-        })),
+        teams: resources
+          .slice(0, 2)
+          .map((r, n) => ({
+            team_id: r.id,
+            tasks: [
+              {
+                action_id: `${s.id}-assist-${n}`,
+                asset_id: assets[n].asset_id,
+                status: "proposed",
+                depart_min: 0,
+                travel_min: 8 + n * 3,
+                start_min: 8 + n * 3,
+                finish_min: 35 + n * 5,
+                deadline_min: 35 + n * 5 + [5, 12, 30][index] + n * 8,
+                prerequisites: n
+                  ? ["Reception capacity confirmed"]
+                  : ["Accessible transport confirmed"],
+                route_source: "Illustrative route",
+                path_lonlat: [
+                  [s.centre[1] - 0.035, s.centre[0] - 0.03],
+                  [s.centre[1] - 0.01, s.centre[0] - 0.01],
+                  [assets[n].longitude, assets[n].latitude],
+                ],
+              },
+              {
+                action_id: `${s.id}-check-${n}`,
+                asset_id: assets[n + 2].asset_id,
+                status: "proposed",
+                depart_min: 35 + n * 5,
+                start_min: 43 + n * 5,
+                finish_min: 55 + n * 5,
+                deadline_min: 90 + n * 5,
+                prerequisites: [],
+                route_source: null,
+              },
+            ],
+          }))
+          .map((team) => {
+            const start = {
+              node_id: `${team.team_id}-start`,
+              name: "Illustrative crew staging point",
+              latitude: s.centre[0] - 0.03,
+              longitude: s.centre[1] - 0.035,
+              available_min: 0,
+              source: "Design demonstration · planned departure point",
+            };
+            const [first, second] = team.tasks;
+            const firstAsset = assets.find(
+              (a) => a.asset_id === first.asset_id,
+            );
+            const secondAsset = assets.find(
+              (a) => a.asset_id === second.asset_id,
+            );
+            const position = (point) => [point.longitude, point.latitude];
+            const leg = (from, to, minutes, path) => ({
+              from_node: from,
+              to_node: to,
+              travel_min: minutes,
+              path_lonlat: path,
+              route_source: "Illustrative route · synthetic demonstration only",
+              route_status: "qualified",
+              confirmed: true,
+              safe: true,
+              available_until_min: 180,
+            });
+            const forward = leg(first.asset_id, second.asset_id, 8, [
+              position(firstAsset),
+              position(secondAsset),
+            ]);
+            const routes = [
+              leg(
+                start.node_id,
+                first.asset_id,
+                first.travel_min,
+                first.path_lonlat,
+              ),
+              forward,
+              leg(start.node_id, second.asset_id, 4, [
+                position(start),
+                position(secondAsset),
+              ]),
+              leg(second.asset_id, first.asset_id, 4, [
+                position(secondAsset),
+                position(firstAsset),
+              ]),
+            ];
+            const prerequisites = [
+              ...new Set(team.tasks.flatMap((task) => task.prerequisites)),
+            ].map((action_id) => ({
+              action_id,
+              status: "completed",
+              finish_min: 0,
+            }));
+            return {
+              ...team,
+              starting_location: start,
+              planning_context: {
+                start,
+                now_min: 0,
+                buffer_min: 0,
+                horizon_min: 180,
+                available_until_min: 180,
+                available: true,
+                transport_capacity: 200,
+                capabilities: ["assessment"],
+                prerequisites,
+                routes,
+              },
+              tasks: team.tasks.map((task, index) => ({
+                ...task,
+                action: index
+                  ? "Assess location and report needs"
+                  : "Assist occupants and verify transport",
+                from_node: index ? first.asset_id : start.node_id,
+                to_node: task.asset_id,
+                duration_min: task.finish_min - task.start_min,
+                travel_min: index ? 8 : task.travel_min,
+                path_lonlat: index ? forward.path_lonlat : task.path_lonlat,
+                route_source:
+                  "Illustrative route · synthetic demonstration only",
+                required_capabilities: ["assessment"],
+                readiness_required: false,
+                transport_people: 0,
+                ordering_reason: index
+                  ? "Illustrative secondary assessment after the earlier deadline; not an optimizer explanation."
+                  : "Illustrative scenario places this earlier-deadline visit first; not a live optimizer decision.",
+              })),
+            };
+          }),
         unserved: {
           [assets[3].asset_id]: "Awaiting forecast and occupancy confirmation",
         },

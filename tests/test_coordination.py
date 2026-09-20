@@ -447,6 +447,27 @@ def test_verified_multi_crew_export_is_published_only_as_a_proposal(tmp_path):
     store.close()
 
 
+def test_crew_review_evidence_survives_coordination_public_boundary(tmp_path):
+    from fireline.dashboard_public import public_state
+    store = coordinator(tmp_path / 'live.sqlite')
+    response = multi_export()
+    team = response['teams'][0]
+    team['planning_context'] = {'start': {'node_id': 'BASE', 'latitude': 41.0,
+                                        'longitude': 3.0, 'available_min': 0},
+                                'transport_capacity': 4, 'private_note': 'hidden'}
+    team['tasks'][0].update(duration_min=2, deadline_min=90, required_capabilities=[],
+                            readiness_required=False, action='assisted_evacuation',
+                            ordering_evidence={'assisted_gain': 2, 'selection_rank': 1})
+    state = public_state(store.refresh(*supplied(), response_plan=response))
+    public = state['plan']['response']['teams'][0]
+    assert public.get('planning_context', {}).get('start', {}).get('node_id') == 'BASE'
+    assert 'private_note' not in public['planning_context']
+    assert public['tasks'][0]['duration_min'] == 2
+    assert public['tasks'][0]['ordering_evidence']['assisted_gain'] == 2
+    assert public['tasks'][0]['action'] == 'assisted_evacuation'
+    store.close()
+
+
 @pytest.mark.parametrize('change', ['snapshot', 'time', 'dispatch', 'asset'])
 def test_stale_or_mismatched_multi_crew_export_is_rejected_atomically(tmp_path, change):
     store = coordinator(tmp_path / 'live.sqlite')

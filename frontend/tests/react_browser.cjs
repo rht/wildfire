@@ -87,7 +87,7 @@ const fs = require("node:fs");
     await expect(page).toHaveURL(/incidents\/gavarres\/summary/);
     await expect(page.getByTestId("metric-active")).toHaveCount(0);
     await expect(page.getByTestId("metric-gps")).toContainText(
-      "41.95900, 3.05050",
+      "41.96, 3.05",
     );
     await expect(page.getByTestId("metric-gps")).toContainText(
       "Perimeter centre",
@@ -143,7 +143,7 @@ const fs = require("node:fs");
       .click();
     await page.getByRole("dialog").waitFor();
     assert.match(await page.getByRole("dialog").innerText(), /Human requested/);
-    await expect(page.getByRole("dialog")).toContainText("41.95300, 3.02200");
+    await expect(page.getByRole("dialog")).toContainText("41.95, 3.02");
     await page.getByRole("button", { name: "Close details" }).click();
     await page.getByRole("dialog").waitFor({ state: "hidden" });
     await page

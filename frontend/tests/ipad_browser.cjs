@@ -40,7 +40,10 @@ const assert = require('node:assert/strict');
    await page.getByRole('button',{name:'Review plan for Crew 1A',exact:true}).tap();
    const dialog=page.getByRole('dialog');
    const reviewMap=await dialog.locator('.crew-route-review').boundingBox(), steps=await dialog.locator('.crew-review-steps').boundingBox();
-   assert.ok(Math.abs(reviewMap.width-steps.width)<2);
+   if (viewport.width >= 1024) {
+    assert.ok(reviewMap.x+reviewMap.width <= steps.x);
+    assert.ok(Math.abs(reviewMap.y-steps.y)<2);
+   } else { assert.ok(Math.abs(reviewMap.width-steps.width)<2); }
    await expect(dialog.getByRole('button',{name:'Confirm crew plan',exact:true})).toBeEnabled();
    await page.screenshot({path:`artifacts/ipad-review-${viewport.width}.png`});
    await dialog.getByRole('button',{name:'Close details'}).tap();

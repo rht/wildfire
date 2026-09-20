@@ -3351,3 +3351,83 @@ Safari check. Backend source files and existing preview processes remain unchang
 
 The separate tmux session `wildfire-time-travel` implemented the saved simulation
 stages in this UI worktree and remains available (`tmux attach -t wildfire-time-travel`).
+
+
+### Crew-plan review table and validated stop order — approved implementation
+
+The analyst opens a full-screen review with a back arrow and a fixed confirmation
+button in the top bar. On wide screens the map is on the left and the table is on
+the right in independently scrollable panels; narrower screens stack the panels.
+The table's first row is the supplied crew starting point,
+followed by numbered destinations in visit order. Each destination shows the action,
+assistance and self-evacuation evidence, risk, valuation, expected people, travel,
+arrival/finish/deadline and the actual ordering rationale. Missing evidence remains
+unknown; assistance does not by itself establish immobility. The map and table
+highlight the same stop on hover/focus/tap and show its name. Planned starting
+points and reported current positions retain distinct source/time labels.
+
+Proposed destinations may move up/down. Started/committed tasks cannot move.
+A changed order is a draft until the server recomputes its supplied route legs,
+timing, prerequisites, capacity and deadlines. Missing routing/validation evidence
+blocks approval of that draft. Approval records the exact validated version and
+analyst; it does not dispatch crews or change movement/completion facts. Reloads
+and other tabs show the saved reviewed order. Source or planning-context changes
+invalidate stale previews and confirmations. Existing original-plan confirmations
+remain compatible. Public contact redaction and Norma evidence remain unchanged.
+
+Implementation sequence and verification:
+
+- [x] Backend: failing tests for legal/illegal order permutations, immutable work,
+  route/timing recalculation, missing evidence, version conflicts and persistence;
+  implement narrow preview/confirmation contracts and public planning evidence.
+  Run the focused dashboard/planner Python suites.
+- [x] Review UI: implement starting-point row, numbered stop table, sourced facts,
+  move controls, validation/error/stale states and explicit approval; verify
+  ordering, unknowns and draft-versus-confirmed state in browser regressions.
+- [x] Map: retain qualified supplied geometry, show start-to-stop legs and
+  direction, and synchronize hover/focus/tap with the corresponding table row.
+  Run crew-map unit tests and browser checks for matching names/highlights.
+- [ ] Integration: verify synthetic demo and connected adapter behavior, restart
+  persistence, source isolation and no dispatch writes; run Node, Python, lint,
+  build and applicable browser suites, obtain independent code review, push a PR.
+
+Development base: origin/main b34cd92 on codex/ui-session. The user approved this
+design and explicitly required the starting point as the table's first entry.
+
+
+Crew-order API: `POST /api/crew-plan-preview` accepts exactly `source`,
+`incident_id`, `revision`, `snapshot_id`, `team_id`, the current base `plan_version`
+and all current `action_ids` in requested order. It returns those identifiers,
+`review_version`, `can_confirm`, public `blockers` and `reviewed_plan` with the
+recalculated tasks, planning context and remaining transport capacity. Preview
+creates no approval or operational event. Confirm using the existing
+`POST /api/crew-approvals` identity plus both `action_ids` and `review_version`;
+the server recomputes the preview before saving. Invalid permutations return
+422; stale evidence or another saved approval returns 409. Infeasible previews
+remain visible with `can_confirm: false`; they cannot be confirmed. GET approvals
+retains the base `plan_version` and adds a saved `reviewed_plan` and
+`approval.review_version` when an edited order has been approved. Legacy original
+order confirmations remain supported. Incident-server approvals use the separate
+`dashboard-approvals.sqlite3` in the incident directory.
+
+The optional response-team `planning_context` carries a supplied start node,
+coordinates/source when known, availability, capabilities, initial transport
+capacity, elapsed-time horizon/buffer, completed prerequisite evidence and directed
+qualified routes among assigned destinations. Tasks carry duration, effective
+deadline, capabilities, readiness requirements and the planner's actual
+`ordering_evidence`: downstream assisted/people/value benefit, feasible candidate
+count and stable tie-break. These heuristic values are not predicted rescue
+outcomes or replacement-cost estimates. Risk and valuation are displayed as
+separate facts, not invented explanations for the optimizer's order. UI numeric
+labels use at most two decimal places (GPS labels use two); source numbers,
+validation calculations and map coordinates retain full precision.
+
+Validation conservatively blocks an order with unfinished dependencies on another
+crew until coordinated replanning is supplied. Qualified graph paths are frozen at
+planning time with the earliest finite edge closure; validation does not search for
+another route and may reject an order that a later replan could support. Missing
+path geometry remains missing. Completed historical work retains its evidence and
+capacity/dependency effects without moving the crew away from its supplied current
+planning start. Synthetic demo routes and starts are explicitly labelled as
+illustrative and are not live operational data. Approval does not dispatch a team
+or establish that it has moved.

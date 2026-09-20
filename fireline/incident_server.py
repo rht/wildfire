@@ -28,6 +28,7 @@ from starlette.routing import Route
 from .dashboard_public import public_state
 from .dashboard_server import HEADERS, CoordinationDatabase
 from .dashboard_server import create_app as dashboard_app
+from .dashboard_approvals import ApprovalStore
 from .incident_runtime import IncidentRuntime, demo_trigger
 
 LOCAL_HOSTS = ["127.0.0.1", "localhost", "[::1]", "testserver"]
@@ -87,7 +88,7 @@ def _valid_session(value, token):
 
 
 class DashboardSession:
-    """Only dashboard reads use cookies; write endpoints always require own auth."""
+    """Dashboard review uses sessions; operational writes require their own auth."""
 
     def __init__(self, app, token):
         self.app, self.token = app, token
@@ -321,7 +322,8 @@ def create_app(
         return response
 
     app = dashboard_app(
-        CoordinationDatabase(runtime.database), poll_interval=poll_interval
+        CoordinationDatabase(runtime.database), poll_interval=poll_interval,
+        approvals=ApprovalStore(runtime.directory / 'dashboard-approvals.sqlite3')
     )
     app.router.routes[0:0] = [
         Route("/api/fire", operational, methods=["POST"]),
