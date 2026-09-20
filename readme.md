@@ -2645,3 +2645,71 @@ The same historical branch report retains two secondary candidates that were alr
 **Accepted fix:** retain the merged JUnit XML hardening in [`scripts/build_priority_report.py:436`](https://github.com/rht/wildfire/blob/587f5bd53eb41bd04d693e49a60940b6a62530f1/scripts/build_priority_report.py#L436), with `defusedxml` and explicit DTD rejection. It addresses demonstrated internal-entity behavior; external-file disclosure was not demonstrated. [PR #3](https://github.com/rht/wildfire/pull/3) remains merged and its tests preserve valid JUnit/XML declarations and failed-test handling.
 
 To verify the selected branch, check out the exact SHA above and run `python -m pytest -q` with the project's development/report dependencies. Submit the complete `fireline/evacuation_readiness.py` to MCP Livecheck under that exact filename; expect the one retained finding, not zero findings. The final source and test hashes are in the current evidence JSON. No feature PR is merged by this decision. The frozen audit and deferred SLNG worktree, sessions and untracked lockfile remain untouched.
+
+## React incident dashboard — codex/ui-session (2026-09-20)
+
+**Approved design:** @mirrdj requested replacing the plain HTML dashboard with
+Mantis's React/MUI design: light sidebar, Public Sans typography, compact white
+cards, blue navigation, a map replacing the large chart, and separate pages.
+Streamlit remains a separate Python application. All web frontend code, vendor
+attribution, package/lock files, assets, build configuration and browser/Node tests
+live in `frontend/`. Python serves its production build; existing demo processes
+remain untouched.
+
+The overview has four counters: active incidents, deployed resources, structures,
+and people clusters. Navigation includes an incident directory, per-incident
+summary/calls/response plan/evacuation/buildings/log pages, global Buildings & risk,
+Resources and Activity log. Count cards navigate to their relevant lists. Calls
+separate pending contact, completed calls and human follow-up with explicit reasons.
+Response steps retain backend ordering, timing, prerequisites and proposal status.
+Evacuation distinguishes reported ability, assistance needed, departure and arrival.
+Buildings show incident, assessment date, valuation, expected loss band, risk
+indicators, remaining window and sources. Global and incident tables share filters.
+Logs display received order, event time, incident, type, severity and explanation;
+newest first is reversible. Missing ingestion sequence/time is explicitly unknown.
+
+**Data boundaries:** existing `coordination-state-1` remains the live source through
+REST/WebSocket. It is one incident; additional incidents are demonstrated only in
+an explicit, labelled frontend demonstration mode. Live source never fills missing
+fields with demo values. No crew deployment is inferred from availability or a
+proposal. No building occupancy is counted as confirmed evacuation progress.
+No numeric risk score is invented from operational `value_score`. Buildings with
+missing risk/valuation and unknown population remain visible. Current-state data
+is not a historical database; unavailable history is disclosed. Frontend demo
+fixtures are illustrative, never evidence of calls or dispatch.
+
+### Implementation plan
+
+**Goal:** deliver the approved navigable Mantis React UI and preserve the read-only
+coordination boundary. **Stack:** React, MUI, Vite, React Router, Leaflet, existing
+Python/Starlette server. **Spec:** this section, including the approved activity-log
+and frontend-directory additions.
+
+- [ ] Task 1 — data adapter and fixtures (`frontend/src/data/`,
+  `frontend/tests/model.test.mjs`). Write failing cases for absent metrics, unique
+  location contact counts, follow-up reasons, incident/date filtering, confirmed
+  evacuation versus ability, and stable event arrival ordering. Run
+  `node --test frontend/tests/model.test.mjs`; implement pure selectors and an
+  isolated demonstration dataset; rerun. Interface: `toIncident(state)`,
+  `callRows(incident)`, `buildingRows(incidents)`, `filterBuildings(rows, filters)`,
+  `orderedEvents(incidents, filters)`, `metrics(incidents)`.
+- [ ] Task 2 — React shell and pages (`frontend/src/`, `frontend/package.json`,
+  `frontend/vite.config.mjs`, `frontend/index.html`). Adapt upstream Mantis card and
+  typography with its MIT attribution. Relocate old dashboard and Node tests into
+  `frontend/legacy/` and `frontend/tests/`. Build overview, incident navigation,
+  calls/reasons, resource plan, evacuation, buildings/detail and activity log.
+  Reuse the proven full-state transport. Add browser assertions for navigation,
+  filters and no write requests before implementing their pages. Run
+  `npm --prefix frontend test`, `npm --prefix frontend run lint` and
+  `npm --prefix frontend run build`.
+- [ ] Task 3 — backend serving/projection (`fireline/dashboard_server.py`,
+  `fireline/dashboard_public.py`, `tests/test_dashboard_server.py`). Test and expose
+  existing valuation/criticality fields through the allowlist, preserving private
+  field redaction. Serve only `frontend/dist/index.html` and built assets; return
+  clear build instructions when missing. Keep API paths and WebSocket semantics.
+  Run targeted Python tests with `PYTHONPATH=.` and the existing sibling venv.
+- [ ] Task 4 — verification and handoff. Start a separate server in this worktree,
+  run Chrome against production build (desktop and mobile), inspect screenshots,
+  verify live/demo separation, filters, detail and log order. Review implementation,
+  fix findings, run relevant Python/Node suites, record actual results here, commit
+  and push `codex/ui-session`. Keep worktree and existing demos available.
