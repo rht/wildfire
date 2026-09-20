@@ -1,0 +1,387 @@
+{
+  "snapshot_id": "end-to-end-demo-0001",
+  "horizon_min": 300,
+  "assisted": {
+    "A": 4,
+    "B": 0,
+    "C": 2
+  },
+  "teams": [
+    {
+      "team_id": "crew-1",
+      "start_node_id": "BASE",
+      "available": true,
+      "available_from_min": 0,
+      "available_until_min": 300,
+      "transport_capacity": 0,
+      "capabilities": [
+        "protection"
+      ],
+      "current_location": {
+        "latitude": 41.88,
+        "longitude": 3.015,
+        "observed_at": "2026-09-20T08:00:00+00:00",
+        "source": "synthetic crew GPS report"
+      }
+    },
+    {
+      "team_id": "crew-2",
+      "start_node_id": "BASE",
+      "available": true,
+      "available_from_min": 0,
+      "available_until_min": 300,
+      "transport_capacity": 8,
+      "capabilities": [
+        "assisted_evacuation"
+      ],
+      "current_location": {
+        "latitude": 41.88,
+        "longitude": 3.016,
+        "observed_at": "2026-09-20T08:00:00+00:00",
+        "source": "synthetic crew GPS report"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "action_id": "protect-B",
+      "asset_id": "B",
+      "duration_min": 5,
+      "deadline_min": 120,
+      "requires": [],
+      "capabilities": [
+        "protection"
+      ],
+      "transport_people": 0,
+      "readiness_required": false,
+      "effects": [
+        {
+          "asset_id": "B",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic protection effect, not predicted lives saved"
+        }
+      ]
+    },
+    {
+      "action_id": "assist-C",
+      "asset_id": "C",
+      "duration_min": 8,
+      "deadline_min": 150,
+      "requires": [],
+      "capabilities": [
+        "assisted_evacuation"
+      ],
+      "transport_people": 2,
+      "readiness_required": true,
+      "effects": [
+        {
+          "asset_id": "C",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic assisted pickup effect"
+        }
+      ]
+    },
+    {
+      "action_id": "assist-A",
+      "asset_id": "A",
+      "duration_min": 20,
+      "deadline_min": 220,
+      "requires": [],
+      "capabilities": [
+        "assisted_evacuation"
+      ],
+      "transport_people": 6,
+      "readiness_required": true,
+      "effects": [
+        {
+          "asset_id": "A",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic assisted pickup effect"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "from_node": "BASE",
+      "to_node": "A",
+      "minutes": 5,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected road",
+      "path_lonlat": [
+        [
+          3.015,
+          41.88
+        ],
+        [
+          3.005,
+          41.895
+        ],
+        [
+          3.01,
+          41.91
+        ]
+      ]
+    },
+    {
+      "from_node": "BASE",
+      "to_node": "B",
+      "minutes": 3,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected road",
+      "path_lonlat": [
+        [
+          3.015,
+          41.88
+        ],
+        [
+          3.02,
+          41.895
+        ],
+        [
+          3.025,
+          41.9
+        ]
+      ]
+    },
+    {
+      "from_node": "BASE",
+      "to_node": "C",
+      "minutes": 4,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected road",
+      "path_lonlat": [
+        [
+          3.015,
+          41.88
+        ],
+        [
+          3.03,
+          41.88
+        ],
+        [
+          3.04,
+          41.89
+        ]
+      ]
+    },
+    {
+      "from_node": "C",
+      "to_node": "A",
+      "minutes": 8,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected road",
+      "path_lonlat": [
+        [
+          3.04,
+          41.89
+        ],
+        [
+          3.03,
+          41.905
+        ],
+        [
+          3.01,
+          41.91
+        ]
+      ]
+    }
+  ],
+  "road_nodes": {
+    "BASE": [
+      3.015,
+      41.88
+    ],
+    "A": [
+      3.01,
+      41.91
+    ],
+    "B": [
+      3.025,
+      41.9
+    ],
+    "C": [
+      3.04,
+      41.89
+    ]
+  },
+  "road_warnings": [
+    {
+      "road_id": "forest-road",
+      "road_name": "Forest Road",
+      "reason": "blocked by the fictional fire",
+      "source": "synthetic road desk"
+    }
+  ],
+  "readiness_validity_min": 60,
+  "forecast_observed_min": 0,
+  "candidates": [
+    {
+      "centre": {
+        "centre_id": "hall",
+        "name": "Demo Reception Hall",
+        "remaining_places": 20,
+        "approved": true,
+        "available_until_min": 300,
+        "source": "synthetic reception desk"
+      },
+      "kind": "community_centre",
+      "approval": {
+        "approval_id": "demo-hall-approved",
+        "analyst_id": "synthetic-analyst",
+        "incident_id": "end-to-end-fire",
+        "centre_id": "hall",
+        "evidence": "synthetic inspected reception"
+      },
+      "safe_until_min": 300,
+      "threat_source": "synthetic forecast",
+      "capabilities": [
+        "assisted_evacuation"
+      ],
+      "closed": false
+    }
+  ],
+  "evacuation_routes": [
+    {
+      "asset_id": "A",
+      "centre_id": "hall",
+      "travel_min": 5,
+      "evacuation_min": 10,
+      "confirmed": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected route",
+      "road_ids": [
+        "south-road"
+      ]
+    },
+    {
+      "asset_id": "B",
+      "centre_id": "hall",
+      "travel_min": 5,
+      "evacuation_min": 10,
+      "confirmed": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected route",
+      "road_ids": [
+        "south-road"
+      ]
+    },
+    {
+      "asset_id": "C",
+      "centre_id": "hall",
+      "travel_min": 5,
+      "evacuation_min": 10,
+      "confirmed": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected route",
+      "road_ids": [
+        "south-road"
+      ]
+    }
+  ],
+  "roads": [
+    {
+      "road_id": "south-road",
+      "state": "open",
+      "observed_min": 0,
+      "available_until_min": 260,
+      "source": "synthetic road desk"
+    }
+  ],
+  "reservations": [
+    {
+      "command_id": "reserve-A",
+      "group_id": "group-A",
+      "centre_id": "hall",
+      "approval": {
+        "approval_id": "demo-allocation-A",
+        "analyst_id": "synthetic-analyst",
+        "incident_id": "end-to-end-fire",
+        "centre_id": "hall",
+        "group_id": "group-A",
+        "evidence": "synthetic group destination approval"
+      }
+    },
+    {
+      "command_id": "reserve-B",
+      "group_id": "group-B",
+      "centre_id": "hall",
+      "approval": {
+        "approval_id": "demo-allocation-B",
+        "analyst_id": "synthetic-analyst",
+        "incident_id": "end-to-end-fire",
+        "centre_id": "hall",
+        "group_id": "group-B",
+        "evidence": "synthetic group destination approval"
+      }
+    },
+    {
+      "command_id": "reserve-C",
+      "group_id": "group-C",
+      "centre_id": "hall",
+      "approval": {
+        "approval_id": "demo-allocation-C",
+        "analyst_id": "synthetic-analyst",
+        "incident_id": "end-to-end-fire",
+        "centre_id": "hall",
+        "group_id": "group-C",
+        "evidence": "synthetic group destination approval"
+      }
+    }
+  ],
+  "route_guidance": {
+    "A": {
+      "asset_id": "A",
+      "centre_id": "hall",
+      "snapshot_id": "end-to-end-demo-0001",
+      "confirmed": true,
+      "instructions": "Use the inspected South Road to Demo Reception Hall.",
+      "road_ids": [
+        "south-road"
+      ],
+      "road_names": [
+        "South Road"
+      ],
+      "source": "synthetic route desk"
+    },
+    "B": {
+      "asset_id": "B",
+      "centre_id": "hall",
+      "snapshot_id": "end-to-end-demo-0001",
+      "confirmed": true,
+      "instructions": "Use the inspected South Road to Demo Reception Hall.",
+      "road_ids": [
+        "south-road"
+      ],
+      "road_names": [
+        "South Road"
+      ],
+      "source": "synthetic route desk"
+    },
+    "C": {
+      "asset_id": "C",
+      "centre_id": "hall",
+      "snapshot_id": "end-to-end-demo-0001",
+      "confirmed": true,
+      "instructions": "Use the inspected South Road to Demo Reception Hall.",
+      "road_ids": [
+        "south-road"
+      ],
+      "road_names": [
+        "South Road"
+      ],
+      "source": "synthetic route desk"
+    }
+  }
+}

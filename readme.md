@@ -2737,7 +2737,7 @@ or public facility discovery; only the private contact configuration supplies th
 
 Implementation steps and interfaces:
 
-- [ ] **Fire assessment adapter** — `fireline/fire_assessment.py` exports
+- [x] **Fire assessment adapter** — `fireline/fire_assessment.py` exports
   `assess_fire(fire, *, scenario_id, sequence, as_of, input_mode, search_radius_m,
   facility_rows=None, forecast=None, spread=None, fetcher=None)` returning
   `{'snapshot': ..., 'discovery': ...}`. Reuse `feeds.equipaments`,
@@ -2747,7 +2747,7 @@ Implementation steps and interfaces:
   filtering, real provider adapter calls, missing timing, unknown occupancy, value
   provenance, invalid geometry/radius and input-mode separation in
   `tests/test_fire_assessment.py`.
-- [ ] **Provider lifecycle adapter** — `fireline/call_events.py` verifies Vonage
+- [x] **Provider lifecycle adapter** — `fireline/call_events.py` verifies Vonage
   signed callbacks against configured application/account and exact persisted call
   bindings; maps `unanswered` to `no_answer`. SLNG call-end notifications wake
   authenticated GET-call synchronization rather than trusting event-supplied answers.
@@ -2755,7 +2755,7 @@ Implementation steps and interfaces:
   signatures, replay, incorrect binding, time limits, busy/failed/no-answer and
   outcome separation in `tests/test_call_events.py`. Document whether the configured
   SIP connection actually exposes Vonage Voice API events.
-- [ ] **Persistent orchestration** — `fireline/incident_runtime.py` stores the active
+- [x] **Persistent orchestration** — `fireline/incident_runtime.py` stores the active
   trigger, snapshot, private operational inputs and enqueue report; builds both
   algorithms' inputs from snapshot IDs/timing/occupancy/value. Reuse allocation
   ledger and approved call-briefing adapter. Crew action durations, capabilities,
@@ -2763,7 +2763,7 @@ Implementation steps and interfaces:
   missing inputs stay reviewable. Queue ticks poll results and publish recomputation.
   Tests in `tests/test_incident_runtime.py` cover fire-to-plan, no-answer escalation,
   contact approvals, stale updates, restart, duplicate triggers and provider errors.
-- [ ] **One runnable service** — `fireline/incident_server.py` combines authenticated
+- [x] **One runnable service** — `fireline/incident_server.py` combines authenticated
   `POST /api/fire`, `POST /voice/results`, provider event endpoints, read-only
   dashboard REST/WebSocket and a background tick. Persistent SQLite paths, public
   hosts/port and secrets are configuration; one process owns the queue. Dashboard
@@ -2771,7 +2771,7 @@ Implementation steps and interfaces:
   trigger and an explicit synthetic no-answer exercise; default never dispatches.
   Tests in `tests/test_incident_server.py` exercise actual HTTP/WebSocket and worker
   transitions, including authentication, duplicate events and reconnect.
-- [ ] **Delivery** — provide replayable trigger/catalog/operations examples, local
+- [x] **Delivery** — provide replayable trigger/catalog/operations examples, local
   run and free-tunnel instructions, regression results, a running local service,
   and a pushed task branch. Verify live read-only facility lookup if reachable and
   clearly distinguish recorded inputs, actual provider reads and synthetic call
@@ -2783,3 +2783,154 @@ as authority for those facts. Keep existing exact approval, review, allocation a
 Norma-defense boundaries. Snapshot value estimates retain their policy provenance.
 No external message, crew dispatch or production emergency instruction is implied
 by publishing a proposal. Use repository-local worktrees and push the task branch.
+
+### Running the integrated service
+
+The service is implemented on `codex/end-to-end`. It reuses the existing assessment,
+contact-priority, multi-crew planning, allocation and voice queue modules. It does
+not merge the separate discovery branch. The HTTP integration tests run a fire
+trigger through assessment, calls, no-answer escalation and WebSocket publication.
+
+From this worktree, with project dependencies installed:
+
+```sh
+mkdir -p data/incident-demo
+python - <<'PY'
+from pathlib import Path
+import secrets
+path = Path('data/incident-demo/local.env')
+if not path.exists():
+    path.write_text('export FIRE_TRIGGER_TOKEN=' + secrets.token_hex(24) + '\n'
+                   'export VOICE_RESULT_TOKEN=' + secrets.token_hex(24) + '\n')
+    path.chmod(0o600)
+PY
+source data/incident-demo/local.env
+python -m fireline.incident_server demo --data-dir data/incident-demo --port 18541
+```
+
+Open `http://127.0.0.1:18541/`. This explicit synthetic exercise discovers three
+nearby catalog locations, rejects the outside-radius location, assesses them,
+queues approved fictional contacts and records unanswered outcomes sequentially.
+No telephony provider is called. Each no-answer keeps household ability unknown
+and creates a human callback. Reusing the directory resumes the same incident.
+Use a new directory for a fresh exercise or another incident.
+
+The two algorithms remain separate:
+
+1. **Contact order:** earliest remaining evacuation window first, using forecast
+   arrival minus estimated evacuation duration minus the preserved 30-minute buffer.
+   Missing or stale timing stays in review. The queue admits calls subject to both
+   concurrency and start-rate limits; these limits are ceilings, not throughput guarantees.
+2. **Crew proposal:** capability- and route-constrained sequencing, accounting for
+   travel, action duration, deadlines, transport seats, reported readiness and
+   commitments. It prioritizes assisted people, then people, then asset value.
+   A short protective action may precede assistance only if the resulting schedule
+   remains feasible. Unknown action times or road safety do not become invented
+   routes or automatic dispatch instructions.
+
+`plan.response.teams[].current_location` is either null or
+`{latitude, longitude, observed_at, source}` from explicit operational reports.
+It is never inferred from `start_node_id`. Each team's `tasks` is ordered and
+contains route geometry in **longitude, latitude** order, plus travel/start/finish
+minutes relative to the incident epoch. The UI can label stops **1 → 2 → 3** and
+show the last reported crew position with its observation timestamp; routes are
+plans, not tracking of actual movement. Old reports retain their timestamps.
+
+`peopleClusters` supplies the UI's identified groups. Counts use assessed occupancy,
+which can be unknown; they are not individually verified headcounts. `unknown`
+means evacuation ability/progress remains unconfirmed. `needs_assistance` comes
+from the current evidenced assessment. `self_evacuating` requires reported departure;
+`arrived` requires recorded arrival for the whole allocated group. Merely answering
+a call, acknowledging instructions, or reserving reception capacity is not arrival.
+
+### Real inputs, callbacks and hosting
+
+For a configured incident, use `serve --settings PRIVATE_SETTINGS.json --data-dir DIR`.
+Settings contain `input_mode` (`live`, `recorded`, or `synthetic`), `call_mode`
+(`disabled` by default, `live`, or synthetic-only `simulate_no_answer`),
+`search_radius_m` (positive, at most 50,000), optional `catalog_file`,
+`operations`, private `contacts`, exact snapshot/asset/phone `approvals`, and
+`call_limits: {"max_concurrent_calls": 5, "max_call_starts_per_second": 1}`.
+Catalog paths are relative to the settings file. Only `live` inputs can enable
+live dispatch. All workers for a provider account must share the existing queue
+budget; run this service with **one process**, persistent disk and one incident
+per directory. A two-second worker tick may further constrain call start rate.
+
+Omit `catalog_file` to query Gencat registered facilities around the fire geometry.
+This is not a complete private-house inventory. Unclassified facilities remain
+unknown-class review records rather than acquiring invented values or occupancy.
+A search radius is coverage chosen by the operator; the service does not calculate
+confinement capability or infer fire-arrival times from that radius. A supplied
+forecast or a supported, provenance-labelled Deepfire spread response provides
+arrival timing. No forecast means review, rather than proximity masquerading as a
+prediction. Assessment uses existing policy-based value estimates and preserves
+low/mid/high loss estimates; no new LLM is used to invent operational facts.
+
+Authenticated endpoints:
+
+| Endpoint | Purpose | Authentication |
+| --- | --- | --- |
+| `POST /api/fire` | Assess a new fire/update and recompute both plans | `FIRE_TRIGGER_TOKEN` bearer |
+| `POST /voice/results` | Record structured interview results and replan | `VOICE_RESULT_TOKEN` bearer |
+| `POST /voice/events/slng` | Wake authoritative authenticated SLNG call polling | Separate `SLNG_EVENT_TOKEN` bearer |
+| `POST /voice/events/vonage` | Process signed lifecycle events, including unanswered | Verified Vonage JWT and exact UUID binding |
+| `POST /api/simulate` | Explicit synthetic outcome exercise only | `FIRE_TRIGGER_TOKEN` bearer |
+| `GET /api/state`, WebSocket `/api/updates` | Public projection and revision updates | Dashboard session when publicly exposed |
+| `GET /health` | Generic worker health | No incident data |
+
+Fire JSON contains `trigger_id`, `scenario_id`, explicit `input_mode` if supplied,
+`as_of` for recorded/synthetic runs, and `fire` with incident ID, WGS84 geometry,
+geometry kind, observation timestamp and source. Add `forecast` or `spread` and
+optionally snapshot-bound `operations`. `demo_trigger()` in
+`fireline/incident_runtime.py` supplies a complete synthetic example; the catalog
+and operational evidence are in `fixtures/end_to_end/`. Submit a saved trigger with:
+
+```sh
+python -m fireline.incident_server trigger --url http://127.0.0.1:18541 --file fire.json
+```
+
+Duplicate trigger IDs must carry identical content. A new trigger receives a new
+snapshot sequence. Its exact phone approvals and operational evidence must refer
+to that snapshot. Previous unstarted calls are cancelled; active calls and durable
+reservations remain visible. Missing/new hazard evidence withholds old evacuation
+instructions without forgetting reception capacity. Full projections are validated
+against disposable database copies before the trigger and assessment checkpoint
+is accepted. Idempotent refresh repairs interrupted projections after restart.
+Do not run another writer against the runtime's databases.
+
+Live telephony additionally requires `SLNG_API_KEY`, `SLNG_AGENT_ID` and
+`SLNG_OUTBOUND_CONNECTION_ID`. SLNG call polling remains available when callbacks
+are not configured. Its call-end webhook is only a wake-up: event payloads cannot
+assert trusted answers. Configure the provider to reach the authenticated HTTPS
+endpoint separately; this change does not alter provider accounts or public routing.
+
+Vonage Voice API events are **not guaranteed by an SLNG SIP trunk alone**. The
+actual provider path must expose a Voice API event URL. Configure
+`VONAGE_SIGNATURE_SECRET`, `VONAGE_API_KEY`, and optionally
+`VONAGE_APPLICATION_ID`, then bind the real UUID to the already-bound local request:
+
+```sh
+python -m fireline.incident_server bind-vonage --data-dir DIR \
+  --settings PRIVATE_SETTINGS.json --request-id REQUEST_ID --call-id VONAGE_UUID
+```
+
+Signed `unanswered` becomes `no_answer`; later generic `completed` does not erase
+it. Binding never matches by phone number. This endpoint and polling behavior are
+tested with mocked transports; no real unanswered call or provider webhook delivery
+has been claimed as validated.
+
+For public access, use HTTPS and add the exact hostname with `--allowed-host`.
+Set a separate `DASHBOARD_TOKEN`; visitors sign in at `/login`, which also protects
+WebSocket access. Trigger/result/dashboard tokens must be distinct and at least
+32 characters. Default binding is localhost; `--host 0.0.0.0` additionally requires
+dashboard authentication. A tunnel can forward HTTPS to the local service, but
+the computer and process must stay running and SQLite must remain on persistent
+disk. No public tunnel or paid deployment is created by these instructions.
+
+Integration verification: **1,110 Python tests passed, one skipped**, plus **18 Node
+tests**. Chrome verified the running REST/WebSocket dashboard with three synthetic
+no-answer outcomes and three human callbacks, without page errors. One existing
+Starlette/AnyIO deprecation warning remains. The Gencat feed check returned 81
+bounding-box records; 34 were within the 5 km metric radius and remained visible
+as unknown-class facilities with unknown forecast timing. This is a catalog
+connectivity check around a test coordinate, not an active-fire validation.

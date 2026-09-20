@@ -145,7 +145,7 @@ def _asset_views(state):
     return views
 
 
-def _response_proposal(response, snapshot, elapsed):
+def _response_proposal(response, snapshot, elapsed, *, now):
     """Attach the verified multi-crew export without applying its proposed work.
 
     The producer owns feasibility and commitments. This boundary checks association
@@ -157,6 +157,7 @@ def _response_proposal(response, snapshot, elapsed):
             or isinstance(response.get('now_min'), bool) or response.get('now_min') != elapsed
             or response.get('dispatch') is not False):
         raise ValueError('response proposal association, time or dispatch mismatch')
+    from .incident_planning import validate_current_location
     assets = {a['asset_id'] for a in snapshot['assets']}
     task_keys = ('action_id', 'asset_id', 'team_id', 'scenario_id', 'snapshot_id',
                  'action_version', 'status', 'from_node', 'to_node', 'depart_min',
@@ -189,7 +190,8 @@ def _response_proposal(response, snapshot, elapsed):
                     ('asset_id', 'coverage', 'confirmed', 'source') if k in effect})
             tasks.append(public)
         teams.append(dict(team_id=team['team_id'], tasks=tasks, locked=team['locked'],
-                          remaining_transport_capacity=team['remaining_transport_capacity']))
+                          remaining_transport_capacity=team['remaining_transport_capacity'],
+                          current_location=validate_current_location(team.get('current_location'), now=now)))
     public = {k: response[k] for k in ('schema_version', 'scenario_id', 'snapshot_id',
                                      'now_min', 'optimal', 'dispatch', 'method')}
     public.update(teams=teams, coverage={k: v for k, v in response['coverage'].items() if k in assets},
@@ -226,6 +228,24 @@ def _allocated_plan(store, snapshot, scenario, assessments, epoch, now, road_war
         raise ValueError('allocation context does not match coordination')
     return coordinate_approved_evacuation(scenario, assessments,
         _AllocationView(now.isoformat(), data), as_of=now.isoformat(), road_warnings=road_warnings)
+
+
+def _people_groups(snapshot, plan):
+    groups = []
+    for asset in snapshot['assets']:
+        aid = asset['asset_id']
+        location = next((r for r in plan['locations'] if r['asset_id'] == aid), {})
+        needs_help = location.get('reported_needs_assistance') is True
+        status = 'needs_assistance' if needs_help else 'unknown'
+        if location.get('evacuation_status') == 'arrival_confirmed':
+            status = 'arrived'
+        elif location.get('evacuation_status') == 'departure_confirmed' and location.get('mode') == 'self_evacuate':
+            status = 'self_evacuating'
+        groups.append(dict(id='group-'+aid, asset_id=aid, name=asset['name'], people=asset['estimated_occupancy'],
+            status=status, latitude=asset['latitude'],longitude=asset['longitude'],
+            destination_id=location.get('destination_id'),source='assessment occupancy and recorded evacuation progress',
+            occupancy_basis=asset['occupancy_basis']))
+    return groups
 
 
 class CoordinationStore:
@@ -318,7 +338,7 @@ class CoordinationStore:
             records.append(record)
         return _merge_assessments(assessments), summaries, records, errors
 
-    def refresh(self, snapshot, scenario, centres, routes, *, road_warnings=(), response_plan=None, allocation_store=None):
+    def refresh(self, snapshot, scenario, centres, routes, *, road_warnings=(), response_plan=None, allocation_store=None, system_events=(), system_errors=()):
         """Recompute at the exact elapsed scenario time and atomically publish changes.
 
         Snapshot records are authoritative for timing, distance and occupancy.
@@ -334,6 +354,7 @@ class CoordinationStore:
             self._accept_snapshot(snapshot, scenario, now, previous)
             current = _snapshot_scenario(snapshot, scenario, self.epoch)
             assessments, calls, records, errors = self._calls(snapshot)
+            errors.extend(system_errors)
             pending_assistance = {t['asset_id'] for t in self.tasks.tasks()
                                   if t['reason'] == 'voice:arrange_assistance' and t['status'] != 'done'}
             pending_assistance.update(a.asset_id for a in assessments
@@ -354,7 +375,7 @@ class CoordinationStore:
                     if 'arrange_assistance' not in row['tasks']:
                         row['tasks'].append('arrange_assistance')
             if response_plan is not None:
-                plan['response'] = _response_proposal(response_plan, snapshot, elapsed)
+                plan['response'] = _response_proposal(response_plan, snapshot, elapsed, now=now)
                 plan['response_replanning_required'] = False
             self.voice.record_plan(plan, snapshot_id=snapshot['snapshot_id'])
             accepted = self._accepted_snapshots(snapshot)
@@ -376,7 +397,9 @@ class CoordinationStore:
                 teams=self.tasks.teams(), tasks=[_task_summary(t) for t in tasks], errors=errors,
                 snapshot_as_of=snapshot['as_of'], data_status=snapshot['data_status'],
                 fire_geometry=snapshot.get('fire_geometry'), fire_geometry_kind=snapshot.get('fire_geometry_kind'),
-                dispatch=False, live_validation=False))
+                fire_observed_at=snapshot.get('fire_observed_at'), fire_source=snapshot.get('fire_source'),
+                dispatch=False, live_validation=False,
+                peopleClusters=_people_groups(snapshot, plan), system_events=list(system_events)))
             # Private text affects the revision digest but never the public payload.
             fingerprint = digest([candidate, records, tasks])
             last = self.conn.execute(
@@ -393,7 +416,7 @@ class CoordinationStore:
                 revision=revision, scenario_id=snapshot['scenario_id'], snapshot_id=snapshot['snapshot_id'],
                 as_of=now.isoformat(), kind='coordination_refreshed', changed_asset_ids=changed,
                 refresh='full_state', input_mode=snapshot['input_mode'])
-            candidate.update(revision=revision, as_of=now.isoformat(), events=[event])
+            candidate.update(revision=revision, as_of=now.isoformat(), events=[event, *system_events])
             self.conn.execute('INSERT INTO coordination_revisions VALUES (?, ?, ?, ?)',
                               (revision, fingerprint, encoded(candidate), encoded(event)))
             return candidate

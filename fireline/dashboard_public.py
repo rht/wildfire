@@ -7,7 +7,8 @@ _PHONE = re.compile(r'(?<![\w-])(?:\+?\d(?:[\d ().-]*\d){8,14}|\(\d{2,4}\)[\d .-
 _SECRET = re.compile(r'(?i)(?:bearer\s+\S+|(?:api[_-]?key|token|password)\s*[:=]\s*\S+)')
 
 # Unknown *values* remain null. Unknown fields are withheld until explicitly reviewed.
-_FIELDS = set('''review unserved blocked_actions assisted_units people_units value_units
+_FIELDS = set('''replacement_value_eur replacement_value_basis expected_loss_eur_low
+expected_loss_eur_mid expected_loss_eur_high people_exposed people_at_risk_p50 people_at_risk_p10 current_location peopleClusters system_events review unserved blocked_actions assisted_units people_units value_units
 allocations allocation_revision allocation_tasks destination_candidates
 allocation_id group_id previous_allocation_id incident_id last_at safety
 instruction_allowed assistance transport_confirmed reception_confirmed pickup_min
