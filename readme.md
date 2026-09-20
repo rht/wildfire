@@ -10,14 +10,21 @@ The colleague builds **risk assessment**, which consumes fire updates, discovers
 
 Use [Superpowers](https://github.com/obra/superpowers) for development. Work in a dedicated branch and worktree under this repository's `.worktrees/` directory, publish every task branch to `origin`, and push progress so colleagues can review it. See [AGENTS.md](AGENTS.md) for the persistent workflow.
 
-### Pipeline pitch slide
+### Pipeline explainer slide
 
-`frontend/pipeline/` is a standalone 16:9 pitch slide in the website's ResponsAra
-brand, using its theme, Public Sans and Ant Design icons. The three equal steps
-are **Assess risk → Coordinate response → Guide the analyst**, with one feedback
-loop: **Live updates refine priorities**. It is a concise architecture explanation;
-planning and analyst review do not imply autonomous dispatch. Technical contracts
-and implementation status remain in the architecture sections below.
+`frontend/pipeline/` is a standalone 16:9 explainer in the website's ResponsAra
+brand, using its theme, Public Sans and Ant Design icons. It explains **Assess
+risk & value → Prioritise action → Analyst’s plan** in about 115 words. The wider
+center panel separates least-time-left call priority from crew sequence planning;
+valuation estimates, sourced evidence, unknowns, route/time/capacity constraints
+and analyst review remain explicit. The feedback loop connects calls and changing
+fire conditions to the plan. It loads no incident data or operational API.
+
+This describes the intended integrated architecture; crew lookahead and enhanced
+urgent-review behavior include the planner enhancements developed in PR #36.
+LLM estimates do not establish actual occupancy or confirmed mobility. Approval
+remains separate from dispatch. Technical contracts and implementation status
+remain in the architecture sections below rather than on the slide.
 
 From `frontend`, run `npm exec vite -- --config pipeline/vite.config.mjs --port
 18544 --strictPort` and open `http://127.0.0.1:18544/`. Build with `npm exec vite --

@@ -28,23 +28,35 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
     ).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     const text = await page.locator(".pitch-slide text").allTextContents();
-    expect(text.join(" ").trim().split(/\s+/).length).toBeLessThanOrEqual(60);
+    expect(text.join(" ").trim().split(/\s+/).length).toBeLessThanOrEqual(130);
     for (const title of [
-      "Assess risk",
-      "Coordinate response",
-      "Guide the analyst",
-      "Live updates refine priorities",
+      "Assess risk & value",
+      "Prioritise action",
+      "Analyst’s plan",
+      "Calls + changing fire conditions update the plan",
     ])
       expect(text).toContain(title);
-    // Each text element must fit inside its card / canvas, with no clipped SVG text.
+    expect(text.join(" ").trim().split(/\s+/).length).toBeGreaterThanOrEqual(
+      100,
+    );
+    // Check actual rendered bounds against each card and the full slide.
     expect(
       await page.locator(".pitch-slide text").evaluateAll((elements) =>
         elements
           .filter((el) => {
-            const box = el.getBBox();
-            return el.parentElement.hasAttribute("transform")
-              ? box.x < 0 || box.x + box.width > 440
-              : box.x < 0 || box.x + box.width > 1600;
+            const card = el.closest("[data-card]");
+            const bounds = (
+              card
+                ? card.querySelector(".card-frame")
+                : document.querySelector(".pitch-slide")
+            ).getBoundingClientRect();
+            const box = el.getBoundingClientRect();
+            return (
+              box.left < bounds.left ||
+              box.right > bounds.right ||
+              box.top < bounds.top ||
+              box.bottom > bounds.bottom
+            );
           })
           .map((el) => el.textContent),
       ),
@@ -108,10 +120,10 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
       { encoding: "utf8" },
     );
     for (const title of [
-      "Assess risk",
-      "Coordinate response",
-      "Guide the analyst",
-      "Live updates refine priorities",
+      "Assess risk & value",
+      "Prioritise action",
+      "Analyst’s plan",
+      "Calls + changing fire conditions update the plan",
     ])
       expect(pdfText).toContain(title);
     expect(pdfText).not.toMatch(/PNG image|Vector PDF|schema|WebSocket|PR #/);
