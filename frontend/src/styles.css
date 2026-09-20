@@ -694,6 +694,7 @@ main {
 }
 @media (min-width: 1700px) {
   main {
+    width: 100%;
     max-width: 1800px;
     margin: auto;
   }
@@ -1588,6 +1589,9 @@ main {
 .metric-grid {
   width: min(100%, 940px);
   flex-shrink: 0;
+}
+.incident-tabs ~ .metric-grid {
+  width: 100%;
 }
 .metric > a,
 .metric-body,
