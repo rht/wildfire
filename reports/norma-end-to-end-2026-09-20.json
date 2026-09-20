@@ -1697,7 +1697,7 @@
     "initial_scan_complete": true,
     "initial_scan_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
     "working_tree_remediation_owner": "root end-to-end session",
-    "working_tree_remediation_claims_verified_by_scanner": "Two exact-file Livechecks at 2a235999 plus hash-verified unchanged results; coordinator reports 71 focused tests at final head and 1115 full-suite tests previously passed.",
+    "working_tree_remediation_claims_verified_by_scanner": "Two exact-file Livechecks at 2a235999 plus hash-verified unchanged results. Root subsequently verified the full suite at final code head: 1115 passed, 1 skipped; scanner did not rerun it.",
     "reported_work": [
       "HTTPS-only dashboard login and secure cookie with regression",
       "typed lifespan",
@@ -3563,7 +3563,7 @@
     "evidence": {
       "finding": "focused_rescans[1].results",
       "historical_subprocess_regression": "new_defense_candidates[0].verification",
-      "latest_suite": "Coordinating root reports 71 focused tests passed at final head; 1115 full-suite Python tests previously passed. Scanner did not rerun suites."
+      "latest_suite": "Coordinating root reran the full suite at final code head 2a235999: 1115 passed, 1 skipped, 1 existing warning. Scanner did not rerun suites."
     }
   },
   "candidate_assessment_scope": "new_defense_candidates contains initial e8b8c8e assessments; selected_new_defenses and current_primary_defense describe the final ba441f7 decisions.",
@@ -4688,5 +4688,18 @@
         "Deploy multiple independent processes on the same incident without equivalent synchronization"
       ]
     }
-  ]
+  ],
+  "root_final_verification": {
+    "code_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+    "verified_by": "coordinating root",
+    "python_suite": {
+      "passed": 1115,
+      "skipped": 1,
+      "warnings": 1,
+      "elapsed_seconds": 11.93,
+      "scope": "full pytest suite rerun after final queue-state correction"
+    },
+    "frontend_tests_passed": 34,
+    "scanner_reran_full_suite": false
+  }
 }
