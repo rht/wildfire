@@ -217,6 +217,25 @@ make fetch        # pull real Gencat registers and Open-Meteo wind into data/ (n
 make precompute   # v0 engine demo (spread CA, routing, decisions); the same uncalibrated CA enriches gavarres_real_0001..0003 (labelled, see below)
 ```
 
+The standalone design mockup has a focused DOM regression test. Install its pinned test-only
+dependency under the ignored `data/` directory, then run the test:
+
+```sh
+npm install --prefix data/ui-dom-test jsdom@27.0.0
+NODE_PATH=data/ui-dom-test/node_modules node --test tests/test_ui_mockup.cjs
+```
+
+The test verifies that snapshot-controlled IDs, names, types, review reasons and provenance render
+as literal text across the ranking, review queue, selected-location detail, map tooltips and change
+log. It also covers queue selection, task creation, team assignment, snapshot advance with task
+preservation and the change-log toggle. The jsdom installation is test-only and does not add a
+production JavaScript framework.
+
+Norma Livecheck returned zero findings for the mockup HTML under full coverage. The extracted
+inline JavaScript and the identical JavaScript form of the CommonJS regression test also returned
+zero findings, but with reduced coverage because one Semgrep rule failed to load. Those JavaScript
+results therefore do not establish an unqualified clean scan.
+
 `CONTRACTS.md` (v1.1) holds the module APIs that implement section 5 and the coordination side.
 `fireline/` has `snapshot.py` (producer), `fire_input.py` (Deepfire poll or recorded responses, stale
 status, latency), `forecast_input.py` (per-location fire arrival estimates: a labelled forecast file or
