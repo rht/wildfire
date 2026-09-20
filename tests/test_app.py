@@ -76,8 +76,8 @@ def test_sequence_controls_step_back_to_an_earlier_snapshot_without_rewinding_th
     at = at.sidebar.button[0].click().run()                          # Previous: an earlier moment, view only
     assert not at.exception and at.title[0].value == opening_title
     assert at.sidebar.select_slider[0].value == first
-    assert any("store stays at 2" in w.value for w in at.warning)
-    assert any("Earlier moment under review" in w.value for w in at.warning)
+    assert any("store stays at 2" in w.value for w in at.warning)          # sidebar notice, no body banner
+    assert any("Earlier moment under review" in e.label for e in at.expander)
 
     at = at.sidebar.select_slider[0].set_value(second).run()         # the slider scrubs back to the update
     assert not at.exception and at.sidebar.select_slider[0].value == second

@@ -926,11 +926,11 @@ def main() -> None:
     c = s["counts"]
     render_header(sess, s)
     if s["reviewing_earlier"]:
-        st.warning(f"Earlier moment under review: snapshot `{s['snapshot_id']}`, sequence {s['sequence']} of "
-                   f"{s['n_sequences']}, as_of {s['as_of']}. The map, ranking and review queue are recomputed for "
-                   f"that moment with your confirmed overrides; tasks, the change log and the store's accepted "
-                   f"sequence stay at {s['applied_sequence']}, and no tasks are suggested from it. Work you create "
-                   f"here is still recorded, stamped with this snapshot.")
+        with st.expander(f"Earlier moment under review - sequence {s['sequence']} of {s['n_sequences']}, view only"):
+            st.write(f"Snapshot `{s['snapshot_id']}`, as_of {s['as_of']}. The map, ranking and review queue are "
+                     f"recomputed for that moment with your confirmed overrides; tasks, the change log and the "
+                     f"store's accepted sequence stay at {s['applied_sequence']}, and no tasks are suggested from "
+                     f"it. Work you create here is still recorded, stamped with this snapshot.")
 
     current = selected_asset_id(sess)
     left, right = st.columns([0.62, 0.38], gap="medium")
