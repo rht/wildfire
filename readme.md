@@ -2716,3 +2716,70 @@ inputs into a long-running coordinator/queue worker, connect authenticated provi
 outcomes to refreshes, and verify the Vonage/SLNG unanswered-call lifecycle end to
 end. Public hosting additionally needs configurable hosts/ports, dashboard access
 control and persistent storage. The mock runner does not replace those services.
+
+## End-to-end fire response service — implementation plan
+
+Owner: @mirrdj. This extends the connected offline branch into a configurable
+single-incident service. Approved scope: one fire trigger → geographic facility
+lookup → existing snapshot risk/value assessment → contact priority and crew
+priority → persistent plans/results → REST/WebSocket dashboard. A new fire update
+or authenticated call result recomputes the plan. Real calls remain opt-in, with
+exact private asset/snapshot/phone approvals; the current test is no-answer.
+
+Architecture: one Python/Starlette process with a paced background tick, the
+existing SQLite coordination and allocation stores on persistent local storage,
+and existing SLNG dispatch/result polling. A trigger is authenticated and binds
+scenario, incident, input mode, sequence and UTC epoch. Duplicate triggers are
+idempotent; a directory cannot mix incidents or input modes. Discovery and risk
+assessment remain a replaceable producer upstream of both existing algorithms.
+The separate discovery PR is not merged. Phone numbers never come from inference
+or public facility discovery; only the private contact configuration supplies them.
+
+Implementation steps and interfaces:
+
+- [ ] **Fire assessment adapter** — `fireline/fire_assessment.py` exports
+  `assess_fire(fire, *, scenario_id, sequence, as_of, input_mode, search_radius_m,
+  facility_rows=None, forecast=None, spread=None, fetcher=None)` returning
+  `{'snapshot': ..., 'discovery': ...}`. Reuse `feeds.equipaments`,
+  `registers_to_assets`, `build_snapshot` and forecast conversion. Supplied catalogs
+  and fetched facilities take the same geographic filtering path. Buffer searches
+  are explicit coverage, never implied fire-arrival predictions. Test geographic
+  filtering, real provider adapter calls, missing timing, unknown occupancy, value
+  provenance, invalid geometry/radius and input-mode separation in
+  `tests/test_fire_assessment.py`.
+- [ ] **Provider lifecycle adapter** — `fireline/call_events.py` verifies Vonage
+  signed callbacks against configured application/account and exact persisted call
+  bindings; maps `unanswered` to `no_answer`. SLNG call-end notifications wake
+  authenticated GET-call synchronization rather than trusting event-supplied answers.
+  Preserve unanswered outcomes across later generic completed notifications. Test
+  signatures, replay, incorrect binding, time limits, busy/failed/no-answer and
+  outcome separation in `tests/test_call_events.py`. Document whether the configured
+  SIP connection actually exposes Vonage Voice API events.
+- [ ] **Persistent orchestration** — `fireline/incident_runtime.py` stores the active
+  trigger, snapshot, private operational inputs and enqueue report; builds both
+  algorithms' inputs from snapshot IDs/timing/occupancy/value. Reuse allocation
+  ledger and approved call-briefing adapter. Crew action durations, capabilities,
+  route geometry and destination approvals are explicit operational evidence;
+  missing inputs stay reviewable. Queue ticks poll results and publish recomputation.
+  Tests in `tests/test_incident_runtime.py` cover fire-to-plan, no-answer escalation,
+  contact approvals, stale updates, restart, duplicate triggers and provider errors.
+- [ ] **One runnable service** — `fireline/incident_server.py` combines authenticated
+  `POST /api/fire`, `POST /voice/results`, provider event endpoints, read-only
+  dashboard REST/WebSocket and a background tick. Persistent SQLite paths, public
+  hosts/port and secrets are configuration; one process owns the queue. Dashboard
+  access uses a separate session login when exposed publicly. CLI supports serve,
+  trigger and an explicit synthetic no-answer exercise; default never dispatches.
+  Tests in `tests/test_incident_server.py` exercise actual HTTP/WebSocket and worker
+  transitions, including authentication, duplicate events and reconnect.
+- [ ] **Delivery** — provide replayable trigger/catalog/operations examples, local
+  run and free-tunnel instructions, regression results, a running local service,
+  and a pushed task branch. Verify live read-only facility lookup if reachable and
+  clearly distinguish recorded inputs, actual provider reads and synthetic call
+  outcomes. No outbound test call is placed while @mirrdj cannot answer.
+
+Global constraints: preserve the 30-minute safety buffer; do not invent people,
+phone numbers, road safety, crew availability or arrival times; do not use an LLM
+as authority for those facts. Keep existing exact approval, review, allocation and
+Norma-defense boundaries. Snapshot value estimates retain their policy provenance.
+No external message, crew dispatch or production emergency instruction is implied
+by publishing a proposal. Use repository-local worktrees and push the task branch.
