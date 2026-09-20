@@ -4,6 +4,7 @@ import json
 import importlib.util
 import os
 import re
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -308,3 +309,42 @@ def test_git_revision_timeout_keeps_optional_provenance_empty(tmp_path, monkeypa
 
     assert revision is None
     assert time.monotonic() - started < 1.0
+
+
+def test_cli_writes_report_when_scoring_seed_is_not_a_stability_seed(tmp_path, monkeypatch):
+    """A separate reporting seed must not crash or change the selection seeds."""
+    script = _calibration_script()
+    report = tmp_path / "calibration.json"
+    original_cfg = dict(config.CA)
+
+    # The numerical simulations are expensive; keep CLI selection, scoring,
+    # serialization and the real recorded perimeter input in this regression.
+    def pair_result(pair, grid, cfg, *, n_runs, seed):
+        score = calibrate.PairScore(
+            label=pair.label, minutes=pair.minutes, seed_area_ha=100.0,
+            observed_area_ha=150.0, observed_new_ha=50.0,
+            predicted_area_ha=150.0 + seed, predicted_new_ha=50.0 + seed,
+            p10_area_ha=200.0, p90_area_ha=100.0, area_ratio=1.0,
+            growth_ratio=1.0, growth_frac_of_observed=0.1, iou=0.8, p10_recall=1.0,
+        )
+        return None, score
+
+    monkeypatch.setattr(script.cal, "run_pair", pair_result)
+    monkeypatch.setattr(script.cal, "calm_wind_area_ha", lambda cfg: 316.0)
+    monkeypatch.setattr(script, "facility_counts", lambda *a, **kw: {
+        "n_located_assets": 0, "assets_inside_recorded_perimeters": {}, "snapshots": [],
+    })
+    monkeypatch.setattr(script, "COARSE_P0", [0.01])
+    monkeypatch.setattr(script, "COARSE_C1", [0.2])
+    monkeypatch.setattr(script, "COARSE_C2", [0.15])
+    monkeypatch.setattr(sys, "argv", ["calibrate_ca.py", "--seed", "7", "--stage", "coarse",
+                                   "--n-runs", "1", "--sweep-runs", "1", "--finalists", "1",
+                                   "--json", str(report)])
+
+    assert script.main() == 0
+    result = json.loads(report.read_text(encoding="utf-8"))
+    assert result["search_space"]["selection_seeds"] == [0, 1, 2]
+    assert set(result["chosen"]["j_fitted_by_seed"]) == {"0", "1", "2"}
+    assert result["chosen"]["pairs_seed"] == 7
+    assert all(p["predicted_new_ha"] == 57.0 for p in result["chosen"]["pairs"])
+    assert config.CA == original_cfg

@@ -320,9 +320,9 @@ def main() -> int:
     best = finalists[0]["cfg"]
     j_after = finalists[0]["j"]
 
-    print(f"\nCHOSEN {json.dumps(best)}   mean J(fitted) over seeds {sel_seeds} = {j_after:.4f}"
-          f"   (seed {args.seed}: {finalists[0]['j_by_seed'][str(args.seed)]:.4f})")
     after = score_set(prs, grid, best, allidx, n_runs=args.n_runs, seed=args.seed)
+    print(f"\nCHOSEN {json.dumps(best)}   mean J(fitted) over seeds {sel_seeds} = {j_after:.4f}"
+          f"   (seed {args.seed}: {objective(after):.4f})")
     print("AFTER -- all six pairs")
     print_table(after)
     calm_after = cal.calm_wind_area_ha(best)

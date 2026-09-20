@@ -2546,6 +2546,16 @@ Rebased onto main `587f5bd`. Only readme.md differs from merged main. Documentat
 Rebased onto main `587f5bd`. The changed fireline/app.py returned clean from Norma Livecheck with full reported coverage. All 309 tests passed, including the Streamlit app tests. Rebase preserved the original tooltip patch exactly; no additional application change was needed. This records the earlier branch scan, before the authorized 2026-09-20 integration. Branch inventory, original backup heads and scan evidence are collected on `codex/norma-feature-rollup`.
 
 
-### Calibration branch Norma verification — 2026-09-19
+### Historical calibration-branch Norma verification — 2026-09-19
 
 Rebased onto merged remediation main `587f5bd`. All six added/modified Python and JSON files pass Norma Livecheck with unreduced coverage; the JSON check covers applicable Node rules, not calibration correctness. Markdown prose has no applicable deterministic rules and was not scanned. Local fixture paths are normalized before entering the cache, Git provenance has a five-second timeout and remains optional, and calibration JSON I/O explicitly uses UTF-8. Regression tests cover path aliases, Git success/failure/timeout, and the full suite passes 337 tests. Independent code review approved the remediation. Exact file hashes, outcomes and original-head backup refs are recorded on `codex/norma-feature-rollup`; the original audit is unchanged.
+
+
+### Calibration integration — 2026-09-20
+
+The calibration harness and recorded fit are integrated, with the current CA defaults and
+committed snapshots preserved. The CLI supports a reporting `--seed` outside
+`--stability-seeds`: it scores that seed separately without changing the seeds used to
+select parameters. A regression reproduces the earlier `KeyError` before the fix and
+verifies that the report is written with the requested scoring seed afterward. The
+Norma results above refer to the historical file revisions, not a rescan of this change.
