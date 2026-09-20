@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import CloseOutlined from "@ant-design/icons/CloseOutlined";
 import { Link } from "react-router-dom";
-import { count, humanize } from "../state/model.mjs";
+import { count, humanize, gps } from "../state/model.mjs";
 export function MainCard({
   title,
   action,
@@ -29,7 +29,7 @@ export function MainCard({
           <CardHeader
             title={title}
             action={action}
-            slotProps={{ title: { variant: "subtitle1" } }}
+            slotProps={{ title: { variant: "subtitle1", component: "h2" } }}
             sx={{ p: 2.5 }}
           />
           <Divider />
@@ -53,20 +53,21 @@ export function Metric({
   icon: Icon,
   tone = "blue",
   testId,
+  compact = false,
 }) {
   const body = (
     <>
       <div className="metric-top">
         <span>{label}</span>
-        {Icon && <Icon className={`metric-icon ${tone}`} />}
+        {Icon && <Icon aria-hidden="true" className={`metric-icon ${tone}`} />}
       </div>
       <div className="metric-value">{count(value)}</div>
-      <div className="metric-note">{note}</div>
-      {to && <span className="metric-open">View details</span>}
+      {!compact && note && <div className="metric-note">{note}</div>}
+      {to && !compact && <span className="metric-open">View details</span>}
     </>
   );
   return (
-    <Card className="metric" data-testid={testId}>
+    <Card className={`metric${compact ? " compact" : ""}`} data-testid={testId}>
       {to ? (
         <Link to={to}>{body}</Link>
       ) : (
@@ -187,5 +188,14 @@ export function ClearFilters({ onClick }) {
     <Button onClick={onClick} size="small">
       Reset filters
     </Button>
+  );
+}
+
+export function Coordinates({ location }) {
+  return (
+    <div className="small-muted gps">
+      GPS: {gps(location)}
+      {gps(location) !== "Not supplied" && " · lat, lon"}
+    </div>
   );
 }

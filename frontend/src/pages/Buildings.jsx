@@ -11,6 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 import {
+  Coordinates,
   MainCard,
   Status,
   Empty,
@@ -22,6 +23,7 @@ import {
   ClearFilters,
 } from "../components/Common";
 import {
+  gps,
   buildingRows,
   filterBuildings,
   money,
@@ -155,10 +157,13 @@ export default function Buildings({ incidents, incident }) {
                       {humanize(r.asset_type)} ·{" "}
                       {r.municipality || "Location not supplied"}
                     </div>
+                    <Coordinates location={r} />
                   </TableCell>
                   {!incident && <TableCell>{r.incident_name}</TableCell>}
                   <TableCell>
-                    <Status value={r.risk_label} />
+                    <span className="risk-status">
+                      <Status value={r.risk_label} />
+                    </span>
                     <div className="small-muted">
                       {r.risk_score !== null
                         ? `Score ${r.risk_score} · supplied`
@@ -210,6 +215,7 @@ export default function Buildings({ incidents, incident }) {
             <Facts
               rows={[
                 ["Incident", selected.incident_name],
+                ["GPS (latitude, longitude)", gps(selected)],
                 ["Assessment time", stamp(selected.assessed_at)],
                 ["Type", humanize(selected.asset_type)],
                 ["Estimated occupancy", count(selected.estimated_occupancy)],

@@ -17,7 +17,13 @@ module.exports = [
         URLSearchParams: "readonly",
       },
     },
+    plugins: { "react-hooks": require("eslint-plugin-react-hooks") },
     rules: {
+      "react-hooks/rules-of-hooks": "error",
+      "no-unused-vars": [
+        "error",
+        { varsIgnorePattern: "^[A-Z]", argsIgnorePattern: "^_" },
+      ],
       "no-undef": "error",
       "no-unreachable": "error",
       eqeqeq: ["error", "always", { null: "ignore" }],

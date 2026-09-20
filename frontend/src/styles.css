@@ -3,7 +3,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   color: #262626;
-  background: #fafafb;
+  background: #ffffff;
 }
 * {
   box-sizing: border-box;
@@ -239,6 +239,9 @@ main {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
+}
+.fire-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .metric {
   position: relative;
@@ -857,4 +860,89 @@ main {
     transition: none !important;
     animation: none !important;
   }
+}
+/* Tables keep readable columns; narrow screens scroll inside the card. */
+.table-scroll table {
+  min-width: 850px;
+}
+.table-scroll th:first-child {
+  min-width: 170px;
+}
+.metric.compact > a,
+.metric.compact .metric-body {
+  min-height: 125px;
+}
+.metric.compact .metric-value {
+  margin-bottom: 0;
+}
+.fire-map-pin {
+  background: white;
+  border: 1px solid #ff603e;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px #0003;
+  cursor: pointer;
+}
+.fire-map-pin svg {
+  width: 100%;
+  height: 100%;
+  padding: 3px;
+  fill: #ff603e;
+}
+
+.crew-plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 500px;
+  overflow: auto;
+}
+.crew-plan-entry.MuiButton-root {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 0;
+  border-radius: 0;
+  border-bottom: 1px solid #f0f0f0;
+  color: #262626;
+  text-align: left;
+  font-size: 12px;
+}
+.crew-plan-entry span {
+  color: #595959;
+  font-weight: 400;
+}
+.gps {
+  white-space: nowrap;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.risk-status .MuiChip-root {
+  width: 128px;
+  justify-content: center;
+}
+
+.crew-plan-entry .crew-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.crew-identity strong {
+  color: #262626;
+}
+.crew-identity small {
+  font-size: 10px;
+}
+.crew-plan-entry .crew-urgency {
+  flex-shrink: 0;
+}
+.crew-plan-entry .crew-urgency span {
+  color: inherit;
+}
+.crew-plan-entry .crew-step-count {
+  font-size: 10px;
+  max-width: 60px;
 }

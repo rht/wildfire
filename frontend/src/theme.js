@@ -3,7 +3,7 @@ import typography from "../vendor/mantis/typography";
 export const theme = createTheme({
   palette: {
     primary: { main: "#1677ff" },
-    background: { default: "#fafafb", paper: "#fff" },
+    background: { default: "#ffffff", paper: "#fff" },
     text: { primary: "#262626", secondary: "#595959" },
     divider: "#f0f0f0",
     error: { main: "#cf1322" },

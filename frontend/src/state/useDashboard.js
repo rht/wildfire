@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import "../../legacy/dashboard-client.js";
+import { useEffect, useState, useMemo } from "react";
+import { DashboardClient } from "./transport.mjs";
 import { toIncident } from "./model.mjs";
 import { demoIncidents } from "./demo.mjs";
 export function useDashboard(demo) {
@@ -13,7 +13,7 @@ export function useDashboard(demo) {
     if (demo) return;
     const events = new Map();
     let sequence = 0;
-    const client = new globalThis.DashboardClient({
+    const client = new DashboardClient({
       fetchState: async () => {
         const response = await fetch("/api/state", {
           cache: "no-store",
@@ -50,8 +50,12 @@ export function useDashboard(demo) {
     client.start();
     return () => client.stop();
   }, [demo]);
+  const incidents = useMemo(
+    () => (demo ? demoIncidents : live ? [live] : []),
+    [demo, live],
+  );
   return {
-    incidents: demo ? demoIncidents : live ? [live] : [],
+    incidents,
     status: demo ? { connection: "demo", stale: false, errors: 0 } : status,
   };
 }

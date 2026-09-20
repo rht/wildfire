@@ -16,7 +16,6 @@ import BankOutlined from "@ant-design/icons/BankOutlined";
 import TeamOutlined from "@ant-design/icons/TeamOutlined";
 import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
-import EnvironmentOutlined from "@ant-design/icons/EnvironmentOutlined";
 import { useDashboard } from "./state/useDashboard";
 import { Overview, Incidents } from "./pages/Overview";
 import Buildings from "./pages/Buildings";
@@ -35,6 +34,7 @@ const tabs = [
   ["calls", "Calls & follow-up"],
   ["plan", "Firefighter plan"],
   ["evacuation", "Evacuation"],
+  ["resources", "Resources"],
   ["buildings", "Buildings & risk"],
   ["log", "Activity log"],
 ];
@@ -83,6 +83,8 @@ function IncidentPage({ incidents, demo }) {
         <ResponsePlan incident={incident} />
       ) : page === "evacuation" ? (
         <Evacuation incident={incident} />
+      ) : page === "resources" ? (
+        <Resources incidents={[incident]} />
       ) : page === "buildings" ? (
         <Buildings key={id} incidents={incidents} incident={incident} />
       ) : page === "log" ? (
@@ -98,15 +100,27 @@ function IncidentPage({ incidents, demo }) {
     </>
   );
 }
+function LegacyIncidentRoute() {
+  const { id, page } = useParams();
+  const location = useLocation();
+  return (
+    <Navigate
+      replace
+      to={
+        id
+          ? `/incidents/${encodeURIComponent(id)}/${page || "summary"}${location.search}`
+          : "/incidents"
+      }
+    />
+  );
+}
 export default function App() {
   const [demo, setDemo] = useState(
       () => new URLSearchParams(window.location.search).get("demo") === "1",
     ),
     [mobileOpen, setMobileOpen] = useState(false);
   const { incidents, status } = useDashboard(demo),
-    location = useLocation(),
     navigate = useNavigate();
-  const selected = location.pathname.split("/")[2];
   const changeSource = (value) => {
     const next = value === "demo";
     setDemo(next);
@@ -124,10 +138,10 @@ export default function App() {
         onClick={() => setMobileOpen(false)}
       >
         <span className="brand-symbol">
-          <FireOutlined />
+          <FireOutlined aria-hidden="true" />
         </span>
         <span>
-          ResponsAra<small>Incident operations</small>
+          ResponsAra<small>Wildfire coordination</small>
         </span>
       </Link>
       <div className="nav-label">Workspace</div>
@@ -139,34 +153,19 @@ export default function App() {
             to={path}
             onClick={() => setMobileOpen(false)}
           >
-            <Icon />
+            <Icon aria-hidden="true" />
             <span>{label}</span>
           </NavLink>
-        ))}
-      </nav>
-      <div className="nav-label incident-label">
-        Incidents <span>{incidents.length}</span>
-      </div>
-      <nav aria-label="Incident navigation">
-        {incidents.map((i) => (
-          <Link
-            key={i.id}
-            className={`nav-incident ${decodeURIComponent(selected || "") === i.id ? "selected" : ""}`}
-            to={`/incidents/${encodeURIComponent(i.id)}/summary`}
-            onClick={() => setMobileOpen(false)}
-          >
-            <span className="dot fire" />
-            <span>
-              {i.name}
-              <small>{i.area || i.id}</small>
-            </span>
-          </Link>
         ))}
       </nav>
       <div className="sidebar-footer">
         <div className="read-only-dot" />
         Read-only workspace<p>Recommendations support analyst decisions.</p>
-        <small>Mantis design · CodedThemes</small>
+        <small>
+          <a href="/assets/mantis-license.txt" target="_blank" rel="noreferrer">
+            Mantis design · CodedThemes
+          </a>
+        </small>
       </div>
     </div>
   );
@@ -190,8 +189,6 @@ export default function App() {
             >
               <MenuOutlined />
             </IconButton>
-            <EnvironmentOutlined />
-            <span>Wildfire coordination</span>
           </div>
           <div className="topbar-right">
             <span
@@ -251,6 +248,11 @@ export default function App() {
             </MainCard>
           ) : (
             <Routes>
+              <Route path="/active-fires" element={<LegacyIncidentRoute />} />
+              <Route
+                path="/active-fires/:id/:page"
+                element={<LegacyIncidentRoute />}
+              />
               <Route
                 path="/overview"
                 element={<Overview incidents={incidents} />}

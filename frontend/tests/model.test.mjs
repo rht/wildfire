@@ -12,6 +12,7 @@ test("dashboard adapter provides tested data boundaries", async (t) => {
     filterBuildings,
     orderedEvents,
     evacuationTotals,
+    readinessFacts,
   } = await import(path);
   const state = {
     scenario_id: "gavarres",
@@ -82,6 +83,169 @@ test("dashboard adapter provides tested data boundaries", async (t) => {
     },
   );
   await t.test(
+    "contact and plan review reasons stay visible without creating uncalled follow-up",
+    () => {
+      const reviewIncident = toIncident({
+        ...state,
+        contacts: {
+          ranked: [],
+          review: [
+            {
+              asset_id: "b",
+              review_reasons: ["forecast_unavailable"],
+            },
+          ],
+        },
+        calls: [],
+        plan: {
+          locations: [
+            { asset_id: "b", reasons: ["readiness_review_required"] },
+          ],
+          response: null,
+        },
+      });
+
+      const [row] = callRows(reviewIncident);
+
+      assert.equal(row.followup, false);
+      assert.deepEqual(row.reasons, []);
+      assert.deepEqual(row.reviewReasons, [
+        "Forecast unavailable",
+        "Readiness review required",
+      ]);
+    },
+  );
+  await t.test(
+    "readiness fallback retains early adverse facts and reports later conflicts",
+    () => {
+      const readinessIncident = toIncident({
+        ...state,
+        calls: [
+          {
+            request_id: "adverse",
+            asset_id: "a",
+            status: "completed",
+            observed_at: "2026-09-20T10:00:00Z",
+            can_self_evacuate: false,
+            reported_needs_assistance: true,
+            transport_available: false,
+            provenance: { source: "stored_call_assessment" },
+          },
+          {
+            request_id: "optimistic",
+            asset_id: "a",
+            status: "completed",
+            observed_at: "2026-09-20T10:01:00Z",
+            can_self_evacuate: true,
+            reported_needs_assistance: false,
+            transport_available: true,
+          },
+          {
+            request_id: "incomplete",
+            asset_id: "a",
+            status: "completed",
+            observed_at: "2026-09-20T10:02:00Z",
+          },
+        ],
+        plan: { locations: [], response: null },
+      });
+      const row = callRows(readinessIncident).find(
+        (candidate) => candidate.asset_id === "a",
+      );
+
+      assert.deepEqual(readinessFacts(readinessIncident, row), {
+        canSelfEvacuate: false,
+        needsAssistance: true,
+        transportAvailable: false,
+        departureConfirmed: null,
+        arrivalConfirmed: null,
+        assistanceReviewRequired: false,
+        conflicts: [
+          "can_self_evacuate",
+          "needs_assistance",
+          "transport_available",
+        ],
+        source: "Call history fallback",
+        requestIds: ["adverse", "optimistic", "incomplete"],
+      });
+    },
+  );
+  await t.test(
+    "authoritative merged plan readiness wins over raw calls",
+    () => {
+      const readinessIncident = toIncident({
+        ...state,
+        calls: [
+          {
+            request_id: "raw",
+            asset_id: "a",
+            status: "completed",
+            can_self_evacuate: false,
+            reported_needs_assistance: true,
+            transport_available: false,
+            departure_confirmed: true,
+            arrival_confirmed: false,
+          },
+        ],
+        plan: {
+          locations: [
+            {
+              asset_id: "a",
+              reported_can_self_evacuate: true,
+              reported_needs_assistance: false,
+              reported_transport_available: true,
+              assistance_review_required: true,
+              call_source: "stored_call_assessment",
+              assessment_request_ids: ["merged"],
+            },
+          ],
+          response: null,
+        },
+      });
+      const row = callRows(readinessIncident).find(
+        (candidate) => candidate.asset_id === "a",
+      );
+      const facts = readinessFacts(readinessIncident, row);
+
+      assert.equal(facts.canSelfEvacuate, true);
+      assert.equal(facts.needsAssistance, false);
+      assert.equal(facts.transportAvailable, true);
+      assert.equal(facts.departureConfirmed, true);
+      assert.equal(facts.arrivalConfirmed, false);
+      assert.equal(facts.assistanceReviewRequired, true);
+      assert.equal(facts.source, "Stored call assessment · merged plan");
+      assert.deepEqual(facts.requestIds, ["merged"]);
+    },
+  );
+  await t.test(
+    "absent readiness and a historically completed call remain unknown",
+    () => {
+      const readinessIncident = toIncident({
+        ...state,
+        calls: [
+          {
+            request_id: "historical",
+            asset_id: "a",
+            snapshot_id: "older-snapshot",
+            status: "completed",
+            message_acknowledged: true,
+          },
+        ],
+        plan: { locations: [], response: null },
+      });
+      const row = callRows(readinessIncident).find(
+        (candidate) => candidate.asset_id === "a",
+      );
+      const facts = readinessFacts(readinessIncident, row);
+
+      assert.equal(facts.canSelfEvacuate, null);
+      assert.equal(facts.needsAssistance, null);
+      assert.equal(facts.transportAvailable, null);
+      assert.equal(facts.departureConfirmed, null);
+      assert.equal(facts.arrivalConfirmed, null);
+    },
+  );
+  await t.test(
     "risk score never comes from value score; zero probability remains zero",
     () => {
       const rows = buildingRows([i]);
@@ -149,4 +313,93 @@ test("dashboard adapter provides tested data boundaries", async (t) => {
       assert.equal(orderedEvents([eventIncident], { kind: "call" }).length, 1);
     },
   );
+});
+
+test("GPS preserves WGS84 order and rejects missing or invalid positions", async () => {
+  const { gps } = await import(path);
+  assert.equal(
+    gps({ latitude: 41.953, longitude: 3.022 }),
+    "41.95300, 3.02200",
+  );
+  assert.equal(gps({ latitude: 0, longitude: 0 }), "0.00000, 0.00000");
+  for (const point of [
+    {},
+    { latitude: null, longitude: 3 },
+    { latitude: 95, longitude: 3 },
+    { latitude: 42, longitude: 190 },
+  ]) {
+    assert.equal(gps(point), "Not supplied");
+  }
+});
+
+test("call history filters attempts independently without inventing caller identity", async () => {
+  const { callHistory, filterCallHistory, callActor } = await import(path);
+  const rows = [
+    {
+      asset_id: "a",
+      name: "School",
+      calls: [
+        {
+          request_id: "one",
+          caller_type: "agent",
+          status: "no_answer",
+          observed_at: "2026-09-19T10:00:00Z",
+        },
+        {
+          request_id: "two",
+          caller_type: "human",
+          status: "completed",
+          observed_at: "2026-09-20T10:00:00Z",
+        },
+      ],
+    },
+    { asset_id: "b", name: "Home", calls: [] },
+  ];
+  const history = callHistory(rows);
+  assert.equal(history.length, 2);
+  assert.equal(history[0].call.request_id, "two");
+  assert.equal(
+    filterCallHistory(history, { caller: "agent", outcome: "completed" })
+      .length,
+    0,
+  );
+  assert.equal(
+    filterCallHistory(history, {
+      caller: "human",
+      from: "2026-09-20",
+      search: "school",
+    }).length,
+    1,
+  );
+  assert.equal(filterCallHistory(history, { to: "2026-09-19" }).length, 1);
+  assert.equal(callActor({ source: "Some agent interview" }), "unknown");
+  assert.equal(callActor({}), "unknown");
+});
+
+test("crew urgency uses supplied unfinished-task timing without inventing missing deadlines", async () => {
+  const { crewUrgency } = await import(path);
+  assert.equal(crewUrgency([]).label, "No plan supplied");
+  assert.equal(
+    crewUrgency([{ status: "proposed", finish_min: 10 }]).label,
+    "Timing unavailable",
+  );
+  assert.equal(
+    crewUrgency([{ status: "completed", deadline_min: 5, finish_min: 10 }])
+      .label,
+    "Completed",
+  );
+  assert.equal(
+    crewUrgency([{ deadline_min: 40, finish_min: 35 }]).tone,
+    "warning",
+  );
+  assert.equal(
+    crewUrgency([{ deadline_min: 30, finish_min: 35 }]).tone,
+    "error",
+  );
+  const partial = crewUrgency([
+    { deadline_min: 80, finish_min: 35 },
+    { finish_min: 40 },
+  ]);
+  assert.equal(partial.partial, true);
+  assert.match(partial.label, /partial timing/);
 });

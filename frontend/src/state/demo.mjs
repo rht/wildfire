@@ -80,15 +80,13 @@ export const demoIncidents = specs.map((s, index) => {
     ],
   }));
   const contacts = {
-    ranked: assets
-      .slice(0, 3)
-      .map((a, n) => ({
-        asset_id: a.asset_id,
-        rank: n + 1,
-        slack_min: [12, 28, 54][n],
-        status: "window_open",
-        policy: "Illustrative remaining evacuation window",
-      })),
+    ranked: assets.slice(0, 3).map((a, n) => ({
+      asset_id: a.asset_id,
+      rank: n + 1,
+      slack_min: [12, 28, 54][n],
+      status: "window_open",
+      policy: "Illustrative remaining evacuation window",
+    })),
     review: [
       {
         asset_id: assets[3].asset_id,
@@ -99,6 +97,7 @@ export const demoIncidents = specs.map((s, index) => {
   const calls = [
     {
       request_id: `${s.id}-call-1`,
+      caller_type: "agent",
       asset_id: assets[0].asset_id,
       status: "completed",
       wants_human: true,
@@ -112,6 +111,7 @@ export const demoIncidents = specs.map((s, index) => {
     },
     {
       request_id: `${s.id}-call-2`,
+      caller_type: "human",
       asset_id: assets[1].asset_id,
       status: "completed",
       can_self_evacuate: true,
@@ -124,6 +124,7 @@ export const demoIncidents = specs.map((s, index) => {
     },
     {
       request_id: `${s.id}-call-3`,
+      caller_type: "agent",
       asset_id: assets[2].asset_id,
       status: "no_answer",
       human_followup_reasons: ["agent_interview_inconclusive"],
@@ -235,6 +236,7 @@ export const demoIncidents = specs.map((s, index) => {
               travel_min: 8 + n * 3,
               start_min: 8 + n * 3,
               finish_min: 35 + n * 5,
+              deadline_min: 35 + n * 5 + [5, 12, 30][index] + n * 8,
               prerequisites: n
                 ? ["Reception capacity confirmed"]
                 : ["Accessible transport confirmed"],
@@ -252,6 +254,7 @@ export const demoIncidents = specs.map((s, index) => {
               depart_min: 35 + n * 5,
               start_min: 43 + n * 5,
               finish_min: 55 + n * 5,
+              deadline_min: 90 + n * 5,
               prerequisites: [],
               route_source: null,
             },

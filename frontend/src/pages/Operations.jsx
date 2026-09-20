@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Button,
@@ -11,6 +11,10 @@ import {
   Alert,
 } from "@mui/material";
 import {
+  Coordinates,
+  FilterSelect,
+  FilterInput,
+  ClearFilters,
   MainCard,
   Status,
   Empty,
@@ -21,20 +25,36 @@ import {
 } from "../components/Common";
 import IncidentMap from "../components/IncidentMap";
 import {
+  gps,
+  callActor,
+  callHistory,
+  filterCallHistory,
   callRows,
   count,
   stamp,
   humanize,
   responseTeams,
   evacuationTotals,
+  readinessFacts,
 } from "../state/model.mjs";
+const callerLabel = (value) =>
+  ({ agent: "Voice assistant", human: "Human", unknown: "Not supplied" })[
+    value
+  ];
+const callDefaults = { search: "", caller: "", outcome: "", from: "", to: "" };
 const fact = (value) =>
   value === true ? "Yes" : value === false ? "No" : "Unknown";
 export function Calls({ incident }) {
   const [params, setParams] = useSearchParams(),
     filter = params.get("filter") || "all",
-    rows = callRows(incident),
-    [selected, setSelected] = useState(null);
+    rows = callRows(incident);
+  const [filters, setFilters] = useState(callDefaults);
+  const set = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
+  const [selectedAssetId, setSelectedAssetId] = useState(null);
+  const selected = rows.find((row) => row.asset_id === selectedAssetId) || null;
+  useEffect(() => {
+    if (selectedAssetId && !selected) setSelectedAssetId(null);
+  }, [selected, selectedAssetId]);
   const filtered = rows.filter((r) =>
     filter === "pending"
       ? r.toCall
@@ -44,16 +64,29 @@ export function Calls({ incident }) {
           ? r.followup
           : true,
   );
+  const history = filterCallHistory(callHistory(filtered), filters);
+  const pending = filtered.filter(
+    (r) =>
+      r.toCall &&
+      (!filters.search ||
+        `${r.name} ${r.asset_id}`
+          .toLowerCase()
+          .includes(filters.search.toLowerCase())),
+  );
   return (
     <>
       <PageHeading
         title="Calls & follow-up"
-        description="Contact order comes from the remaining evacuation window. Counts are unique locations; repeated attempts stay together."
+        description="Counts are unique locations. Call history shows individual attempts, newest first."
       />
       <div className="queue-filters">
         {[
           ["all", "All locations", rows.length],
-          ["pending", "To call", rows.filter((r) => r.toCall).length],
+          [
+            "pending",
+            "Voice assistant to call",
+            rows.filter((r) => r.toCall).length,
+          ],
           ["called", "Already called", rows.filter((r) => r.called).length],
           ["human", "Human follow-up", rows.filter((r) => r.followup).length],
         ].map(([id, label, total]) => (
@@ -68,65 +101,166 @@ export function Calls({ incident }) {
           </Button>
         ))}
       </div>
-      <MainCard title="Contact work queue" content={false}>
-        <div className="table-scroll">
-          <Table>
-            <TableHead>
-              <TableRow>
-                {[
-                  "Priority",
-                  "Location",
-                  "Remaining window",
-                  "Last call",
-                  "Follow-up reasons",
-                  "Details",
-                ].map((c) => (
-                  <TableCell key={c}>{c}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filtered.map((r) => (
-                <TableRow key={r.asset_id}>
-                  <TableCell>
-                    <span className="rank">{r.rank ?? "?"}</span>
-                  </TableCell>
-                  <TableCell>
-                    <strong>{r.name}</strong>
-                    <div className="small-muted">{humanize(r.asset_type)}</div>
-                  </TableCell>
-                  <TableCell>{count(r.slack_min)} min</TableCell>
-                  <TableCell>
-                    <Status value={r.latest?.status || "not_called"} />
-                    <div className="small-muted">
-                      {r.calls.length} attempt{r.calls.length !== 1 ? "s" : ""}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {r.reasons.length
-                      ? r.reasons.map((reason) => (
-                          <div className="reason" key={reason}>
-                            {reason}
-                          </div>
-                        ))
-                      : "None reported"}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      size="small"
-                      onClick={() => setSelected(r)}
-                      aria-label={`View call details for ${r.name}`}
-                    >
-                      View details
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+      <MainCard>
+        <div className="filters">
+          <FilterInput
+            label="Search calls"
+            value={filters.search}
+            onChange={(v) => set("search", v)}
+            placeholder="Location or request ID"
+          />
+          {filter !== "pending" && (
+            <>
+              <FilterSelect
+                label="Caller"
+                value={filters.caller}
+                onChange={(v) => set("caller", v)}
+                options={[
+                  ["", "All callers"],
+                  ["agent", "Voice assistant"],
+                  ["human", "Human"],
+                  ["unknown", "Not supplied"],
+                ]}
+              />
+              <FilterSelect
+                label="Call outcome"
+                value={filters.outcome}
+                onChange={(v) => set("outcome", v)}
+                options={[
+                  ["", "All outcomes"],
+                  ...[
+                    ...new Set(
+                      incident.calls.map((c) => c.status).filter(Boolean),
+                    ),
+                  ].map((v) => [v, humanize(v)]),
+                ]}
+              />
+              <FilterInput
+                label="Call from"
+                type="date"
+                value={filters.from}
+                onChange={(v) => set("from", v)}
+              />
+              <FilterInput
+                label="Call to"
+                type="date"
+                value={filters.to}
+                onChange={(v) => set("to", v)}
+              />
+            </>
+          )}
+          <ClearFilters onClick={() => setFilters(callDefaults)} />
         </div>
-        {!filtered.length && <Empty title="No locations in this queue" />}
       </MainCard>
+      {filter !== "pending" && (
+        <MainCard title="Call history" content={false}>
+          <div className="table-scroll">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {[
+                    "Location",
+                    "Caller",
+                    "Call time",
+                    "Outcome",
+                    "Follow-up reasons",
+                    "Review reasons",
+                    "Details",
+                  ].map((c) => (
+                    <TableCell key={c}>{c}</TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {history.map((r, n) => (
+                  <TableRow key={`${r.asset_id}:${r.call.request_id || n}`}>
+                    <TableCell>
+                      <strong>{r.name}</strong>
+                      <Coordinates location={r} />
+                    </TableCell>
+                    <TableCell>{callerLabel(r.caller)}</TableCell>
+                    <TableCell className="nowrap">
+                      {stamp(r.call.observed_at)}
+                    </TableCell>
+                    <TableCell>
+                      <Status value={r.call.status} />
+                      <div className="small-muted">{r.call.request_id}</div>
+                    </TableCell>
+                    <TableCell>
+                      {callRows({
+                        ...incident,
+                        calls: [r.call],
+                        plan: { locations: [] },
+                      })
+                        .find((row) => row.asset_id === r.asset_id)
+                        ?.reasons.join(" · ") || "None reported"}
+                    </TableCell>
+                    <TableCell>
+                      {r.reviewReasons.join(" · ") || "None supplied"}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="small"
+                        onClick={() => setSelectedAssetId(r.asset_id)}
+                        aria-label={`View call details for ${r.name}`}
+                      >
+                        View details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          {!history.length && <Empty title="No matching call records" />}
+        </MainCard>
+      )}
+      {filter === "pending" && (
+        <MainCard title="Voice assistant to call" content={false}>
+          <div className="table-scroll">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {[
+                    "Priority",
+                    "Location",
+                    "Remaining window",
+                    "Review reasons",
+                    "Details",
+                  ].map((c) => (
+                    <TableCell key={c}>{c}</TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {pending.map((r) => (
+                  <TableRow key={r.asset_id}>
+                    <TableCell>{r.rank ?? "—"}</TableCell>
+                    <TableCell>
+                      <strong>{r.name}</strong>
+                      <Coordinates location={r} />
+                    </TableCell>
+                    <TableCell>{count(r.slack_min)} min</TableCell>
+                    <TableCell>
+                      {r.reviewReasons.join(" · ") || "None supplied"}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="small"
+                        onClick={() => setSelectedAssetId(r.asset_id)}
+                        aria-label={`View call details for ${r.name}`}
+                      >
+                        View details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          {!pending.length && <Empty title="No matching locations" />}
+        </MainCard>
+      )}
       <Typography variant="body2" color="text.secondary">
         Already called means a completed call record exists, not that
         instructions were understood. Human follow-up may overlap with completed
@@ -135,10 +269,11 @@ export function Calls({ incident }) {
       <DetailDialog
         open={!!selected}
         title={selected ? `Call details · ${selected.name}` : ""}
-        onClose={() => setSelected(null)}
+        onClose={() => setSelectedAssetId(null)}
       >
         {selected && (
           <>
+            <Facts rows={[["GPS (latitude, longitude)", gps(selected)]]} />
             <Typography variant="h5">Human follow-up reasons</Typography>
             {selected.reasons.length ? (
               <ul>
@@ -150,6 +285,18 @@ export function Calls({ incident }) {
               <p>No human follow-up reason supplied.</p>
             )}
             <Typography variant="h5" sx={{ mt: 3 }}>
+              Review reasons
+            </Typography>
+            {selected.reviewReasons.length ? (
+              <ul>
+                {selected.reviewReasons.map((r) => (
+                  <li key={r}>{r}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No operational review reason supplied.</p>
+            )}
+            <Typography variant="h5" sx={{ mt: 3 }}>
               Call history
             </Typography>
             {selected.calls.length ? (
@@ -158,6 +305,7 @@ export function Calls({ incident }) {
                   <Facts
                     rows={[
                       ["Request", c.request_id],
+                      ["Caller", callerLabel(callActor(c))],
                       ["Status", humanize(c.status)],
                       ["Observed at", stamp(c.observed_at)],
                       ["Wants a human", fact(c.wants_human)],
@@ -216,7 +364,18 @@ export function ResponsePlan({ incident }) {
                     incident.teams.find((t) => t.team_id === team.team_id)
                       ?.name || team.team_id
                   }
-                  action={<Status value="proposed" />}
+                  action={
+                    <Status
+                      value={
+                        team.status ||
+                        (team.tasks?.every(
+                          (t) => t.status === team.tasks[0]?.status,
+                        )
+                          ? team.tasks?.[0]?.status
+                          : "mixed")
+                      }
+                    />
+                  }
                   key={team.team_id}
                 >
                   {(team.tasks || []).length ? (
@@ -239,6 +398,7 @@ export function ResponsePlan({ incident }) {
                               </strong>
                               <Status value={step.status || "proposed"} />
                             </div>
+                            <Coordinates location={asset} />
                             <Typography color="text.secondary">
                               {humanize(step.action || step.action_id)}
                             </Typography>
@@ -326,9 +486,20 @@ export function ResponsePlan({ incident }) {
   );
 }
 export function Evacuation({ incident, incidents }) {
-  const scope = incident ? [incident] : incidents,
+  const [search, setSearch] = useState(""),
+    [incidentFilter, setIncidentFilter] = useState("");
+  const scope = (incident ? [incident] : incidents).filter(
+      (i) => !incidentFilter || i.id === incidentFilter,
+    ),
     groups = scope.flatMap((i) =>
-      (i.peopleClusters || []).map((g) => ({ ...g, incident_name: i.name })),
+      (i.peopleClusters || []).map((g) => ({
+        ...g,
+        location:
+          gps(g) !== "Not supplied"
+            ? g
+            : i.assets.find((a) => a.asset_id === g.asset_id),
+        incident_name: i.name,
+      })),
     ),
     totals = incident
       ? evacuationTotals(incident)
@@ -363,9 +534,35 @@ export function Evacuation({ incident, incidents }) {
           note="Arrival reported"
         />
       </div>
+      <MainCard>
+        <div className="filters">
+          <FilterInput
+            label="Search people and locations"
+            value={search}
+            onChange={setSearch}
+          />
+          {!incident && (
+            <FilterSelect
+              label="Incident"
+              value={incidentFilter}
+              onChange={setIncidentFilter}
+              options={[
+                ["", "All incidents"],
+                ...incidents.map((i) => [i.id, i.name]),
+              ]}
+            />
+          )}
+          <ClearFilters
+            onClick={() => {
+              setSearch("");
+              setIncidentFilter("");
+            }}
+          />
+        </div>
+      </MainCard>
       {groups.length ? (
         <MainCard
-          title={`Identified people clusters (${groups.length})`}
+          title={`Identified people / groups (${groups.length})`}
           content={false}
         >
           <div className="table-scroll">
@@ -373,7 +570,7 @@ export function Evacuation({ incident, incidents }) {
               <TableHead>
                 <TableRow>
                   {[
-                    "Group / location",
+                    "Person / group / location",
                     "Incident",
                     "People",
                     "Progress",
@@ -385,18 +582,29 @@ export function Evacuation({ incident, incidents }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {groups.map((g) => (
-                  <TableRow key={g.id}>
-                    <TableCell>{g.name}</TableCell>
-                    <TableCell>{g.incident_name}</TableCell>
-                    <TableCell>{count(g.people)}</TableCell>
-                    <TableCell>
-                      <Status value={g.status} />
-                    </TableCell>
-                    <TableCell>{stamp(g.updated_at)}</TableCell>
-                    <TableCell>{g.source}</TableCell>
-                  </TableRow>
-                ))}
+                {groups
+                  .filter(
+                    (g) =>
+                      !search ||
+                      `${g.name} ${g.id}`
+                        .toLowerCase()
+                        .includes(search.toLowerCase()),
+                  )
+                  .map((g) => (
+                    <TableRow key={g.id}>
+                      <TableCell>
+                        {g.name}
+                        <Coordinates location={g.location} />
+                      </TableCell>
+                      <TableCell>{g.incident_name}</TableCell>
+                      <TableCell>{count(g.people)}</TableCell>
+                      <TableCell>
+                        <Status value={g.status} />
+                      </TableCell>
+                      <TableCell>{stamp(g.updated_at)}</TableCell>
+                      <TableCell>{g.source}</TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </div>
@@ -418,9 +626,11 @@ export function Evacuation({ incident, incidents }) {
                   "Estimated occupancy",
                   "Reported ability",
                   "Assistance requested",
+                  "Transport available",
                   "Departure",
                   "Arrival",
                   "Destination",
+                  "Review / evidence",
                 ].map((c) => (
                   <TableCell key={c}>{c}</TableCell>
                 ))}
@@ -428,31 +638,73 @@ export function Evacuation({ incident, incidents }) {
             </TableHead>
             <TableBody>
               {scope.flatMap((i) =>
-                callRows(i).map((r) => {
-                  const p = i.plan.locations?.find(
-                    (l) => l.asset_id === r.asset_id,
-                  );
-                  return (
-                    <TableRow key={`${i.id}:${r.asset_id}`}>
-                      <TableCell>{r.name}</TableCell>
-                      <TableCell>{count(r.estimated_occupancy)}</TableCell>
-                      <TableCell>{fact(r.latest?.can_self_evacuate)}</TableCell>
-                      <TableCell>
-                        {fact(
-                          r.latest?.reported_needs_assistance ??
-                            r.latest?.needs_assistance,
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {fact(r.latest?.departure_confirmed)}
-                      </TableCell>
-                      <TableCell>{fact(r.latest?.arrival_confirmed)}</TableCell>
-                      <TableCell>
-                        {p?.destination_name || "Not supplied"}
-                      </TableCell>
-                    </TableRow>
-                  );
-                }),
+                callRows(i)
+                  .filter(
+                    (r) =>
+                      !search ||
+                      `${r.name} ${r.asset_id}`
+                        .toLowerCase()
+                        .includes(search.toLowerCase()),
+                  )
+                  .map((r) => {
+                    const p = i.plan.locations?.find(
+                        (l) => l.asset_id === r.asset_id,
+                      ),
+                      readiness = readinessFacts(i, r);
+                    return (
+                      <TableRow key={`${i.id}:${r.asset_id}`}>
+                        <TableCell>
+                          {r.name}
+                          <Coordinates location={r} />
+                        </TableCell>
+                        <TableCell>{count(r.estimated_occupancy)}</TableCell>
+                        <TableCell>{fact(readiness.canSelfEvacuate)}</TableCell>
+                        <TableCell>{fact(readiness.needsAssistance)}</TableCell>
+                        <TableCell>
+                          {fact(readiness.transportAvailable)}
+                        </TableCell>
+                        <TableCell>
+                          {fact(readiness.departureConfirmed)}
+                        </TableCell>
+                        <TableCell>
+                          {fact(readiness.arrivalConfirmed)}
+                        </TableCell>
+                        <TableCell>
+                          {p?.destination_name || "Not supplied"}
+                          {p?.destination_name && (
+                            <Coordinates
+                              location={i.assets.find(
+                                (a) =>
+                                  a.asset_id === p.destination_id ||
+                                  a.asset_id === p.centre_id,
+                              )}
+                            />
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {readiness.assistanceReviewRequired && (
+                            <div className="reason">
+                              Assistance review pending
+                            </div>
+                          )}
+                          {readiness.conflicts.length > 0 && (
+                            <div className="reason">
+                              Conflicting reports:{" "}
+                              {readiness.conflicts.map(humanize).join(", ")}
+                            </div>
+                          )}
+                          <div className="small-muted">
+                            Evidence: {readiness.source || "Not supplied"}
+                          </div>
+                          {readiness.requestIds.length > 0 && (
+                            <div className="small-muted">
+                              Requests: {readiness.requestIds.join(", ")}
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }),
               )}
             </TableBody>
           </Table>
@@ -462,10 +714,15 @@ export function Evacuation({ incident, incidents }) {
   );
 }
 export function Resources({ incidents }) {
+  const [search, setSearch] = useState(""),
+    [type, setType] = useState(""),
+    [deployment, setDeployment] = useState(""),
+    [incidentFilter, setIncidentFilter] = useState("");
   const rows = incidents.flatMap((i) =>
     (
       i.resources ||
       i.teams.map((t) => ({
+        ...t,
         id: t.team_id,
         name: t.name,
         type: t.capabilities?.join(", "),
@@ -481,6 +738,56 @@ export function Resources({ incidents }) {
         title="Resources"
         description="Crews, vehicles and aircraft associated with the connected incidents."
       />
+      <MainCard>
+        <div className="filters">
+          <FilterInput
+            label="Search resources"
+            value={search}
+            onChange={setSearch}
+          />
+          <FilterSelect
+            label="Resource type"
+            value={type}
+            onChange={setType}
+            options={[
+              ["", "All types"],
+              ...[...new Set(rows.map((r) => r.type).filter(Boolean))].map(
+                (v) => [v, v],
+              ),
+            ]}
+          />
+          <FilterSelect
+            label="Deployment"
+            value={deployment}
+            onChange={setDeployment}
+            options={[
+              ["", "All deployments"],
+              ...[...new Set(rows.map((r) => r.status || "unknown"))].map(
+                (v) => [v, humanize(v)],
+              ),
+            ]}
+          />
+          {incidents.length > 1 && (
+            <FilterSelect
+              label="Incident"
+              value={incidentFilter}
+              onChange={setIncidentFilter}
+              options={[
+                ["", "All incidents"],
+                ...incidents.map((i) => [i.id, i.name]),
+              ]}
+            />
+          )}
+          <ClearFilters
+            onClick={() => {
+              setSearch("");
+              setType("");
+              setDeployment("");
+              setIncidentFilter("");
+            }}
+          />
+        </div>
+      </MainCard>
       <MainCard title={`Resource records (${rows.length})`} content={false}>
         <div className="table-scroll">
           <Table>
@@ -499,20 +806,32 @@ export function Resources({ incidents }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((r) => (
-                <TableRow key={`${r.incident_id}:${r.id}`}>
-                  <TableCell>
-                    <strong>{r.name}</strong>
-                  </TableCell>
-                  <TableCell>{r.type || "Not supplied"}</TableCell>
-                  <TableCell>{r.incident_name}</TableCell>
-                  <TableCell>
-                    <Status value={r.status} />
-                  </TableCell>
-                  <TableCell>{fact(r.available)}</TableCell>
-                  <TableCell>{r.source || "Not supplied"}</TableCell>
-                </TableRow>
-              ))}
+              {rows
+                .filter(
+                  (r) =>
+                    (!search ||
+                      `${r.name} ${r.id}`
+                        .toLowerCase()
+                        .includes(search.toLowerCase())) &&
+                    (!type || r.type === type) &&
+                    (!deployment || (r.status || "unknown") === deployment) &&
+                    (!incidentFilter || r.incident_id === incidentFilter),
+                )
+                .map((r) => (
+                  <TableRow key={`${r.incident_id}:${r.id}`}>
+                    <TableCell>
+                      <strong>{r.name}</strong>
+                      <Coordinates location={r} />
+                    </TableCell>
+                    <TableCell>{r.type || "Not supplied"}</TableCell>
+                    <TableCell>{r.incident_name}</TableCell>
+                    <TableCell>
+                      <Status value={r.status} />
+                    </TableCell>
+                    <TableCell>{fact(r.available)}</TableCell>
+                    <TableCell>{r.source || "Not supplied"}</TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </div>

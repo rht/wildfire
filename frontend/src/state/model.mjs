@@ -90,6 +90,9 @@ export function callRows(incident) {
     const reasons = new Set(
       calls.flatMap((r) => r.human_followup_reasons || []).map(humanize),
     );
+    const reviewReasons = new Set(
+      [...(c.review_reasons || []), ...(location?.reasons || [])].map(humanize),
+    );
     for (const r of calls) {
       if (r.wants_human === true) reasons.add("Human requested");
       if ((r.reported_needs_assistance ?? r.needs_assistance) === true)
@@ -99,11 +102,10 @@ export function callRows(incident) {
       if (["failed", "no_answer", "busy"].includes(r.status))
         reasons.add(humanize(r.status));
     }
-    if (location?.human_followup && calls.length)
-      for (const reason of location.reasons || [])
-        reasons.add(humanize(reason));
     const followup =
-      calls.some((r) => r.human_followup_required === true) || reasons.size > 0;
+      calls.some((r) => r.human_followup_required === true) ||
+      reasons.size > 0 ||
+      (calls.length > 0 && location?.human_followup === true);
     if (followup && !reasons.size) reasons.add("Human review required");
     const called = calls.some((r) => r.status === "completed");
     return {
@@ -115,8 +117,98 @@ export function callRows(incident) {
       toCall: !called,
       followup,
       reasons: [...reasons],
+      reviewReasons: [...reviewReasons],
     };
   });
+}
+const booleanFact = (value) =>
+  value === true ? true : value === false ? false : null;
+const has = (value, key) =>
+  value !== null &&
+  typeof value === "object" &&
+  Object.prototype.hasOwnProperty.call(value, key);
+const callFact = (call, fields) => {
+  for (const field of fields) {
+    const value = booleanFact(call?.[field]);
+    if (value !== null) return value;
+  }
+  return null;
+};
+const conservativeCallFact = (calls, fields, adverse) => {
+  const values = calls.map((call) => callFact(call, fields));
+  if (values.includes(adverse)) return adverse;
+  if (values.includes(!adverse)) return !adverse;
+  return null;
+};
+export function readinessFacts(incident, row) {
+  const calls = row?.calls || [];
+  const location = incident.plan.locations?.find(
+    (candidate) => candidate.asset_id === row?.asset_id,
+  );
+  const definitions = [
+    {
+      result: "canSelfEvacuate",
+      plan: "reported_can_self_evacuate",
+      calls: ["can_self_evacuate", "reported_can_self_evacuate"],
+      adverse: false,
+      conflict: "can_self_evacuate",
+    },
+    {
+      result: "needsAssistance",
+      plan: "reported_needs_assistance",
+      calls: ["reported_needs_assistance", "needs_assistance"],
+      adverse: true,
+      conflict: "needs_assistance",
+    },
+    {
+      result: "transportAvailable",
+      plan: "reported_transport_available",
+      calls: ["transport_available", "reported_transport_available"],
+      adverse: false,
+      conflict: "transport_available",
+    },
+  ];
+  const facts = {};
+  const conflicts = [];
+  let usesPlan = false;
+  for (const definition of definitions) {
+    const values = calls
+      .map((call) => callFact(call, definition.calls))
+      .filter((value) => value !== null);
+    const authoritative = has(location, definition.plan);
+    if (authoritative) usesPlan = true;
+    facts[definition.result] = authoritative
+      ? booleanFact(location[definition.plan])
+      : conservativeCallFact(calls, definition.calls, definition.adverse);
+    if (
+      (values.includes(true) && values.includes(false)) ||
+      (authoritative &&
+        facts[definition.result] !== null &&
+        values.includes(!facts[definition.result]))
+    ) {
+      conflicts.push(definition.conflict);
+    }
+  }
+  const requestIds =
+    usesPlan && Array.isArray(location?.assessment_request_ids)
+      ? location.assessment_request_ids
+      : calls.map((call) => call.request_id).filter(Boolean);
+  const source = usesPlan
+    ? location?.call_source
+      ? `${humanize(location.call_source)} · merged plan`
+      : "Coordination plan · merged facts"
+    : calls.length
+      ? "Call history fallback"
+      : null;
+  return {
+    ...facts,
+    departureConfirmed: booleanFact(row?.latest?.departure_confirmed),
+    arrivalConfirmed: booleanFact(row?.latest?.arrival_confirmed),
+    assistanceReviewRequired: location?.assistance_review_required === true,
+    conflicts,
+    source,
+    requestIds: [...new Set(requestIds)],
+  };
 }
 export function buildingRows(incidents) {
   return incidents.flatMap((i) =>
@@ -234,4 +326,75 @@ export function responseTeams(incident) {
       },
     ]
   );
+}
+
+// WGS84 display order is latitude, longitude; never substitute a perimeter centre.
+export function gps(point) {
+  const lat = number(point?.latitude),
+    lon = number(point?.longitude);
+  return lat !== null &&
+    lon !== null &&
+    Math.abs(lat) <= 90 &&
+    Math.abs(lon) <= 180
+    ? `${lat.toFixed(5)}, ${lon.toFixed(5)}`
+    : "Not supplied";
+}
+export function callActor(call) {
+  const value = call?.caller_type || call?.source;
+  if (["agent", "voice_assistant"].includes(value)) return "agent";
+  if (["human", "human_operator"].includes(value)) return "human";
+  return "unknown";
+}
+export function callHistory(rows) {
+  return rows
+    .flatMap((row) =>
+      row.calls.map((call) => ({ ...row, call, caller: callActor(call) })),
+    )
+    .sort(
+      (a, b) =>
+        (Date.parse(b.call.observed_at) || 0) -
+        (Date.parse(a.call.observed_at) || 0),
+    );
+}
+export function filterCallHistory(
+  rows,
+  { search = "", caller = "", outcome = "", from = "", to = "" } = {},
+) {
+  return rows.filter(
+    (row) =>
+      (!search ||
+        `${row.name} ${row.asset_id} ${row.call.request_id}`
+          .toLowerCase()
+          .includes(search.toLowerCase())) &&
+      (!caller || row.caller === caller) &&
+      (!outcome || row.call.status === outcome) &&
+      withinDate(row.call.observed_at, from, to),
+  );
+}
+
+export function crewUrgency(tasks) {
+  if (!tasks.length) return { tone: "default", label: "No plan supplied" };
+  const pending = tasks.filter((task) => task.status !== "completed");
+  if (!pending.length) return { tone: "default", label: "Completed" };
+  const known = pending.filter(
+    (task) =>
+      number(task.deadline_min) !== null && number(task.finish_min) !== null,
+  );
+  if (!known.length) return { tone: "default", label: "Timing unavailable" };
+  const margin = Math.min(
+    ...known.map((task) => task.deadline_min - task.finish_min),
+  );
+  const partial = known.length !== pending.length;
+  const label =
+    margin < 0
+      ? `Misses deadline by ${count(Math.abs(margin))} min`
+      : margin === 0
+        ? "No time margin"
+        : `${count(margin)} min margin`;
+  return {
+    margin,
+    partial,
+    tone: margin <= 0 ? "error" : margin <= 15 ? "warning" : "default",
+    label: label + (partial ? " · partial timing" : ""),
+  };
 }

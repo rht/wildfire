@@ -228,6 +228,24 @@ def test_coordination_call_projection_preserves_reported_assistance_and_provenan
     assert public_state(state)['calls'] == state['calls']
 
 
+def test_public_plan_projection_preserves_assistance_review_without_private_notes():
+    state = envelope()
+    state['plan']['locations'] = [{
+        'asset_id': 'a',
+        'assistance_review_required': True,
+        'reported_needs_assistance': True,
+        'private_assistance_note': 'private household details',
+    }]
+
+    location = public_state(state)['plan']['locations'][0]
+
+    assert location == {
+        'asset_id': 'a',
+        'assistance_review_required': True,
+        'reported_needs_assistance': True,
+    }
+
+
 def test_read_only_database_adapter_never_creates_missing_database(tmp_path):
     import pytest
     import sqlite3
