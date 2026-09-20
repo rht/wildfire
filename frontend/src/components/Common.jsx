@@ -48,6 +48,7 @@ export function MainCard({
 export function Metric({
   label,
   value,
+  valueText,
   note,
   to,
   icon: Icon,
@@ -61,7 +62,7 @@ export function Metric({
         <span>{label}</span>
         {Icon && <Icon aria-hidden="true" className={`metric-icon ${tone}`} />}
       </div>
-      <div className="metric-value">{count(value)}</div>
+      <div className="metric-value">{valueText ?? count(value)}</div>
       {!compact && note && <div className="metric-note">{note}</div>}
       {to && !compact && <span className="metric-open">View details</span>}
     </>

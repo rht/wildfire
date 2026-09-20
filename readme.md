@@ -2720,8 +2720,8 @@ and frontend-directory additions.
 Latest UI refinements requested by @mirrdj: white page background; **Incidents**
 throughout navigation and labels, including smoke events; remove the overview
 subtitle and explanations under its four cards; move the incident table to
-**Incidents** (`#/incidents`). Each incident summary has three area-specific
-cards (deployed resources, structures, people/groups) and a zoomed map. The overview
+**Incidents** (`#/incidents`). Each incident summary has four cards: GPS coordinates, deployed resources,
+structures and people/groups, plus a zoomed map. The overview
 map opens incident details on **click**, with hover reserved for labels.
 Old `#/active-fires` links redirect. People/groups include individuals.
 
@@ -2759,7 +2759,7 @@ on 18521 and Streamlit on 18511 remain running in their original worktrees. Port
 8511 and discovery PR18 were not touched. No live calls, dispatch or operational
 writes were performed.
 
-Verification: `npm --prefix frontend test` **28 passed**; frontend lint, formatting
+Verification: `npm --prefix frontend test` **29 passed**; frontend lint, formatting
 and production build passed. Chrome tests cover desktop/mobile navigation, fire
 scoping, filters, valuation details, call follow-up reasons, log order, real
 REST/WebSocket connection, and live/demo separation. A controlled WebSocket test
@@ -2804,3 +2804,9 @@ license asset.
 
 The Resources table includes a Plan column linked by the supplied team identifier
 to the same crew review/confirmation panel. Missing plans are explicitly labelled.
+
+Activity log order uses a compact column sized to its heading and sequence number.
+
+The incident GPS card prefers a supplied incident point. When only a usable
+perimeter exists it shows the centre of its bounds, explicitly labelled “Perimeter
+centre”; missing coordinates are never filled from demonstration data.

@@ -403,3 +403,33 @@ test("crew urgency uses supplied unfinished-task timing without inventing missin
   assert.equal(partial.partial, true);
   assert.match(partial.label, /partial timing/);
 });
+
+test("incident GPS prefers supplied point and labels a derived perimeter centre", async () => {
+  const { incidentGps } = await import(path);
+  assert.deepEqual(incidentGps({ latitude: 0, longitude: 0 }), {
+    point: { latitude: 0, longitude: 0 },
+    basis: "Incident point · lat, lon",
+  });
+  const perimeter = {
+    type: "Polygon",
+    coordinates: [
+      [
+        [3, 41],
+        [5, 41],
+        [5, 43],
+        [3, 41],
+      ],
+    ],
+  };
+  assert.deepEqual(incidentGps({ fire_geometry: perimeter }), {
+    point: { latitude: 42, longitude: 4 },
+    basis: "Perimeter centre · lat, lon",
+  });
+  assert.equal(incidentGps({}).point, null);
+  assert.equal(
+    incidentGps({
+      fire_geometry: { type: "Polygon", coordinates: [[[200, 95]]] },
+    }).point,
+    null,
+  );
+});

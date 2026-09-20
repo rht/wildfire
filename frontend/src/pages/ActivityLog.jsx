@@ -122,14 +122,19 @@ export default function ActivityLog({ incidents, incident, demo }) {
                   "Severity",
                   "Source",
                 ].map((c) => (
-                  <TableCell key={c}>{c}</TableCell>
+                  <TableCell
+                    key={c}
+                    className={c === "Order" ? "log-order" : undefined}
+                  >
+                    {c}
+                  </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {events.map((e) => (
                 <TableRow key={e.key}>
-                  <TableCell>
+                  <TableCell className="log-order">
                     <span className="sequence">
                       {e.ingestion_sequence ?? "—"}
                     </span>

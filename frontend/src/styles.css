@@ -971,3 +971,16 @@ main {
   background: #fffbe6;
   border-radius: 4px;
 }
+
+.MuiTableCell-root.log-order {
+  width: 1%;
+  white-space: nowrap;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+[data-testid="metric-gps"] .metric-value {
+  font-size: 18px;
+  margin-top: 14px;
+  font-variant-numeric: tabular-nums;
+}

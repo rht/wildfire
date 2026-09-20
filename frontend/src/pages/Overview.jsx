@@ -23,17 +23,26 @@ import {
 } from "../components/Common";
 import CrewPlans from "../components/CrewPlans";
 import IncidentMap from "../components/IncidentMap";
-import { metrics, callRows, stamp } from "../state/model.mjs";
+import { metrics, callRows, stamp, gps, incidentGps } from "../state/model.mjs";
 export function Overview({ incidents, incident }) {
   const scope = incident ? [incident] : incidents,
-    totals = metrics(scope);
+    totals = metrics(scope),
+    coordinates = incident ? incidentGps(incident) : null;
   const prefix = incident
     ? `/incidents/${encodeURIComponent(incident.id)}`
     : "";
   return (
     <>
       {!incident && <PageHeading title="Operations overview" />}
-      <div className={incident ? "metric-grid fire-metrics" : "metric-grid"}>
+      <div className="metric-grid">
+        {incident && (
+          <Metric
+            label="GPS coordinates"
+            valueText={gps(coordinates.point)}
+            note={coordinates.basis}
+            testId="metric-gps"
+          />
+        )}
         {!incident && (
           <Metric
             compact

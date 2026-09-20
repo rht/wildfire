@@ -398,3 +398,44 @@ export function crewUrgency(tasks) {
     label: label + (partial ? " · partial timing" : ""),
   };
 }
+
+export function incidentGps(incident) {
+  if (gps(incident) !== "Not supplied")
+    return {
+      point: { latitude: incident.latitude, longitude: incident.longitude },
+      basis: "Incident point · lat, lon",
+    };
+  const points = [];
+  const visit = (coordinates) => {
+    if (!Array.isArray(coordinates)) return false;
+    if (typeof coordinates[0] === "number") {
+      const point = { latitude: coordinates[1], longitude: coordinates[0] };
+      if (gps(point) === "Not supplied") return false;
+      points.push(point);
+      return true;
+    }
+    return coordinates.length > 0 && coordinates.every(visit);
+  };
+  const geometry =
+    incident?.fire_geometry?.type === "Feature"
+      ? incident.fire_geometry.geometry
+      : incident?.fire_geometry;
+  if (
+    ["Polygon", "MultiPolygon"].includes(geometry?.type) &&
+    visit(geometry.coordinates) &&
+    points.length
+  ) {
+    const latitudes = points.map((p) => p.latitude),
+      longitudes = points.map((p) => p.longitude);
+    // A perimeter crossing the date line needs geographic handling rather than a misleading midpoint.
+    if (Math.max(...longitudes) - Math.min(...longitudes) <= 180)
+      return {
+        point: {
+          latitude: (Math.min(...latitudes) + Math.max(...latitudes)) / 2,
+          longitude: (Math.min(...longitudes) + Math.max(...longitudes)) / 2,
+        },
+        basis: "Perimeter centre · lat, lon",
+      };
+  }
+  return { point: null, basis: "Coordinates not supplied" };
+}

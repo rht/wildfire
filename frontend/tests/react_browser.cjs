@@ -86,6 +86,12 @@ const fs = require("node:fs");
       .click();
     await expect(page).toHaveURL(/incidents\/gavarres\/summary/);
     await expect(page.getByTestId("metric-active")).toHaveCount(0);
+    await expect(page.getByTestId("metric-gps")).toContainText(
+      "41.95900, 3.05050",
+    );
+    await expect(page.getByTestId("metric-gps")).toContainText(
+      "Perimeter centre",
+    );
     await expect(page.getByTestId("metric-structures")).toContainText("4");
     await page.mouse.move(0, 0);
     await page.goto(base + "/?demo=1#/overview");
