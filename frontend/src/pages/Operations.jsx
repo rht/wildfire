@@ -192,6 +192,11 @@ export function Calls({ incident }) {
                     </TableCell>
                     <TableCell>
                       <Status value={r.call.status} />
+                      {r.call.queue_state != null && (
+                        <div className="small-muted">
+                          Queue: {humanize(r.call.queue_state)}
+                        </div>
+                      )}
                       <div className="small-muted call-request-id">
                         {r.call.request_id}
                       </div>
@@ -277,11 +282,13 @@ export function Calls({ incident }) {
       )}
       <Typography variant="body2" color="text.secondary">
         To call shows locations with no call records or an unstarted queued
-        request; queue eligibility is not supplied. Attempted includes no answer
-        and other started or terminal outcomes. Completed counts completed calls
-        only, without proving instructions were understood. A supplied queued
-        retry can overlap with attempted calls; human follow-up can overlap with
-        either. This page does not place calls.
+        request. Supplied queue membership must be pending; cancelled, held and
+        started requests are excluded. Without queue data, eligibility is
+        unknown. Attempted includes no answer and other started or terminal
+        outcomes. Completed counts completed calls only, without proving
+        instructions were understood. A supplied queued retry can overlap with
+        attempted calls; human follow-up can overlap with either. This page does
+        not place calls.
       </Typography>
       <DetailDialog
         open={!!selected}
@@ -324,6 +331,7 @@ export function Calls({ incident }) {
                       ["Request", c.request_id],
                       ["Caller", callerLabel(callActor(c))],
                       ["Status", humanize(c.status)],
+                      ["Queue state", humanize(c.queue_state)],
                       ["Observed at", stamp(c.observed_at)],
                       ["Wants a human", fact(c.wants_human)],
                       [

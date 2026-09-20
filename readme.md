@@ -2915,17 +2915,22 @@ all three as waiting because it equated attempted calls with completed calls.
 **Call attempted** now includes started or terminal call records; **Call completed**
 is a separate count of locations with a completed record. **Voice assistant to call**
 includes only locations with no records or a supplied `queued` request whose
-`dispatch_state` is absent or `not_started`. A queued record already `attempting`,
+`dispatch_state` is absent or `not_started`, and any non-null `queue_state` is
+`pending`. A queued record already `attempting`,
 `bound` or `outcome_unknown` is an attempt, not another waiting call. Unknown call
 statuses remain unknown. Human follow-up is independent; a supplied queued retry
 may overlap with attempted/completed history. All counts are unique locations.
 Pending rows distinguish **Queued request** from **No call records**. Long request
 IDs wrap and follow-up reasons retain a minimum column width.
 
-The current public `coordination-state-1` endpoint does not expose queue membership.
-These are lifecycle counts, not proof of approved dispatch eligibility. Exact
-pending-versus-held/review counts would require the runtime to publish a public
-queue projection keyed by request ID. No backend or runtime files were changed
+The runtime contract now supplies `calls[].queue_state` as `pending`, `review`,
+`started`, `cancelled` or `null`. Non-null membership is authoritative: only
+`pending` can qualify an unstarted queued request for **Voice assistant to call**.
+`review`, `started` and `cancelled` are excluded even if call status remains
+`queued`. Null or absent membership preserves the lifecycle fallback, with queue
+eligibility explicitly unknown. Terminal calls and started dispatch are never
+requeued by stale pending metadata. The history and detail views expose queue
+state separately from call outcome. No backend or runtime files were changed
 under the integration freeze.
 
 Verification: regression tests cover terminal attempts, explicit retries, active
@@ -2935,3 +2940,11 @@ follow-ups, and checks retry/completion updates without writing to the service.
 Final checks passed: 35 Node tests, frontend lint/format/build, all four Chrome
 regression scripts and the read-only port-18541 state replay. Review found no
 blocking issues. Existing crew-map and persisted-confirmation checks still pass.
+
+Queue cancellation regression: unit coverage includes every queue state, null/absent
+fallback and stale pending metadata on a terminal call. Chrome verifies a queued
+retry leaves the waiting list on cancellation/review/start, returns only with pending
+membership, and still exits on completion. Runtime publication remains owned by
+`codex/end-to-end`; frontend consumes the field directly from REST/WebSocket data.
+Cancellation update verification passed: 36 Node tests, lint, formatting, production
+build and all four Chrome regression scripts, including saved confirmations.

@@ -49,6 +49,21 @@ const assert = require('node:assert/strict');
     await card('Voice assistant to call').click();
     await expect(page.locator('tbody tr')).toHaveCount(1);
     await expect(page.locator('tbody tr')).toContainText('Queued request');
+    for (const queueState of ['cancelled', 'review', 'started']) {
+      retry.queue_state = queueState;
+      state.revision++;
+      stream.send(JSON.stringify(state));
+      await expect(card('Voice assistant to call')).toContainText('0');
+      await expect(page.locator('tbody tr')).toHaveCount(0);
+    }
+    await card('All locations').click();
+    await expect(page.locator('tbody')).toContainText('Queue: Started');
+    retry.queue_state = 'pending';
+    state.revision++;
+    stream.send(JSON.stringify(state));
+    await expect(card('Voice assistant to call')).toContainText('1');
+    await card('Voice assistant to call').click();
+    await expect(page.locator('tbody tr')).toHaveCount(1);
     retry.status = 'completed';
     retry.dispatch_state = 'bound';
     state.revision++;

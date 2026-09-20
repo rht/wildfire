@@ -508,3 +508,21 @@ test('call state distinguishes uncalled, queued retries, active attempts, comple
   assert.deepEqual(ids('attempted'), ['retry', 'active', 'uncertain', 'done', 'failed', 'declined', 'busy']);
   assert.deepEqual(ids('completed'), ['done']);
 });
+
+test('queue membership excludes cancelled, held and started requests despite queued call status', async () => {
+  const { toIncident, callRows } = await import(path);
+  const states = ['pending', 'review', 'started', 'cancelled', null, undefined];
+  const rows = callRows(toIncident({
+    assets: states.map((_, index) => ({asset_id: String(index)})),
+    calls: states.map((queue_state, index) => ({
+      asset_id: String(index), status: 'queued', dispatch_state: 'not_started', queue_state,
+    })),
+  }));
+  assert.deepEqual(rows.map(row => row.toCall), [true, false, false, false, true, true]);
+  assert.deepEqual(rows.map(row => row.uncalled), [false, false, false, false, false, false]);
+  const terminal = callRows(toIncident({
+    assets: [{asset_id: 'a'}],
+    calls: [{asset_id: 'a', status: 'no_answer', dispatch_state: 'bound', queue_state: 'pending'}],
+  }))[0];
+  assert.equal(terminal.toCall, false, 'stale pending membership must not requeue a terminal attempt');
+});

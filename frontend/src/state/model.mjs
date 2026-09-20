@@ -125,6 +125,7 @@ export function callRows(incident) {
     const queued = calls.some(
       (r) =>
         r.status === "queued" &&
+        (r.queue_state == null || r.queue_state === "pending") &&
         (r.dispatch_state == null || r.dispatch_state === "not_started"),
     );
     return {
