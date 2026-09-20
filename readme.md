@@ -3132,3 +3132,10 @@ when a queue exists, otherwise null. A cancelled immutable request may still hav
 a historical call status of queued; the queue state prevents showing it as a
 pending AI call. No-answer is an attempted call that requires follow-up, not proof
 of a completed interview or permission for an automatic retry.
+
+Final Norma evidence: [scan and remediation report](reports/norma-end-to-end-2026-09-20.json),
+code commit `2a23599`. Across 25 supported files, 22 checks had unreduced coverage
+and three JavaScript checks had reduced coverage. Ten original findings were
+removed; six findings remain as documented decisions, with zero observed
+actionable findings left. This is not an all-clean or exhaustive-bug-free claim.
+Defense is documented, not formally registered with Norma.

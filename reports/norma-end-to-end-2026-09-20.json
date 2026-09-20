@@ -1,0 +1,4651 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/rht/wildfire",
+  "branch": "codex/end-to-end",
+  "base_commit": "d7cf32ea94a795e9705cd64219e864bbc07621de",
+  "code_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+  "date": "2026-09-20",
+  "status": "initial_and_focused_scans_complete_with_documented_retained_findings",
+  "generated_at": "2026-09-20T03:04:47.267Z",
+  "ownership": {
+    "only_written_file": "reports/norma-end-to-end-2026-09-20.json",
+    "source_edits": false,
+    "commits": false,
+    "source_fixes_owner": "coordinating end-to-end session",
+    "working_tree_changes_during_scan": "Coordinator started source remediation during this scan. Results cover code_commit only, not newer uncommitted edits or subsequent commits."
+  },
+  "method": {
+    "transport": "authenticated Quality Clouds MCP",
+    "tool": "live_check",
+    "content_source": "git show CODE_COMMIT:repository-relative-path",
+    "max_issues": 200,
+    "severity_filter": null,
+    "whole_repository_scan": false,
+    "cross_file_result_reuse": false,
+    "call_start_times": [
+      "2026-09-20T02:58:41.023Z",
+      "2026-09-20T02:58:41.024Z",
+      "2026-09-20T02:58:41.024Z",
+      "2026-09-20T02:58:41.028Z",
+      "2026-09-20T02:58:41.029Z",
+      "2026-09-20T02:58:41.036Z",
+      "2026-09-20T02:59:30.469Z",
+      "2026-09-20T02:59:30.469Z",
+      "2026-09-20T02:59:30.469Z",
+      "2026-09-20T02:59:30.470Z",
+      "2026-09-20T02:59:30.470Z",
+      "2026-09-20T02:59:30.472Z",
+      "2026-09-20T03:00:25.470Z",
+      "2026-09-20T03:00:25.470Z",
+      "2026-09-20T03:00:25.470Z",
+      "2026-09-20T03:00:25.470Z",
+      "2026-09-20T03:00:25.473Z",
+      "2026-09-20T03:00:25.473Z",
+      "2026-09-20T03:01:13.112Z",
+      "2026-09-20T03:01:13.112Z",
+      "2026-09-20T03:01:13.113Z",
+      "2026-09-20T03:01:13.113Z",
+      "2026-09-20T03:01:13.115Z",
+      "2026-09-20T03:01:13.117Z"
+    ],
+    "rate_limit_per_minute_per_user": 30,
+    "rate_limit_per_day_per_org": 5000,
+    "maximum_starts_in_any_60_seconds": 12,
+    "actual_account_tier": null,
+    "remaining_org_quota": null
+  },
+  "repository_context": {
+    "status": "unresolved",
+    "detail": "No repository matching this remote is linked to your organization, so results are not scoped. This is your organization's generic catalog; link it with link_repository or import it from the portal."
+  },
+  "ruleset_catalog": [
+    {
+      "ruleset_id": "agentic-rules-analyzer-1.0",
+      "name": "Agentic Rules Analyzer",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "narrative",
+      "description": "Evaluates prompt-based (judgement) rules against a repository with an LLM agent and posts the findings to issues_persistence_api as llm_issues.",
+      "rule_group_ids": [
+        "devops-design-patterns-by-norma_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "fastapi-norma-ruleset",
+      "name": "FastAPI Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "FastAPI-specific semgrep rules covering performance, scalability, manageability, security, architecture and maintainability.",
+      "rule_group_ids": [
+        "fastapi-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "javascript-norma-ruleset",
+      "name": "JavaScript Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "JavaScript-specific rules covering async error handling, DOM manipulation (eval, innerHTML), fetch correctness and observability.",
+      "rule_group_ids": [
+        "javascript-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "nodejs-norma-ruleset",
+      "name": "Node.js Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "Node.js project-hygiene rules covering package.json dependency pinning, linter and test-framework presence, and committed env files with secrets.",
+      "rule_group_ids": [
+        "nodejs-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "php-norma-ruleset",
+      "name": "PHP Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "PHP-specific Semgrep rules covering security, performance, scalability, maintainability, manageability and architecture for native PHP codebases.",
+      "rule_group_ids": [
+        "php-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "prompts-analysis",
+      "name": "Prompts Analysis",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": null,
+      "rule_group_ids": [
+        "prompt-analysis-1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "python-norma-ruleset",
+      "name": "Python Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "Pure-Python semgrep rules covering performance, scalability, manageability, security, architecture and maintainability.",
+      "rule_group_ids": [
+        "python-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "react-norma-ruleset",
+      "name": "React Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "React-specific rules covering component architecture, hooks, JSX, XSS sanitisation and error handling for AI-scaffolded React+Vite codebases.",
+      "rule_group_ids": [
+        "react-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "regex-tool-adobe-magento",
+      "name": "Adobe Magento Framework",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "Executes regex-based structural analysis using Quality Clouds' curated Magento rulesets. Validates architectural compliance (Dependency Injection, Layout XML, Plugins) and detects deprecated logic in Adobe Commerce and Open Source editions.",
+      "rule_group_ids": [
+        "regex-tool-adobe-best-practices_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "solid-patterns-analyzer-1.0",
+      "name": "solid-patterns-analyzer",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "The object-oriented design auditor for your repository. It detects violations of the five SOLID principles \u2014 from god classes to rigid, switch-driven logic \u2014 preventing brittle architectures that become expensive to change and maintain in production.",
+      "rule_group_ids": [
+        "solid-architecture-rules-1.0",
+        "solid-patterns-analyzer-1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "not_licensed"
+    },
+    {
+      "ruleset_id": "sqlalchemy-norma-ruleset",
+      "name": "SQLAlchemy Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "SQLAlchemy-specific semgrep rules covering performance, scalability, manageability, security, architecture and maintainability.",
+      "rule_group_ids": [
+        "sqlalchemy-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "supabase-norma-ruleset",
+      "name": "Supabase Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "Supabase-specific rules covering service-role and anon key handling, admin client placement, auth flow and session guards, client-side token storage and JWT handling, storage bucket exposure, Supabase project/environment separation, Edge Function rate limiting, and mutation error handling.",
+      "rule_group_ids": [
+        "supabase-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "typescript-norma-ruleset",
+      "name": "TypeScript Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "TypeScript-specific rules covering type-safety configuration and hardcoded secrets in source files.",
+      "rule_group_ids": [
+        "typescript-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    },
+    {
+      "ruleset_id": "vite-norma-ruleset",
+      "name": "Vite Norma Agent",
+      "version": "1.0",
+      "scope": "global",
+      "output_type": "issues",
+      "description": "Vite-specific rules covering environment variable handling, env separation across dev/staging/prod, and HTML security headers (CSP, SRI, Referrer-Policy).",
+      "rule_group_ids": [
+        "vite-norma-ruleset_1.0"
+      ],
+      "ce_types": [],
+      "agent_features": [],
+      "state": "available"
+    }
+  ],
+  "summary": {
+    "changed_files": 25,
+    "scanned_source_files": 24,
+    "livecheck_calls": 24,
+    "files_with_findings": 7,
+    "zero_finding_files": 17,
+    "total_findings": 16,
+    "severity_counts": {
+      "HIGH": 5,
+      "MEDIUM": 8,
+      "LOW": 3
+    },
+    "unreduced_coverage_files": 22,
+    "reduced_coverage_files": 2,
+    "errors": 0,
+    "unscanned_files": 1,
+    "all_clean": false
+  },
+  "inventory": [
+    {
+      "file": "fireline/call_events.py",
+      "sha256": "7c4ab6a40f5745957aef67e46e46bedf3e549dddd2bbdf3f4cb549f57d0138e7",
+      "bytes": 10117,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/coordination.py",
+      "sha256": "32b968a1d370978fd619d3bdcd6327f1cdff9eb1a8e580c338e3224ebdf6d1d4",
+      "bytes": 26176,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/dashboard_public.py",
+      "sha256": "fb6e9e06286467a05fc1c0a7f263e158feac99dd773049a024c0bcc969f86bc1",
+      "bytes": 7591,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/fire_assessment.py",
+      "sha256": "660d9c669c159c1d3639aa65f48ebe7c27505fff19336d943c8e19926da088a8",
+      "bytes": 12119,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/incident_planning.py",
+      "sha256": "d6c5ae729e10b053b4171a84207c22210e4a90580d6983e66263a342eb31f344",
+      "bytes": 8335,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/incident_runtime.py",
+      "sha256": "609754592f9220667385ee74a029c46bb3f8fce65a020af6dcf118362a741418",
+      "bytes": 24261,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/incident_server.py",
+      "sha256": "207efad88ec64faf7f6fac844f2aa3e500ea0f0d87f0a21cff559825f491f689",
+      "bytes": 18980,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/offline_integration.py",
+      "sha256": "f5aac5b0d98ffcc80a4b194a9e4c7769ceaa534bac02f9d833241b7a62ceba02",
+      "bytes": 18887,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/priority_models.py",
+      "sha256": "501409db522d106ba4e781d2ddde98c8a3ac9ed57e65d721a7b9e61b1fa00db5",
+      "bytes": 7436,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/snapshot_contacts.py",
+      "sha256": "8070aa0610bfd6d17a48919f43a0157f5b68a4c9f2ca6c547f9bc650de65494a",
+      "bytes": 15252,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fireline/voice_queue.py",
+      "sha256": "77bfbd08bf3b9366bd88f49bb820955ca898aef5e37454530b6186390911a546",
+      "bytes": 11097,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fixtures/end_to_end/catalog.json",
+      "sha256": "c5b4468a8d5370410734223c082076769ee701ff157d9b8d167d6eba808a32d4",
+      "bytes": 895,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fixtures/end_to_end/operations.json",
+      "sha256": "356c19ad433fcdc26088bfd3318a03bfb436c5f1b63d0ed15c12e5f68691e826",
+      "bytes": 8416,
+      "disposition": "scanned"
+    },
+    {
+      "file": "fixtures/integration/offline_scenario.json",
+      "sha256": "cff4d66453c38ab730cc493b88f8494e1f06602d1a195b2424389e54218b7e21",
+      "bytes": 4968,
+      "disposition": "scanned"
+    },
+    {
+      "file": "frontend/legacy/dashboard-view.js",
+      "sha256": "bc65722da42ca88522187deecffaff141c9754d8cd13bfbf7991e153d1dad01e",
+      "bytes": 15850,
+      "disposition": "scanned"
+    },
+    {
+      "file": "frontend/legacy/ui-mockup.html",
+      "sha256": "133c9fd052a15b9a64c946be7336383e664695b7cf1979e0b0753f17b5a07398",
+      "bytes": 18739,
+      "inline_scripts": [],
+      "disposition": "scanned"
+    },
+    {
+      "file": "frontend/tests/test_ui_mockup.cjs",
+      "sha256": "78645dfba9954d0e28326a1ddda19cbe494614b1339817c8298245e9850b2bcf",
+      "bytes": 11461,
+      "disposition": "scanned"
+    },
+    {
+      "file": "readme.md",
+      "sha256": "cf1a4a9c64bbac8b51cf254d284955255da976bc8894961b7750fa3c4d9f9ba0",
+      "bytes": 252296,
+      "disposition": "not_scanned_no_matching_deterministic_prose_rules"
+    },
+    {
+      "file": "tests/test_call_events.py",
+      "sha256": "e8d9bd616f9833e16635c19bc057292a3e11f155213a52425583769514733362",
+      "bytes": 9854,
+      "disposition": "scanned"
+    },
+    {
+      "file": "tests/test_fire_assessment.py",
+      "sha256": "fb912a3448a2e7674390f8caba9179503b23c887713d9dea44211252747e943c",
+      "bytes": 12460,
+      "disposition": "scanned"
+    },
+    {
+      "file": "tests/test_incident_planning.py",
+      "sha256": "9153d9c06114e9f1bdfa29a5a5357320c68fa487af6acdba5272c66de3173e32",
+      "bytes": 8002,
+      "disposition": "scanned"
+    },
+    {
+      "file": "tests/test_incident_runtime.py",
+      "sha256": "bdfb0a42510e35e9bb002ac24e401245b45eaceabd9ce1b811e40d89e42770f9",
+      "bytes": 11311,
+      "disposition": "scanned"
+    },
+    {
+      "file": "tests/test_incident_server.py",
+      "sha256": "212ec0e7842ce582f50882f9706d1a92ff725b71f1bbcbd9b49a535eb7473edd",
+      "bytes": 17955,
+      "disposition": "scanned"
+    },
+    {
+      "file": "tests/test_offline_integration.py",
+      "sha256": "0a70377add0f7fc2d15791cb0a037bbbd81931a34976299462f422befd3ab502",
+      "bytes": 5984,
+      "disposition": "scanned"
+    },
+    {
+      "file": "tests/test_snapshot_contacts.py",
+      "sha256": "c97d40f87adf322ae9c9b5fd92c4dffdce90bc37f706cdbe7d7ebf3d828b97c6",
+      "bytes": 18506,
+      "disposition": "scanned"
+    }
+  ],
+  "results": [
+    {
+      "file": "fireline/call_events.py",
+      "scan_file": "fireline/call_events.py",
+      "sha256": "7c4ab6a40f5745957aef67e46e46bedf3e549dddd2bbdf3f4cb549f57d0138e7",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:58:41.023Z",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-arch-type-eq": {
+            "rule_name": "type(x) == X",
+            "severity": "HIGH",
+            "impact_area": "architecture",
+            "description": "Checks an object's type too strictly; rejects valid subtypes that should also be accepted.",
+            "remediation_action": "Use isinstance.",
+            "good_code": "if isinstance(x, int): ...",
+            "bad_code": "if type(x) == int: ...",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-arch-type-eq",
+            "file": "fireline/call_events.py",
+            "line": 158,
+            "column": 13,
+            "snippet": "            type(issued) is not int"
+          },
+          {
+            "rule_id": "py-arch-type-eq",
+            "file": "fireline/call_events.py",
+            "line": 163,
+            "column": 35,
+            "snippet": "            if name in claims and type(claims[name]) is not int:"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/dashboard_public.py",
+      "scan_file": "fireline/dashboard_public.py",
+      "sha256": "fb6e9e06286467a05fc1c0a7f263e158feac99dd773049a024c0bcc969f86bc1",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:58:41.024Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/incident_planning.py",
+      "scan_file": "fireline/incident_planning.py",
+      "sha256": "d6c5ae729e10b053b4171a84207c22210e4a90580d6983e66263a342eb31f344",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:58:41.029Z",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-scal-deepcopy": {
+            "rule_name": "copy.deepcopy(...) flag",
+            "severity": "MEDIUM",
+            "impact_area": "performance",
+            "description": "Makes a full deep clone of an object. This is expensive and rarely necessary.",
+            "remediation_action": "Consider copy.copy or dataclasses.replace.",
+            "good_code": "# review: copy.copy or dataclasses.replace may suffice",
+            "bad_code": "result = copy.deepcopy(obj)",
+            "estimated_time_to_fix": 15
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-scal-deepcopy",
+            "file": "fireline/incident_planning.py",
+            "line": 143,
+            "column": 39,
+            "snippet": "                data['routes'].append(deepcopy(route))"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/fire_assessment.py",
+      "scan_file": "fireline/fire_assessment.py",
+      "sha256": "660d9c669c159c1d3639aa65f48ebe7c27505fff19336d943c8e19926da088a8",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:58:41.028Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/coordination.py",
+      "scan_file": "fireline/coordination.py",
+      "sha256": "32b968a1d370978fd619d3bdcd6327f1cdff9eb1a8e580c338e3224ebdf6d1d4",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:58:41.024Z",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-arch-type-eq": {
+            "rule_name": "type(x) == X",
+            "severity": "HIGH",
+            "impact_area": "architecture",
+            "description": "Checks an object's type too strictly; rejects valid subtypes that should also be accepted.",
+            "remediation_action": "Use isinstance.",
+            "good_code": "if isinstance(x, int): ...",
+            "bad_code": "if type(x) == int: ...",
+            "estimated_time_to_fix": 2
+          },
+          "py-maint-no-print": {
+            "rule_name": "print() in production code",
+            "severity": "MEDIUM",
+            "impact_area": "maintainability",
+            "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+            "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+            "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+            "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+            "estimated_time_to_fix": 3
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-arch-type-eq",
+            "file": "fireline/coordination.py",
+            "line": 275,
+            "column": 12,
+            "snippet": "        if type(after_revision) is not int or after_revision < 0:"
+          },
+          {
+            "rule_id": "py-maint-no-print",
+            "file": "fireline/coordination.py",
+            "line": 456,
+            "column": 9,
+            "snippet": "        print(encoded(state))"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/incident_runtime.py",
+      "scan_file": "fireline/incident_runtime.py",
+      "sha256": "609754592f9220667385ee74a029c46bb3f8fce65a020af6dcf118362a741418",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:58:41.036Z",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-mng-magic-timeout": {
+            "rule_name": "Magic-number timeout",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Uses an unexplained number for a timeout or sleep. Hard to understand or adjust later.",
+            "remediation_action": "Extract to a named constant.",
+            "good_code": "RETRY_DELAY_SECONDS = 30\ntime.sleep(RETRY_DELAY_SECONDS)",
+            "bad_code": "time.sleep(30)",
+            "estimated_time_to_fix": 5
+          },
+          "py-mng-open-no-encoding": {
+            "rule_name": "open() without explicit encoding",
+            "severity": "LOW",
+            "impact_area": "manageability",
+            "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+            "remediation_action": "Always pass encoding=\"utf-8\".",
+            "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+            "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+            "estimated_time_to_fix": 2
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-mng-magic-timeout",
+            "file": "fireline/incident_runtime.py",
+            "line": 69,
+            "column": 14,
+            "snippet": "        db = sqlite3.connect(self.control, timeout=10)"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/incident_runtime.py",
+            "line": 167,
+            "column": 27,
+            "snippet": "        rows = json.loads(Path(catalog).read_text()) if catalog else None"
+          },
+          {
+            "rule_id": "py-mng-open-no-encoding",
+            "file": "fireline/incident_runtime.py",
+            "line": 398,
+            "column": 13,
+            "snippet": "            path.write_text(encoded(roster))"
+          }
+        ],
+        "issues_returned": 3,
+        "total_issues": 3,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fixtures/end_to_end/catalog.json",
+      "scan_file": "fixtures/end_to_end/catalog.json",
+      "sha256": "c5b4468a8d5370410734223c082076769ee701ff157d9b8d167d6eba808a32d4",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:59:30.472Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "nodejs-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/offline_integration.py",
+      "scan_file": "fireline/offline_integration.py",
+      "sha256": "f5aac5b0d98ffcc80a4b194a9e4c7769ceaa534bac02f9d833241b7a62ceba02",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:59:30.470Z",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "py-scal-deepcopy": {
+            "rule_name": "copy.deepcopy(...) flag",
+            "severity": "MEDIUM",
+            "impact_area": "performance",
+            "description": "Makes a full deep clone of an object. This is expensive and rarely necessary.",
+            "remediation_action": "Consider copy.copy or dataclasses.replace.",
+            "good_code": "# review: copy.copy or dataclasses.replace may suffice",
+            "bad_code": "result = copy.deepcopy(obj)",
+            "estimated_time_to_fix": 15
+          },
+          "py-maint-no-print": {
+            "rule_name": "print() in production code",
+            "severity": "MEDIUM",
+            "impact_area": "maintainability",
+            "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+            "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+            "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+            "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+            "estimated_time_to_fix": 3
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-scal-deepcopy",
+            "file": "fireline/offline_integration.py",
+            "line": 291,
+            "column": 51,
+            "snippet": "                recommendation[\"road_warnings\"] = deepcopy(self.spec[\"road_warnings\"])"
+          },
+          {
+            "rule_id": "py-maint-no-print",
+            "file": "fireline/offline_integration.py",
+            "line": 495,
+            "column": 9,
+            "snippet": "        print(\n            json.dumps(\n                {\n                    \"database\": str(run.database),\n                    \"revision\": state[\"revision\"],\n                    \"input_mode\": \"synthetic\",\n                    \"calls\": [\n                        {\"asset_id\": c[\"asset_id\"], \"status\": c[\"status\"]}\n                        for c in state[\"calls\"]\n                    ],\n                }\n            )\n        )"
+          }
+        ],
+        "issues_returned": 2,
+        "total_issues": 2,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/priority_models.py",
+      "scan_file": "fireline/priority_models.py",
+      "sha256": "501409db522d106ba4e781d2ddde98c8a3ac9ed57e65d721a7b9e61b1fa00db5",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:59:30.469Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/voice_queue.py",
+      "scan_file": "fireline/voice_queue.py",
+      "sha256": "77bfbd08bf3b9366bd88f49bb820955ca898aef5e37454530b6186390911a546",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:59:30.470Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/snapshot_contacts.py",
+      "scan_file": "fireline/snapshot_contacts.py",
+      "sha256": "8070aa0610bfd6d17a48919f43a0157f5b68a4c9f2ca6c547f9bc650de65494a",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:59:30.469Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/incident_server.py",
+      "scan_file": "fireline/incident_server.py",
+      "sha256": "207efad88ec64faf7f6fac844f2aa3e500ea0f0d87f0a21cff559825f491f689",
+      "method": "live_check",
+      "started_at": "2026-09-20T02:59:30.469Z",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "fa-sec-cookie-no-secure": {
+            "rule_name": "Cookie missing secure flag",
+            "severity": "HIGH",
+            "impact_area": "security",
+            "description": "response.set_cookie() called without secure=True \u2014 cookie transmitted over plain HTTP.",
+            "remediation_action": "Pass secure=True.",
+            "good_code": "response.set_cookie(\"session\", token, httponly=True, secure=True)",
+            "bad_code": "response.set_cookie(\"session\", token, httponly=True)",
+            "estimated_time_to_fix": 2
+          },
+          "fa-mnt-no-typing-param": {
+            "rule_name": "Untyped route parameter",
+            "severity": "MEDIUM",
+            "impact_area": "maintainability",
+            "description": "Route parameter declared without an explicit type annotation \u2014 FastAPI treats it as a Query string by default.",
+            "remediation_action": "Annotate all route params.",
+            "good_code": "@app.get(\"/x\")\nasync def x(id: int): ...",
+            "bad_code": "@app.get(\"/x\")\nasync def x(id): ...",
+            "estimated_time_to_fix": 5
+          },
+          "py-maint-no-print": {
+            "rule_name": "print() in production code",
+            "severity": "MEDIUM",
+            "impact_area": "maintainability",
+            "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+            "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+            "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+            "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+            "estimated_time_to_fix": 3
+          },
+          "fa-scl-hardcoded-workers": {
+            "rule_name": "Hardcoded uvicorn workers",
+            "severity": "MEDIUM",
+            "impact_area": "scalability",
+            "description": "uvicorn.run(..., workers=N) hardcoded \u2014 must come from env/config so it can be tuned per environment.",
+            "remediation_action": "Read from env.",
+            "good_code": "uvicorn.run(app, workers=int(os.environ[\"WEB_CONCURRENCY\"]))",
+            "bad_code": "uvicorn.run(app, workers=4)",
+            "estimated_time_to_fix": 5
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "fa-sec-cookie-no-secure",
+            "file": "fireline/incident_server.py",
+            "line": 309,
+            "column": 9,
+            "snippet": "        response.set_cookie(\n            \"incident_session\",\n            _session(dashboard_token),\n            max_age=SESSION_SECONDS,\n            httponly=True,\n            secure=request.url.scheme == \"https\",\n            samesite=\"strict\",\n        )"
+          },
+          {
+            "rule_id": "fa-mnt-no-typing-param",
+            "file": "fireline/incident_server.py",
+            "line": 200,
+            "column": 5,
+            "snippet": "    @asynccontextmanager\n    async def lifespan(app):\n        stop.clear()\n        task = asyncio.create_task(worker()) if tick_interval else None\n        try:\n            yield\n        finally:\n            stop.set()\n            if task:\n                await task"
+          },
+          {
+            "rule_id": "py-maint-no-print",
+            "file": "fireline/incident_server.py",
+            "line": 401,
+            "column": 13,
+            "snippet": "            print(\"Vonage association recorded; no call was placed.\")"
+          },
+          {
+            "rule_id": "py-maint-no-print",
+            "file": "fireline/incident_server.py",
+            "line": 422,
+            "column": 13,
+            "snippet": "            print(json.dumps(response.json(), indent=2))"
+          },
+          {
+            "rule_id": "fa-scl-hardcoded-workers",
+            "file": "fireline/incident_server.py",
+            "line": 478,
+            "column": 9,
+            "snippet": "        uvicorn.run(\n            application, host=args.host, port=args.port, workers=1, access_log=False\n        )"
+          }
+        ],
+        "issues_returned": 5,
+        "total_issues": 5,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fixtures/integration/offline_scenario.json",
+      "scan_file": "fixtures/integration/offline_scenario.json",
+      "sha256": "cff4d66453c38ab730cc493b88f8494e1f06602d1a195b2424389e54218b7e21",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:00:25.470Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "nodejs-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fixtures/end_to_end/operations.json",
+      "scan_file": "fixtures/end_to_end/operations.json",
+      "sha256": "356c19ad433fcdc26088bfd3318a03bfb436c5f1b63d0ed15c12e5f68691e826",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:00:25.470Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "nodejs-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "frontend/legacy/ui-mockup.html",
+      "scan_file": "frontend/legacy/ui-mockup.html",
+      "sha256": "133c9fd052a15b9a64c946be7336383e664695b7cf1979e0b0753f17b5a07398",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:00:25.470Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "frontend/legacy/dashboard-view.js",
+      "scan_file": "frontend/legacy/dashboard-view.js",
+      "sha256": "bc65722da42ca88522187deecffaff141c9754d8cd13bfbf7991e153d1dad01e",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:00:25.470Z",
+      "result": {
+        "outcome": "issues",
+        "rules": {
+          "js-no-error-handling-async": {
+            "rule_name": "Async Operation Without Error Handling",
+            "severity": "HIGH",
+            "impact_area": "scalability",
+            "description": "Detects async functions or await expressions that are not wrapped in try/catch blocks and do not chain .catch(). AI-generated code frequently omits error handling, causing unhandled promise rejections that crash the app silently.",
+            "remediation_action": "Wrap all await calls in try/catch. In the catch block, show user-friendly error feedback (toast, alert) and log the error for debugging. Consider a global error handler for uncaught promise rejections.",
+            "good_code": "const handleSubmit = async () => {\n  try {\n    const { data, error } = await supabase.from('todos').insert({ title })\n    if (error) throw error\n    setTodos([...todos, data])\n  } catch (err) {\n    toast.error('Failed to add todo')\n    console.error(err)\n  }\n}",
+            "bad_code": "const handleSubmit = async () => {\n  const { data } = await supabase.from('todos').insert({ title })\n  setTodos([...todos, data])\n  // If insert fails, data is null \u2192 crash on spread\n}",
+            "estimated_time_to_fix": 10
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "js-no-error-handling-async",
+            "file": "frontend/legacy/dashboard-view.js",
+            "line": 217,
+            "column": 36,
+            "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok) throw new Error('unavailable');return r.json();},"
+          }
+        ],
+        "issues_returned": 1,
+        "total_issues": 1,
+        "capped": false,
+        "coverage": {
+          "reduced": true,
+          "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+        },
+        "rulesets_evaluated": [
+          "javascript-norma-ruleset",
+          "nodejs-norma-ruleset",
+          "react-norma-ruleset",
+          "supabase-norma-ruleset",
+          "typescript-norma-ruleset",
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "frontend/tests/test_ui_mockup.cjs",
+      "scan_file": "frontend/tests/test_ui_mockup.virtual.js",
+      "sha256": "78645dfba9954d0e28326a1ddda19cbe494614b1339817c8298245e9850b2bcf",
+      "method": "extension_mapped_live_check",
+      "started_at": "2026-09-20T03:00:25.473Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": true,
+          "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+        },
+        "rulesets_evaluated": [
+          "javascript-norma-ruleset",
+          "nodejs-norma-ruleset",
+          "react-norma-ruleset",
+          "supabase-norma-ruleset",
+          "typescript-norma-ruleset",
+          "vite-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "tests/test_call_events.py",
+      "scan_file": "tests/test_call_events.py",
+      "sha256": "e8d9bd616f9833e16635c19bc057292a3e11f155213a52425583769514733362",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:00:25.473Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "tests/test_incident_runtime.py",
+      "scan_file": "tests/test_incident_runtime.py",
+      "sha256": "bdfb0a42510e35e9bb002ac24e401245b45eaceabd9ce1b811e40d89e42770f9",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:01:13.112Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "tests/test_incident_server.py",
+      "scan_file": "tests/test_incident_server.py",
+      "sha256": "212ec0e7842ce582f50882f9706d1a92ff725b71f1bbcbd9b49a535eb7473edd",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:01:13.113Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "tests/test_fire_assessment.py",
+      "scan_file": "tests/test_fire_assessment.py",
+      "sha256": "fb912a3448a2e7674390f8caba9179503b23c887713d9dea44211252747e943c",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:01:13.113Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "tests/test_offline_integration.py",
+      "scan_file": "tests/test_offline_integration.py",
+      "sha256": "0a70377add0f7fc2d15791cb0a037bbbd81931a34976299462f422befd3ab502",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:01:13.115Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "tests/test_snapshot_contacts.py",
+      "scan_file": "tests/test_snapshot_contacts.py",
+      "sha256": "c97d40f87adf322ae9c9b5fd92c4dffdce90bc37f706cdbe7d7ebf3d828b97c6",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:01:13.117Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "tests/test_incident_planning.py",
+      "scan_file": "tests/test_incident_planning.py",
+      "sha256": "9153d9c06114e9f1bdfa29a5a5357320c68fa487af6acdba5272c66de3173e32",
+      "method": "live_check",
+      "started_at": "2026-09-20T03:01:13.112Z",
+      "result": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    }
+  ],
+  "findings": [
+    {
+      "scan_result_index": 0,
+      "rule_id": "py-arch-type-eq",
+      "file": "fireline/call_events.py",
+      "line": 158,
+      "column": 13,
+      "snippet": "            type(issued) is not int",
+      "severity": "HIGH",
+      "triage": {
+        "status": "review_strict_input_contract",
+        "reason": "Exact integer JWT issued-at validation may deliberately reject bool/subclasses; related to existing strict-primitive policy, not the preferred NEW defense."
+      }
+    },
+    {
+      "scan_result_index": 0,
+      "rule_id": "py-arch-type-eq",
+      "file": "fireline/call_events.py",
+      "line": 163,
+      "column": 35,
+      "snippet": "            if name in claims and type(claims[name]) is not int:",
+      "severity": "HIGH",
+      "triage": {
+        "status": "review_strict_input_contract",
+        "reason": "Exact integer time-claim validation needs explicit claim contract; do not replace with bare isinstance that accepts bool."
+      }
+    },
+    {
+      "scan_result_index": 2,
+      "rule_id": "py-scal-deepcopy",
+      "file": "fireline/incident_planning.py",
+      "line": 143,
+      "column": 39,
+      "snippet": "                data['routes'].append(deepcopy(route))",
+      "severity": "MEDIUM",
+      "triage": {
+        "status": "review_copy_ownership",
+        "reason": "Determine whether nested route ownership requires deep copy; shallow replacement must preserve mutation isolation."
+      }
+    },
+    {
+      "scan_result_index": 4,
+      "rule_id": "py-arch-type-eq",
+      "file": "fireline/coordination.py",
+      "line": 275,
+      "column": 12,
+      "snippet": "        if type(after_revision) is not int or after_revision < 0:",
+      "severity": "HIGH",
+      "triage": {
+        "status": "review_strict_input_contract",
+        "reason": "Revision cursor exact integer validation may be intentional; preserve rejection of bool if refactoring."
+      }
+    },
+    {
+      "scan_result_index": 4,
+      "rule_id": "py-maint-no-print",
+      "file": "fireline/coordination.py",
+      "line": 456,
+      "column": 9,
+      "snippet": "        print(encoded(state))",
+      "severity": "MEDIUM",
+      "triage": {
+        "status": "selected_deliberate_design_defense",
+        "reason": "Keep print(encoded(state)): CLI JSON stdout protocol, independently verified by the existing subprocess parsing/replay regression at the pinned commit."
+      }
+    },
+    {
+      "scan_result_index": 5,
+      "rule_id": "py-mng-magic-timeout",
+      "file": "fireline/incident_runtime.py",
+      "line": 69,
+      "column": 14,
+      "snippet": "        db = sqlite3.connect(self.control, timeout=10)",
+      "severity": "LOW",
+      "triage": {
+        "status": "actionable_manageability",
+        "reason": "Name/document the SQLite busy timeout without altering its operational behavior."
+      }
+    },
+    {
+      "scan_result_index": 5,
+      "rule_id": "py-mng-open-no-encoding",
+      "file": "fireline/incident_runtime.py",
+      "line": 167,
+      "column": 27,
+      "snippet": "        rows = json.loads(Path(catalog).read_text()) if catalog else None",
+      "severity": "LOW",
+      "triage": {
+        "status": "actionable_encoding",
+        "reason": "Specify UTF-8 for JSON catalog text."
+      }
+    },
+    {
+      "scan_result_index": 5,
+      "rule_id": "py-mng-open-no-encoding",
+      "file": "fireline/incident_runtime.py",
+      "line": 398,
+      "column": 13,
+      "snippet": "            path.write_text(encoded(roster))",
+      "severity": "LOW",
+      "triage": {
+        "status": "actionable_encoding",
+        "reason": "Specify UTF-8 for generated JSON roster text."
+      }
+    },
+    {
+      "scan_result_index": 7,
+      "rule_id": "py-scal-deepcopy",
+      "file": "fireline/offline_integration.py",
+      "line": 291,
+      "column": 51,
+      "snippet": "                recommendation[\"road_warnings\"] = deepcopy(self.spec[\"road_warnings\"])",
+      "severity": "MEDIUM",
+      "triage": {
+        "status": "review_copy_ownership",
+        "reason": "Nested road warnings may need ownership isolation; assess before replacing deepcopy."
+      }
+    },
+    {
+      "scan_result_index": 7,
+      "rule_id": "py-maint-no-print",
+      "file": "fireline/offline_integration.py",
+      "line": 495,
+      "column": 9,
+      "snippet": "        print(\n            json.dumps(\n                {\n                    \"database\": str(run.database),\n                    \"revision\": state[\"revision\"],\n                    \"input_mode\": \"synthetic\",\n                    \"calls\": [\n                        {\"asset_id\": c[\"asset_id\"], \"status\": c[\"status\"]}\n                        for c in state[\"calls\"]\n                    ],\n                }\n            )\n        )",
+      "severity": "MEDIUM",
+      "triage": {
+        "status": "review_cli_output_contract",
+        "reason": "Machine-readable JSON stdout is potentially intentional; logger.info is not an equivalent output interface.",
+        "coordinator_disposition": "CLI output deliberately retained by coordinating session; exact final implementation and checks await remediation SHA."
+      }
+    },
+    {
+      "scan_result_index": 11,
+      "rule_id": "fa-sec-cookie-no-secure",
+      "file": "fireline/incident_server.py",
+      "line": 309,
+      "column": 9,
+      "snippet": "        response.set_cookie(\n            \"incident_session\",\n            _session(dashboard_token),\n            max_age=SESSION_SECONDS,\n            httponly=True,\n            secure=request.url.scheme == \"https\",\n            samesite=\"strict\",\n        )",
+      "severity": "HIGH",
+      "triage": {
+        "status": "security_review_required",
+        "reason": "Cookie secure flag follows request scheme; public host configuration does not itself force HTTPS. Verify TLS/proxy trust and forbid insecure public-session transport. Not proposed for defense."
+      }
+    },
+    {
+      "scan_result_index": 11,
+      "rule_id": "fa-mnt-no-typing-param",
+      "file": "fireline/incident_server.py",
+      "line": 200,
+      "column": 5,
+      "snippet": "    @asynccontextmanager\n    async def lifespan(app):\n        stop.clear()\n        task = asyncio.create_task(worker()) if tick_interval else None\n        try:\n            yield\n        finally:\n            stop.set()\n            if task:\n                await task",
+      "severity": "MEDIUM",
+      "triage": {
+        "status": "rule_scope_false_positive",
+        "reason": "This is an asynccontextmanager lifespan callback, not a FastAPI route parameter. A type annotation can still improve clarity."
+      }
+    },
+    {
+      "scan_result_index": 11,
+      "rule_id": "py-maint-no-print",
+      "file": "fireline/incident_server.py",
+      "line": 401,
+      "column": 13,
+      "snippet": "            print(\"Vonage association recorded; no call was placed.\")",
+      "severity": "MEDIUM",
+      "triage": {
+        "status": "review_cli_output_contract",
+        "reason": "CLI confirmation message, not request-path logging; decide the intended CLI output interface.",
+        "coordinator_disposition": "CLI output deliberately retained by coordinating session; exact final implementation and checks await remediation SHA."
+      }
+    },
+    {
+      "scan_result_index": 11,
+      "rule_id": "py-maint-no-print",
+      "file": "fireline/incident_server.py",
+      "line": 422,
+      "column": 13,
+      "snippet": "            print(json.dumps(response.json(), indent=2))",
+      "severity": "MEDIUM",
+      "triage": {
+        "status": "review_cli_output_contract",
+        "reason": "CLI trigger command returns JSON to stdout; logging can change its consumer contract.",
+        "coordinator_disposition": "CLI output deliberately retained by coordinating session; exact final implementation and checks await remediation SHA."
+      }
+    },
+    {
+      "scan_result_index": 11,
+      "rule_id": "fa-scl-hardcoded-workers",
+      "file": "fireline/incident_server.py",
+      "line": 478,
+      "column": 9,
+      "snippet": "        uvicorn.run(\n            application, host=args.host, port=args.port, workers=1, access_log=False\n        )",
+      "severity": "MEDIUM",
+      "triage": {
+        "status": "selected_deliberate_design_defense",
+        "reason": "Keep workers=1: explicit single-process ownership; process-local asyncio.Lock coordinates API mutations and one lifespan background task. Multi-process use requires separate coordination design."
+      }
+    },
+    {
+      "scan_result_index": 15,
+      "rule_id": "js-no-error-handling-async",
+      "file": "frontend/legacy/dashboard-view.js",
+      "line": 217,
+      "column": 36,
+      "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok) throw new Error('unavailable');return r.json();},",
+      "severity": "HIGH",
+      "triage": {
+        "status": "new_error_boundary_defense_candidate",
+        "reason": "The callback deliberately rejects; DashboardClient.start awaits it inside try/catch and owns unavailable status and retry. Four exact-code stubbed cases passed."
+      }
+    }
+  ],
+  "coverage_limitations": [
+    "All three final JavaScript checks (legacy view and two CJS tests) have reduced coverage: one unidentified Semgrep rule could not be evaluated.",
+    "Both frontend/tests/test_ui_mockup.cjs and frontend/tests/test_dashboard_client.cjs use exact unchanged bytes under recorded virtual .js names; this is extension-mapped coverage.",
+    "HTML was evaluated against Vite rules; it contains no inline scripts. Inline CSS/SVG are not covered by matching deterministic rules.",
+    "JSON checks cover applicable Node hygiene rules, not domain/schema correctness.",
+    "readme.md is not scanned and is not called clean.",
+    "React code inherited unchanged from the supplied merged main base is outside this changed-file scan. Frontend legacy JS/HTML and changed CJS tests are included.",
+    "File-level Livechecks can report unchanged lines within changed files; findings are not automatically newly introduced defects.",
+    "No complete Python/frontend test suite was run by this scanning session; the coordinating session owns integration verification."
+  ],
+  "existing_strict_int_defense": {
+    "file": "fireline/evacuation_readiness.py",
+    "sha256": "b01fb58659b1a37b2d5a0911a4eeb15ae12e2a1bb05644e98592a989fdab2f00",
+    "unchanged_between_base_and_code_commit": true,
+    "strict_statement_present": true,
+    "disposition": "preserved; outside changed-file scan; not rescanned or counted as a new finding",
+    "formal_registration": "previously documented only; no exception endpoint exposed"
+  },
+  "new_defense_candidates": [
+    {
+      "id": "coordination_cli_json_stdout",
+      "recommended": true,
+      "selected": true,
+      "selected_by": "Explicit end-to-end coordination instruction",
+      "branch": "codex/end-to-end",
+      "commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/coordination.py",
+      "line": 456,
+      "column": 9,
+      "rule_id": "py-maint-no-print",
+      "severity": "MEDIUM",
+      "observed_finding": true,
+      "status": "selected_for_retention_documented_defense_not_fixed_or_formally_registered",
+      "snippet": "print(encoded(state))",
+      "intended_behavior": "Successful coordination tick emits exactly one machine-readable JSON state to stdout, with a trailing newline; consumers can parse it and compare replay results.",
+      "why_general_rule_does_not_fit": "The rule treats print as diagnostic logging. This call is the CLI result protocol. logger.info may be disabled by level, normally writes to stderr, and may add formatting; it is not a behavior-preserving replacement for stdout JSON. Moving diagnostics to logging is separate from emitting command output.",
+      "tradeoffs": "Stdout is reserved for protocol data and cannot also carry arbitrary informational logs. Large states are serialized as one output payload and broken-pipe behavior remains a CLI concern. This does not authorize printing secrets or raw private input.",
+      "evidence": [
+        {
+          "file": "fireline/coordination.py",
+          "line": 425,
+          "detail": "The call is in main(argv), the explicit CLI entry point."
+        },
+        {
+          "file": "fireline/coordination.py",
+          "line": 454,
+          "detail": "The emitted state is the successful CoordinationStore.refresh result."
+        },
+        {
+          "file": "fireline/coordination.py",
+          "line": 457,
+          "detail": "Rejected inputs use parser.exit with a nonzero exit and an error message; they are separate from the success JSON output."
+        },
+        {
+          "file": "tests/test_coordination.py",
+          "line": 273,
+          "detail": "Existing subprocess regression requires nonempty stdout, json.loads parses it, asserts coordination-state-1, compares the second replay result, and verifies persisted state/revision."
+        }
+      ],
+      "verification": {
+        "commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "command": "python -m pytest -q -p no:cacheprovider tests/test_coordination.py::test_offline_cli_tick_publishes_readable_state_and_updates",
+        "interpreter": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/norma-ca-calibration/.venv/bin/python",
+        "execution": "temporary git archive of pinned commit; PYTHONPATH pinned to archive; no worktree source edits",
+        "test_sha256": "3a537b831f69f419a45c3914f4e8bb76a6210f3d7459b4aa6ef8291f80e0b112",
+        "exit_code": 0,
+        "stdout": ".                                                                        [100%]\n1 passed in 0.59s\n",
+        "stderr": ""
+      },
+      "initial_environment_check": "The end-to-end worktree has no .venv; no dependencies were installed or modified. An existing sibling interpreter ran the test from an isolated temporary archive with PYTHONPATH pinned to the scanned revision.",
+      "invalidation_conditions": [
+        "The command contract changes from JSON stdout to another explicit output channel",
+        "Additional prints or logger configuration contaminate stdout with non-JSON diagnostics",
+        "The output ceases to be the public state or includes private payloads/secrets",
+        "The print is moved into a library/background/request path where there is no CLI stdout contract",
+        "Subprocess parsing/replay regression stops validating the actual CLI"
+      ],
+      "bounds": "Only this exact CLI result-output finding is selected. Other no-print findings need their own output-contract review; no whole-rule exemption or suppression is implied.",
+      "selection_status": "selected documented decision"
+    },
+    {
+      "id": "single_incident_worker",
+      "recommended": true,
+      "branch": "codex/end-to-end",
+      "commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_server.py",
+      "line": 478,
+      "rule_id": "fa-scl-hardcoded-workers",
+      "severity": "MEDIUM",
+      "observed_finding": true,
+      "status": "selected_for_retention_documented_defense_not_fixed_or_formally_registered",
+      "intended_behavior": "One Uvicorn worker process owns the IncidentRuntime; API mutations and background ticks share a process-local asyncio.Lock.",
+      "why_general_rule_does_not_fit": "Increasing a configurable worker count is not safe capacity tuning for this design: each app lifespan creates its own background loop and process-local lock. An environment-controlled worker count does not supply cross-process ownership or locking.",
+      "tradeoffs": "Single-process throughput and availability are limited; no multi-worker scalability claim. This setting does not prevent an operator from launching multiple separate service instances.",
+      "evidence": [
+        {
+          "file": "fireline/incident_server.py",
+          "line": 3,
+          "detail": "Module documentation explicitly says run one worker process."
+        },
+        {
+          "file": "fireline/incident_server.py",
+          "line": 180,
+          "detail": "Process-local asyncio.Lock serializes mutations and ticks."
+        },
+        {
+          "file": "fireline/incident_server.py",
+          "line": 201,
+          "detail": "Lifespan creates background worker task."
+        },
+        {
+          "file": "tests/test_incident_server.py",
+          "line": 325,
+          "detail": "test_fire_requests_wait_for_running_tick_before_mutating_incident checks single-app serialization; inspected, not rerun by scanner."
+        },
+        {
+          "file": "tests/test_incident_server.py",
+          "line": 237,
+          "detail": "Background worker advances synthetic queue; test inspected, not rerun."
+        },
+        {
+          "file": "tests/test_incident_server.py",
+          "line": 256,
+          "detail": "Worker failure/recovery behavior; test inspected, not rerun."
+        }
+      ],
+      "invalidation_conditions": [
+        "Cross-process ownership/leader election or distributed locking is implemented and tested",
+        "Background dispatch is separated from replicated read/API workers",
+        "The service is deployed with multiple independent instances against one incident store without equivalent coordination"
+      ],
+      "test_gap": "Existing tests do not prove multi-process safety or explicitly assert the CLI passes workers=1. Coordinator can add a focused configuration invariant test if this defense is selected.",
+      "selection_status": "selected documented decision",
+      "selected": true,
+      "selected_by": "Explicit end-to-end coordination instruction to retain workers=1"
+    },
+    {
+      "id": "caller_owned_fetch_errors",
+      "recommended": false,
+      "branch": "codex/end-to-end",
+      "commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "frontend/legacy/dashboard-view.js",
+      "line": 217,
+      "rule_id": "js-no-error-handling-async",
+      "severity": "HIGH",
+      "status": "supported_alternative_defense_not_formally_registered",
+      "intended_behavior": "fetchState propagates network, HTTP-status and JSON failures to the transport state machine; DashboardClient.start catches and schedules unavailable/retry behavior.",
+      "evidence": [
+        {
+          "file": "frontend/legacy/dashboard-client.js",
+          "line": 37,
+          "detail": "try/await fetchState at37-38 and catch/recover at61 own the rejection."
+        }
+      ],
+      "probe": {
+        "commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "client_sha256": "3fe34add27a0fc46e6cf3d7bee39806abdba5df59d0a04b16cf8d841f9353570",
+        "view_sha256": "bc65722da42ca88522187deecffaff141c9754d8cd13bfbf7991e153d1dad01e",
+        "probe": "Exact committed callback extracted and run with exact committed DashboardClient; stub fetch/no network; captured timers/no scheduled retry",
+        "cases": [
+          {
+            "mode": "network_rejection",
+            "passed": true,
+            "handled_by": "DashboardClient.start catch/recover or normal acceptance"
+          },
+          {
+            "mode": "http_failure",
+            "passed": true,
+            "handled_by": "DashboardClient.start catch/recover or normal acceptance"
+          },
+          {
+            "mode": "json_rejection",
+            "passed": true,
+            "handled_by": "DashboardClient.start catch/recover or normal acceptance"
+          },
+          {
+            "mode": "success",
+            "passed": true,
+            "handled_by": "DashboardClient.start catch/recover or normal acceptance"
+          }
+        ],
+        "limitations": "Does not exercise a browser, real WebSocket, DOM, or exceptions thrown by UI recovery callbacks."
+      },
+      "tradeoffs": "Callback must only be consumed through an awaiting error boundary; local recovery duplication could hide failure or cause duplicate retries.",
+      "invalidation_conditions": [
+        "A new caller invokes fetchState without awaiting/catching its promise",
+        "DashboardClient removes or bypasses its catch/recover boundary",
+        "Recovery callbacks themselves throw and escape; the probe does not cover such UI callback errors"
+      ],
+      "coverage_note": "The observed finding is real; its JavaScript scan has reduced coverage.",
+      "selection_status": "not_selected; retained as assessed alternative"
+    }
+  ],
+  "formal_defense_submission": {
+    "performed": false,
+    "reason": "Selected finding is documented for retention. No finding-scoped defense endpoint is exposed and repository is unresolved; no fixed/verified-action endpoint used."
+  },
+  "audit_frozen": {
+    "branch": "codex/qualityclouds-audit",
+    "expected_head": "92ae882545ae6b45fb6e2356e1f8aa17da599312",
+    "source_or_report_modified": false
+  },
+  "focused_verification": {
+    "cli_json_stdout_regression": {
+      "commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_coordination.py::test_offline_cli_tick_publishes_readable_state_and_updates",
+      "interpreter": "/Users/mirunadianajarda/Documents/Personal/wildfire/.worktrees/norma-ca-calibration/.venv/bin/python",
+      "execution": "temporary git archive of pinned commit; PYTHONPATH pinned to archive; no worktree source edits",
+      "test_sha256": "3a537b831f69f419a45c3914f4e8bb76a6210f3d7459b4aa6ef8291f80e0b112",
+      "exit_code": 0,
+      "stdout": ".                                                                        [100%]\n1 passed in 0.59s\n",
+      "stderr": ""
+    },
+    "full_suite_run_by_scanner": false
+  },
+  "updated_at": "2026-09-20T03:17:19.542347+00:00",
+  "selected_new_defenses": [
+    {
+      "candidate_id": "single_incident_worker",
+      "file": "fireline/incident_server.py",
+      "line": 483,
+      "rule_id": "fa-scl-hardcoded-workers",
+      "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "primary_retained_documented_design_not_fixed_not_formally_registered"
+    },
+    {
+      "candidate_id": "cli_stdout_output",
+      "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "retained_documented_output_contract_not_fixed",
+      "locations": [
+        {
+          "file": "fireline/coordination.py",
+          "line": 466,
+          "output": "JSON state protocol"
+        },
+        {
+          "file": "fireline/offline_integration.py",
+          "line": 493,
+          "output": "JSON command result"
+        },
+        {
+          "file": "fireline/incident_server.py",
+          "line": 426,
+          "output": "JSON trigger response"
+        },
+        {
+          "file": "fireline/incident_server.py",
+          "line": 405,
+          "output": "Human-readable CLI completion confirmation; not JSON"
+        }
+      ],
+      "rule_id": "py-maint-no-print",
+      "rationale": "CLI result and completion output is intentionally observable independent of logging levels/handlers; logger.info is not an equivalent output contract."
+    },
+    {
+      "candidate_id": "caller_owned_fetch_errors",
+      "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "file": "frontend/legacy/dashboard-view.js",
+      "line": 217,
+      "rule_id": "js-no-error-handling-async",
+      "status": "retained_documented_error_boundary_not_fixed",
+      "rationale": "Unchanged exact callback delegates failures to DashboardClient.start catch/recover; new committed test checks rejection and retry for both clients.",
+      "evidence_reuse": "The source file and client code hashes remain unchanged; initial exact-code probe and applicable-rule verdict reused with provenance.",
+      "regression": {
+        "file": "frontend/tests/test_dashboard_client.cjs",
+        "line": 58
+      }
+    }
+  ],
+  "primary_selected_new_defense": {
+    "candidate_id": "single_incident_worker",
+    "file": "fireline/incident_server.py",
+    "line": 483,
+    "rule_id": "fa-scl-hardcoded-workers",
+    "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+    "status": "primary_retained_documented_design_not_fixed_not_formally_registered"
+  },
+  "coordination_followup": {
+    "initial_scan_complete": true,
+    "initial_scan_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+    "working_tree_remediation_owner": "root end-to-end session",
+    "working_tree_remediation_claims_verified_by_scanner": "Final two exact-file Livechecks at 2a235999 plus hash-verified unchanged results; final 1115 Python suite count is coordinator-reported.",
+    "reported_work": [
+      "HTTPS-only dashboard login and secure cookie with regression",
+      "typed lifespan",
+      "named SQLite timeout and explicit UTF-8",
+      "bool-safe isinstance for other strict-int checks; centre.remaining_places defense preserved",
+      "shallow copy for scalar routes",
+      "redundant recommendation warning copy removed"
+    ],
+    "documented_retained_decisions": [
+      "JSON stdout CLI protocol",
+      "single Uvicorn worker process"
+    ],
+    "next_action": "Root commits report and opens PR; scanner made no source changes or commits.",
+    "remediation_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+  },
+  "focused_rescans": [
+    {
+      "from_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "to_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+      "completed_at": "2026-09-20T03:13:16.566Z",
+      "inventory": [
+        {
+          "file": "fireline/call_events.py",
+          "sha256": "b7e85f582d4ddf2468ff36b6f53959b396c82cb622be2c5d949220980e908f53",
+          "bytes": 10231
+        },
+        {
+          "file": "fireline/coordination.py",
+          "sha256": "cf6aab9fe67c7caf233d799eaa31e6036bb6933d84110407d5073047c5e33ac2",
+          "bytes": 26626
+        },
+        {
+          "file": "fireline/dashboard_public.py",
+          "sha256": "0cbb2f1325a96a49bedee783fcbbf92d5f55234c0dc2168fca93800e24a71034",
+          "bytes": 7615
+        },
+        {
+          "file": "fireline/incident_planning.py",
+          "sha256": "8588f7559562688fdd932b0b372282ca4ce3e422eca995092293e88754cf8c40",
+          "bytes": 8331
+        },
+        {
+          "file": "fireline/incident_runtime.py",
+          "sha256": "85bd2addf39780df71e8d0038e448dbaa6222cba42a07c564baedfc95d3e6b99",
+          "bytes": 24378
+        },
+        {
+          "file": "fireline/incident_server.py",
+          "sha256": "fff5ebe3fb6c8c3b5e494d3b52970aa11eced401f9c506718190ce585aecc69c",
+          "bytes": 19290
+        },
+        {
+          "file": "fireline/offline_integration.py",
+          "sha256": "09b1446918c0100492e45588a6b7c7d18d6a013b34896031d35cf357912cd3c8",
+          "bytes": 18769
+        },
+        {
+          "file": "frontend/tests/test_dashboard_client.cjs",
+          "sha256": "68e02648e4db35745b44002199cd4f9f5c742e4115a806f92af4e59967d30698",
+          "bytes": 4136
+        },
+        {
+          "file": "readme.md",
+          "sha256": "1fd4baf40e173d852e703f3ff48531b708dadf62aff9bd95540aaef287fd4dd4",
+          "bytes": 254494
+        },
+        {
+          "file": "tests/test_incident_runtime.py",
+          "sha256": "9fc73981bc1b5c6561fc0e8f9ce808c43190bece3045324289c0541279390d49",
+          "bytes": 11383
+        },
+        {
+          "file": "tests/test_incident_server.py",
+          "sha256": "5a534df51d79138ee73fcde480a0eda993747785e42547f4c977ad7feae4cc7b",
+          "bytes": 18886
+        }
+      ],
+      "catalog_matches_initial": true,
+      "ruleset_catalog": [
+        {
+          "ruleset_id": "agentic-rules-analyzer-1.0",
+          "name": "Agentic Rules Analyzer",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "narrative",
+          "description": "Evaluates prompt-based (judgement) rules against a repository with an LLM agent and posts the findings to issues_persistence_api as llm_issues.",
+          "rule_group_ids": [
+            "devops-design-patterns-by-norma_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "fastapi-norma-ruleset",
+          "name": "FastAPI Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "FastAPI-specific semgrep rules covering performance, scalability, manageability, security, architecture and maintainability.",
+          "rule_group_ids": [
+            "fastapi-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "javascript-norma-ruleset",
+          "name": "JavaScript Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "JavaScript-specific rules covering async error handling, DOM manipulation (eval, innerHTML), fetch correctness and observability.",
+          "rule_group_ids": [
+            "javascript-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "nodejs-norma-ruleset",
+          "name": "Node.js Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "Node.js project-hygiene rules covering package.json dependency pinning, linter and test-framework presence, and committed env files with secrets.",
+          "rule_group_ids": [
+            "nodejs-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "php-norma-ruleset",
+          "name": "PHP Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "PHP-specific Semgrep rules covering security, performance, scalability, maintainability, manageability and architecture for native PHP codebases.",
+          "rule_group_ids": [
+            "php-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "prompts-analysis",
+          "name": "Prompts Analysis",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": null,
+          "rule_group_ids": [
+            "prompt-analysis-1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "python-norma-ruleset",
+          "name": "Python Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "Pure-Python semgrep rules covering performance, scalability, manageability, security, architecture and maintainability.",
+          "rule_group_ids": [
+            "python-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "react-norma-ruleset",
+          "name": "React Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "React-specific rules covering component architecture, hooks, JSX, XSS sanitisation and error handling for AI-scaffolded React+Vite codebases.",
+          "rule_group_ids": [
+            "react-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "regex-tool-adobe-magento",
+          "name": "Adobe Magento Framework",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "Executes regex-based structural analysis using Quality Clouds' curated Magento rulesets. Validates architectural compliance (Dependency Injection, Layout XML, Plugins) and detects deprecated logic in Adobe Commerce and Open Source editions.",
+          "rule_group_ids": [
+            "regex-tool-adobe-best-practices_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "solid-patterns-analyzer-1.0",
+          "name": "solid-patterns-analyzer",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "The object-oriented design auditor for your repository. It detects violations of the five SOLID principles \u2014 from god classes to rigid, switch-driven logic \u2014 preventing brittle architectures that become expensive to change and maintain in production.",
+          "rule_group_ids": [
+            "solid-architecture-rules-1.0",
+            "solid-patterns-analyzer-1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "not_licensed"
+        },
+        {
+          "ruleset_id": "sqlalchemy-norma-ruleset",
+          "name": "SQLAlchemy Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "SQLAlchemy-specific semgrep rules covering performance, scalability, manageability, security, architecture and maintainability.",
+          "rule_group_ids": [
+            "sqlalchemy-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "supabase-norma-ruleset",
+          "name": "Supabase Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "Supabase-specific rules covering service-role and anon key handling, admin client placement, auth flow and session guards, client-side token storage and JWT handling, storage bucket exposure, Supabase project/environment separation, Edge Function rate limiting, and mutation error handling.",
+          "rule_group_ids": [
+            "supabase-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "typescript-norma-ruleset",
+          "name": "TypeScript Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "TypeScript-specific rules covering type-safety configuration and hardcoded secrets in source files.",
+          "rule_group_ids": [
+            "typescript-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        },
+        {
+          "ruleset_id": "vite-norma-ruleset",
+          "name": "Vite Norma Agent",
+          "version": "1.0",
+          "scope": "global",
+          "output_type": "issues",
+          "description": "Vite-specific rules covering environment variable handling, env separation across dev/staging/prod, and HTML security headers (CSP, SRI, Referrer-Policy).",
+          "rule_group_ids": [
+            "vite-norma-ruleset_1.0"
+          ],
+          "ce_types": [],
+          "agent_features": [],
+          "state": "available"
+        }
+      ],
+      "repository_context": {
+        "status": "unresolved",
+        "detail": "No repository matching this remote is linked to your organization, so results are not scoped. This is your organization's generic catalog; link it with link_repository or import it from the portal."
+      },
+      "method": "Fresh exact git-show bytes for supported files changed from e8b8c8e to ba441f7; CJS submitted unchanged under recorded virtual .js filename",
+      "call_start_times": [
+        "2026-09-20T03:10:07.626Z",
+        "2026-09-20T03:10:07.626Z",
+        "2026-09-20T03:10:07.628Z",
+        "2026-09-20T03:10:07.628Z",
+        "2026-09-20T03:10:07.637Z",
+        "2026-09-20T03:10:54.371Z",
+        "2026-09-20T03:10:54.372Z",
+        "2026-09-20T03:10:54.372Z",
+        "2026-09-20T03:10:54.377Z",
+        "2026-09-20T03:10:54.379Z"
+      ],
+      "results": [
+        {
+          "file": "fireline/dashboard_public.py",
+          "sha256": "0cbb2f1325a96a49bedee783fcbbf92d5f55234c0dc2168fca93800e24a71034",
+          "bytes": 7615,
+          "scan_file": "fireline/dashboard_public.py",
+          "started_at": "2026-09-20T03:10:07.626Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "clean",
+            "message": "No issues found in this file for the applicable rules.",
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "fireline/incident_planning.py",
+          "sha256": "8588f7559562688fdd932b0b372282ca4ce3e422eca995092293e88754cf8c40",
+          "bytes": 8331,
+          "scan_file": "fireline/incident_planning.py",
+          "started_at": "2026-09-20T03:10:07.626Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "clean",
+            "message": "No issues found in this file for the applicable rules.",
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "fireline/call_events.py",
+          "sha256": "b7e85f582d4ddf2468ff36b6f53959b396c82cb622be2c5d949220980e908f53",
+          "bytes": 10231,
+          "scan_file": "fireline/call_events.py",
+          "started_at": "2026-09-20T03:10:07.628Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "clean",
+            "message": "No issues found in this file for the applicable rules.",
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "fireline/coordination.py",
+          "sha256": "cf6aab9fe67c7caf233d799eaa31e6036bb6933d84110407d5073047c5e33ac2",
+          "bytes": 26626,
+          "scan_file": "fireline/coordination.py",
+          "started_at": "2026-09-20T03:10:07.628Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "issues",
+            "rules": {
+              "py-maint-no-print": {
+                "rule_name": "print() in production code",
+                "severity": "MEDIUM",
+                "impact_area": "maintainability",
+                "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+                "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+                "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+                "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+                "estimated_time_to_fix": 3
+              }
+            },
+            "issues": [
+              {
+                "rule_id": "py-maint-no-print",
+                "file": "fireline/coordination.py",
+                "line": 462,
+                "column": 9,
+                "snippet": "        print(encoded(state))"
+              }
+            ],
+            "issues_returned": 1,
+            "total_issues": 1,
+            "capped": false,
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "fireline/incident_runtime.py",
+          "sha256": "85bd2addf39780df71e8d0038e448dbaa6222cba42a07c564baedfc95d3e6b99",
+          "bytes": 24378,
+          "scan_file": "fireline/incident_runtime.py",
+          "started_at": "2026-09-20T03:10:07.637Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "clean",
+            "message": "No issues found in this file for the applicable rules.",
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "tests/test_incident_runtime.py",
+          "sha256": "9fc73981bc1b5c6561fc0e8f9ce808c43190bece3045324289c0541279390d49",
+          "bytes": 11383,
+          "scan_file": "tests/test_incident_runtime.py",
+          "started_at": "2026-09-20T03:10:54.377Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "clean",
+            "message": "No issues found in this file for the applicable rules.",
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "tests/test_incident_server.py",
+          "sha256": "5a534df51d79138ee73fcde480a0eda993747785e42547f4c977ad7feae4cc7b",
+          "bytes": 18886,
+          "scan_file": "tests/test_incident_server.py",
+          "started_at": "2026-09-20T03:10:54.379Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "clean",
+            "message": "No issues found in this file for the applicable rules.",
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "frontend/tests/test_dashboard_client.cjs",
+          "sha256": "68e02648e4db35745b44002199cd4f9f5c742e4115a806f92af4e59967d30698",
+          "bytes": 4136,
+          "scan_file": "frontend/tests/test_dashboard_client.virtual.js",
+          "started_at": "2026-09-20T03:10:54.372Z",
+          "method": "extension_mapped_live_check",
+          "result": {
+            "outcome": "clean",
+            "message": "No issues found in this file for the applicable rules.",
+            "coverage": {
+              "reduced": true,
+              "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+            },
+            "rulesets_evaluated": [
+              "javascript-norma-ruleset",
+              "nodejs-norma-ruleset",
+              "react-norma-ruleset",
+              "supabase-norma-ruleset",
+              "typescript-norma-ruleset",
+              "vite-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "fireline/offline_integration.py",
+          "sha256": "09b1446918c0100492e45588a6b7c7d18d6a013b34896031d35cf357912cd3c8",
+          "bytes": 18769,
+          "scan_file": "fireline/offline_integration.py",
+          "started_at": "2026-09-20T03:10:54.372Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "issues",
+            "rules": {
+              "py-maint-no-print": {
+                "rule_name": "print() in production code",
+                "severity": "MEDIUM",
+                "impact_area": "maintainability",
+                "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+                "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+                "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+                "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+                "estimated_time_to_fix": 3
+              }
+            },
+            "issues": [
+              {
+                "rule_id": "py-maint-no-print",
+                "file": "fireline/offline_integration.py",
+                "line": 493,
+                "column": 9,
+                "snippet": "        print(\n            json.dumps(\n                {\n                    \"database\": str(run.database),\n                    \"revision\": state[\"revision\"],\n                    \"input_mode\": \"synthetic\",\n                    \"calls\": [\n                        {\"asset_id\": c[\"asset_id\"], \"status\": c[\"status\"]}\n                        for c in state[\"calls\"]\n                    ],\n                }\n            )\n        )"
+              }
+            ],
+            "issues_returned": 1,
+            "total_issues": 1,
+            "capped": false,
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "fireline/incident_server.py",
+          "sha256": "fff5ebe3fb6c8c3b5e494d3b52970aa11eced401f9c506718190ce585aecc69c",
+          "bytes": 19290,
+          "scan_file": "fireline/incident_server.py",
+          "started_at": "2026-09-20T03:10:54.371Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "issues",
+            "rules": {
+              "py-maint-no-print": {
+                "rule_name": "print() in production code",
+                "severity": "MEDIUM",
+                "impact_area": "maintainability",
+                "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+                "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+                "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+                "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+                "estimated_time_to_fix": 3
+              },
+              "fa-scl-hardcoded-workers": {
+                "rule_name": "Hardcoded uvicorn workers",
+                "severity": "MEDIUM",
+                "impact_area": "scalability",
+                "description": "uvicorn.run(..., workers=N) hardcoded \u2014 must come from env/config so it can be tuned per environment.",
+                "remediation_action": "Read from env.",
+                "good_code": "uvicorn.run(app, workers=int(os.environ[\"WEB_CONCURRENCY\"]))",
+                "bad_code": "uvicorn.run(app, workers=4)",
+                "estimated_time_to_fix": 5
+              }
+            },
+            "issues": [
+              {
+                "rule_id": "py-maint-no-print",
+                "file": "fireline/incident_server.py",
+                "line": 405,
+                "column": 13,
+                "snippet": "            print(\"Vonage association recorded; no call was placed.\")"
+              },
+              {
+                "rule_id": "py-maint-no-print",
+                "file": "fireline/incident_server.py",
+                "line": 426,
+                "column": 13,
+                "snippet": "            print(json.dumps(response.json(), indent=2))"
+              },
+              {
+                "rule_id": "fa-scl-hardcoded-workers",
+                "file": "fireline/incident_server.py",
+                "line": 483,
+                "column": 9,
+                "snippet": "        uvicorn.run(\n            application, host=args.host, port=args.port, workers=1, access_log=False\n        )"
+              }
+            ],
+            "issues_returned": 3,
+            "total_issues": 3,
+            "capped": false,
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        }
+      ],
+      "summary": {
+        "changed_files": 11,
+        "scanned_files": 10,
+        "files_with_findings": 3,
+        "zero_finding_files": 7,
+        "total_findings": 5,
+        "severity_counts": {
+          "MEDIUM": 5
+        },
+        "unreduced_coverage_files": 9,
+        "reduced_coverage_files": 1,
+        "unscanned_files": 1,
+        "errors": 0,
+        "capped_results": 0
+      },
+      "test_evidence": {
+        "reported_by": "coordinating root session",
+        "reported_python_passed": 1115,
+        "reported_node_passed": 34,
+        "full_suites_independently_rerun_by_scanner": false,
+        "inspected_regressions": [
+          {
+            "file": "tests/test_incident_server.py",
+            "line": 467,
+            "claim": "CLI launch assertion checks workers=1"
+          },
+          {
+            "file": "frontend/tests/test_dashboard_client.cjs",
+            "line": 58,
+            "claim": "REST rejection/retry regression loops over both DashboardClient and LegacyClient at line60"
+          },
+          {
+            "file": "tests/test_incident_runtime.py",
+            "line": 271,
+            "claim": "Cancellation regression asserts all calls expose queue_state cancelled"
+          }
+        ]
+      },
+      "strict_int_preservation": {
+        "file": "fireline/evacuation_readiness.py",
+        "sha256": "b01fb58659b1a37b2d5a0911a4eeb15ae12e2a1bb05644e98592a989fdab2f00",
+        "unchanged_from_initial_scan": true,
+        "exact_type_check_present": true
+      }
+    },
+    {
+      "from_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+      "to_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "completed_at": "2026-09-20T03:17:19.516529+00:00",
+      "inventory": [
+        {
+          "file": "fireline/coordination.py",
+          "sha256": "0064a7d5a7ce263ed3bfa3a1623fb67c933a33d654189ca02d01faa203926945",
+          "bytes": 26874
+        },
+        {
+          "file": "readme.md",
+          "sha256": "49dde61fcbdb38064a0c4283c90bab1a202166ee277941bdcedd0ab742d4a1cf",
+          "bytes": 254575
+        },
+        {
+          "file": "tests/test_incident_runtime.py",
+          "sha256": "9229e08aebb76e1c2551ccca85089a02c150b9c4e2ac10f4e1716ed09edde200",
+          "bytes": 11424
+        }
+      ],
+      "method": "Two fresh exact git-show byte Python Livechecks; unchanged supported files hash-carried with existing path, language and ruleset context.",
+      "results": [
+        {
+          "file": "fireline/coordination.py",
+          "sha256": "0064a7d5a7ce263ed3bfa3a1623fb67c933a33d654189ca02d01faa203926945",
+          "bytes": 26874,
+          "scan_file": "fireline/coordination.py",
+          "started_at": "2026-09-20T03:15:59.741Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "issues",
+            "rules": {
+              "py-maint-no-print": {
+                "rule_name": "print() in production code",
+                "severity": "MEDIUM",
+                "impact_area": "maintainability",
+                "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+                "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+                "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+                "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+                "estimated_time_to_fix": 3
+              }
+            },
+            "issues": [
+              {
+                "rule_id": "py-maint-no-print",
+                "file": "fireline/coordination.py",
+                "line": 466,
+                "column": 9,
+                "snippet": "        print(encoded(state))"
+              }
+            ],
+            "issues_returned": 1,
+            "total_issues": 1,
+            "capped": false,
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        },
+        {
+          "file": "tests/test_incident_runtime.py",
+          "sha256": "9229e08aebb76e1c2551ccca85089a02c150b9c4e2ac10f4e1716ed09edde200",
+          "bytes": 11424,
+          "scan_file": "tests/test_incident_runtime.py",
+          "started_at": "2026-09-20T03:15:59.741Z",
+          "method": "live_check",
+          "result": {
+            "outcome": "clean",
+            "message": "No issues found in this file for the applicable rules.",
+            "coverage": {
+              "reduced": false,
+              "reason": null
+            },
+            "rulesets_evaluated": [
+              "fastapi-norma-ruleset",
+              "python-norma-ruleset",
+              "sqlalchemy-norma-ruleset"
+            ]
+          }
+        }
+      ],
+      "call_start_times": [
+        "2026-09-20T03:15:59.741Z",
+        "2026-09-20T03:15:59.741Z"
+      ],
+      "summary": {
+        "changed_files": 3,
+        "scanned_files": 2,
+        "files_with_findings": 1,
+        "zero_finding_files": 1,
+        "total_findings": 1,
+        "severity_counts": {
+          "MEDIUM": 1
+        },
+        "unreduced_coverage_files": 2,
+        "reduced_coverage_files": 0,
+        "unscanned_files": 1,
+        "errors": 0,
+        "capped_results": 0
+      },
+      "test_evidence": {
+        "reported_by": "coordinating root session",
+        "reported_python_passed": 1115,
+        "full_suites_independently_rerun_by_scanner": false
+      }
+    }
+  ],
+  "initial_summary_scope": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+  "final_code_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+  "latest_summary": {
+    "code_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+    "base_commit": "d7cf32ea94a795e9705cd64219e864bbc07621de",
+    "changed_files": 26,
+    "supported_files": 25,
+    "freshly_rescanned_files": 2,
+    "unchanged_file_results_reused": 23,
+    "files_with_findings": 4,
+    "zero_finding_files": 21,
+    "remaining_findings": 6,
+    "retained_findings": 6,
+    "actionable_findings_remaining": 0,
+    "actionable_scope": "No unclassified or unremediated actionable findings among observed applicable-rule results; not a guarantee of absence of defects.",
+    "initial_findings_removed": 10,
+    "severity_counts": {
+      "HIGH": 1,
+      "MEDIUM": 5
+    },
+    "unreduced_coverage_files": 22,
+    "reduced_coverage_files": 3,
+    "unscanned_files": 1,
+    "total_livecheck_calls": 36,
+    "all_clean": false
+  },
+  "final_file_coverage": [
+    {
+      "file": "fireline/call_events.py",
+      "sha256": "b7e85f582d4ddf2468ff36b6f53959b396c82cb622be2c5d949220980e908f53",
+      "bytes": 10231,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/call_events.py",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 2,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fireline/coordination.py",
+      "sha256": "0064a7d5a7ce263ed3bfa3a1623fb67c933a33d654189ca02d01faa203926945",
+      "bytes": 26874,
+      "status": "issues",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/coordination.py",
+      "evidence": {
+        "section": "focused_rescans[1].results",
+        "index": 0,
+        "reused": false
+      },
+      "issues": [
+        {
+          "rule_id": "py-maint-no-print",
+          "file": "fireline/coordination.py",
+          "line": 466,
+          "column": 9,
+          "snippet": "        print(encoded(state))"
+        }
+      ],
+      "rules": {
+        "py-maint-no-print": {
+          "rule_name": "print() in production code",
+          "severity": "MEDIUM",
+          "impact_area": "maintainability",
+          "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+          "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+          "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+          "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+          "estimated_time_to_fix": 3
+        }
+      }
+    },
+    {
+      "file": "fireline/dashboard_public.py",
+      "sha256": "0cbb2f1325a96a49bedee783fcbbf92d5f55234c0dc2168fca93800e24a71034",
+      "bytes": 7615,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/dashboard_public.py",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 0,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fireline/fire_assessment.py",
+      "sha256": "660d9c669c159c1d3639aa65f48ebe7c27505fff19336d943c8e19926da088a8",
+      "bytes": 12119,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/fire_assessment.py",
+      "evidence": {
+        "section": "results",
+        "index": 3,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fireline/incident_planning.py",
+      "sha256": "8588f7559562688fdd932b0b372282ca4ce3e422eca995092293e88754cf8c40",
+      "bytes": 8331,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/incident_planning.py",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 1,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fireline/incident_runtime.py",
+      "sha256": "85bd2addf39780df71e8d0038e448dbaa6222cba42a07c564baedfc95d3e6b99",
+      "bytes": 24378,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/incident_runtime.py",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 4,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fireline/incident_server.py",
+      "sha256": "fff5ebe3fb6c8c3b5e494d3b52970aa11eced401f9c506718190ce585aecc69c",
+      "bytes": 19290,
+      "status": "issues",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/incident_server.py",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 9,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "issues": [
+        {
+          "rule_id": "py-maint-no-print",
+          "file": "fireline/incident_server.py",
+          "line": 405,
+          "column": 13,
+          "snippet": "            print(\"Vonage association recorded; no call was placed.\")"
+        },
+        {
+          "rule_id": "py-maint-no-print",
+          "file": "fireline/incident_server.py",
+          "line": 426,
+          "column": 13,
+          "snippet": "            print(json.dumps(response.json(), indent=2))"
+        },
+        {
+          "rule_id": "fa-scl-hardcoded-workers",
+          "file": "fireline/incident_server.py",
+          "line": 483,
+          "column": 9,
+          "snippet": "        uvicorn.run(\n            application, host=args.host, port=args.port, workers=1, access_log=False\n        )"
+        }
+      ],
+      "rules": {
+        "py-maint-no-print": {
+          "rule_name": "print() in production code",
+          "severity": "MEDIUM",
+          "impact_area": "maintainability",
+          "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+          "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+          "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+          "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+          "estimated_time_to_fix": 3
+        },
+        "fa-scl-hardcoded-workers": {
+          "rule_name": "Hardcoded uvicorn workers",
+          "severity": "MEDIUM",
+          "impact_area": "scalability",
+          "description": "uvicorn.run(..., workers=N) hardcoded \u2014 must come from env/config so it can be tuned per environment.",
+          "remediation_action": "Read from env.",
+          "good_code": "uvicorn.run(app, workers=int(os.environ[\"WEB_CONCURRENCY\"]))",
+          "bad_code": "uvicorn.run(app, workers=4)",
+          "estimated_time_to_fix": 5
+        }
+      }
+    },
+    {
+      "file": "fireline/offline_integration.py",
+      "sha256": "09b1446918c0100492e45588a6b7c7d18d6a013b34896031d35cf357912cd3c8",
+      "bytes": 18769,
+      "status": "issues",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/offline_integration.py",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 8,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "issues": [
+        {
+          "rule_id": "py-maint-no-print",
+          "file": "fireline/offline_integration.py",
+          "line": 493,
+          "column": 9,
+          "snippet": "        print(\n            json.dumps(\n                {\n                    \"database\": str(run.database),\n                    \"revision\": state[\"revision\"],\n                    \"input_mode\": \"synthetic\",\n                    \"calls\": [\n                        {\"asset_id\": c[\"asset_id\"], \"status\": c[\"status\"]}\n                        for c in state[\"calls\"]\n                    ],\n                }\n            )\n        )"
+        }
+      ],
+      "rules": {
+        "py-maint-no-print": {
+          "rule_name": "print() in production code",
+          "severity": "MEDIUM",
+          "impact_area": "maintainability",
+          "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+          "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+          "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+          "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+          "estimated_time_to_fix": 3
+        }
+      }
+    },
+    {
+      "file": "fireline/priority_models.py",
+      "sha256": "501409db522d106ba4e781d2ddde98c8a3ac9ed57e65d721a7b9e61b1fa00db5",
+      "bytes": 7436,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/priority_models.py",
+      "evidence": {
+        "section": "results",
+        "index": 8,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fireline/snapshot_contacts.py",
+      "sha256": "8070aa0610bfd6d17a48919f43a0157f5b68a4c9f2ca6c547f9bc650de65494a",
+      "bytes": 15252,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/snapshot_contacts.py",
+      "evidence": {
+        "section": "results",
+        "index": 10,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fireline/voice_queue.py",
+      "sha256": "77bfbd08bf3b9366bd88f49bb820955ca898aef5e37454530b6186390911a546",
+      "bytes": 11097,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fireline/voice_queue.py",
+      "evidence": {
+        "section": "results",
+        "index": 9,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fixtures/end_to_end/catalog.json",
+      "sha256": "c5b4468a8d5370410734223c082076769ee701ff157d9b8d167d6eba808a32d4",
+      "bytes": 895,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "nodejs-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fixtures/end_to_end/catalog.json",
+      "evidence": {
+        "section": "results",
+        "index": 6,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fixtures/end_to_end/operations.json",
+      "sha256": "356c19ad433fcdc26088bfd3318a03bfb436c5f1b63d0ed15c12e5f68691e826",
+      "bytes": 8416,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "nodejs-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fixtures/end_to_end/operations.json",
+      "evidence": {
+        "section": "results",
+        "index": 13,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "fixtures/integration/offline_scenario.json",
+      "sha256": "cff4d66453c38ab730cc493b88f8494e1f06602d1a195b2424389e54218b7e21",
+      "bytes": 4968,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "nodejs-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "fixtures/integration/offline_scenario.json",
+      "evidence": {
+        "section": "results",
+        "index": 12,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "frontend/legacy/dashboard-view.js",
+      "sha256": "bc65722da42ca88522187deecffaff141c9754d8cd13bfbf7991e153d1dad01e",
+      "bytes": 15850,
+      "status": "issues",
+      "coverage": {
+        "reduced": true,
+        "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+      },
+      "rulesets_evaluated": [
+        "javascript-norma-ruleset",
+        "nodejs-norma-ruleset",
+        "react-norma-ruleset",
+        "supabase-norma-ruleset",
+        "typescript-norma-ruleset",
+        "vite-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "frontend/legacy/dashboard-view.js",
+      "evidence": {
+        "section": "results",
+        "index": 15,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [
+        {
+          "rule_id": "js-no-error-handling-async",
+          "file": "frontend/legacy/dashboard-view.js",
+          "line": 217,
+          "column": 36,
+          "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok) throw new Error('unavailable');return r.json();},"
+        }
+      ],
+      "rules": {
+        "js-no-error-handling-async": {
+          "rule_name": "Async Operation Without Error Handling",
+          "severity": "HIGH",
+          "impact_area": "scalability",
+          "description": "Detects async functions or await expressions that are not wrapped in try/catch blocks and do not chain .catch(). AI-generated code frequently omits error handling, causing unhandled promise rejections that crash the app silently.",
+          "remediation_action": "Wrap all await calls in try/catch. In the catch block, show user-friendly error feedback (toast, alert) and log the error for debugging. Consider a global error handler for uncaught promise rejections.",
+          "good_code": "const handleSubmit = async () => {\n  try {\n    const { data, error } = await supabase.from('todos').insert({ title })\n    if (error) throw error\n    setTodos([...todos, data])\n  } catch (err) {\n    toast.error('Failed to add todo')\n    console.error(err)\n  }\n}",
+          "bad_code": "const handleSubmit = async () => {\n  const { data } = await supabase.from('todos').insert({ title })\n  setTodos([...todos, data])\n  // If insert fails, data is null \u2192 crash on spread\n}",
+          "estimated_time_to_fix": 10
+        }
+      }
+    },
+    {
+      "file": "frontend/legacy/ui-mockup.html",
+      "sha256": "133c9fd052a15b9a64c946be7336383e664695b7cf1979e0b0753f17b5a07398",
+      "bytes": 18739,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "vite-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "frontend/legacy/ui-mockup.html",
+      "evidence": {
+        "section": "results",
+        "index": 14,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "frontend/tests/test_dashboard_client.cjs",
+      "sha256": "68e02648e4db35745b44002199cd4f9f5c742e4115a806f92af4e59967d30698",
+      "bytes": 4136,
+      "status": "clean",
+      "coverage": {
+        "reduced": true,
+        "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+      },
+      "rulesets_evaluated": [
+        "javascript-norma-ruleset",
+        "nodejs-norma-ruleset",
+        "react-norma-ruleset",
+        "supabase-norma-ruleset",
+        "typescript-norma-ruleset",
+        "vite-norma-ruleset"
+      ],
+      "method": "extension_mapped_live_check",
+      "scan_file": "frontend/tests/test_dashboard_client.virtual.js",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 7,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "frontend/tests/test_ui_mockup.cjs",
+      "sha256": "78645dfba9954d0e28326a1ddda19cbe494614b1339817c8298245e9850b2bcf",
+      "bytes": 11461,
+      "status": "clean",
+      "coverage": {
+        "reduced": true,
+        "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+      },
+      "rulesets_evaluated": [
+        "javascript-norma-ruleset",
+        "nodejs-norma-ruleset",
+        "react-norma-ruleset",
+        "supabase-norma-ruleset",
+        "typescript-norma-ruleset",
+        "vite-norma-ruleset"
+      ],
+      "method": "extension_mapped_live_check",
+      "scan_file": "frontend/tests/test_ui_mockup.virtual.js",
+      "evidence": {
+        "section": "results",
+        "index": 16,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "readme.md",
+      "sha256": "49dde61fcbdb38064a0c4283c90bab1a202166ee277941bdcedd0ab742d4a1cf",
+      "bytes": 254575,
+      "status": "not_scanned",
+      "reason": "No matching deterministic prose rules; not clean"
+    },
+    {
+      "file": "tests/test_call_events.py",
+      "sha256": "e8d9bd616f9833e16635c19bc057292a3e11f155213a52425583769514733362",
+      "bytes": 9854,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "tests/test_call_events.py",
+      "evidence": {
+        "section": "results",
+        "index": 17,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "tests/test_fire_assessment.py",
+      "sha256": "fb912a3448a2e7674390f8caba9179503b23c887713d9dea44211252747e943c",
+      "bytes": 12460,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "tests/test_fire_assessment.py",
+      "evidence": {
+        "section": "results",
+        "index": 20,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "tests/test_incident_planning.py",
+      "sha256": "9153d9c06114e9f1bdfa29a5a5357320c68fa487af6acdba5272c66de3173e32",
+      "bytes": 8002,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "tests/test_incident_planning.py",
+      "evidence": {
+        "section": "results",
+        "index": 23,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "tests/test_incident_runtime.py",
+      "sha256": "9229e08aebb76e1c2551ccca85089a02c150b9c4e2ac10f4e1716ed09edde200",
+      "bytes": 11424,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "tests/test_incident_runtime.py",
+      "evidence": {
+        "section": "focused_rescans[1].results",
+        "index": 1,
+        "reused": false
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "tests/test_incident_server.py",
+      "sha256": "5a534df51d79138ee73fcde480a0eda993747785e42547f4c977ad7feae4cc7b",
+      "bytes": 18886,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "tests/test_incident_server.py",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 6,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "tests/test_offline_integration.py",
+      "sha256": "0a70377add0f7fc2d15791cb0a037bbbd81931a34976299462f422befd3ab502",
+      "bytes": 5984,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "tests/test_offline_integration.py",
+      "evidence": {
+        "section": "results",
+        "index": 21,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    },
+    {
+      "file": "tests/test_snapshot_contacts.py",
+      "sha256": "c97d40f87adf322ae9c9b5fd92c4dffdce90bc37f706cdbe7d7ebf3d828b97c6",
+      "bytes": 18506,
+      "status": "clean",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ],
+      "method": "live_check",
+      "scan_file": "tests/test_snapshot_contacts.py",
+      "evidence": {
+        "section": "results",
+        "index": 22,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "issues": [],
+      "rules": {}
+    }
+  ],
+  "remaining_findings": [
+    {
+      "rule_id": "py-maint-no-print",
+      "file": "fireline/coordination.py",
+      "line": 466,
+      "column": 9,
+      "snippet": "        print(encoded(state))",
+      "source_file": "fireline/coordination.py",
+      "severity": "MEDIUM",
+      "evidence": {
+        "section": "focused_rescans[1].results",
+        "index": 0,
+        "reused": false
+      },
+      "disposition": "retained_documented_decision_not_fixed",
+      "decision": "cli_stdout_output"
+    },
+    {
+      "rule_id": "py-maint-no-print",
+      "file": "fireline/incident_server.py",
+      "line": 405,
+      "column": 13,
+      "snippet": "            print(\"Vonage association recorded; no call was placed.\")",
+      "source_file": "fireline/incident_server.py",
+      "severity": "MEDIUM",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 9,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "disposition": "retained_documented_decision_not_fixed",
+      "decision": "cli_stdout_output"
+    },
+    {
+      "rule_id": "py-maint-no-print",
+      "file": "fireline/incident_server.py",
+      "line": 426,
+      "column": 13,
+      "snippet": "            print(json.dumps(response.json(), indent=2))",
+      "source_file": "fireline/incident_server.py",
+      "severity": "MEDIUM",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 9,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "disposition": "retained_documented_decision_not_fixed",
+      "decision": "cli_stdout_output"
+    },
+    {
+      "rule_id": "fa-scl-hardcoded-workers",
+      "file": "fireline/incident_server.py",
+      "line": 483,
+      "column": 9,
+      "snippet": "        uvicorn.run(\n            application, host=args.host, port=args.port, workers=1, access_log=False\n        )",
+      "source_file": "fireline/incident_server.py",
+      "severity": "MEDIUM",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 9,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "disposition": "retained_documented_decision_not_fixed",
+      "decision": "single_incident_worker"
+    },
+    {
+      "rule_id": "py-maint-no-print",
+      "file": "fireline/offline_integration.py",
+      "line": 493,
+      "column": 9,
+      "snippet": "        print(\n            json.dumps(\n                {\n                    \"database\": str(run.database),\n                    \"revision\": state[\"revision\"],\n                    \"input_mode\": \"synthetic\",\n                    \"calls\": [\n                        {\"asset_id\": c[\"asset_id\"], \"status\": c[\"status\"]}\n                        for c in state[\"calls\"]\n                    ],\n                }\n            )\n        )",
+      "source_file": "fireline/offline_integration.py",
+      "severity": "MEDIUM",
+      "evidence": {
+        "section": "focused_rescans[0].results",
+        "index": 8,
+        "reused": true,
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck."
+      },
+      "disposition": "retained_documented_decision_not_fixed",
+      "decision": "cli_stdout_output"
+    },
+    {
+      "rule_id": "js-no-error-handling-async",
+      "file": "frontend/legacy/dashboard-view.js",
+      "line": 217,
+      "column": 36,
+      "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok) throw new Error('unavailable');return r.json();},",
+      "source_file": "frontend/legacy/dashboard-view.js",
+      "severity": "HIGH",
+      "evidence": {
+        "section": "results",
+        "index": 15,
+        "reused": true,
+        "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+        "reason": "Identical committed SHA-256, path/language mapping and previously recorded ruleset context; carried forward without another Livecheck.",
+        "verified_at_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca"
+      },
+      "disposition": "retained_documented_decision_not_fixed",
+      "decision": "caller_owned_fetch_errors"
+    }
+  ],
+  "finding_reconciliation": [
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/call_events.py",
+      "initial_line": 158,
+      "rule_id": "py-arch-type-eq",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/call_events.py",
+      "initial_line": 163,
+      "rule_id": "py-arch-type-eq",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_planning.py",
+      "initial_line": 143,
+      "rule_id": "py-scal-deepcopy",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/coordination.py",
+      "initial_line": 275,
+      "rule_id": "py-arch-type-eq",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/coordination.py",
+      "initial_line": 456,
+      "rule_id": "py-maint-no-print",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "retained_documented_decision",
+      "final_line": 466
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_runtime.py",
+      "initial_line": 69,
+      "rule_id": "py-mng-magic-timeout",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_runtime.py",
+      "initial_line": 167,
+      "rule_id": "py-mng-open-no-encoding",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_runtime.py",
+      "initial_line": 398,
+      "rule_id": "py-mng-open-no-encoding",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/offline_integration.py",
+      "initial_line": 291,
+      "rule_id": "py-scal-deepcopy",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/offline_integration.py",
+      "initial_line": 495,
+      "rule_id": "py-maint-no-print",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "retained_documented_decision",
+      "final_line": 493
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_server.py",
+      "initial_line": 309,
+      "rule_id": "fa-sec-cookie-no-secure",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_server.py",
+      "initial_line": 200,
+      "rule_id": "fa-mnt-no-typing-param",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "removed_by_remediation_and_rechecked",
+      "final_line": null
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_server.py",
+      "initial_line": 401,
+      "rule_id": "py-maint-no-print",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "retained_documented_decision",
+      "final_line": 405
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_server.py",
+      "initial_line": 422,
+      "rule_id": "py-maint-no-print",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "retained_documented_decision",
+      "final_line": 426
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "fireline/incident_server.py",
+      "initial_line": 478,
+      "rule_id": "fa-scl-hardcoded-workers",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "retained_documented_decision",
+      "final_line": 483
+    },
+    {
+      "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "file": "frontend/legacy/dashboard-view.js",
+      "initial_line": 217,
+      "rule_id": "js-no-error-handling-async",
+      "final_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "retained_documented_decision",
+      "final_line": 217
+    }
+  ],
+  "initial_primary_selected_new_defense": {
+    "candidate_id": "coordination_cli_json_stdout",
+    "file": "fireline/coordination.py",
+    "line": 456,
+    "rule_id": "py-maint-no-print",
+    "commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+    "status": "selected_for_retention_documented_defense_not_fixed_or_formally_registered"
+  },
+  "initial_selected_new_defenses": [
+    {
+      "candidate_id": "coordination_cli_json_stdout",
+      "file": "fireline/coordination.py",
+      "line": 456,
+      "rule_id": "py-maint-no-print",
+      "commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "status": "selected_for_retention_documented_defense_not_fixed_or_formally_registered"
+    },
+    {
+      "candidate_id": "single_incident_worker",
+      "file": "fireline/incident_server.py",
+      "line": 478,
+      "rule_id": "fa-scl-hardcoded-workers",
+      "commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+      "status": "selected_for_retention_documented_defense_not_fixed_or_formally_registered"
+    }
+  ],
+  "current_primary_defense": {
+    "candidate_id": "single_incident_worker",
+    "file": "fireline/incident_server.py",
+    "line": 483,
+    "rule_id": "fa-scl-hardcoded-workers",
+    "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+    "status": "primary_retained_documented_design_not_fixed_not_formally_registered",
+    "intended_behavior": "Exactly one server process owns API mutation/background-tick serialization through asyncio.Lock and one lifespan task.",
+    "rationale": "Worker count is an ownership invariant, not an unrestricted scaling parameter; multiple independent process locks do not coordinate shared incident operations.",
+    "tradeoffs": "Limits throughput and availability; operators still must avoid multiple independent service instances. Fixed workers=1 does not prove cross-process safety.",
+    "evidence_anchors": {
+      "fireline/incident_server.py": [
+        {
+          "line": 182,
+          "text": "lock = asyncio.Lock()"
+        },
+        {
+          "line": 203,
+          "text": "async def lifespan(app: Starlette) -> AsyncIterator[None]:"
+        },
+        {
+          "line": 484,
+          "text": "application, host=args.host, port=args.port, workers=1, access_log=False"
+        }
+      ],
+      "frontend/tests/test_dashboard_client.cjs": [
+        {
+          "line": 58,
+          "text": "test('REST fetch rejection is handled by the caller and recovers through retry',async()=>{"
+        },
+        {
+          "line": 60,
+          "text": "for(const Client of [DashboardClient,LegacyClient]) {"
+        }
+      ],
+      "tests/test_incident_server.py": [
+        {
+          "line": 347,
+          "text": "with ThreadPoolExecutor(max_workers=1) as pool:"
+        },
+        {
+          "line": 467,
+          "text": "assert server_options[0][\"workers\"] == 1"
+        }
+      ]
+    },
+    "invalidation_conditions": [
+      "Introduce tested inter-process coordination or leader election",
+      "Separate background ownership from replicated API workers",
+      "Deploy multiple independent processes on the same incident without equivalent synchronization"
+    ]
+  },
+  "candidate_assessment_scope": "new_defense_candidates contains initial e8b8c8e assessments; selected_new_defenses and current_primary_defense describe the final ba441f7 decisions.",
+  "prior_final_snapshots": [
+    {
+      "final_code_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+      "latest_summary": {
+        "code_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+        "base_commit": "d7cf32ea94a795e9705cd64219e864bbc07621de",
+        "changed_files": 26,
+        "supported_files": 25,
+        "freshly_rescanned_files": 10,
+        "unchanged_file_results_reused": 15,
+        "files_with_findings": 4,
+        "zero_finding_files": 21,
+        "remaining_findings": 6,
+        "retained_findings": 6,
+        "actionable_findings_remaining": 0,
+        "actionable_scope": "No unclassified or unremediated actionable findings among observed applicable-rule results; not a guarantee of absence of defects.",
+        "initial_findings_removed": 10,
+        "severity_counts": {
+          "HIGH": 1,
+          "MEDIUM": 5
+        },
+        "unreduced_coverage_files": 22,
+        "reduced_coverage_files": 3,
+        "unscanned_files": 1,
+        "total_livecheck_calls": 34,
+        "all_clean": false
+      },
+      "final_file_coverage": [
+        {
+          "file": "fireline/call_events.py",
+          "sha256": "b7e85f582d4ddf2468ff36b6f53959b396c82cb622be2c5d949220980e908f53",
+          "bytes": 10231,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/call_events.py",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 2,
+            "reused": false
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fireline/coordination.py",
+          "sha256": "cf6aab9fe67c7caf233d799eaa31e6036bb6933d84110407d5073047c5e33ac2",
+          "bytes": 26626,
+          "status": "issues",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/coordination.py",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 3,
+            "reused": false
+          },
+          "issues": [
+            {
+              "rule_id": "py-maint-no-print",
+              "file": "fireline/coordination.py",
+              "line": 462,
+              "column": 9,
+              "snippet": "        print(encoded(state))"
+            }
+          ],
+          "rules": {
+            "py-maint-no-print": {
+              "rule_name": "print() in production code",
+              "severity": "MEDIUM",
+              "impact_area": "maintainability",
+              "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+              "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+              "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+              "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+              "estimated_time_to_fix": 3
+            }
+          }
+        },
+        {
+          "file": "fireline/dashboard_public.py",
+          "sha256": "0cbb2f1325a96a49bedee783fcbbf92d5f55234c0dc2168fca93800e24a71034",
+          "bytes": 7615,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/dashboard_public.py",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 0,
+            "reused": false
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fireline/fire_assessment.py",
+          "sha256": "660d9c669c159c1d3639aa65f48ebe7c27505fff19336d943c8e19926da088a8",
+          "bytes": 12119,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/fire_assessment.py",
+          "evidence": {
+            "section": "results",
+            "index": 3,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fireline/incident_planning.py",
+          "sha256": "8588f7559562688fdd932b0b372282ca4ce3e422eca995092293e88754cf8c40",
+          "bytes": 8331,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/incident_planning.py",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 1,
+            "reused": false
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fireline/incident_runtime.py",
+          "sha256": "85bd2addf39780df71e8d0038e448dbaa6222cba42a07c564baedfc95d3e6b99",
+          "bytes": 24378,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/incident_runtime.py",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 4,
+            "reused": false
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fireline/incident_server.py",
+          "sha256": "fff5ebe3fb6c8c3b5e494d3b52970aa11eced401f9c506718190ce585aecc69c",
+          "bytes": 19290,
+          "status": "issues",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/incident_server.py",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 9,
+            "reused": false
+          },
+          "issues": [
+            {
+              "rule_id": "py-maint-no-print",
+              "file": "fireline/incident_server.py",
+              "line": 405,
+              "column": 13,
+              "snippet": "            print(\"Vonage association recorded; no call was placed.\")"
+            },
+            {
+              "rule_id": "py-maint-no-print",
+              "file": "fireline/incident_server.py",
+              "line": 426,
+              "column": 13,
+              "snippet": "            print(json.dumps(response.json(), indent=2))"
+            },
+            {
+              "rule_id": "fa-scl-hardcoded-workers",
+              "file": "fireline/incident_server.py",
+              "line": 483,
+              "column": 9,
+              "snippet": "        uvicorn.run(\n            application, host=args.host, port=args.port, workers=1, access_log=False\n        )"
+            }
+          ],
+          "rules": {
+            "py-maint-no-print": {
+              "rule_name": "print() in production code",
+              "severity": "MEDIUM",
+              "impact_area": "maintainability",
+              "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+              "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+              "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+              "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+              "estimated_time_to_fix": 3
+            },
+            "fa-scl-hardcoded-workers": {
+              "rule_name": "Hardcoded uvicorn workers",
+              "severity": "MEDIUM",
+              "impact_area": "scalability",
+              "description": "uvicorn.run(..., workers=N) hardcoded \u2014 must come from env/config so it can be tuned per environment.",
+              "remediation_action": "Read from env.",
+              "good_code": "uvicorn.run(app, workers=int(os.environ[\"WEB_CONCURRENCY\"]))",
+              "bad_code": "uvicorn.run(app, workers=4)",
+              "estimated_time_to_fix": 5
+            }
+          }
+        },
+        {
+          "file": "fireline/offline_integration.py",
+          "sha256": "09b1446918c0100492e45588a6b7c7d18d6a013b34896031d35cf357912cd3c8",
+          "bytes": 18769,
+          "status": "issues",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/offline_integration.py",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 8,
+            "reused": false
+          },
+          "issues": [
+            {
+              "rule_id": "py-maint-no-print",
+              "file": "fireline/offline_integration.py",
+              "line": 493,
+              "column": 9,
+              "snippet": "        print(\n            json.dumps(\n                {\n                    \"database\": str(run.database),\n                    \"revision\": state[\"revision\"],\n                    \"input_mode\": \"synthetic\",\n                    \"calls\": [\n                        {\"asset_id\": c[\"asset_id\"], \"status\": c[\"status\"]}\n                        for c in state[\"calls\"]\n                    ],\n                }\n            )\n        )"
+            }
+          ],
+          "rules": {
+            "py-maint-no-print": {
+              "rule_name": "print() in production code",
+              "severity": "MEDIUM",
+              "impact_area": "maintainability",
+              "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+              "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+              "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+              "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+              "estimated_time_to_fix": 3
+            }
+          }
+        },
+        {
+          "file": "fireline/priority_models.py",
+          "sha256": "501409db522d106ba4e781d2ddde98c8a3ac9ed57e65d721a7b9e61b1fa00db5",
+          "bytes": 7436,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/priority_models.py",
+          "evidence": {
+            "section": "results",
+            "index": 8,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fireline/snapshot_contacts.py",
+          "sha256": "8070aa0610bfd6d17a48919f43a0157f5b68a4c9f2ca6c547f9bc650de65494a",
+          "bytes": 15252,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/snapshot_contacts.py",
+          "evidence": {
+            "section": "results",
+            "index": 10,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fireline/voice_queue.py",
+          "sha256": "77bfbd08bf3b9366bd88f49bb820955ca898aef5e37454530b6186390911a546",
+          "bytes": 11097,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fireline/voice_queue.py",
+          "evidence": {
+            "section": "results",
+            "index": 9,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fixtures/end_to_end/catalog.json",
+          "sha256": "c5b4468a8d5370410734223c082076769ee701ff157d9b8d167d6eba808a32d4",
+          "bytes": 895,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "nodejs-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fixtures/end_to_end/catalog.json",
+          "evidence": {
+            "section": "results",
+            "index": 6,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fixtures/end_to_end/operations.json",
+          "sha256": "356c19ad433fcdc26088bfd3318a03bfb436c5f1b63d0ed15c12e5f68691e826",
+          "bytes": 8416,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "nodejs-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fixtures/end_to_end/operations.json",
+          "evidence": {
+            "section": "results",
+            "index": 13,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "fixtures/integration/offline_scenario.json",
+          "sha256": "cff4d66453c38ab730cc493b88f8494e1f06602d1a195b2424389e54218b7e21",
+          "bytes": 4968,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "nodejs-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "fixtures/integration/offline_scenario.json",
+          "evidence": {
+            "section": "results",
+            "index": 12,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "frontend/legacy/dashboard-view.js",
+          "sha256": "bc65722da42ca88522187deecffaff141c9754d8cd13bfbf7991e153d1dad01e",
+          "bytes": 15850,
+          "status": "issues",
+          "coverage": {
+            "reduced": true,
+            "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+          },
+          "rulesets_evaluated": [
+            "javascript-norma-ruleset",
+            "nodejs-norma-ruleset",
+            "react-norma-ruleset",
+            "supabase-norma-ruleset",
+            "typescript-norma-ruleset",
+            "vite-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "frontend/legacy/dashboard-view.js",
+          "evidence": {
+            "section": "results",
+            "index": 15,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [
+            {
+              "rule_id": "js-no-error-handling-async",
+              "file": "frontend/legacy/dashboard-view.js",
+              "line": 217,
+              "column": 36,
+              "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok) throw new Error('unavailable');return r.json();},"
+            }
+          ],
+          "rules": {
+            "js-no-error-handling-async": {
+              "rule_name": "Async Operation Without Error Handling",
+              "severity": "HIGH",
+              "impact_area": "scalability",
+              "description": "Detects async functions or await expressions that are not wrapped in try/catch blocks and do not chain .catch(). AI-generated code frequently omits error handling, causing unhandled promise rejections that crash the app silently.",
+              "remediation_action": "Wrap all await calls in try/catch. In the catch block, show user-friendly error feedback (toast, alert) and log the error for debugging. Consider a global error handler for uncaught promise rejections.",
+              "good_code": "const handleSubmit = async () => {\n  try {\n    const { data, error } = await supabase.from('todos').insert({ title })\n    if (error) throw error\n    setTodos([...todos, data])\n  } catch (err) {\n    toast.error('Failed to add todo')\n    console.error(err)\n  }\n}",
+              "bad_code": "const handleSubmit = async () => {\n  const { data } = await supabase.from('todos').insert({ title })\n  setTodos([...todos, data])\n  // If insert fails, data is null \u2192 crash on spread\n}",
+              "estimated_time_to_fix": 10
+            }
+          }
+        },
+        {
+          "file": "frontend/legacy/ui-mockup.html",
+          "sha256": "133c9fd052a15b9a64c946be7336383e664695b7cf1979e0b0753f17b5a07398",
+          "bytes": 18739,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "vite-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "frontend/legacy/ui-mockup.html",
+          "evidence": {
+            "section": "results",
+            "index": 14,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "frontend/tests/test_dashboard_client.cjs",
+          "sha256": "68e02648e4db35745b44002199cd4f9f5c742e4115a806f92af4e59967d30698",
+          "bytes": 4136,
+          "status": "clean",
+          "coverage": {
+            "reduced": true,
+            "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+          },
+          "rulesets_evaluated": [
+            "javascript-norma-ruleset",
+            "nodejs-norma-ruleset",
+            "react-norma-ruleset",
+            "supabase-norma-ruleset",
+            "typescript-norma-ruleset",
+            "vite-norma-ruleset"
+          ],
+          "method": "extension_mapped_live_check",
+          "scan_file": "frontend/tests/test_dashboard_client.virtual.js",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 7,
+            "reused": false
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "frontend/tests/test_ui_mockup.cjs",
+          "sha256": "78645dfba9954d0e28326a1ddda19cbe494614b1339817c8298245e9850b2bcf",
+          "bytes": 11461,
+          "status": "clean",
+          "coverage": {
+            "reduced": true,
+            "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+          },
+          "rulesets_evaluated": [
+            "javascript-norma-ruleset",
+            "nodejs-norma-ruleset",
+            "react-norma-ruleset",
+            "supabase-norma-ruleset",
+            "typescript-norma-ruleset",
+            "vite-norma-ruleset"
+          ],
+          "method": "extension_mapped_live_check",
+          "scan_file": "frontend/tests/test_ui_mockup.virtual.js",
+          "evidence": {
+            "section": "results",
+            "index": 16,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "readme.md",
+          "sha256": "1fd4baf40e173d852e703f3ff48531b708dadf62aff9bd95540aaef287fd4dd4",
+          "bytes": 254494,
+          "status": "not_scanned",
+          "reason": "No matching deterministic prose rules; not clean"
+        },
+        {
+          "file": "tests/test_call_events.py",
+          "sha256": "e8d9bd616f9833e16635c19bc057292a3e11f155213a52425583769514733362",
+          "bytes": 9854,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "tests/test_call_events.py",
+          "evidence": {
+            "section": "results",
+            "index": 17,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "tests/test_fire_assessment.py",
+          "sha256": "fb912a3448a2e7674390f8caba9179503b23c887713d9dea44211252747e943c",
+          "bytes": 12460,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "tests/test_fire_assessment.py",
+          "evidence": {
+            "section": "results",
+            "index": 20,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "tests/test_incident_planning.py",
+          "sha256": "9153d9c06114e9f1bdfa29a5a5357320c68fa487af6acdba5272c66de3173e32",
+          "bytes": 8002,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "tests/test_incident_planning.py",
+          "evidence": {
+            "section": "results",
+            "index": 23,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "tests/test_incident_runtime.py",
+          "sha256": "9fc73981bc1b5c6561fc0e8f9ce808c43190bece3045324289c0541279390d49",
+          "bytes": 11383,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "tests/test_incident_runtime.py",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 5,
+            "reused": false
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "tests/test_incident_server.py",
+          "sha256": "5a534df51d79138ee73fcde480a0eda993747785e42547f4c977ad7feae4cc7b",
+          "bytes": 18886,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "tests/test_incident_server.py",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 6,
+            "reused": false
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "tests/test_offline_integration.py",
+          "sha256": "0a70377add0f7fc2d15791cb0a037bbbd81931a34976299462f422befd3ab502",
+          "bytes": 5984,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "tests/test_offline_integration.py",
+          "evidence": {
+            "section": "results",
+            "index": 21,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        },
+        {
+          "file": "tests/test_snapshot_contacts.py",
+          "sha256": "c97d40f87adf322ae9c9b5fd92c4dffdce90bc37f706cdbe7d7ebf3d828b97c6",
+          "bytes": 18506,
+          "status": "clean",
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ],
+          "method": "live_check",
+          "scan_file": "tests/test_snapshot_contacts.py",
+          "evidence": {
+            "section": "results",
+            "index": 22,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "issues": [],
+          "rules": {}
+        }
+      ],
+      "remaining_findings": [
+        {
+          "rule_id": "py-maint-no-print",
+          "file": "fireline/coordination.py",
+          "line": 462,
+          "column": 9,
+          "snippet": "        print(encoded(state))",
+          "source_file": "fireline/coordination.py",
+          "severity": "MEDIUM",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 3,
+            "reused": false
+          },
+          "disposition": "retained_documented_decision_not_fixed",
+          "decision": "cli_stdout_output"
+        },
+        {
+          "rule_id": "py-maint-no-print",
+          "file": "fireline/incident_server.py",
+          "line": 405,
+          "column": 13,
+          "snippet": "            print(\"Vonage association recorded; no call was placed.\")",
+          "source_file": "fireline/incident_server.py",
+          "severity": "MEDIUM",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 9,
+            "reused": false
+          },
+          "disposition": "retained_documented_decision_not_fixed",
+          "decision": "cli_stdout_output"
+        },
+        {
+          "rule_id": "py-maint-no-print",
+          "file": "fireline/incident_server.py",
+          "line": 426,
+          "column": 13,
+          "snippet": "            print(json.dumps(response.json(), indent=2))",
+          "source_file": "fireline/incident_server.py",
+          "severity": "MEDIUM",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 9,
+            "reused": false
+          },
+          "disposition": "retained_documented_decision_not_fixed",
+          "decision": "cli_stdout_output"
+        },
+        {
+          "rule_id": "fa-scl-hardcoded-workers",
+          "file": "fireline/incident_server.py",
+          "line": 483,
+          "column": 9,
+          "snippet": "        uvicorn.run(\n            application, host=args.host, port=args.port, workers=1, access_log=False\n        )",
+          "source_file": "fireline/incident_server.py",
+          "severity": "MEDIUM",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 9,
+            "reused": false
+          },
+          "disposition": "retained_documented_decision_not_fixed",
+          "decision": "single_incident_worker"
+        },
+        {
+          "rule_id": "py-maint-no-print",
+          "file": "fireline/offline_integration.py",
+          "line": 493,
+          "column": 9,
+          "snippet": "        print(\n            json.dumps(\n                {\n                    \"database\": str(run.database),\n                    \"revision\": state[\"revision\"],\n                    \"input_mode\": \"synthetic\",\n                    \"calls\": [\n                        {\"asset_id\": c[\"asset_id\"], \"status\": c[\"status\"]}\n                        for c in state[\"calls\"]\n                    ],\n                }\n            )\n        )",
+          "source_file": "fireline/offline_integration.py",
+          "severity": "MEDIUM",
+          "evidence": {
+            "section": "focused_rescans[0].results",
+            "index": 8,
+            "reused": false
+          },
+          "disposition": "retained_documented_decision_not_fixed",
+          "decision": "cli_stdout_output"
+        },
+        {
+          "rule_id": "js-no-error-handling-async",
+          "file": "frontend/legacy/dashboard-view.js",
+          "line": 217,
+          "column": 36,
+          "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok) throw new Error('unavailable');return r.json();},",
+          "source_file": "frontend/legacy/dashboard-view.js",
+          "severity": "HIGH",
+          "evidence": {
+            "section": "results",
+            "index": 15,
+            "reused": true,
+            "original_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+            "reason": "Identical SHA-256 and repository-relative/virtual path, language mapping, ruleset catalog/version and repository context; verified against final committed bytes."
+          },
+          "disposition": "retained_documented_decision_not_fixed",
+          "decision": "caller_owned_fetch_errors"
+        }
+      ],
+      "finding_reconciliation": [
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/call_events.py",
+          "initial_line": 158,
+          "rule_id": "py-arch-type-eq",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/call_events.py",
+          "initial_line": 163,
+          "rule_id": "py-arch-type-eq",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/incident_planning.py",
+          "initial_line": 143,
+          "rule_id": "py-scal-deepcopy",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/coordination.py",
+          "initial_line": 275,
+          "rule_id": "py-arch-type-eq",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/coordination.py",
+          "initial_line": 456,
+          "rule_id": "py-maint-no-print",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "retained_documented_decision",
+          "final_line": 462
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/incident_runtime.py",
+          "initial_line": 69,
+          "rule_id": "py-mng-magic-timeout",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/incident_runtime.py",
+          "initial_line": 167,
+          "rule_id": "py-mng-open-no-encoding",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/incident_runtime.py",
+          "initial_line": 398,
+          "rule_id": "py-mng-open-no-encoding",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/offline_integration.py",
+          "initial_line": 291,
+          "rule_id": "py-scal-deepcopy",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/offline_integration.py",
+          "initial_line": 495,
+          "rule_id": "py-maint-no-print",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "retained_documented_decision",
+          "final_line": 493
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/incident_server.py",
+          "initial_line": 309,
+          "rule_id": "fa-sec-cookie-no-secure",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/incident_server.py",
+          "initial_line": 200,
+          "rule_id": "fa-mnt-no-typing-param",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "removed_by_remediation_and_rechecked",
+          "final_line": null
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/incident_server.py",
+          "initial_line": 401,
+          "rule_id": "py-maint-no-print",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "retained_documented_decision",
+          "final_line": 405
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/incident_server.py",
+          "initial_line": 422,
+          "rule_id": "py-maint-no-print",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "retained_documented_decision",
+          "final_line": 426
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "fireline/incident_server.py",
+          "initial_line": 478,
+          "rule_id": "fa-scl-hardcoded-workers",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "retained_documented_decision",
+          "final_line": 483
+        },
+        {
+          "initial_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
+          "file": "frontend/legacy/dashboard-view.js",
+          "initial_line": 217,
+          "rule_id": "js-no-error-handling-async",
+          "final_commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "retained_documented_decision",
+          "final_line": 217
+        }
+      ],
+      "selected_new_defenses": [
+        {
+          "candidate_id": "single_incident_worker",
+          "file": "fireline/incident_server.py",
+          "line": 483,
+          "rule_id": "fa-scl-hardcoded-workers",
+          "commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "primary_retained_documented_design_not_fixed_not_formally_registered"
+        },
+        {
+          "candidate_id": "cli_stdout_output",
+          "commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "status": "retained_documented_output_contract_not_fixed",
+          "locations": [
+            {
+              "file": "fireline/coordination.py",
+              "line": 462,
+              "output": "JSON state protocol"
+            },
+            {
+              "file": "fireline/offline_integration.py",
+              "line": 493,
+              "output": "JSON command result"
+            },
+            {
+              "file": "fireline/incident_server.py",
+              "line": 426,
+              "output": "JSON trigger response"
+            },
+            {
+              "file": "fireline/incident_server.py",
+              "line": 405,
+              "output": "Human-readable CLI completion confirmation; not JSON"
+            }
+          ],
+          "rule_id": "py-maint-no-print",
+          "rationale": "CLI result and completion output is intentionally observable independent of logging levels/handlers; logger.info is not an equivalent output contract."
+        },
+        {
+          "candidate_id": "caller_owned_fetch_errors",
+          "commit": "ba441f7e036dade9fd6a688f36953c09787b3278",
+          "file": "frontend/legacy/dashboard-view.js",
+          "line": 217,
+          "rule_id": "js-no-error-handling-async",
+          "status": "retained_documented_error_boundary_not_fixed",
+          "rationale": "Unchanged exact callback delegates failures to DashboardClient.start catch/recover; new committed test checks rejection and retry for both clients.",
+          "evidence_reuse": "The source file and client code hashes remain unchanged; initial exact-code probe and applicable-rule verdict reused with provenance.",
+          "regression": {
+            "file": "frontend/tests/test_dashboard_client.cjs",
+            "line": 58
+          }
+        }
+      ]
+    }
+  ]
+}
