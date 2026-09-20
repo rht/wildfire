@@ -34,6 +34,18 @@ SMALL_WINDOW_MIN = config.CONTACT_POLICY["attention_min"]   # "small window" thr
 # cost, shown with its damage-ratio band, that must never order or filter the table (handoff 002).
 LOSS_COLUMN = "expected loss (estimate, assumed replacement cost, damage-ratio band)"
 DEFAULT_SCENARIO = "gavarres_real"      # the real-area scenario opens first; the synthetic one stays selectable
+# The approve-all preview: every pending agent proposal applied in memory at once, so the ranked queue
+# can be read with and without them. It confirms nothing - no override reaches the store - and the fields
+# the agent proposes are mostly absent from the contact sort key (readme 6), so the order usually does not
+# move at all. The caption has to say that plainly instead of looking like a button that failed.
+APPROVE_ALL_LABEL = "Preview all proposals as approved"
+APPROVE_ALL_HELP = ("A what-if view, not an approval. Every pending agent proposal is applied in memory and "
+                    "the queue re-ranked; the SQLite store is untouched, no override is confirmed, and no "
+                    "analyst has checked these proposals. Switch it off to return to the confirmed data.")
+RANK_DELTA_COLUMN = "rank change if all approved (+ = up the queue)"
+SORT_KEY_NOTE = ("Occupancy, capacity and criticality_tier are absent from contact_priority.contact_sort_key "
+                 "(readme 6), so approving them changes what the analyst knows about a location, not who is "
+                 "contacted first; only asset_type and evacuation_min can move a row.")
 
 
 # ----------------------------------------------------------------------------- helpers
@@ -309,18 +321,83 @@ def strategic_frame(assets: list[dict]) -> pd.DataFrame:
     } for a in assets])
 
 
-def ranked_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFrame:
-    return pd.DataFrame([{
-        "rank": a["priority_rank"], "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
-        "distance m": a.get("distance_to_fire_m"), "predicted arrival": a.get("fire_arrival_at"),
-        "forecast source": a.get("forecast_source"),
-        "evacuation min": a.get("evacuation_min"), "latest start (min from now)": a.get("latest_start_min"),
-        "remaining window (min)": a.get("slack_min"), "status": a.get("priority_status"),
-        "review flags": ", ".join(a.get("review_reasons") or []), "people": people(a),
-        "people exposed": exposed(a), "people at risk p50 / p10": at_risk(a), LOSS_COLUMN: loss_eur(a),
-        "criticality": criticality_label(a),
-        "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
-    } for a in assets])
+def rank_delta(asset: dict) -> str:
+    """One asset's rank movement under the approve-all preview, signed: `+3 (up)` is three places nearer
+    the top of the contact queue, `-2 (down)` is two places further from it, `0 (no move)` is the usual
+    answer. Only meaningful while the preview is on; `ranked_frame` leaves the column out otherwise."""
+    delta, baseline = asset.get("preview_rank_delta"), asset.get("preview_baseline_rank")
+    if delta is None:
+        return "new (not ranked before)" if baseline is None else "-"
+    d = int(delta)
+    if d == 0:
+        return "0 (no move)"
+    return f"+{d} (up)" if d > 0 else f"{d} (down)"
+
+
+def by_field_text(by_field: dict | None) -> str:
+    """`capacity 2, criticality_tier 13`: which fields the preview's proposals would write."""
+    return ", ".join(f"{field} {n}" for field, n in sorted((by_field or {}).items())) or "no field"
+
+
+def approve_all_caption(report: dict | None, brief: bool = False) -> str:
+    """What approving every agent proposal actually changed - including, in the usual case, nothing at
+    all about the contact order. `report` is `Session.preview_report`; "" when the preview is off.
+
+    Zero rows moved is the designed separation (readme 6, measured in VALIDATION.md), not an empty result,
+    so the caption states it and names the sort key rather than leaving a column of zeros unexplained.
+    """
+    if not report or not report.get("on"):
+        return ""
+    moved, total = report["rows_moved"], report["ranked_after"]
+    if not report["proposals"]:
+        if brief:
+            return ("Preview on, but the agent has proposed nothing on this snapshot: the list below is the "
+                    "confirmed ranking.")
+        return (f"Preview on, and there is nothing to approve: the agent has made no proposals on this "
+                f"snapshot ({report['investigated']} location(s) investigated, llm mode "
+                f"`{report['llm_label']}`). The {total} ranked row(s) below are the confirmed ranking, "
+                f"unchanged, and the store holds no new overrides.")
+    if brief:
+        tail = (f"{moved} of {total} row(s) moved." if moved else
+                f"contact order unchanged, 0 of {total} rows moved - these fields are not in the sort key.")
+        return (f"Preview: {report['proposals']} proposal(s) applied in memory, nothing written to the "
+                f"store; {tail}")
+    head = (f"Preview only: {report['proposals']} agent proposal(s) from {report['investigated']} "
+            f"investigated location(s), applied in memory (llm mode `{report['llm_label']}`) - "
+            f"{by_field_text(report['by_field'])}. No analyst confirmed them and the store holds no new "
+            f"overrides. {report['flags_cleared']} review flag(s) cleared, {report['tiers_set']} "
+            f"criticality tier(s) set.")
+    if moved:
+        return (f"{head} Contact order: {moved} of {total} ranked row(s) moved, "
+                f"{len(report['entered_ranked'])} entered the ranked queue and {len(report['left_ranked'])} "
+                f"left it ({report['ranked_before']} ranked before, {total} after).")
+    return (f"{head} Contact order: unchanged - 0 of {total} ranked rows moved. That is the designed "
+            f"separation, not a failed button. {SORT_KEY_NOTE} VALIDATION.md records the same result for "
+            f"criticality: the contact order with every asset at the top tier is identical to the untiered "
+            f"order.")
+
+
+def ranked_frame(assets: list[dict], open_counts: dict[str, int], preview: bool = False) -> pd.DataFrame:
+    """The ranked table. `preview` adds the rank-movement column, and only then: with the approve-all
+    preview off the table is exactly the confirmed one, same columns as ever."""
+    rows = []
+    for a in assets:
+        row: dict = {"rank": a["priority_rank"]}
+        if preview:
+            row[RANK_DELTA_COLUMN] = rank_delta(a)
+        row.update({
+            "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
+            "distance m": a.get("distance_to_fire_m"), "predicted arrival": a.get("fire_arrival_at"),
+            "forecast source": a.get("forecast_source"), "evacuation min": a.get("evacuation_min"),
+            "latest start (min from now)": a.get("latest_start_min"),
+            "remaining window (min)": a.get("slack_min"), "status": a.get("priority_status"),
+            "review flags": ", ".join(a.get("review_reasons") or []), "people": people(a),
+            "people exposed": exposed(a), "people at risk p50 / p10": at_risk(a), LOSS_COLUMN: loss_eur(a),
+            "criticality": criticality_label(a),
+            "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
+        })
+        rows.append(row)
+    return pd.DataFrame(rows)
 
 
 def review_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFrame:
@@ -770,11 +847,29 @@ def render_escalation_card(sess: Session) -> None:
                                     "never a dispatch order."))
 
 
+def render_approve_all_toggle(sess: Session) -> None:
+    """The preview switch, read beside the ranked list. `Session.set_approve_all` applies every pending
+    proposal in memory and rescores; nothing here confirms a proposal or writes to the store."""
+    on = bool(st.toggle(APPROVE_ALL_LABEL, value=bool(sess.approve_all), key="ra-approve-all",
+                        help=APPROVE_ALL_HELP))
+    if on != bool(sess.approve_all):
+        sess.set_approve_all(on)
+        st.rerun()
+
+
 def render_ranked_card(sess: Session, current: str | None) -> None:
-    """Ranked locations: the rank number is the button that selects the location."""
+    """Ranked locations: the rank number is the button that selects the location. The approve-all
+    preview sits on the heading, where the order it might change is read."""
     ranked = sess.scored["ranked"]
+    report = sess.preview_report
     with st.container(key="racard-ranked"):
-        st.html(ui_theme.card_title_html("Ranked locations - analyst priority", len(ranked)))
+        title, control = st.columns([0.46, 0.54], vertical_alignment="center")
+        title.html(ui_theme.card_title_html("Ranked locations - analyst priority", len(ranked)))
+        with control:
+            render_approve_all_toggle(sess)
+        brief = approve_all_caption(report, brief=True)
+        if brief:
+            st.caption(brief)
         if not ranked:
             st.html(ui_theme.empty_state_html("No location has both a forecast arrival and an evacuation estimate."))
         with st.container(key="ra-ranklist", height=300, border=False):
@@ -789,8 +884,11 @@ def render_ranked_card(sess: Session, current: str | None) -> None:
                     name=a["name"], subtitle=location_subtitle(a), value=f"{a['slack_min']:.0f} min",
                     segments=window_segments(a), value_tone=window_tone(a),
                     selected=a["asset_id"] == current))
-        st.html('<div class="ra-card-foot">Smallest remaining evacuation window first. The bar is that '
-                'window\'s arithmetic: evacuation duration, buffer and the window that is left.</div>')
+        foot = ("Smallest remaining evacuation window first. The bar is that window's arithmetic: "
+                "evacuation duration, buffer and the window that is left.")
+        if brief:
+            foot += " " + SORT_KEY_NOTE
+        st.html(f'<div class="ra-card-foot">{ui_theme.esc(foot)}</div>')
 
 
 def render_selected_card(sess: Session, current: str | None) -> None:
@@ -848,13 +946,18 @@ def render_detail_sections(sess: Session, s: dict, c: dict, current: str | None)
         else:
             render_selected(sess, sess.asset(current))
 
+    preview = approve_all_caption(sess.preview_report)
     with st.expander(f"Ranked assets ({c['ranked']})"):
         st.caption("Smallest remaining window first, then earlier predicted arrival, nearer distance, asset id. "
                    "A farther asset can rank higher when the fire reaches it sooner or its evacuation takes longer.")
-        st.dataframe(ranked_frame(sess.scored["ranked"], open_counts), width="stretch", hide_index=True)
+        if preview:
+            st.caption(preview)
+        st.dataframe(ranked_frame(sess.scored["ranked"], open_counts, bool(preview)), width="stretch",
+                     hide_index=True)
         if sess.scored["flagged"]:
             st.caption(f"Ranked assets that still carry review flags ({len(sess.scored['flagged'])}):")
-            st.dataframe(ranked_frame(sess.scored["flagged"], open_counts), width="stretch", hide_index=True)
+            st.dataframe(ranked_frame(sess.scored["flagged"], open_counts, bool(preview)), width="stretch",
+                         hide_index=True)
 
     with st.expander(f"Needs-review queue ({c['needs_review']})"):
         st.caption("Unranked: no forecast arrival (forecast_unavailable, a producer gap) or no evacuation estimate "
