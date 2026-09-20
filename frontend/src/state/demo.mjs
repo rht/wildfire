@@ -183,7 +183,7 @@ export const demoIncidents = specs.map((s, index) => {
     incident_status: "active",
     area: s.area,
     revision: 1,
-    snapshot_id: `${s.id}-snapshot`,
+    snapshot_id: `${s.id}-snapshot-${typeof __DESIGN_DEMO_VERSION__ === "undefined" ? "source" : __DESIGN_DEMO_VERSION__}`,
     as_of,
     input_mode: "offline_demo",
     assets,

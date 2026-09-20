@@ -76,12 +76,56 @@ def test_sequence_controls_step_back_to_an_earlier_snapshot_without_rewinding_th
     at = at.sidebar.button[0].click().run()                          # Previous: an earlier moment, view only
     assert not at.exception and at.title[0].value == opening_title
     assert at.sidebar.select_slider[0].value == first
-    assert any("store stays at 2" in w.value for w in at.warning)
-    assert any("Earlier moment under review" in w.value for w in at.warning)
+    assert any("store stays at 2" in w.value for w in at.warning)          # sidebar notice, no body banner
+    assert any("Earlier moment under review" in e.label for e in at.expander)
 
     at = at.sidebar.select_slider[0].set_value(second).run()         # the slider scrubs back to the update
     assert not at.exception and at.sidebar.select_slider[0].value == second
     assert not at.warning
+
+
+# --------------------------------------------------------------- dashboard display helpers
+def test_window_segments_are_the_window_components_not_a_new_score():
+    """The ranked row's bar re-draws the snapshot's own arithmetic: evacuation + buffer + window."""
+    from fireline.app import window_segments
+
+    a = make_asset(window_components={"evacuation_min": 90.0, "buffer_min": 30.0}, evacuation_min=90.0)
+    a.update(slack_min=62.0, time_to_impact_min=182.0)
+    assert window_segments(a) == [90.0, 30.0, 62.0]
+    assert sum(window_segments(a)) == a["time_to_impact_min"]
+    assert window_segments(make_asset()) == [None, None, None]     # no components: an empty bar
+
+
+def test_window_tone_matches_the_three_bands_the_map_paints():
+    from fireline.app import SMALL_WINDOW_MIN, window_tone
+
+    ranked = dict(queue="ranked", priority_status="window_open")
+    assert window_tone({**ranked, "slack_min": -5.0, "priority_status": "window_exhausted"}) == "red"
+    assert window_tone({**ranked, "slack_min": SMALL_WINDOW_MIN - 1}) == "orange"
+    assert window_tone({**ranked, "slack_min": SMALL_WINDOW_MIN + 1}) == "ink"
+    assert window_tone({"queue": "needs_review", "slack_min": None}) == "grey"
+
+
+def test_location_subtitle_reads_type_and_distance_and_says_when_there_is_none():
+    from fireline.app import location_subtitle
+
+    assert location_subtitle({"asset_type": "school", "distance_to_fire_m": 1400.4}) == "school - 1,400 m to fire"
+    assert location_subtitle({"asset_type": "masia"}) == "masia - distance unknown"
+
+
+def test_stamp_shortens_a_timestamp_and_keeps_anything_it_cannot_parse():
+    from fireline.app import stamp
+
+    assert stamp("2026-07-03T13:20:01.981000+00:00") == "13:20Z 2026-07-03"
+    assert stamp(None) == "-" and stamp("not a time") == "not a time"
+
+
+def test_escalation_counts_split_the_task_pipeline():
+    from fireline.app import escalation_counts
+
+    rows = [{"status": s} for s in ("open", "assigned", "in_progress", "blocked", "done", "done")]
+    assert escalation_counts(rows) == {"done": 2, "blocked": 1, "open": 3}
+    assert escalation_counts([]) == {"done": 0, "blocked": 0, "open": 0}
 
 
 # --------------------------------------------------------------- value at risk (handoff 002)

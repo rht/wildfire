@@ -62,7 +62,7 @@ export default function Buildings({ incidents, incident }) {
         description={
           incident
             ? `Assessments for ${incident.name}`
-            : "Valuation and risk assessments across incidents. Filters use assessment date (UTC)."
+            : "Valuation and risk assessments across incidents."
         }
       />
       <MainCard>

@@ -472,3 +472,57 @@ test("GPS centre rejects malformed/open polygon rings and accepts MultiPolygon",
     { latitude: 41, longitude: 3 },
   );
 });
+
+test('terminal no-answer attempts are attempted, not completed or waiting to call', async () => {
+  const { toIncident, callRows } = await import(path);
+  const incident = toIncident({
+    assets: ['a', 'b', 'c'].map(asset_id => ({ asset_id })),
+    calls: ['a', 'b', 'c'].map(asset_id => ({ asset_id, status: 'no_answer', dispatch_state: 'bound', human_followup_required: true })),
+  });
+  const rows = callRows(incident);
+  assert.equal(rows.filter(row => row.toCall).length, 0);
+  assert.equal(rows.filter(row => row.attempted).length, 3);
+  assert.equal(rows.filter(row => row.completed).length, 0);
+  assert.equal(rows.filter(row => row.followup).length, 3);
+});
+
+test('call state distinguishes uncalled, queued retries, active attempts, completed and unknown records', async () => {
+  const { toIncident, callRows } = await import(path);
+  const calls = [
+    { asset_id: 'queued', status: 'queued', dispatch_state: 'not_started' },
+    { asset_id: 'retry', status: 'no_answer', dispatch_state: 'bound' },
+    { asset_id: 'retry', status: 'queued', dispatch_state: 'not_started' },
+    { asset_id: 'active', status: 'ringing', dispatch_state: 'bound' },
+    { asset_id: 'uncertain', status: 'queued', dispatch_state: 'outcome_unknown' },
+    { asset_id: 'done', status: 'completed' },
+    { asset_id: 'unknown', status: null },
+    ...['failed', 'declined', 'busy'].map(status => ({ asset_id: status, status })),
+  ];
+  const rows = callRows(toIncident({
+    assets: [...new Set(['uncalled', ...calls.map(c => c.asset_id)])].map(asset_id => ({asset_id})), calls,
+  }));
+  const ids = field => rows.filter(row => row[field]).map(row => row.asset_id);
+  assert.deepEqual(ids('uncalled'), ['uncalled']);
+  assert.deepEqual(ids('queued'), ['queued', 'retry']);
+  assert.deepEqual(ids('toCall'), ['uncalled', 'queued', 'retry']);
+  assert.deepEqual(ids('attempted'), ['retry', 'active', 'uncertain', 'done', 'failed', 'declined', 'busy']);
+  assert.deepEqual(ids('completed'), ['done']);
+});
+
+test('queue membership excludes cancelled, held and started requests despite queued call status', async () => {
+  const { toIncident, callRows } = await import(path);
+  const states = ['pending', 'review', 'started', 'cancelled', null, undefined];
+  const rows = callRows(toIncident({
+    assets: states.map((_, index) => ({asset_id: String(index)})),
+    calls: states.map((queue_state, index) => ({
+      asset_id: String(index), status: 'queued', dispatch_state: 'not_started', queue_state,
+    })),
+  }));
+  assert.deepEqual(rows.map(row => row.toCall), [true, false, false, false, true, true]);
+  assert.deepEqual(rows.map(row => row.uncalled), [false, false, false, false, false, false]);
+  const terminal = callRows(toIncident({
+    assets: [{asset_id: 'a'}],
+    calls: [{asset_id: 'a', status: 'no_answer', dispatch_state: 'bound', queue_state: 'pending'}],
+  }))[0];
+  assert.equal(terminal.toCall, false, 'stale pending membership must not requeue a terminal attempt');
+});

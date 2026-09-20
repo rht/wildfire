@@ -17,6 +17,7 @@ import {
   Status,
   Empty,
 } from "../components/Common";
+import { useApprovals } from "../state/approvals";
 import { orderedEvents, stamp, humanize } from "../state/model.mjs";
 const defaults = {
   incident: "",
@@ -29,7 +30,10 @@ const defaults = {
 export default function ActivityLog({ incidents, incident, demo }) {
   const [filters, setFilters] = useState(defaults);
   const set = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
-  const scope = incident ? [incident] : incidents,
+  const { logIncidents } = useApprovals();
+  const scope = incident
+      ? logIncidents.filter((i) => i.id === incident.id)
+      : logIncidents,
     all = scope.flatMap((i) => i.events),
     events = orderedEvents(scope, filters);
   return (
@@ -100,11 +104,7 @@ export default function ActivityLog({ incidents, incident, demo }) {
       <MainCard
         title={`Event stream (${events.length})`}
         action={
-          <span className="small-muted">
-            {demo
-              ? "Illustrative ingestion sequence"
-              : "Browser-session receipt order"}
-          </span>
+          <span className="small-muted">{"Browser-session receipt order"}</span>
         }
         content={false}
       >
@@ -157,6 +157,18 @@ export default function ActivityLog({ incidents, incident, demo }) {
                   </TableCell>
                   <TableCell>
                     {e.notes || e.reason || "No description supplied"}
+                    {e.team_id && (
+                      <div>
+                        <Link
+                          to={`/incidents/${encodeURIComponent(e.incident_id)}/plan`}
+                        >
+                          {scope
+                            .find((i) => i.id === e.incident_id)
+                            ?.teams.find((t) => t.team_id === e.team_id)
+                            ?.name || e.team_id}
+                        </Link>
+                      </div>
+                    )}
                     {e.asset_id && (
                       <div>
                         <Link
@@ -180,7 +192,7 @@ export default function ActivityLog({ incidents, incident, demo }) {
       </MainCard>
       <Typography color="text.secondary" variant="body2">
         {demo
-          ? "This event history is an illustrative fixture. No operational actions were performed."
+          ? "Demo events and saved demo confirmations. Receipt order is tracked for this browser session."
           : "This feed retains supplied events received during this browser session. Received time is browser receipt time, not server ingestion time. Earlier history is not provided by the current-state API; reloading starts a new session."}
       </Typography>
     </>

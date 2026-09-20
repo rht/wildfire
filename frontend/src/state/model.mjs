@@ -107,14 +107,38 @@ export function callRows(incident) {
       reasons.size > 0 ||
       (calls.length > 0 && location?.human_followup === true);
     if (followup && !reasons.size) reasons.add("Human review required");
-    const called = calls.some((r) => r.status === "completed");
+    const completed = calls.some((r) => r.status === "completed");
+    const attempted = calls.some(
+      (r) =>
+        [
+          "ringing",
+          "in_progress",
+          "completed",
+          "no_answer",
+          "failed",
+          "declined",
+          "busy",
+        ].includes(r.status) ||
+        ["attempting", "bound", "outcome_unknown"].includes(r.dispatch_state),
+    );
+    const uncalled = calls.length === 0;
+    const queued = calls.some(
+      (r) =>
+        r.status === "queued" &&
+        (r.queue_state == null || r.queue_state === "pending") &&
+        (r.dispatch_state == null || r.dispatch_state === "not_started"),
+    );
     return {
       ...asset,
       ...c,
       calls,
       latest,
-      called,
-      toCall: !called,
+      called: attempted,
+      attempted,
+      completed,
+      uncalled,
+      queued,
+      toCall: uncalled || queued,
       followup,
       reasons: [...reasons],
       reviewReasons: [...reviewReasons],

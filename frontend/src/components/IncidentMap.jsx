@@ -3,6 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
 import { responseTeams, gps } from "../state/model.mjs";
+import { crewMapData } from "../state/crew-map.mjs";
 export default function IncidentMap({
   incidents,
   showRoutes = false,
@@ -121,12 +122,11 @@ export default function IncidentMap({
           .addTo(layers);
       }
       if (showRoutes) {
-        const crew = responseTeams(incident)
-          .flatMap((t) => t.tasks || [])
-          .map((t) => ({
-            ...t,
-            path: t.path_lonlat?.map((p) => [p[1], p[0]]),
-          }));
+        const crew = responseTeams(incident).flatMap((team) =>
+          crewMapData(team, incident.assets).stops.map((stop) => ({
+            path: stop.path,
+          })),
+        );
         const evacuation = (incident.plan.locations || []).flatMap(
           (l) => l.routes || [],
         );
@@ -169,7 +169,7 @@ export default function IncidentMap({
           <i className="dot blue" />
           Identified location
         </span>
-        {showRoutes && <span>Dashed: proposed route</span>}
+        {showRoutes && <span>Dashed: planned route</span>}
       </div>
     </div>
   );
