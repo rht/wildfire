@@ -2810,3 +2810,5 @@ Activity log order uses a compact column sized to its heading and sequence numbe
 The incident GPS card prefers a supplied incident point. When only a usable
 perimeter exists it shows the centre of its bounds, explicitly labelled “Perimeter
 centre”; missing coordinates are never filled from demonstration data.
+
+The Buildings & risk subtitle omits the assessment-date filter explanation.
