@@ -81,7 +81,17 @@
           "confirmed": true,
           "source": "synthetic assisted pickup effect"
         }
-      ]
+      ],
+      "evacuation": {
+        "destination_id": "hall",
+        "node_id": "hall",
+        "unload_min": 2,
+        "available_until_min": 260,
+        "confirmed": true,
+        "safe": true,
+        "source": "synthetic reserved reception and inspected route",
+        "places_reserved": 2
+      }
     },
     {
       "action_id": "assist-A",
@@ -101,7 +111,17 @@
           "confirmed": true,
           "source": "synthetic assisted pickup effect"
         }
-      ]
+      ],
+      "evacuation": {
+        "destination_id": "hall",
+        "node_id": "hall",
+        "unload_min": 2,
+        "available_until_min": 260,
+        "confirmed": true,
+        "safe": true,
+        "source": "synthetic reserved reception and inspected route",
+        "places_reserved": 6
+      }
     }
   ],
   "routes": [
@@ -196,6 +216,82 @@
           41.91
         ]
       ]
+    },
+    {
+      "from_node": "C",
+      "to_node": "hall",
+      "minutes": 5,
+      "available_until_min": 260,
+      "confirmed": true,
+      "safe": true,
+      "source": "synthetic inspected transport route",
+      "path_lonlat": [
+        [
+          3.04,
+          41.89
+        ],
+        [
+          3.04,
+          41.88
+        ]
+      ]
+    },
+    {
+      "from_node": "hall",
+      "to_node": "C",
+      "minutes": 5,
+      "available_until_min": 260,
+      "confirmed": true,
+      "safe": true,
+      "source": "synthetic inspected transport route",
+      "path_lonlat": [
+        [
+          3.04,
+          41.88
+        ],
+        [
+          3.04,
+          41.89
+        ]
+      ]
+    },
+    {
+      "from_node": "A",
+      "to_node": "hall",
+      "minutes": 5,
+      "available_until_min": 260,
+      "confirmed": true,
+      "safe": true,
+      "source": "synthetic inspected transport route",
+      "path_lonlat": [
+        [
+          3.01,
+          41.91
+        ],
+        [
+          3.04,
+          41.88
+        ]
+      ]
+    },
+    {
+      "from_node": "hall",
+      "to_node": "A",
+      "minutes": 5,
+      "available_until_min": 260,
+      "confirmed": true,
+      "safe": true,
+      "source": "synthetic inspected transport route",
+      "path_lonlat": [
+        [
+          3.04,
+          41.88
+        ],
+        [
+          3.01,
+          41.91
+        ]
+      ]
     }
   ],
   "road_nodes": {
@@ -214,6 +310,10 @@
     "C": [
       3.04,
       41.89
+    ],
+    "hall": [
+      3.04,
+      41.88
     ]
   },
   "road_warnings": [

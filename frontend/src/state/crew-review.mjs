@@ -15,6 +15,7 @@ const yesNo = (value) =>
 export function moveCrewStop(tasks, index, delta) {
   const next = index + delta;
   if (
+    crewReorderBlocked(tasks) ||
     ![1, -1].includes(delta) ||
     tasks[index]?.status !== "proposed" ||
     tasks[next]?.status !== "proposed"
@@ -133,5 +134,103 @@ export function crewStopFacts(incident, task, team = {}) {
     riskScore:
       number(asset.risk_score) === null ? "Unknown" : count(asset.risk_score),
     orderReason: suppliedOrderReason(task, team),
+    unknownDimensions: (task.unknown_dimensions || [])
+      .map(humanize)
+      .join(" · "),
   };
+}
+
+export function crewReorderBlocked(tasks = []) {
+  return tasks.some(
+    (task) =>
+      task.mission_status === "complete_evacuation" ||
+      task.mission_legs?.length > 0 ||
+      task.team_ids?.length > 1 ||
+      task.required_team_count > 1,
+  );
+}
+
+export function crewMissionFacts(incident, task) {
+  return {
+    label:
+      task.mission_status === "complete_evacuation"
+        ? "Complete evacuation planned"
+        : task.mission_status === "pickup_only"
+          ? "Pickup only · onward transport unresolved"
+          : "Mission details not supplied",
+    plannedPeople:
+      number(task.delivered_people) === null
+        ? "Unknown"
+        : count(task.delivered_people),
+    missionPeople:
+      number(task.mission_delivered_people) === null
+        ? "Unknown"
+        : count(task.mission_delivered_people),
+    tripCount:
+      number(task.trip_count) === null ? "Unknown" : count(task.trip_count),
+    crews:
+      (task.team_ids || [])
+        .map(
+          (id) =>
+            incident.teams?.find((team) => team.team_id === id)?.name || id,
+        )
+        .join(" · ") || "Unknown",
+    destination:
+      task.evacuation?.destination_id || task.evacuation?.node_id || "Unknown",
+    legs: task.mission_legs || [],
+  };
+}
+
+export function crewSensitivityFacts(task) {
+  const sensitivity = task.sensitivity || {};
+  return {
+    label:
+      sensitivity.status === "robust"
+        ? "Passes supplied stress case"
+        : sensitivity.status === "fragile"
+          ? "Fragile under supplied uncertainty"
+          : "Sensitivity unknown",
+    tone: sensitivity.status === "fragile" ? "warning" : "default",
+    reasons: (sensitivity.reasons || []).map(humanize).join(" · "),
+  };
+}
+
+export function urgentInterventionReviews(incident) {
+  const response = incident.plan?.response || {};
+  const reviews = new Map();
+  for (const entry of [
+    ...(response.review || []),
+    ...(response.unassigned || []),
+  ]) {
+    if (
+      entry.reason !== "urgent_intervention_review" &&
+      entry.human_decision_required !== true
+    )
+      continue;
+    const key = entry.action_id || entry.asset_id;
+    const previous = reviews.get(key);
+    reviews.set(key, {
+      ...previous,
+      ...entry,
+      name:
+        incident.assets?.find((asset) => asset.asset_id === entry.asset_id)
+          ?.name ||
+        entry.asset_id ||
+        entry.action_id ||
+        "Unspecified location",
+      reasons: [
+        ...new Set([...(previous?.reasons || []), ...(entry.reasons || [])]),
+      ],
+      candidate_attempts: [
+        ...(previous?.candidate_attempts || []),
+        ...(entry.candidate_attempts || []),
+      ].filter(
+        (attempt, index, all) =>
+          all.findIndex(
+            (other) => JSON.stringify(other) === JSON.stringify(attempt),
+          ) === index,
+      ),
+    });
+  }
+  return [...reviews.values()];
 }

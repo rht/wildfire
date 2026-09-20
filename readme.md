@@ -3605,3 +3605,140 @@ desktop/tablet screenshot inspection and independent code review. Browser covera
 includes shared routes, crew-scoped selection, fixed headers, contained scrolling,
 nested review/back navigation, reordering and saved approval persistence. Physical
 iPad/Safari testing remains outside the Chrome-emulation checks.
+
+### Planner edge-case update — design and implementation plan
+
+Approved scope from @mirrdj: account for missing valuation, fresh assistance calls,
+late interventions, complete evacuation journeys, repeated transport trips,
+competing deadlines, confirmed departures/arrivals, joint crew requirements and
+forecast uncertainty. This extends proposals and analyst review; it does not
+activate dispatch or place telephone calls.
+
+Implementation sequence:
+
+1. Add regression cases and extend `fireline/multi_response.py`: allow known
+   human benefit with unknown value (retain unknown metadata); separate evidence
+   freshness from the fire buffer; expose urgent intervention review for late or
+   blocked rescue needs; compare bounded alternative action sequences rather than
+   only immediate benefit. Preserve committed work and deterministic results.
+2. Extend operational action evidence for complete evacuation missions: require
+   a confirmed destination, available reception places, safe outbound routing and
+   unloading time before claiming delivery; release vehicle seats after unloading
+   and support repeated trips. Reserve all required crews together for joint work.
+   Missing mission inputs remain explicit review needs, never invented routes.
+3. Update `fireline/incident_planning.py` and coordination projection: reconcile
+   confirmed arrivals with remaining people/assistance needs, retain property
+   value, bind all operational evidence to the snapshot, and carry mission and
+   urgent-review data through public state and plan approval validation.
+4. Add bounded sensitivity checks using supplied early-arrival/long-duration
+   evidence. Mark absent uncertainty inputs and fragile proposals explicitly;
+   do not invent probability distributions or claim optimality.
+5. Show unresolved intervention needs and mission details in the crew UI; prevent
+   single-crew reorder approval from bypassing joint work or mission validation.
+6. Run focused regressions, full Python and frontend tests, build/browser checks,
+   and a synthetic fire-to-plan-to-call-outcome exercise. Request an independent
+   whole-change review, then commit and push the branch with a reviewable PR.
+
+Verification includes unknown-value rescue, 15-minute fresh-call evidence with a
+30-minute fire buffer, overdue urgent review, unsafe return legs, eight-seat
+multi-trip evacuation, urgent-small versus later-large rescue, confirmed arrival,
+two-crew synchronization and a plan that fails an explicitly supplied stress case.
+
+### Planner edge-case behavior and operational evidence
+
+The response planner now uses bounded deterministic sequence lookahead, retaining
+`optimal: false` and `dispatch: false`. Its objective remains lexicographic:
+assistance benefit, total people benefit, then asset value. Known dimensions can
+contribute independently; an unknown valuation no longer blocks known human
+benefit and remains explicitly unknown. The default search examines depth 3,
+beam width 8, up to 256 expansions per decision. Optional snapshot-bound
+`operations.search` configures these as `depth`, `beam_width`, `max_expansions`
+(maxima 5, 32, 2048). Joint crew combinations are bounded at 128; transport at
+64 rounds. This is a bounded heuristic, not a guarantee of a globally optimal plan.
+
+Assistance evidence must be current when work starts, including each repeated
+pickup. Its freshness window is independent of the fire safety buffer. The
+15-minute default evidence lifetime therefore no longer conflicts automatically
+with the 30-minute fire buffer. Missing, stale or unanswered evidence remains a
+review need. A predicted fire deadline that cannot be met leaves an explicit
+`urgent_intervention_review` with `human_decision_required` and any qualified
+candidate timing. It does not silently discard the location or authorize an
+unsafe approach. Route changes during synchronized crew waits require replanning.
+
+A transport action can supply `evacuation`:
+
+```json
+{
+  "destination_id": "hall",
+  "node_id": "hall",
+  "unload_min": 2,
+  "available_until_min": 260,
+  "confirmed": true,
+  "safe": true,
+  "source": "confirmed reception and inspected transport route",
+  "places_reserved": 16
+}
+```
+
+Qualified outbound and return routes must be supplied. With a reception ledger,
+mission evidence is additionally constrained by current safe reservations for the
+same asset/destination and snapshot. Repeated journeys restore seats only after
+unloading; actions cannot reserve the same known population twice. Optional
+`required_team_count` reserves qualified crews jointly and synchronizes pickup
+rounds. Missions expose `mission_legs`, `trip_count`, per-crew `delivered_people`
+and whole-mission `mission_delivered_people`. These are **planned arrivals**,
+never observed arrivals. Old transport actions without destination evidence remain
+labelled `pickup_only` with an explicit destination-review need. Their legacy
+protection estimate is not a claim of successful evacuation.
+
+`response.remaining_needs` reconciles confirmed reception arrivals and retains
+property value. Intention and departure are not arrival. Partial groups without
+trusted membership use the maximum known arrived group size, keep assistance
+counts conservative and show review reasons. Optional current-snapshot
+`operations.arrival_group_membership[group_id]` supplies `member_ids`,
+`assisted_member_ids` and `source` for union counting; these identifiers never
+enter public state. Older arrival records require an explicit
+`operations.arrival_baseline_snapshot_ids[asset_id] = original_snapshot_id`
+binding that says current occupancy still represents that original cohort.
+Without that binding, or after released arrival records lose their counts,
+reconciliation requires review. Partial arrivals that change a configured
+transport load require a resized mission; full arrival removes unnecessary
+transport work while retaining property-protection options.
+
+Optional `action.duration_high_min` and forecast `arrival_p10_at` support stress
+checks. Missing bounds or unknown upstream duration produces `unknown`; supplied
+bounds can produce `robust` or `fragile`, without implying a probability or
+operational guarantee. Failed stressed routes/prerequisites propagate downstream.
+Manual reordering invalidates the old sensitivity result. Complete journeys and
+joint missions cannot use the simple single-crew reorder validator; they require
+a coordinated replan. `coverage_by_dimension` separates human and property
+coverage so partial transport cannot masquerade as full population protection.
+
+The UI exposes urgent and ordinary review needs separately, distinguishes pickup
+from complete planned journeys, shows reception/unloading, joint crews, trips and
+uncertainty, and maps only contiguous supplied journey geometry. The synthetic
+end-to-end fixture now includes explicit reception legs for assisted evacuation.
+
+For the three-contact exercise, set `call_limits.max_concurrent_calls` to `2`
+and `call_limits.max_call_starts_per_second` to `1`. All three calls remain in the
+priority queue; at most two may be creating, ringing or active. A terminal result
+frees a slot for the next eligible contact, subject to pacing and the next worker
+tick. Private telephone numbers and local queue data stay outside Git. Preparing
+a queue does not enable outbound calling; the prepared demo has
+`call_mode: "disabled"`.
+
+Validation covers HTTP fire ingestion with an injected deterministic assessment
+model, mixed simulated call outcomes, complete rescue missions, public WebSocket
+updates and restart recovery. `frontend/tests/planner_pipeline_browser.cjs` also
+runs the actual incident server and built React UI without intercepting their
+REST/WebSocket connection. These exercises make no real telephone calls and do
+not establish real-world forecast, valuation or provider performance.
+
+Verification after rebasing onto the shared-map UI (PR #34): 1,281 Python tests
+passed, one skipped, with the existing Starlette/AnyIO deprecation warning;
+80 JavaScript tests passed; frontend lint, formatting and production build passed.
+The 11 browser scenarios include an actual incident-server/React/WebSocket run
+with three assessed locations, unanswered-call escalation, assistance transport
+to reception, visible urgent review and persisted backend state. The two-active
+queue refill was separately exercised with both completed and unanswered endings
+using a mock provider. Real outbound calls remain disabled in the private exercise.

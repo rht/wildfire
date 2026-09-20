@@ -10,12 +10,14 @@ import argparse
 import hashlib
 import json
 import sys
+from copy import deepcopy
+from itertools import combinations
 from pathlib import Path
 
 from .priority_models import number, string_sequence
+from .response_missions import journey, validate_evacuation
 from .response_priority import after_deadline
 from .routing import RoadGraph
-
 
 DIMENSIONS = ('assisted', 'people', 'value')
 ACTIVE_STATUSES = ('informed', 'en_route', 'in_progress')
@@ -69,12 +71,25 @@ def _validate(data):
         number(data[key], key)
     if data['now_min'] > data['horizon_min']:
         raise ValueError('now_min exceeds horizon_min')
+    search = data.get('search', {})
+    if not isinstance(search, dict) or set(search) - {'depth', 'beam_width', 'max_expansions'}:
+        raise ValueError('invalid search configuration')
+    for key, limit in (('depth', 5), ('beam_width', 32), ('max_expansions', 2048)):
+        if key in search:
+            _integer(search[key], key)
+            if not 1 <= search[key] <= limit:
+                raise ValueError('search limit out of range')
     assets = _indexed(data['assets'], 'asset_id')
     teams = _indexed(data['teams'], 'team_id')
     actions = _indexed(data['actions'], 'action_id')
     readiness = _indexed(data.get('readiness', []), 'asset_id')
     for asset in assets.values():
         _text(asset['node_id'], 'node_id')
+        if 'deadline_early_min' in asset:
+            number(asset['deadline_early_min'], 'deadline_early_min', nullable=True)
+            if (asset['deadline_early_min'] is not None and asset['deadline_min'] is not None
+                    and asset['deadline_early_min'] > asset['deadline_min']):
+                raise ValueError('early deadline exceeds nominal deadline')
         for key in (*DIMENSIONS, 'deadline_min'):
             number(asset[key], key, nullable=True)
         for key in ('people', 'assisted'):
@@ -99,6 +114,18 @@ def _validate(data):
         if action['duration_min'] <= 0:
             raise ValueError('duration_min must be positive')
         number(action['deadline_min'], 'deadline_min', nullable=True)
+        count = action.get('required_team_count', 1)
+        _integer(count, 'required_team_count')
+        if count < 1:
+            raise ValueError('required_team_count must be positive')
+        if action.get('duration_high_min') is not None:
+            number(action['duration_high_min'], 'duration_high_min')
+            if action['duration_high_min'] < action['duration_min']:
+                raise ValueError('high duration is less than nominal duration')
+        if 'evacuation' in action:
+            validate_evacuation(action['evacuation'], number, _integer, _boolean, _text)
+            if action['transport_people'] <= 0:
+                raise ValueError('evacuation requires transport_people')
         _integer(action['transport_people'], 'transport_people')
         _boolean(action['readiness_required'], 'readiness_required')
         string_sequence(action['capabilities'], 'capabilities')
@@ -229,6 +256,8 @@ def _action_version(action):
               'transport_people', 'readiness_required')}
     fields.update(requires=sorted(action['requires']), capabilities=sorted(action['capabilities']),
                   effects=_public_effects(action))
+    fields.update({key: action[key] for key in ('evacuation', 'required_team_count',
+                  'duration_high_min') if key in action})
     return hashlib.sha256(json.dumps(fields, sort_keys=True).encode()).hexdigest()
 
 
@@ -238,7 +267,14 @@ class _Planner:
         self.assets, self.teams, self.actions, self.readiness = _validate(data)
         self.routes = _Routes(data, graph)
         self.coverage = dict.fromkeys(self.assets, 0.0)
+        self.dimension_coverage = {key: dict.fromkeys(DIMENSIONS, 0.0) for key in self.assets}
+        self.search = dict(depth=3, beam_width=8, max_expansions=256)
+        self.search.update(data.get('search', {}))
         self.done = {}
+        self.stress_done = {}
+        self.stress_unknown = set()
+        self.stress_failed = set()
+        self.transport_reserved = dict.fromkeys(self.assets, 0)
         self.reserved = set()
         self.review = []
         self.states = {key: dict(node=team['start_node_id'],
@@ -252,7 +288,7 @@ class _Planner:
         if asset['deadline_min'] is None or action['deadline_min'] is None:
             reasons.append('unknown_deadline')
         targets = [self.assets[e['asset_id']] for e in action['effects']]
-        if any(any(a[key] is None for key in DIMENSIONS) for a in targets):
+        if targets and all(all(a[key] is None for key in DIMENSIONS) for a in targets):
             reasons.append('unknown_needs')
         if any(a['deadline_min'] is None for a in targets):
             reasons.append('unknown_deadline')
@@ -261,75 +297,191 @@ class _Planner:
         return reasons
 
     def candidate(self, action, team_id):
-        state, team = self.states[team_id], self.teams[team_id]
+        rows, reasons = self.group_candidate(action, (team_id,))
+        return (rows[0] if rows else None), reasons
+
+    def group_candidate(self, action, team_ids, *, attempts=None):
         reasons = self._need_reasons(action)
-        if state['locked']:
-            reasons.append('committed_team')
-        if not team['available']:
-            reasons.append('team_unavailable')
-        if not set(action['capabilities']) <= set(team['capabilities']):
-            reasons.append('capabilities')
-        if action['transport_people'] > state['capacity']:
-            reasons.append('transport_capacity')
+        people = self.assets[action['asset_id']]['people']
+        if people is not None and action['transport_people'] > people:
+            reasons.append('transport_people_exceeds_people')
+        already = self.transport_reserved[action['asset_id']]
+        if action['transport_people'] and already:
+            reasons.append('transport_people_exceeds_remaining'
+                           if people is not None and already + action['transport_people'] > people
+                           else 'transport_population_overlap_review')
+        if len(team_ids) != action.get('required_team_count', 1):
+            reasons.append('required_teams_unavailable')
+        for key in team_ids:
+            state, team = self.states[key], self.teams[key]
+            if state['locked']:
+                reasons.append('committed_team')
+            if not team['available']:
+                reasons.append('team_unavailable')
+            if not set(action['capabilities']) <= set(team['capabilities']):
+                reasons.append('capabilities')
         if not set(action['requires']) <= self.done.keys():
             reasons.append('prerequisites')
+        if 'evacuation' not in action and action['transport_people'] > sum(
+                self.states[key]['capacity'] for key in team_ids):
+            reasons.append('transport_capacity')
         if reasons:
-            return None, reasons
-        # Waiting at the current node is conservative; site arrival never precedes dependencies.
-        depart = max(state['time'], *(self.done[k] for k in action['requires']), 0)
+            return None, sorted(set(reasons))
         target = self.assets[action['asset_id']]
-        leg = self.routes.leg(state['node'], target['node_id'], depart)
-        if leg is None:
-            return None, ['route_unavailable']
-        start = depart + leg['minutes']
+        depart = max([self.states[key]['time'] for key in team_ids] +
+                     [self.done[key] for key in action['requires']] + [0])
+        arrivals = []
+        for key in team_ids:
+            state = self.states[key]
+            leg = self.routes.leg(state['node'], target['node_id'], depart)
+            if leg is None:
+                return None, ['route_unavailable']
+            arrivals.append((key, leg))
+        start = max(depart + leg['minutes'] for _, leg in arrivals)
         finish = start + action['duration_min']
-        deadline = min(self.data['horizon_min'], team['available_until_min'],
-                       target['deadline_min'], action['deadline_min'])
-        if after_deadline(finish + self.data['buffer_min'], deadline):
-            return None, ['deadline']
+        deadline = min(self.data['horizon_min'], target['deadline_min'], action['deadline_min'],
+                       *(self.teams[key]['available_until_min'] for key in team_ids))
         outcome = self.readiness.get(action['asset_id'])
         if action['readiness_required'] or (outcome and action['transport_people']):
             if (outcome is None or outcome['status'] != 'assistance_required'
                     or outcome['observed_min'] > self.data['now_min']
-                    or finish + self.data['buffer_min'] >= outcome['valid_until_min']):
+                    or start >= outcome['valid_until_min']):
                 return None, ['readiness_review']
-        row = dict(action_id=action['action_id'], asset_id=action['asset_id'], team_id=team_id,
-                   scenario_id=self.data['scenario_id'], snapshot_id=self.data['snapshot_id'],
-                   action_version=_action_version(action), status='proposed',
-                   from_node=state['node'], to_node=target['node_id'], depart_min=depart,
-                   travel_min=leg['minutes'], start_min=start, finish_min=finish,
-                   prerequisites=sorted(action['requires']), effects=_public_effects(action),
-                   transport_people=action['transport_people'], route_source=leg['source'],
-                   duration_min=action['duration_min'], deadline_min=deadline,
-                   required_capabilities=sorted(action['capabilities']),
-                   readiness_required=action['readiness_required'], route_status='qualified')
-        if isinstance(action.get('action'), str) and action['action'].strip():
-            row['action'] = action['action']
-        if outcome:
-            row['readiness'] = {k: outcome[k] for k in ('asset_id', 'status', 'observed_min',
-                                'valid_until_min', 'source', 'request_id')}
-        for key in ('path_lonlat', 'path_nodes'):
-            value = leg.get(key)
-            if value is not None:
-                row[key] = value
-        return row, []
+        unknown = sorted({key for e in action['effects'] for key in DIMENSIONS
+                          if self.assets[e['asset_id']][key] is None})
+        rows = []
+        remaining = action['transport_people']
+        for key, leg in arrivals:
+            count = min(remaining, self.states[key]['capacity'])
+            remaining -= count
+            # Synchronize arrival by waiting at the known departure node.
+            actual_depart = start - leg['minutes']
+            synchronized_leg = self.routes.leg(self.states[key]['node'], target['node_id'], actual_depart)
+            if synchronized_leg is None:
+                return None, ['route_unavailable']
+            if synchronized_leg != leg:
+                return None, ['synchronized_route_changed']
+            row = dict(action_id=action['action_id'], asset_id=action['asset_id'], team_id=key,
+                       scenario_id=self.data['scenario_id'], snapshot_id=self.data['snapshot_id'],
+                       action_version=_action_version(action), status='proposed',
+                       from_node=self.states[key]['node'], to_node=target['node_id'],
+                       depart_min=actual_depart, travel_min=leg['minutes'], start_min=start,
+                       finish_min=finish, prerequisites=sorted(action['requires']),
+                       effects=_public_effects(action), transport_people=count,
+                       route_source=leg['source'], duration_min=action['duration_min'],
+                       deadline_min=deadline, required_capabilities=sorted(action['capabilities']),
+                       readiness_required=action['readiness_required'], route_status='qualified',
+                       unknown_dimensions=unknown)
+            if len(team_ids) > 1:
+                row.update(team_ids=list(team_ids), required_team_count=len(team_ids),
+                           benefit_owner_team_id=team_ids[0], mission_id=action['action_id'])
+            if action['transport_people']:
+                row['mission_status'] = 'pickup_only'
+            if isinstance(action.get('action'), str) and action['action'].strip():
+                row['action'] = action['action']
+            if outcome:
+                row['readiness'] = {k: outcome[k] for k in ('asset_id', 'status', 'observed_min',
+                                    'valid_until_min', 'source', 'request_id')}
+            row.update({k: leg[k] for k in ('path_lonlat', 'path_nodes') if k in leg})
+            rows.append(row)
+        if attempts is not None:
+            attempts.extend(dict(team_id=r['team_id'], start_min=start, finish_min=finish,
+                                 route_status='qualified') for r in rows)
+        approach_rows = deepcopy(rows)
+        if 'evacuation' in action:
+            rows, reasons = journey(action, rows, self.states, self.teams, self.routes,
+                                   action['duration_min'], self.data['horizon_min'], self.data['buffer_min'])
+            if rows is None:
+                return None, reasons
+            finish = rows[0]['finish_min']
+        if after_deadline(finish + self.data['buffer_min'], deadline):
+            return None, ['deadline']
+        sensitivity = self.sensitivity(action, approach_rows, rows, target, deadline)
+        for row in rows:
+            row['sensitivity'] = sensitivity
+        if not any(self.priority(action, rows[0])[:3]):
+            return None, ['no_incremental_benefit']
+        return rows, []
 
-    def gain(self, action, finish=0):
+    def sensitivity(self, action, approaches, rows, target, deadline):
+        high, early = action.get('duration_high_min'), target.get('deadline_early_min')
+        info = dict(status='unknown', duration_high_min=high, deadline_early_min=early,
+                    reasons=[])
+        if (any(self.states[r['team_id']].get('stress_failed') for r in rows)
+                or self.stress_failed.intersection(action['requires'])):
+            info.update(status='fragile', reasons=['upstream_stress_infeasible'])
+            return info
+        if (high is None
+                or any(self.states[r['team_id']].get('stress_unknown') for r in rows)
+                or self.stress_unknown.intersection(action['requires'])):
+            info['reasons'] = ['uncertainty_bounds_missing']
+            return info
+        stress_rows = deepcopy(approaches)
+        # Propagate supplied high-duration delay through earlier work on each crew.
+        delay = max([self.states[r['team_id']].get('stress_delay', 0) for r in rows] +
+                    [max(0, self.stress_done.get(key, self.done[key]) - self.done[key])
+                     for key in action['requires']])
+        for row in stress_rows:
+            row['depart_min'] += delay
+            row['start_min'] += delay
+        stress_finish = stress_rows[0]['start_min'] + high
+        reasons = []
+        for row in stress_rows:
+            stressed_leg = self.routes.leg(row['from_node'], row['to_node'], row['depart_min'])
+            if stressed_leg is None:
+                reasons.append('stress_route_unavailable')
+            elif (stressed_leg['minutes'] != row['travel_min']
+                  or stressed_leg.get('path_nodes') != row.get('path_nodes')
+                  or stressed_leg['source'] != row['route_source']):
+                reasons.append('stress_route_changed')
+            if row.get('readiness') and row['start_min'] >= row['readiness']['valid_until_min']:
+                reasons.append('stress_readiness_expired')
+        if 'evacuation' in action:
+            journeys, blocked = journey(action, stress_rows, self.states, self.teams, self.routes,
+                                       high, self.data['horizon_min'], self.data['buffer_min'])
+            reasons.extend(blocked)
+            if journeys:
+                stress_finish = journeys[0]['finish_min']
+        stress_deadline = min(deadline, early) if early is not None else deadline
+        if after_deadline(stress_finish + self.data['buffer_min'], stress_deadline):
+            reasons.append('stress_deadline')
+        if early is None:
+            reasons.append('uncertainty_bounds_missing')
+        info.update(status='fragile' if set(reasons) - {'uncertainty_bounds_missing'}
+                    else 'unknown' if early is None else 'robust', stress_finish_min=stress_finish,
+                    stress_deadline_min=stress_deadline, reasons=sorted(set(reasons)))
+        return info
+
+    def _effect_coverage(self, row, effect, dimension):
+        amount = effect['coverage']
+        if (row.get('mission_status') == 'complete_evacuation' and dimension != 'value'
+                and effect['asset_id'] == row['asset_id']):
+            people = self.assets[effect['asset_id']]['people']
+            # Delivery count is exact; assistance membership is not inferable for partial loads.
+            delivered = row['mission_delivered_people']
+            if people is None or people <= 0:
+                return 0
+            amount = min(amount, delivered / people)
+            if dimension == 'assisted' and delivered < people:
+                amount = 0
+        return amount
+
+    def gain(self, action, finish=0, row=None):
         gains = [0.0, 0.0, 0.0]
         for effect in action['effects']:
             asset = self.assets[effect['asset_id']]
             if (not effect['confirmed'] or asset['deadline_min'] is None
-                    or any(asset[k] is None for k in DIMENSIONS)
                     or after_deadline(finish + self.data['buffer_min'], asset['deadline_min'])):
                 continue
-            delta = max(0, effect['coverage'] - self.coverage[effect['asset_id']])
             for i, key in enumerate(DIMENSIONS):
-                gains[i] += delta * asset[key]
+                if asset[key] is not None:
+                    coverage = self._effect_coverage(row, effect, key) if row else effect['coverage']
+                    gains[i] += max(0, coverage - self.dimension_coverage[effect['asset_id']][key]) * asset[key]
         return tuple(gains)
 
     def priority(self, action, row):
-        """Best downstream benefit is a heuristic hint, never feasibility or optimality proof."""
-        best = self.gain(action, row['finish_min'])
+        """Prerequisite hints preserve productive chains in a bounded frontier."""
+        best = self.gain(action, row['finish_min'], row)
         reachable = {action['action_id']}
         changed = True
         while changed:
@@ -340,7 +492,8 @@ class _Planner:
                     changed = True
                     if not self._need_reasons(child):
                         best = max(best, self.gain(child, row['finish_min'] + child['duration_min']))
-        return (*(-x for x in best), row['finish_min'], row['action_id'], row['team_id'])
+        return (*(-x for x in best), row['sensitivity']['status'] == 'fragile',
+                row['finish_min'], row['action_id'], row['team_id'])
 
     def credit(self, row):
         finish = row.get('actual_finish_min', row['finish_min'])
@@ -348,18 +501,134 @@ class _Planner:
         for effect in row['effects']:
             asset = self.assets[effect['asset_id']]
             if (not effect['confirmed'] or asset['deadline_min'] is None
-                    or any(asset[k] is None for k in DIMENSIONS)
                     or after_deadline(finish + self.data['buffer_min'], asset['deadline_min'])):
                 continue
-            delta = max(0, effect['coverage'] - self.coverage[effect['asset_id']])
-            self.coverage[effect['asset_id']] += delta
-            if delta:
-                gained[effect['asset_id']] = delta
+            aid = effect['asset_id']
+            old = self.coverage[aid]
+            for key in DIMENSIONS:
+                if asset[key] is not None:
+                    self.dimension_coverage[aid][key] = max(self.dimension_coverage[aid][key],
+                                                           self._effect_coverage(row, effect, key))
+            self.coverage[aid] = max(self.dimension_coverage[aid].values())
+            if self.coverage[aid] > old:
+                gained[aid] = self.coverage[aid] - old
         row['coverage_gained'] = gained
 
+    def candidates(self):
+        result = []
+        for key, action in self.actions.items():
+            if key in self.reserved:
+                continue
+            # Bound combinatorial joint-team matching conservatively and deterministically.
+            for index, ids in enumerate(combinations(self.teams, action.get('required_team_count', 1))):
+                if index >= 128:
+                    break
+                rows, _ = self.group_candidate(action, ids)
+                if rows:
+                    result.append((self.priority(action, rows[0]), rows))
+        return sorted(result, key=lambda item: item[0])
+
+    def apply(self, rows, *, record=False):
+        first = rows[0]
+        self.reserved.add(first['action_id'])
+        self.transport_reserved[first['asset_id']] += self.actions[first['action_id']]['transport_people']
+        if first['sensitivity']['status'] == 'fragile':
+            self.stress_failed.add(first['action_id'])
+        self.done[first['action_id']] = first['finish_min']
+        stress_finish = first.get('sensitivity', {}).get('stress_finish_min')
+        if stress_finish is None:
+            self.stress_unknown.add(first['action_id'])
+        else:
+            self.stress_done[first['action_id']] = stress_finish
+        self.credit(first)
+        for index, row in enumerate(rows):
+            if index:
+                row['coverage_gained'] = {}
+            state = self.states[row['team_id']]
+            state.update(node=row['to_node'], time=row['finish_min'],
+                         capacity=state['capacity'] if row.get('mission_status') == 'complete_evacuation'
+                         else state['capacity'] - row['transport_people'])
+            if row['sensitivity']['status'] == 'fragile':
+                state['stress_failed'] = True
+            if self.actions[row['action_id']].get('duration_high_min') is None:
+                state['stress_unknown'] = True
+            stress_finish = row.get('sensitivity', {}).get('stress_finish_min')
+            if stress_finish is not None:
+                state['stress_delay'] = max(0, stress_finish - row['finish_min'])
+            if record:
+                state['tasks'].append(row)
+        if record:
+            reasons = ['unknown_' + key for key in first['unknown_dimensions']]
+            if first.get('mission_status') == 'pickup_only':
+                reasons.append('evacuation_details_missing')
+            if first['sensitivity']['status'] == 'fragile':
+                reasons.append('fragile_plan')
+            if reasons:
+                self.review.append(dict(action_id=first['action_id'], asset_id=first['asset_id'],
+                    team_id=first['team_id'], reason='intervention_review', reasons=reasons,
+                    human_decision_required=True, unknown_dimensions=first['unknown_dimensions']))
+
+    def objective(self):
+        return tuple(sum(self.dimension_coverage[aid][key] * asset[key]
+                         for aid, asset in self.assets.items() if asset[key] is not None)
+                     for key in DIMENSIONS)
+
+    def checkpoint(self):
+        return deepcopy((self.states, self.coverage, self.dimension_coverage, self.done, self.reserved,
+                         self.stress_done, self.stress_unknown, self.stress_failed, self.transport_reserved))
+
+    def restore(self, checkpoint):
+        (self.states, self.coverage, self.dimension_coverage, self.done, self.reserved,
+         self.stress_done, self.stress_unknown, self.stress_failed, self.transport_reserved) = deepcopy(checkpoint)
+
+    def choose(self, candidates):
+        """Bounded sequence comparison, with no optimality claim or assumed future work."""
+        root = self.checkpoint()
+        # Each frontier entry carries a concrete first choice and its realized objective.
+        frontier = [(root, None, 0, ())]
+        best = None
+        expansions = 0
+        for _ in range(self.search['depth']):
+            next_frontier = []
+            for state, first, fragile, trace in frontier:
+                self.restore(state)
+                options = candidates if first is None else self.candidates()
+                for priority, rows in options[:self.search['beam_width']]:
+                    if expansions >= self.search['max_expansions']:
+                        break
+                    self.restore(state)
+                    self.apply(deepcopy(rows))
+                    expansions += 1
+                    choice = (priority, rows) if first is None else first
+                    risk = fragile + (rows[0]['sensitivity']['status'] == 'fragile')
+                    sequence = trace + (priority,)
+                    score = (*(-v for v in self.objective()[:2]), risk,
+                             -self.objective()[2], sequence)
+                    entry = (self.checkpoint(), choice, risk, sequence)
+                    if best is None or score < best[0]:
+                        best = (score, choice)
+                    next_frontier.append((score, entry))
+            if not next_frontier or expansions >= self.search['max_expansions']:
+                break
+            frontier = [entry for _, entry in sorted(next_frontier, key=lambda x: x[0])[:self.search['beam_width']]]
+        self.restore(root)
+        return best[1] if best else candidates[0]
+
     def load_commitments(self):
-        commitments = _indexed(self.data.get('committed', []), 'action_id')
-        rows = sorted(commitments.values(), key=lambda r: (r['depart_min'], r['action_id']))
+        commitments = self.data.get('committed', [])
+        seen = {}
+        for original in commitments:
+            key = original['action_id']
+            siblings = seen.setdefault(key, [])
+            if siblings:
+                common = ('asset_id', 'scenario_id', 'snapshot_id', 'action_version', 'status',
+                          'start_min', 'team_ids', 'required_team_count', 'benefit_owner_team_id', 'effects')
+                if (original.get('required_team_count', 1) <= 1
+                        or original['team_id'] in [r['team_id'] for r in siblings]
+                        or any(original.get(k) != siblings[0].get(k) for k in common)):
+                    raise ValueError('inconsistent duplicate committed action')
+            siblings.append(original)
+        rows = sorted(commitments, key=lambda r: (r['depart_min'], r['action_id'], r['team_id']))
         for original in rows:
             fields = ('action_id', 'asset_id', 'team_id', 'scenario_id', 'snapshot_id',
                       'action_version', 'status', 'from_node', 'to_node', 'depart_min',
@@ -389,6 +658,41 @@ class _Planner:
                 _text(source, 'route_source')
             row['route_source'] = list(source) if isinstance(source, list) else source
             self.reserved.add(row['action_id'])
+            if row['asset_id'] in self.transport_reserved:
+                self.transport_reserved[row['asset_id']] += row['transport_people']
+            action = self.actions.get(row['action_id'])
+            advanced = (original.get('mission_status') == 'complete_evacuation'
+                        or original.get('required_team_count', 1) > 1
+                        or (action is not None and ('evacuation' in action
+                            or action.get('required_team_count', 1) > 1)))
+            if advanced:
+                # Active or completed mission ledgers require arrival reconciliation by the
+                # incident adapter. Preserve all reservations without re-crediting delivery.
+                for name in ('mission_status', 'mission_legs', 'delivered_people', 'mission_delivered_people',
+                             'evacuation', 'trip_count', 'team_ids', 'required_team_count',
+                             'benefit_owner_team_id', 'mission_id', 'sensitivity', 'unknown_dimensions'):
+                    if name in original:
+                        row[name] = deepcopy(original[name])
+                members = original.get('team_ids', [row['team_id']])
+                string_sequence(members, 'committed team_ids')
+                if row['team_id'] not in members or len(set(members)) != len(members):
+                    raise ValueError('invalid committed team membership')
+                if row['status'] == 'completed':
+                    number(original.get('actual_finish_min'), 'actual_finish_min')
+                    if original['actual_finish_min'] > self.data['now_min']:
+                        raise ValueError('actual_finish_min must not exceed now_min')
+                    row['actual_finish_min'] = original['actual_finish_min']
+                for member in members:
+                    if member not in self.states:
+                        self.states[member] = dict(node=row['to_node'], time=self.data['now_min'],
+                                                  capacity=0, tasks=[], locked=True)
+                    self.states[member]['locked'] = True
+                row['coverage_gained'] = {}
+                self.states[row['team_id']]['tasks'].append(row)
+                self.review.append(dict(action_id=row['action_id'], asset_id=row['asset_id'],
+                    team_id=row['team_id'], reason='committed_review',
+                    reasons=['advanced_commitment_review'], human_decision_required=True))
+                continue
             reasons = []
             team_id = row['team_id']
             if team_id not in self.states:
@@ -447,50 +751,48 @@ class _Planner:
 
     def run(self):
         self.load_commitments()
+        method = 'bounded deterministic prerequisite-aware sequence lookahead'
         while True:
-            candidates = []
-            for key, action in self.actions.items():
-                if key in self.reserved:
-                    continue
-                for team_id in self.teams:
-                    row, _ = self.candidate(action, team_id)
-                    if row is not None:
-                        candidates.append((self.priority(action, row), row))
+            candidates = self.candidates()
             if not candidates:
                 break
-            priority, row = min(candidates, key=lambda candidate: candidate[0])
-            row['ordering_evidence'] = dict(
-                method='deterministic prerequisite-aware greedy heuristic',
-                assisted_gain=-priority[0], people_gain=-priority[1], value_gain=-priority[2],
-                candidate_count=len(candidates), selection_rank=len(self.reserved) + 1,
-                tie_break='earliest finish, action ID, team ID',
-                reason='Highest lexicographic downstream assisted, people and value benefit among feasible candidates')
-            self.reserved.add(row['action_id'])
-            self.done[row['action_id']] = row['finish_min']
-            self.credit(row)
-            state = self.states[row['team_id']]
-            state.update(node=row['to_node'], time=row['finish_min'],
-                         capacity=state['capacity'] - row['transport_people'])
-            state['tasks'].append(row)
+            _priority, rows = self.choose(candidates)
+            gain = self.gain(self.actions[rows[0]['action_id']], rows[0]['finish_min'], rows[0])
+            for row in rows:
+                row['ordering_evidence'] = dict(method=method,
+                    assisted_gain=gain[0], people_gain=gain[1], value_gain=gain[2],
+                    candidate_count=len(candidates), selection_rank=len(self.reserved) + 1,
+                    tie_break='supplied stress robustness, prerequisite benefit, earliest finish, action ID, team ID',
+                    reason='Best realized lexicographic benefit within bounded candidate sequences',
+                    search_limits=self.search)
+            self.apply(rows, record=True)
         unassigned = []
         for key, action in self.actions.items():
-            if key not in self.reserved:
-                reasons = set()
-                for team_id in self.teams:
-                    _, blocked = self.candidate(action, team_id)
-                    reasons.update(blocked)
-                unassigned.append(dict(action_id=key, asset_id=action['asset_id'],
-                                       reasons=sorted(reasons or {'no_teams'})))
+            if key in self.reserved:
+                continue
+            reasons, attempts = set(), []
+            groups = combinations(self.teams, action.get('required_team_count', 1))
+            for index, ids in enumerate(groups):
+                if index >= 128:
+                    reasons.add('joint_candidate_limit')
+                    break
+                _, blocked = self.group_candidate(action, ids, attempts=attempts)
+                reasons.update(blocked)
+            if action.get('required_team_count', 1) > 1:
+                reasons.add('required_teams_unavailable')
+            unassigned.append(dict(action_id=key, asset_id=action['asset_id'],
+                reason='urgent_intervention_review', human_decision_required=True,
+                reasons=sorted(reasons or {'no_teams'}), candidate_attempts=attempts))
+        objective = dict(zip((key + '_units' for key in DIMENSIONS), self.objective()))
         return dict(schema_version='multi-response-plan-1', scenario_id=self.data['scenario_id'],
                     snapshot_id=self.data['snapshot_id'], now_min=self.data['now_min'],
-                    optimal=False, dispatch=False, method='deterministic prerequisite-aware greedy heuristic',
+                    optimal=False, dispatch=False, method=method, search_limits=self.search,
                     teams=[dict(team_id=key, tasks=state['tasks'], locked=state['locked'],
                                 remaining_transport_capacity=state['capacity'],
                                 planning_context=self.review_context(key))
                            for key, state in sorted(self.states.items())],
-                    coverage=self.coverage, objective={key+'_units': sum(
-                        self.coverage[aid] * asset[key] for aid, asset in self.assets.items()
-                        if asset[key] is not None) for key in DIMENSIONS},
+                    coverage=self.coverage, objective=objective,
+                    coverage_by_dimension=self.dimension_coverage,
                     unassigned=unassigned, review=self.review + unassigned)
 
     def review_context(self, team_id):
@@ -561,7 +863,10 @@ def plan_multi_response(data, *, graph=None):
     ``data`` follows multi-response-input-1 in readme.md. Supply either directed
     ``routes`` or a qualified RoadGraph, never both. Unknown route safety is unusable.
     """
-    return _Planner(data, graph).run()
+    result = _Planner(data, graph).run()
+    # Finite inputs can still overflow a summed objective; never publish invalid JSON.
+    json.dumps(result, allow_nan=False)
+    return result
 
 
 def main(argv=None):
