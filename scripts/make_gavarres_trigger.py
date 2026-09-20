@@ -17,7 +17,9 @@ Writes fixtures/incidents/gavarres_real/
 
 The recorded Deepfire fire-spread run (fixtures/fire/deepfire/real/*fire-spread-simulation*) is NOT attached:
 it was run on 2026-09-19 and `assess_fire` rejects a forecast issued after the trigger's July `as_of`.
-No forecast is fabricated; every asset stays `forecast_unavailable`.
+Instead each trigger carries a `forecast` (forecast-input-1) lifted verbatim from the paired committed snapshot
+gavarres_real_000N.json: the project's CA-ensemble estimates (labelled enrichment, not validated, not a provider
+forecast) for every asset with an arrival, issued at the perimeter time. Nothing is inferred from distance.
 
 Deterministic: same inputs -> byte-identical files. Never reads the gitignored data/.
 """
@@ -27,6 +29,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -69,6 +72,31 @@ def catalog_row(asset: dict) -> dict:
     return row
 
 
+def snapshot_assets(path: Path) -> list[dict]:
+    return json.loads(path.read_text(encoding="utf-8"))["assets"]
+
+
+FORECAST_NOTE = ("computed offline by the project's CA ensemble from recorded wind model data valid at this "
+                 "perimeter's time; issued_at is the perimeter time, not the build time; labelled enrichment, "
+                 "not validated, not a provider forecast")
+
+
+def build_forecast(trigger: dict, assets: list[dict]) -> dict:
+    """forecast-input-1 lifted verbatim from the paired snapshot: one estimate per asset with an arrival."""
+    covered = [a for a in assets if a.get("arrival_p10_at") is not None]
+    if not covered:
+        raise SystemExit(f"{trigger['trigger_id']}: paired snapshot has no asset with arrival_p10_at")
+    sources = {a["forecast_source"] for a in covered}
+    horizons = {a["forecast_horizon_at"] for a in covered}
+    if len(sources) != 1 or len(horizons) != 1:
+        raise SystemExit(f"{trigger['trigger_id']}: mixed forecast_source / forecast_horizon_at in snapshot")
+    return {"schema_version": "forecast-input-1", "forecast_source": sources.pop(), "input_mode": "recorded",
+            "issued_at": trigger["as_of"], "received_at": trigger["as_of"], "forecast_horizon_at": horizons.pop(),
+            "basis": "p10", "note": FORECAST_NOTE,
+            "estimates": {a["asset_id"]: {k: a[k] for k in ("arrival_p10_at", "arrival_p50_at", "burn_probability")}
+                          for a in sorted(covered, key=lambda a: a["asset_id"])}}
+
+
 def build_catalog(files=SNAPSHOT_FILES) -> list[dict]:
     rows = {}
     for path in files:
@@ -93,6 +121,16 @@ CREWS = (
 SHIFT_MIN = 720          # each crew is available for 12 h from the trigger
 TARGETS = 3              # located catalog assets nearest the perimeter that get a fictional action
 ROUTE_KMH = 40           # straight-line speed assumed for the fictional routes
+MIN_LEAD_MIN = 120       # a target's forecast arrival must be at least this long after the trigger
+# FICTIONAL assisted-evacuation counts by asset type (capped at the estimated occupancy when known).
+ASSISTED_BY_TYPE = {"care_home": 4, "hospital": 4, "school": 2, "campsite": 2}
+ASSISTED_SOURCE = "FICTIONAL assisted counts by asset type (care_home/hospital 4, school/campsite 2, else 0)"
+
+
+def assisted_count(row: dict) -> int:
+    count = ASSISTED_BY_TYPE.get(row.get("asset_type"), 0)
+    occupancy = row.get("estimated_occupancy")
+    return count if occupancy is None else min(count, int(occupancy))
 
 
 def _km(lat1, lon1, lat2, lon2) -> float:
@@ -103,12 +141,22 @@ def _km(lat1, lon1, lat2, lon2) -> float:
     return 2 * 6371 * asin(sqrt(h))
 
 
-def nearest_assets(fire: dict, catalog: list[dict], count: int = TARGETS) -> list[dict]:
-    """The `count` located catalog rows nearest the perimeter (ties broken by asset_id); none inside it."""
+def nearest_assets(fire: dict, catalog: list[dict], forecast: dict, as_of, count: int = TARGETS) -> list[dict]:
+    """The `count` located catalog rows nearest the perimeter (ties broken by asset_id) that the planner can
+    schedule: outside the perimeter, known occupancy, and a forecast arrival >= MIN_LEAD_MIN after as_of."""
     geometry = shape(fire["geometry"])
+    earliest = as_of + timedelta(minutes=MIN_LEAD_MIN)
+    estimates = forecast["estimates"]
+
+    def eligible(r):
+        est = estimates.get(r["asset_id"])
+        return (r["latitude"] is not None and r["longitude"] is not None
+                and r.get("estimated_occupancy") is not None and est is not None
+                and utc(est["arrival_p10_at"]) >= earliest
+                and not geometry.contains(Point(r["longitude"], r["latitude"])))
+
     ranked = sorted((geometry.distance(Point(r["longitude"], r["latitude"])), r["asset_id"], r)
-                    for r in catalog if r["latitude"] is not None and r["longitude"] is not None
-                    and not geometry.contains(Point(r["longitude"], r["latitude"])))
+                    for r in catalog if eligible(r))
     return [r for _, _, r in ranked[:count]]
 
 
@@ -117,7 +165,7 @@ def build_operations(trigger: dict, catalog: list[dict], epoch, sequence: int) -
     as_of = utc(trigger["as_of"])
     elapsed = round((as_of - epoch).total_seconds() / 60)
     horizon = elapsed + SHIFT_MIN
-    targets = nearest_assets(trigger["fire"], catalog)
+    targets = nearest_assets(trigger["fire"], catalog, trigger["forecast"], as_of)
     teams, nodes, routes = [], {}, []
     for team_id, lat, lon, capabilities, capacity, note in CREWS:
         base = f"base-{team_id}"
@@ -135,15 +183,28 @@ def build_operations(trigger: dict, catalog: list[dict], epoch, sequence: int) -
                            "confirmed": True, "safe": True, "available_until_min": horizon,
                            "source": "fictional straight-line route, not an inspected road",
                            "path_lonlat": [[lon, lat], [asset["longitude"], asset["latitude"]]]})
+    for src in targets:                       # target-to-target legs so one crew can chain actions
+        for dst in targets:
+            if src["asset_id"] != dst["asset_id"]:
+                routes.append({"from_node": src["asset_id"], "to_node": dst["asset_id"],
+                               "minutes": max(1, round(_km(src["latitude"], src["longitude"], dst["latitude"],
+                                                           dst["longitude"]) / ROUTE_KMH * 60)),
+                               "confirmed": True, "safe": True, "available_until_min": horizon,
+                               "source": "fictional straight-line route, not an inspected road",
+                               "path_lonlat": [[src["longitude"], src["latitude"]],
+                                               [dst["longitude"], dst["latitude"]]]})
     actions = [{"action_id": f"protect-{a['asset_id']}", "asset_id": a["asset_id"], "duration_min": 30,
                 "deadline_min": horizon, "requires": [], "capabilities": ["protection"],
                 "transport_people": 0, "readiness_required": False,
                 "effects": [{"asset_id": a["asset_id"], "coverage": 1, "confirmed": True,
                              "source": "fictional protection effect, not predicted lives saved"}]}
                for a in targets]
+    assisted = {r["asset_id"]: assisted_count(r) for r in catalog
+                if r["latitude"] is not None and r["longitude"] is not None}
     return {"snapshot_id": f"{SCENARIO_ID}-{sequence:04d}", "horizon_min": horizon,
-            "source": "FICTIONAL crews and routes invented for the demo; not a real deployment",
-            "teams": teams, "road_nodes": nodes, "routes": routes, "actions": actions,
+            "source": "FICTIONAL crews, routes and assisted counts invented for the demo; not a real deployment",
+            "note": ASSISTED_SOURCE,
+            "assisted": assisted, "teams": teams, "road_nodes": nodes, "routes": routes, "actions": actions,
             "readiness_validity_min": 60}
 
 
@@ -157,6 +218,7 @@ def build_triggers(catalog: list[dict] | None = None) -> list[dict]:
                  "as_of": as_of.isoformat(), "fire": fire}
                 for n, (fire, as_of) in enumerate(fires, start=1)]
     for n, trigger in enumerate(triggers, start=1):
+        trigger["forecast"] = build_forecast(trigger, snapshot_assets(SNAPSHOT_FILES[n - 1]))
         trigger["operations"] = build_operations(trigger, catalog, epoch, n)
     return triggers
 
@@ -186,7 +248,8 @@ def main(argv=None) -> int:
         body = json.loads(path.read_text(encoding="utf-8"))
         detail = (f"{len(body)} rows" if isinstance(body, list) else
                   f"as_of {body['as_of']} observed {body['fire']['observed_at']} "
-                  f"{len(body['operations']['teams'])} fictional crews" if "fire" in body else "")
+                  f"{len(body['operations']['teams'])} fictional crews "
+                  f"{len(body['forecast']['estimates'])} forecast estimates" if "fire" in body else "")
         print(f"{path.relative_to(ROOT) if path.is_relative_to(ROOT) else path}: {detail}")
     return 0
 

@@ -33,22 +33,31 @@ Run the incident server on it (no telephony, no LLM):
 
 ## What is not real
 
-- No forecast: the recorded Deepfire fire-spread run (`*fire-spread-simulation-latlon_12h_5members.json`)
+- Forecast provenance: the recorded Deepfire fire-spread run (`*fire-spread-simulation-latlon_12h_5members.json`)
   was computed on 2026-09-19 from a simulated ignition, and `assess_fire` rejects a forecast issued after
-  the trigger's July `as_of`, so `spread` is not attached and every asset stays `forecast_unavailable`.
-  Nothing is inferred from distance.
+  the trigger's July `as_of`, so `spread` is not attached. Instead each trigger carries a `forecast`
+  (forecast-input-1, `input_mode: recorded`, `basis: p10`) whose `estimates` are copied verbatim from the
+  paired committed snapshot `fixtures/snapshots/gavarres_real_000N.json` (21 / 72 / 106 assets with an
+  arrival): the project's CA ensemble computed offline from recorded wind model data valid at that
+  perimeter's time, labelled enrichment, not validated, not a provider forecast; `issued_at` is the
+  perimeter time, not the build time. Assets the ensemble does not cover stay `forecast_unavailable`;
+  nothing is inferred from distance.
 - No calls, no contacts, no approvals (`call_mode: disabled`, empty `contacts` / `approvals`).
 - FICTIONAL crews: each trigger carries an `operations` block, bound to that trigger's snapshot id
   (`gavarres_real-000N`), with four invented crews (`bombers-1`, `bombers-2` protection crews parked at
   the real Vall d'Aro and Cassà de la Selva fire stations, the `transport-1` assisted-evacuation minibus
   in La Bisbal d'Empordà, `police-1` in Palafrugell), each with a `current_location` whose `source` says
-  fictional, a 12 h availability window from the trigger, straight-line routes to the three located
-  catalog assets nearest the perimeter and one fictional protection action per target. This is what
-  makes the Resources / Crews views, the crew markers on the map and a non-null `plan.response`
-  appear and clears `operational_inputs_need_refresh`. Nothing here is a real deployment. Because no
-  forecast is attached every asset has an unknown deadline, so the planner puts the actions in
-  `plan.response.review` (`unknown_deadline`) rather than proposing crew tasks or routes; there are still
-  no destinations, reservations or road reports.
+  fictional, a 12 h availability window from the trigger, straight-line routes (base to target and
+  target to target) to the three located catalog assets nearest the perimeter that have a known
+  occupancy and a forecast arrival at least 2 h after the trigger, and one fictional protection action
+  per target. The `assisted` map is FICTIONAL too: a labelled rule by asset type (care home / hospital 4,
+  school / campsite 2, else 0, capped at the estimated occupancy) for every located catalog asset, stated
+  in the operations `source` / `note`. With deadlines from the lifted forecast and these counts the
+  planner proposes crew tasks with `path_lonlat` for the protection crews; the transport and police
+  crews stay idle (no matching action). This is what makes the Resources / Crews views, the crew
+  markers and routes on the map and a non-null `plan.response` appear and clears
+  `operational_inputs_need_refresh`. Nothing here is a real deployment; there are still no destinations,
+  reservations or road reports.
 - No LLM assessment (`llm_assessment.mode: disabled`).
 - The register extract (2026-09-19) postdates the fire (July 2026): this is a recorded-input demo, not a
   historical as-of replay.

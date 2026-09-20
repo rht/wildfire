@@ -190,10 +190,496 @@
   "raw_ref": "fixtures/fire/deepfire/real/20260919T131342Z_satellite-perimeters.json",
   "notes": "observed_at from observed_watermark"
  },
+ "forecast": {
+  "schema_version": "forecast-input-1",
+  "forecast_source": "ca_ensemble (labelled enrichment, not validated)",
+  "input_mode": "recorded",
+  "issued_at": "2026-07-03T15:32:24.822000+00:00",
+  "received_at": "2026-07-03T15:32:24.822000+00:00",
+  "forecast_horizon_at": "2026-07-04T03:32:24.822000+00:00",
+  "basis": "p10",
+  "note": "computed offline by the project's CA ensemble from recorded wind model data valid at this perimeter's time; issued_at is the perimeter time, not the build time; labelled enrichment, not validated, not a provider forecast",
+  "estimates": {
+   "equipaments:10213412": {
+    "arrival_p10_at": "2026-07-03T18:55:36.821817+00:00",
+    "arrival_p50_at": "2026-07-03T19:00:24.822000+00:00",
+    "burn_probability": 0.95
+   },
+   "equipaments:10213421": {
+    "arrival_p10_at": "2026-07-03T23:40:48.821634+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "equipaments:25599403": {
+    "arrival_p10_at": "2026-07-03T16:02:00.822023+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.4
+   },
+   "equipaments:3041423": {
+    "arrival_p10_at": "2026-07-03T21:12:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T21:18:24.822000+00:00",
+    "burn_probability": 1.0
+   },
+   "equipaments:34473418": {
+    "arrival_p10_at": "2026-07-03T19:06:48.821634+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.25
+   },
+   "equipaments:3620470": {
+    "arrival_p10_at": "2026-07-03T23:34:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "equipaments:3620472": {
+    "arrival_p10_at": "2026-07-03T23:25:12.821268+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "equipaments:55419": {
+    "arrival_p10_at": "2026-07-03T18:56:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T19:04:24.822000+00:00",
+    "burn_probability": 0.95
+   },
+   "equipaments:759234": {
+    "arrival_p10_at": "2026-07-03T23:47:12.821268+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17000411": {
+    "arrival_p10_at": "2026-07-03T19:27:36.821817+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17000421": {
+    "arrival_p10_at": "2026-07-03T19:30:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17000561": {
+    "arrival_p10_at": "2026-07-04T01:22:24.822000+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17000688": {
+    "arrival_p10_at": "2026-07-03T18:47:36.821817+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17000706": {
+    "arrival_p10_at": "2026-07-03T20:04:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17000718": {
+    "arrival_p10_at": "2026-07-03T20:05:36.822732+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17000846": {
+    "arrival_p10_at": "2026-07-03T21:36:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T21:42:24.822000+00:00",
+    "burn_probability": 0.9
+   },
+   "schools:17000858": {
+    "arrival_p10_at": "2026-07-03T21:48:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T21:52:24.822000+00:00",
+    "burn_probability": 0.95
+   },
+   "schools:17000883": {
+    "arrival_p10_at": "2026-07-03T18:39:12.822183+00:00",
+    "arrival_p50_at": "2026-07-03T18:44:24.822000+00:00",
+    "burn_probability": 0.9
+   },
+   "schools:17000895": {
+    "arrival_p10_at": "2026-07-03T18:20:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T18:32:24.822000+00:00",
+    "burn_probability": 0.85
+   },
+   "schools:17000913": {
+    "arrival_p10_at": "2026-07-04T01:13:12.821268+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17000998": {
+    "arrival_p10_at": "2026-07-03T20:43:36.822732+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17001024": {
+    "arrival_p10_at": "2026-07-03T17:08:24.822000+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.25
+   },
+   "schools:17001231": {
+    "arrival_p10_at": "2026-07-03T19:01:12.822183+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.25
+   },
+   "schools:17001292": {
+    "arrival_p10_at": "2026-07-04T01:22:48.823465+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.15
+   },
+   "schools:17002031": {
+    "arrival_p10_at": "2026-07-03T21:16:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T21:24:24.822000+00:00",
+    "burn_probability": 0.95
+   },
+   "schools:17002569": {
+    "arrival_p10_at": "2026-07-03T23:53:36.822732+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17002570": {
+    "arrival_p10_at": "2026-07-03T23:46:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17002594": {
+    "arrival_p10_at": "2026-07-03T23:53:36.822732+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17002715": {
+    "arrival_p10_at": "2026-07-03T22:53:12.821268+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17003631": {
+    "arrival_p10_at": "2026-07-03T17:48:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T17:52:24.822000+00:00",
+    "burn_probability": 0.55
+   },
+   "schools:17003689": {
+    "arrival_p10_at": "2026-07-03T18:24:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T18:36:24.822000+00:00",
+    "burn_probability": 0.95
+   },
+   "schools:17004736": {
+    "arrival_p10_at": "2026-07-03T22:42:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17005248": {
+    "arrival_p10_at": "2026-07-03T21:53:36.822732+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17005352": {
+    "arrival_p10_at": "2026-07-03T23:17:12.821268+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17005571": {
+    "arrival_p10_at": "2026-07-03T19:58:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.15
+   },
+   "schools:17005650": {
+    "arrival_p10_at": "2026-07-03T21:48:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T21:52:24.822000+00:00",
+    "burn_probability": 0.95
+   },
+   "schools:17005844": {
+    "arrival_p10_at": "2026-07-03T18:00:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T18:06:24.822000+00:00",
+    "burn_probability": 0.9
+   },
+   "schools:17005856": {
+    "arrival_p10_at": "2026-07-03T21:23:36.822732+00:00",
+    "arrival_p50_at": "2026-07-03T21:24:24.822000+00:00",
+    "burn_probability": 0.95
+   },
+   "schools:17006061": {
+    "arrival_p10_at": "2026-07-03T18:24:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T18:36:24.822000+00:00",
+    "burn_probability": 0.95
+   },
+   "schools:17006691": {
+    "arrival_p10_at": "2026-07-03T18:39:12.822183+00:00",
+    "arrival_p50_at": "2026-07-03T18:44:24.822000+00:00",
+    "burn_probability": 0.9
+   },
+   "schools:17006708": {
+    "arrival_p10_at": "2026-07-04T01:14:48.823465+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.25
+   },
+   "schools:17006757": {
+    "arrival_p10_at": "2026-07-03T21:16:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T21:20:24.822000+00:00",
+    "burn_probability": 1.0
+   },
+   "schools:17006861": {
+    "arrival_p10_at": "2026-07-03T22:00:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T22:04:24.822000+00:00",
+    "burn_probability": 1.0
+   },
+   "schools:17007117": {
+    "arrival_p10_at": "2026-07-03T18:04:48.821634+00:00",
+    "arrival_p50_at": "2026-07-03T18:10:24.822000+00:00",
+    "burn_probability": 0.6
+   },
+   "schools:17007300": {
+    "arrival_p10_at": "2026-07-03T19:18:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17007312": {
+    "arrival_p10_at": "2026-07-03T23:50:48.821634+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17007579": {
+    "arrival_p10_at": "2026-07-04T01:18:24.822000+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.3
+   },
+   "schools:17007580": {
+    "arrival_p10_at": "2026-07-03T18:09:12.822183+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.35
+   },
+   "schools:17007890": {
+    "arrival_p10_at": "2026-07-04T01:57:36.822732+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17008195": {
+    "arrival_p10_at": "2026-07-03T18:29:36.821817+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17008468": {
+    "arrival_p10_at": "2026-07-03T21:44:24.822000+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17008471": {
+    "arrival_p10_at": "2026-07-04T01:25:12.821268+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.25
+   },
+   "schools:17008501": {
+    "arrival_p10_at": "2026-07-03T22:08:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T22:12:24.822000+00:00",
+    "burn_probability": 0.9
+   },
+   "schools:17008997": {
+    "arrival_p10_at": "2026-07-03T21:52:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17009138": {
+    "arrival_p10_at": "2026-07-03T21:03:36.822732+00:00",
+    "arrival_p50_at": "2026-07-03T21:08:24.822000+00:00",
+    "burn_probability": 0.95
+   },
+   "schools:17009278": {
+    "arrival_p10_at": "2026-07-03T18:20:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T18:32:24.822000+00:00",
+    "burn_probability": 0.85
+   },
+   "schools:17009424": {
+    "arrival_p10_at": "2026-07-03T23:33:36.822732+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17009503": {
+    "arrival_p10_at": "2026-07-03T18:57:12.822183+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.25
+   },
+   "schools:17009576": {
+    "arrival_p10_at": "2026-07-03T21:28:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T21:32:24.822000+00:00",
+    "burn_probability": 0.9
+   },
+   "schools:17009621": {
+    "arrival_p10_at": "2026-07-04T01:06:48.823465+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.25
+   },
+   "schools:17009710": {
+    "arrival_p10_at": "2026-07-03T17:47:36.821817+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17009862": {
+    "arrival_p10_at": "2026-07-03T18:50:48.821634+00:00",
+    "arrival_p50_at": "2026-07-03T19:04:24.822000+00:00",
+    "burn_probability": 0.85
+   },
+   "schools:17010086": {
+    "arrival_p10_at": "2026-07-03T21:56:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17010372": {
+    "arrival_p10_at": "2026-07-04T00:04:24.822000+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17010396": {
+    "arrival_p10_at": "2026-07-04T01:26:48.823465+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.15
+   },
+   "schools:17010402": {
+    "arrival_p10_at": "2026-07-03T20:47:12.821268+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17010611": {
+    "arrival_p10_at": "2026-07-03T21:40:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T21:44:24.822000+00:00",
+    "burn_probability": 0.9
+   },
+   "schools:17010785": {
+    "arrival_p10_at": "2026-07-03T23:34:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17010815": {
+    "arrival_p10_at": "2026-07-03T23:26:24.822000+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.1
+   },
+   "schools:17010864": {
+    "arrival_p10_at": "2026-07-03T19:40:00.822366+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.2
+   },
+   "schools:17010891": {
+    "arrival_p10_at": "2026-07-03T17:28:24.822000+00:00",
+    "arrival_p50_at": "2026-07-03T17:36:24.822000+00:00",
+    "burn_probability": 0.85
+   },
+   "schools:17010992": {
+    "arrival_p10_at": "2026-07-03T20:54:48.821634+00:00",
+    "arrival_p50_at": null,
+    "burn_probability": 0.15
+   }
+  }
+ },
  "operations": {
   "snapshot_id": "gavarres_real-0002",
   "horizon_min": 852,
-  "source": "FICTIONAL crews and routes invented for the demo; not a real deployment",
+  "source": "FICTIONAL crews, routes and assisted counts invented for the demo; not a real deployment",
+  "note": "FICTIONAL assisted counts by asset type (care_home/hospital 4, school/campsite 2, else 0)",
+  "assisted": {
+   "equipaments:10213412": 0,
+   "equipaments:10213421": 0,
+   "equipaments:25599403": 0,
+   "equipaments:3041423": 0,
+   "equipaments:3041468": 0,
+   "equipaments:3041486": 0,
+   "equipaments:34473418": 0,
+   "equipaments:3620470": 4,
+   "equipaments:3620472": 4,
+   "equipaments:55419": 0,
+   "equipaments:759234": 0,
+   "equipaments:759245": 0,
+   "equipaments:759250": 0,
+   "equipaments:759260": 0,
+   "schools:17000411": 2,
+   "schools:17000421": 2,
+   "schools:17000561": 2,
+   "schools:17000688": 2,
+   "schools:17000706": 2,
+   "schools:17000718": 2,
+   "schools:17000846": 2,
+   "schools:17000858": 2,
+   "schools:17000883": 2,
+   "schools:17000895": 2,
+   "schools:17000913": 2,
+   "schools:17000998": 2,
+   "schools:17001024": 2,
+   "schools:17001231": 2,
+   "schools:17001292": 2,
+   "schools:17002031": 2,
+   "schools:17002259": 2,
+   "schools:17002481": 2,
+   "schools:17002491": 2,
+   "schools:17002508": 2,
+   "schools:17002511": 2,
+   "schools:17002521": 2,
+   "schools:17002533": 2,
+   "schools:17002545": 2,
+   "schools:17002557": 2,
+   "schools:17002569": 2,
+   "schools:17002570": 2,
+   "schools:17002594": 2,
+   "schools:17002651": 2,
+   "schools:17002715": 2,
+   "schools:17003631": 2,
+   "schools:17003689": 2,
+   "schools:17003872": 2,
+   "schools:17003896": 2,
+   "schools:17003938": 2,
+   "schools:17003941": 2,
+   "schools:17004736": 2,
+   "schools:17004876": 2,
+   "schools:17005248": 2,
+   "schools:17005315": 2,
+   "schools:17005352": 2,
+   "schools:17005571": 2,
+   "schools:17005650": 2,
+   "schools:17005728": 2,
+   "schools:17005844": 2,
+   "schools:17005856": 2,
+   "schools:17005923": 2,
+   "schools:17006061": 2,
+   "schools:17006587": 2,
+   "schools:17006691": 2,
+   "schools:17006708": 2,
+   "schools:17006757": 2,
+   "schools:17006782": 2,
+   "schools:17006861": 2,
+   "schools:17007117": 2,
+   "schools:17007142": 2,
+   "schools:17007300": 2,
+   "schools:17007312": 2,
+   "schools:17007579": 2,
+   "schools:17007580": 2,
+   "schools:17007841": 2,
+   "schools:17007890": 2,
+   "schools:17008146": 2,
+   "schools:17008195": 2,
+   "schools:17008201": 2,
+   "schools:17008328": 2,
+   "schools:17008353": 2,
+   "schools:17008468": 2,
+   "schools:17008471": 2,
+   "schools:17008493": 2,
+   "schools:17008501": 2,
+   "schools:17008523": 2,
+   "schools:17008560": 2,
+   "schools:17008997": 2,
+   "schools:17009114": 2,
+   "schools:17009138": 2,
+   "schools:17009278": 2,
+   "schools:17009424": 2,
+   "schools:17009503": 2,
+   "schools:17009576": 2,
+   "schools:17009621": 2,
+   "schools:17009710": 2,
+   "schools:17009734": 2,
+   "schools:17009862": 2,
+   "schools:17010086": 2,
+   "schools:17010372": 2,
+   "schools:17010384": 2,
+   "schools:17010396": 2,
+   "schools:17010402": 2,
+   "schools:17010505": 2,
+   "schools:17010611": 2,
+   "schools:17010785": 2,
+   "schools:17010815": 2,
+   "schools:17010840": 2,
+   "schools:17010864": 2,
+   "schools:17010891": 2,
+   "schools:17010992": 2
+  },
   "teams": [
    {
     "team_id": "bombers-1",
@@ -273,10 +759,6 @@
     3.031821,
     41.80871
    ],
-   "equipaments:25599403": [
-    3.074588,
-    41.852481
-   ],
    "schools:17007580": [
     3.073513,
     41.86267
@@ -284,6 +766,10 @@
    "schools:17009710": [
     3.033851,
     41.95146
+   ],
+   "schools:17000688": [
+    3.082497,
+    41.86173
    ],
    "base-bombers-2": [
     2.883842,
@@ -299,25 +785,6 @@
    ]
   },
   "routes": [
-   {
-    "from_node": "base-bombers-1",
-    "to_node": "equipaments:25599403",
-    "minutes": 9,
-    "confirmed": true,
-    "safe": true,
-    "available_until_min": 852,
-    "source": "fictional straight-line route, not an inspected road",
-    "path_lonlat": [
-     [
-      3.031821,
-      41.80871
-     ],
-     [
-      3.074588,
-      41.852481
-     ]
-    ]
-   },
    {
     "from_node": "base-bombers-1",
     "to_node": "schools:17007580",
@@ -357,21 +824,21 @@
     ]
    },
    {
-    "from_node": "base-bombers-2",
-    "to_node": "equipaments:25599403",
-    "minutes": 24,
+    "from_node": "base-bombers-1",
+    "to_node": "schools:17000688",
+    "minutes": 11,
     "confirmed": true,
     "safe": true,
     "available_until_min": 852,
     "source": "fictional straight-line route, not an inspected road",
     "path_lonlat": [
      [
-      2.883842,
-      41.879694
+      3.031821,
+      41.80871
      ],
      [
-      3.074588,
-      41.852481
+      3.082497,
+      41.86173
      ]
     ]
    },
@@ -414,21 +881,21 @@
     ]
    },
    {
-    "from_node": "base-transport-1",
-    "to_node": "equipaments:25599403",
-    "minutes": 18,
+    "from_node": "base-bombers-2",
+    "to_node": "schools:17000688",
+    "minutes": 25,
     "confirmed": true,
     "safe": true,
     "available_until_min": 852,
     "source": "fictional straight-line route, not an inspected road",
     "path_lonlat": [
      [
-      3.04,
-      41.96
+      2.883842,
+      41.879694
      ],
      [
-      3.074588,
-      41.852481
+      3.082497,
+      41.86173
      ]
     ]
    },
@@ -471,21 +938,21 @@
     ]
    },
    {
-    "from_node": "base-police-1",
-    "to_node": "equipaments:25599403",
-    "minutes": 15,
+    "from_node": "base-transport-1",
+    "to_node": "schools:17000688",
+    "minutes": 17,
     "confirmed": true,
     "safe": true,
     "available_until_min": 852,
     "source": "fictional straight-line route, not an inspected road",
     "path_lonlat": [
      [
-      3.16,
-      41.92
+      3.04,
+      41.96
      ],
      [
-      3.074588,
-      41.852481
+      3.082497,
+      41.86173
      ]
     ]
    },
@@ -526,29 +993,142 @@
       41.95146
      ]
     ]
+   },
+   {
+    "from_node": "base-police-1",
+    "to_node": "schools:17000688",
+    "minutes": 14,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.16,
+      41.92
+     ],
+     [
+      3.082497,
+      41.86173
+     ]
+    ]
+   },
+   {
+    "from_node": "schools:17007580",
+    "to_node": "schools:17009710",
+    "minutes": 16,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.073513,
+      41.86267
+     ],
+     [
+      3.033851,
+      41.95146
+     ]
+    ]
+   },
+   {
+    "from_node": "schools:17007580",
+    "to_node": "schools:17000688",
+    "minutes": 1,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.073513,
+      41.86267
+     ],
+     [
+      3.082497,
+      41.86173
+     ]
+    ]
+   },
+   {
+    "from_node": "schools:17009710",
+    "to_node": "schools:17007580",
+    "minutes": 16,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.033851,
+      41.95146
+     ],
+     [
+      3.073513,
+      41.86267
+     ]
+    ]
+   },
+   {
+    "from_node": "schools:17009710",
+    "to_node": "schools:17000688",
+    "minutes": 16,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.033851,
+      41.95146
+     ],
+     [
+      3.082497,
+      41.86173
+     ]
+    ]
+   },
+   {
+    "from_node": "schools:17000688",
+    "to_node": "schools:17007580",
+    "minutes": 1,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.082497,
+      41.86173
+     ],
+     [
+      3.073513,
+      41.86267
+     ]
+    ]
+   },
+   {
+    "from_node": "schools:17000688",
+    "to_node": "schools:17009710",
+    "minutes": 16,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.082497,
+      41.86173
+     ],
+     [
+      3.033851,
+      41.95146
+     ]
+    ]
    }
   ],
   "actions": [
-   {
-    "action_id": "protect-equipaments:25599403",
-    "asset_id": "equipaments:25599403",
-    "duration_min": 30,
-    "deadline_min": 852,
-    "requires": [],
-    "capabilities": [
-     "protection"
-    ],
-    "transport_people": 0,
-    "readiness_required": false,
-    "effects": [
-     {
-      "asset_id": "equipaments:25599403",
-      "coverage": 1,
-      "confirmed": true,
-      "source": "fictional protection effect, not predicted lives saved"
-     }
-    ]
-   },
    {
     "action_id": "protect-schools:17007580",
     "asset_id": "schools:17007580",
@@ -583,6 +1163,26 @@
     "effects": [
      {
       "asset_id": "schools:17009710",
+      "coverage": 1,
+      "confirmed": true,
+      "source": "fictional protection effect, not predicted lives saved"
+     }
+    ]
+   },
+   {
+    "action_id": "protect-schools:17000688",
+    "asset_id": "schools:17000688",
+    "duration_min": 30,
+    "deadline_min": 852,
+    "requires": [],
+    "capabilities": [
+     "protection"
+    ],
+    "transport_people": 0,
+    "readiness_required": false,
+    "effects": [
+     {
+      "asset_id": "schools:17000688",
       "coverage": 1,
       "confirmed": true,
       "source": "fictional protection effect, not predicted lives saved"

@@ -29,3 +29,7 @@ def test_recorded_triggers_carry_the_real_perimeter(tmp_path):
     assert "operational_inputs_need_refresh" not in {e["code"] for e in state["errors"]}
     assert all("fictional" in t["current_location"]["source"] for t in state["plan"]["response"]["teams"])
     assert public_state(runtime.state())["fire_geometry"] == state["fire_geometry"]
+    # The lifted snapshot forecast gives deadlines, so the planner dispatches crews with drawn routes.
+    assert sum(a["fire_arrival_at"] is not None for a in state["assets"]) >= 20
+    tasks = [t for team in state["plan"]["response"]["teams"] for t in team["tasks"]]
+    assert tasks and all(len(t["path_lonlat"]) >= 2 for t in tasks)
