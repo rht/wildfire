@@ -551,7 +551,7 @@ main {
 }
 .queue-filters {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 20px;
 }
 .queue-filter {
@@ -564,6 +564,14 @@ main {
 .queue-filter strong {
   font-size: 23px;
   font-weight: 600;
+}
+
+.call-request-id {
+  max-width: 180px;
+  overflow-wrap: anywhere;
+}
+.call-followup-reasons {
+  min-width: 180px;
 }
 .rank {
   display: inline-flex;

@@ -133,7 +133,7 @@ const fs = require("node:fs");
     await expect(page.locator("tbody tr")).toHaveCount(1);
     await page.getByRole("button", { name: "Reset filters" }).click();
     await page.getByRole("button", { name: /Voice assistant to call/ }).click();
-    await expect(page.locator("tbody tr")).toHaveCount(2);
+    await expect(page.locator("tbody tr")).toHaveCount(1);
     await page.getByRole("button", { name: /Human follow-up/ }).click();
     await page
       .getByRole("button", {

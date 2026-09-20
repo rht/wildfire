@@ -2660,7 +2660,8 @@ The overview has four counters: incidents, deployed resources, structures,
 and people/groups (including individuals). Navigation includes an Incidents table, per-incident
 summary/calls/response plan/evacuation/resources/buildings/log pages, global Buildings & risk,
 Resources and Activity log. Count cards navigate to their relevant lists. Calls
-separate pending contact, completed calls and human follow-up with explicit reasons.
+separate uncalled/queued contact, attempted calls, completed calls and human follow-up
+with explicit reasons.
 Response steps retain backend ordering, timing, prerequisites and proposal status.
 Evacuation distinguishes reported ability, assistance needed, departure and arrival.
 Buildings show incident, assessment date, valuation, expected loss band, risk
@@ -2730,8 +2731,9 @@ incident summaries scope that list. Entries open ordered steps, destinations, GP
 and prerequisites. Explicit confirmation records analyst approval of the current
 plan version in a separate SQLite database; opening a review never asserts approval
 or dispatch. Call history contains individual attempts with caller, outcome,
-UTC date and search filters. **Voice assistant to call** shows pending locations
-in backend priority order. Call caller identity is shown only when explicit;
+UTC date and search filters. **Voice assistant to call** shows locations with no call
+records or a supplied unstarted queued request, in backend priority order. Terminal
+attempts do not imply a retry. Call caller identity is shown only when explicit;
 unknown identity stays unavailable. Demo records explicitly distinguish agent and
 human calls. Incident, resource and people tables include search and relevant filters.
 Location tables, details, map tooltips and crew destinations display supplied WGS84
@@ -2905,3 +2907,31 @@ passed. Browser coverage includes three numbered stops, operations position meta
 position removal over WebSocket, invalid path omission and the renamed heading.
 The invalid-path check also found and fixed a pre-existing incident-map crash on
 null crew-path points by sharing geometry validation. Code review is complete.
+
+### Call lifecycle count correction
+
+Integration at port 18541 supplied three `no_answer` records, but the old UI counted
+all three as waiting because it equated attempted calls with completed calls.
+**Call attempted** now includes started or terminal call records; **Call completed**
+is a separate count of locations with a completed record. **Voice assistant to call**
+includes only locations with no records or a supplied `queued` request whose
+`dispatch_state` is absent or `not_started`. A queued record already `attempting`,
+`bound` or `outcome_unknown` is an attempt, not another waiting call. Unknown call
+statuses remain unknown. Human follow-up is independent; a supplied queued retry
+may overlap with attempted/completed history. All counts are unique locations.
+Pending rows distinguish **Queued request** from **No call records**. Long request
+IDs wrap and follow-up reasons retain a minimum column width.
+
+The current public `coordination-state-1` endpoint does not expose queue membership.
+These are lifecycle counts, not proof of approved dispatch eligibility. Exact
+pending-versus-held/review counts would require the runtime to publish a public
+queue projection keyed by request ID. No backend or runtime files were changed
+under the integration freeze.
+
+Verification: regression tests cover terminal attempts, explicit retries, active
+and uncertain dispatch, unknown outcomes, and completion. Chrome replay of the
+public port-18541 state shows 0 to call, 3 attempted, 0 completed and 3 human
+follow-ups, and checks retry/completion updates without writing to the service.
+Final checks passed: 35 Node tests, frontend lint/format/build, all four Chrome
+regression scripts and the read-only port-18541 state replay. Review found no
+blocking issues. Existing crew-map and persisted-confirmation checks still pass.

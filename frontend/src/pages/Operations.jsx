@@ -60,10 +60,12 @@ export function Calls({ incident }) {
     filter === "pending"
       ? r.toCall
       : filter === "called"
-        ? r.called
-        : filter === "human"
-          ? r.followup
-          : true,
+        ? r.attempted
+        : filter === "completed"
+          ? r.completed
+          : filter === "human"
+            ? r.followup
+            : true,
   );
   const history = filterCallHistory(callHistory(filtered), filters);
   const pending = filtered.filter(
@@ -88,7 +90,12 @@ export function Calls({ incident }) {
             "Voice assistant to call",
             rows.filter((r) => r.toCall).length,
           ],
-          ["called", "Already called", rows.filter((r) => r.called).length],
+          ["called", "Call attempted", rows.filter((r) => r.attempted).length],
+          [
+            "completed",
+            "Call completed",
+            rows.filter((r) => r.completed).length,
+          ],
           ["human", "Human follow-up", rows.filter((r) => r.followup).length],
         ].map(([id, label, total]) => (
           <Button
@@ -185,9 +192,11 @@ export function Calls({ incident }) {
                     </TableCell>
                     <TableCell>
                       <Status value={r.call.status} />
-                      <div className="small-muted">{r.call.request_id}</div>
+                      <div className="small-muted call-request-id">
+                        {r.call.request_id}
+                      </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="call-followup-reasons">
                       {callRows({
                         ...incident,
                         calls: [r.call],
@@ -225,6 +234,7 @@ export function Calls({ incident }) {
                   {[
                     "Priority",
                     "Location",
+                    "Call state",
                     "Remaining window",
                     "Review reasons",
                     "Details",
@@ -240,6 +250,9 @@ export function Calls({ incident }) {
                     <TableCell>
                       <strong>{r.name}</strong>
                       <Coordinates location={r} />
+                    </TableCell>
+                    <TableCell>
+                      {r.queued ? "Queued request" : "No call records"}
                     </TableCell>
                     <TableCell>{count(r.slack_min)} min</TableCell>
                     <TableCell>
@@ -263,9 +276,12 @@ export function Calls({ incident }) {
         </MainCard>
       )}
       <Typography variant="body2" color="text.secondary">
-        Already called means a completed call record exists, not that
-        instructions were understood. Human follow-up may overlap with completed
-        calls. This page does not place calls.
+        To call shows locations with no call records or an unstarted queued
+        request; queue eligibility is not supplied. Attempted includes no answer
+        and other started or terminal outcomes. Completed counts completed calls
+        only, without proving instructions were understood. A supplied queued
+        retry can overlap with attempted calls; human follow-up can overlap with
+        either. This page does not place calls.
       </Typography>
       <DetailDialog
         open={!!selected}
