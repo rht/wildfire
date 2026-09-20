@@ -2874,3 +2874,34 @@ lint, formatting and production build passed. Chrome checks covered the dashboar
 connected state, saved confirmation after server restart, cross-view and cross-tab
 updates, stale-plan rejection, audit logs and source isolation. Code review findings
 were resolved and rechecked. Pending plans display **Awaiting confirmation**.
+
+### Crew review map and evacuation heading
+
+@mirrdj requested **Identified groups** in place of **Location readiness** on the
+Evacuation page. Existing people-count labels and calculations are unchanged.
+The crew review dialog includes a map of that crew's supplied planned paths and
+numbered destinations, using task array order consistently with the step list.
+Paths stay dashed even after analyst confirmation: approval is not movement.
+Missing paths are not bridged with invented lines. Destinations use identified
+asset GPS, or a labelled supplied path endpoint when asset GPS is absent. Repeated
+destinations share a marker listing their stop numbers.
+
+Runtime interface agreed with `codex/end-to-end`: optional
+`plan.response.teams[].current_location = {latitude, longitude, observed_at, source}`
+contains an operations-supplied position, otherwise `null`. The map labels this
+**Reported crew location**, shows GPS, timestamp and source, and never infers a
+live position from `start_node` or a path origin. Invalid or absent coordinates
+remain unknown. Tasks already supply ordered `path_lonlat` (longitude, latitude),
+`asset_id`, `start_min` and `finish_min`; no additional backend fields are required.
+
+Implementation/verification sequence: test order, geometry validation and unknown
+position behavior; add the shared map to the existing confirmation dialog; verify
+reported and missing positions through REST/WebSocket browser fixtures; run Node,
+lint, formatting, build and confirmation browser regressions; commit and push.
+
+Verification completed: 33 Node tests passed; lint, formatting and production build
+passed. Chrome dashboard, connected-state and persisted-confirmation regressions
+passed. Browser coverage includes three numbered stops, operations position metadata,
+position removal over WebSocket, invalid path omission and the renamed heading.
+The invalid-path check also found and fixed a pre-existing incident-map crash on
+null crew-path points by sharing geometry validation. Code review is complete.

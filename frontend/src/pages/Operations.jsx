@@ -608,7 +608,7 @@ export function Evacuation({ incident, incidents }) {
           evacuation count.
         </Alert>
       )}
-      <MainCard title="Location readiness" content={false}>
+      <MainCard title="Identified groups" content={false}>
         <div className="table-scroll">
           <Table>
             <TableHead>

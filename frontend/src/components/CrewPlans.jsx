@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Typography, Alert, Chip } from "@mui/material";
 import { useApprovals } from "../state/approvals";
+import CrewPlanMap from "./CrewPlanMap";
 import { MainCard, Empty, DetailDialog, Coordinates, Facts } from "./Common";
 import {
   responseTeams,
@@ -37,6 +38,7 @@ export default function CrewPlans({ incidents, teamId }) {
       id,
       name: incident.teams.find((t) => t.team_id === id)?.name || id,
       tasks: plans.find((t) => t.team_id === id)?.tasks || [],
+      team: plans.find((t) => t.team_id === id),
     }));
   });
   for (const row of rows)
@@ -205,6 +207,11 @@ export default function CrewPlans({ incidents, teamId }) {
               Timing: {crewUrgency(selected.tasks).label}. Margin compares the
               supplied deadline with the planned finish.
             </Typography>
+            <CrewPlanMap
+              team={selected.team}
+              assets={selected.incident.assets}
+              name={selected.name}
+            />
             {selected.tasks.map((step, index) => {
               const location = selected.incident.assets.find(
                 (a) => a.asset_id === step.asset_id,

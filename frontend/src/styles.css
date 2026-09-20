@@ -989,3 +989,28 @@ main {
   color: #389e0d;
   font-weight: 600;
 }
+
+.crew-route-review {
+  margin-bottom: 24px;
+}
+.crew-route-map {
+  height: 340px;
+  width: 100%;
+  border-radius: 6px;
+}
+.crew-stop-pin,
+.crew-position-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1677ff;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  font-weight: 700;
+  box-shadow: 0 1px 5px #0008;
+}
+.crew-position-pin {
+  background: #237804;
+  border-radius: 5px;
+}

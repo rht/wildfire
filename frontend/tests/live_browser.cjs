@@ -156,6 +156,52 @@ const assert = require("node:assert/strict");
         .getByRole("dialog")
         .getByRole("button", { name: "Confirm crew plan", exact: true }),
     ).toBeDisabled();
+    await page.getByRole("dialog").getByRole("button", { name: "Close" }).click();
+    state.revision = 5;
+    state.teams = [{ team_id: "crew-1", name: "Crew map test" }];
+    state.assets = [
+      { asset_id: "a", name: "First destination", latitude: 41.1, longitude: 2.1 },
+      { asset_id: "b", name: "Second destination", latitude: 41.2, longitude: 2.2 },
+      { asset_id: "c", name: "Third destination", latitude: 41.3, longitude: 2.3 },
+    ];
+    state.plan.response = {
+      teams: [{
+        team_id: "crew-1",
+        current_location: { latitude: 41, longitude: 2, observed_at: "2026-09-20T10:30:00Z", source: "Operations <img data-injected>" },
+        start_node: [99, 99],
+        tasks: state.assets.map((asset, index) => ({
+          action_id: `stop-${index}`,
+          asset_id: asset.asset_id,
+          status: index === 0 ? "confirmed" : "proposed",
+          path_lonlat: [[2 + index / 10, 41 + index / 10], [asset.longitude, asset.latitude]],
+        })),
+      }],
+    };
+    stream.send(JSON.stringify(state));
+    await page.getByRole("button", { name: "Review plan for Crew map test", exact: true }).click();
+    const map = page.getByLabel("Plan map for Crew map test", { exact: true });
+    await expect(map).toBeVisible();
+    await expect(map.locator(".crew-stop-pin")).toHaveText(["1", "2", "3"]);
+    await expect(map.locator(".crew-position-pin")).toHaveCount(1);
+    await expect(map.locator('path[stroke-dasharray="8 7"]')).toHaveCount(3);
+    await expect(page.getByRole("dialog")).toContainText("GPS: 41.00000, 2.00000");
+    await expect(page.getByRole("dialog")).toContainText("Observed: 2026-09-20 10:30:00 UTC");
+    await expect(page.getByRole("dialog")).toContainText("Source: Operations <img data-injected>");
+    assert.equal(await page.locator("[data-injected]").count(), 0);
+    await map.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: "artifacts/crew-route-map.png", animations: "disabled" });
+    state.revision = 6;
+    state.plan.response.teams[0].current_location = null;
+    state.plan.response.teams[0].tasks[1].path_lonlat = [[2, 41], null, [2.2, 41.2]];
+    stream.send(JSON.stringify(state));
+    await expect(map.locator(".crew-position-pin")).toHaveCount(0);
+    assert.deepEqual(errors, []);
+    await expect(map.locator('path[stroke-dasharray="8 7"]')).toHaveCount(2);
+    await expect(page.getByRole("dialog")).toContainText("Current crew location not supplied.");
+    await expect(page.getByRole("dialog")).toContainText("Path not supplied for stops: 2.");
+    await page.getByRole("dialog").getByRole("button", { name: "Close" }).click();
+    await page.goto(base + "/#/incidents/test/evacuation");
+    await expect(page.getByRole("heading", { name: "Identified groups", exact: true })).toBeVisible();
     assert.deepEqual(errors, []);
     assert.deepEqual(writes, []);
     console.log(
