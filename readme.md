@@ -3605,3 +3605,41 @@ desktop/tablet screenshot inspection and independent code review. Browser covera
 includes shared routes, crew-scoped selection, fixed headers, contained scrolling,
 nested review/back navigation, reordering and saved approval persistence. Physical
 iPad/Safari testing remains outside the Chrome-emulation checks.
+
+### Planner edge-case update — design and implementation plan
+
+Approved scope from @mirrdj: account for missing valuation, fresh assistance calls,
+late interventions, complete evacuation journeys, repeated transport trips,
+competing deadlines, confirmed departures/arrivals, joint crew requirements and
+forecast uncertainty. This extends proposals and analyst review; it does not
+activate dispatch or place telephone calls.
+
+Implementation sequence:
+
+1. Add regression cases and extend `fireline/multi_response.py`: allow known
+   human benefit with unknown value (retain unknown metadata); separate evidence
+   freshness from the fire buffer; expose urgent intervention review for late or
+   blocked rescue needs; compare bounded alternative action sequences rather than
+   only immediate benefit. Preserve committed work and deterministic results.
+2. Extend operational action evidence for complete evacuation missions: require
+   a confirmed destination, available reception places, safe outbound routing and
+   unloading time before claiming delivery; release vehicle seats after unloading
+   and support repeated trips. Reserve all required crews together for joint work.
+   Missing mission inputs remain explicit review needs, never invented routes.
+3. Update `fireline/incident_planning.py` and coordination projection: reconcile
+   confirmed arrivals with remaining people/assistance needs, retain property
+   value, bind all operational evidence to the snapshot, and carry mission and
+   urgent-review data through public state and plan approval validation.
+4. Add bounded sensitivity checks using supplied early-arrival/long-duration
+   evidence. Mark absent uncertainty inputs and fragile proposals explicitly;
+   do not invent probability distributions or claim optimality.
+5. Show unresolved intervention needs and mission details in the crew UI; prevent
+   single-crew reorder approval from bypassing joint work or mission validation.
+6. Run focused regressions, full Python and frontend tests, build/browser checks,
+   and a synthetic fire-to-plan-to-call-outcome exercise. Request an independent
+   whole-change review, then commit and push the branch with a reviewable PR.
+
+Verification includes unknown-value rescue, 15-minute fresh-call evidence with a
+30-minute fire buffer, overdue urgent review, unsafe return legs, eight-seat
+multi-trip evacuation, urgent-small versus later-large rescue, confirmed arrival,
+two-crew synchronization and a plan that fails an explicitly supplied stress case.
