@@ -1,0 +1,91 @@
+{
+  "context": {
+    "scenario_id": "scenario",
+    "incident_id": "incident-1",
+    "snapshot_id": "snapshot-1",
+    "epoch": "2026-09-20T00:00:00Z",
+    "as_of": "2026-09-20T00:00:00Z",
+    "forecast_observed_min": 0,
+    "max_age_min": 15,
+    "buffer_min": 0
+  },
+  "candidates": [
+    {
+      "centre": {
+        "centre_id": "centre",
+        "name": "Hall",
+        "remaining_places": 6,
+        "approved": true,
+        "available_until_min": 90,
+        "source": "facility-register"
+      },
+      "kind": "community_centre",
+      "approval": {
+        "approval_id": "approval-centre",
+        "analyst_id": "analyst",
+        "incident_id": "incident-1",
+        "centre_id": "centre",
+        "evidence": "Reception inspected",
+        "group_id": null
+      },
+      "safe_until_min": 90,
+      "threat_source": "forecast-1",
+      "capabilities": [],
+      "closed": false,
+      "provenance": []
+    }
+  ],
+  "groups": [
+    {
+      "group_id": "group-A",
+      "asset_id": "A",
+      "people": 4,
+      "assisted": false,
+      "needs": [],
+      "fire_arrival_min": 60,
+      "evacuation_min": 5,
+      "forecast_source": "forecast-1"
+    }
+  ],
+  "routes": [
+    {
+      "asset_id": "A",
+      "centre_id": "centre",
+      "travel_min": 2,
+      "evacuation_min": 5,
+      "confirmed": true,
+      "available_until_min": 60,
+      "source": "route-inspection",
+      "road_ids": [
+        "road-1"
+      ]
+    }
+  ],
+  "roads": [
+    {
+      "road_id": "road-1",
+      "state": "open",
+      "observed_min": 0,
+      "available_until_min": 60,
+      "source": "road-inspection"
+    }
+  ],
+  "commands": [
+    {
+      "kind": "reserve",
+      "command_id": "synthetic-reserve-A",
+      "group_id": "group-A",
+      "centre_id": "centre",
+      "approval": {
+        "approval_id": "synthetic-allocation-approval",
+        "analyst_id": "synthetic-analyst",
+        "incident_id": "incident-1",
+        "centre_id": "centre",
+        "evidence": "Synthetic offline approval only",
+        "group_id": "group-A"
+      },
+      "as_of": "2026-09-20T00:00:00Z",
+      "snapshot_id": "snapshot-1"
+    }
+  ]
+}

@@ -111,12 +111,14 @@ class SlngClient:
             raise ValueError('explicit live request and approved target required')
         if not self.config.outbound_connection_id:
             raise ValueError('SLNG outbound connection is required on the configured agent')
+        arguments = call_arguments(request)
         configuration = self._http('GET', self._path(''))
         if (configuration.get('id') != self.config.agent_id or
                 configuration.get('sip_outbound_trunk_id') != self.config.outbound_connection_id):
             raise ValueError('agent outbound connection does not match configured connection')
+        validate_agent_templates(configuration, arguments)
         body = self._http('POST', self._path('calls'),
-                          {'phone_number': request.contact_number, 'arguments': call_arguments(request)})
+                          {'phone_number': request.contact_number, 'arguments': arguments})
         try:
             uuid(body['call_id'])
         except (KeyError, ValueError):
@@ -131,10 +133,29 @@ class SlngClient:
 
 
 def call_arguments(request):
-    return {'request_id': request.request_id, 'asset_id': request.asset_id,
+    arguments = {'request_id': request.request_id, 'asset_id': request.asset_id,
             'snapshot_id': request.snapshot_id, 'incident_brief': request.incident_brief,
             'scenario_notice': 'SIMULATION' if request.input_mode != 'live' else 'Analyst-authorized contact',
             'language': request.language, 'road_warning_brief': road_warning_brief(request.road_warnings)}
+    # Provider limits apply to the rendered road text as well as the incident brief.
+    # Never truncate restrictions or drop identity bindings to fit the payload.
+    if (len(arguments) > 32 or any(len(k) > 64 or not isinstance(v, str) or len(v) > 1024
+                                  for k, v in arguments.items())
+            or sum(len(v) for v in arguments.values()) > 8192):
+        raise ValueError('SLNG argument limits exceeded; review the call briefing')
+    return arguments
+
+
+def validate_agent_templates(configuration, arguments):
+    """Require an advertised binding for every argument before starting a call."""
+    variables = configuration.get('template_variables')
+    if not isinstance(variables, dict) or not arguments.keys() <= variables.keys():
+        raise ValueError('incompatible SLNG agent templates; deploy the dynamic package')
+    for name, metadata in variables.items():
+        if not isinstance(metadata, dict) or not isinstance(metadata.get('required'), bool):
+            raise ValueError('invalid SLNG agent template metadata')
+        if metadata['required'] and name not in arguments:
+            raise ValueError('required SLNG agent template argument is missing')
 
 
 def agent_configuration(request, *, name, region, models, tool_refs=None, outbound_connection_id=None):
@@ -142,7 +163,9 @@ def agent_configuration(request, *, name, region, models, tool_refs=None, outbou
         text(models.get(key), key)
     text(name, 'name', 255)
     text(region, 'region', 64)
-    prompt = interview_prompt(request, template=True)
+    prompt = (interview_prompt(request, template=True) +
+              '\nInternal call binding: request_id={{request_id}}; snapshot_id={{snapshot_id}}. '
+              'Never speak these internal identifiers or change the call binding.')
     config = dict(name=name, system_prompt=prompt, greeting='I am an AI readiness assistant. {{scenario_notice}}. May I confirm your location?',
                   language=request.language, region=region, models=dict(models),
                   tool_mode='shared', tool_refs=list(tool_refs or []), mcp_refs=[],

@@ -11,7 +11,7 @@ from fireline.contact_priority import ContactPolicy
 from fireline.priority_examples import load_scenario
 from fireline.voice_store import VoiceStore
 from tests.test_voice_interview import EPOCH, request
-from tests.test_voice_provider import AGENT, TRUNK, Transport, client
+from tests.test_voice_provider import configured_agent, AGENT, TRUNK, Transport, client
 
 
 def api():
@@ -38,7 +38,7 @@ def enqueue(q, *, locations=None, same_phone=False):
 def provider(count=3, error=None):
     bodies = []
     for i in range(count):
-        bodies += [dict(id=AGENT, sip_outbound_trunk_id=TRUNK),
+        bodies += [configured_agent(),
                    error or dict(call_id=str(uuid4()))]
     return client(Transport(bodies))
 
@@ -216,7 +216,7 @@ def test_slow_provider_creation_cannot_cause_a_burst(tmp_path):
                 now[0] += timedelta(seconds=3)
             return super().request(method, url, **kwargs)
 
-    c = client(SlowTransport([dict(id=AGENT, sip_outbound_trunk_id=TRUNK),
+    c = client(SlowTransport([configured_agent(),
                               dict(call_id=str(uuid4()))]))
     q.dispatch_next(c)
     assert q.dispatch_next(provider()) is None
@@ -256,7 +256,7 @@ def test_worker_syncs_terminal_call_then_refills_without_printing_private_data(t
     body = dict(id=first['provider_call_id'], agent_id=AGENT, status='no_answer',
                 arguments={k: rec['request'][k] for k in ('request_id', 'asset_id', 'snapshot_id')},
                 updated_at=now[0].isoformat(), tool_executions=[])
-    c = client(Transport([body, dict(id=AGENT, sip_outbound_trunk_id=TRUNK), dict(call_id=str(uuid4()))]))
+    c = client(Transport([body, configured_agent(), dict(call_id=str(uuid4()))]))
     run_worker(q, c, once=True)
     assert s.get('req-A')['status'] == 'no_answer'
     assert s.get('req-B')['dispatch_state'] == 'bound'

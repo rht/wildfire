@@ -10,6 +10,193 @@ The colleague builds **risk assessment**, which consumes fire updates, discovers
 
 Use [Superpowers](https://github.com/obra/superpowers) for development. Work in a dedicated branch and worktree under this repository's `.worktrees/` directory, publish every task branch to `origin`, and push progress so colleagues can review it. See [AGENTS.md](AGENTS.md) for the persistent workflow.
 
+## Three-component architecture
+
+Architecture baseline recorded on 2026-09-19. The responsibility split remains current;
+the implementation inventory and gaps below describe that dated baseline. Since then,
+multi-crew planning, monetary-loss estimates, approved allocation records, call briefings,
+coordination persistence and the read-only live dashboard have landed. See the module
+sections and the 2026-09-20 integration checkpoint below for current wiring and limits.
+
+This diagram describes the agreed responsibility split and proposed extensions, not a claim that
+every arrow is implemented. **1 assesses what is exposed; 2 coordinates what to do; 3 shows the
+recommendations and captures the analyst's decisions.** AI calling belongs to component 2.
+The existing MVP remains one incident in a bounded area; multiple incidents and automatic
+multi-crew scheduling below are design requirements for subsequent integration.
+
+```mermaid
+flowchart LR
+    F["FIRE INPUT<br/>Observed perimeter / hotspot centre<br/>Separate spread forecast over time"]
+    D["DISCOVERY DATA<br/>Facility and asset APIs / registers<br/>Occupancy evidence and contacts"]
+    R["OPERATIONAL INPUT<br/>Crews, trucks, positions, capabilities<br/>Approved centres, routes, capacity"]
+
+    A["1. ASSESS LOCATIONS<br/><b>Which infrastructure, people and assets?<br/>What risk and value?</b><br/><br/>Discover locations and forecast exposure<br/>LLM proposes evidenced estimates<br/>Assess mobility and evacuation duration<br/>Identify reception-centre candidates"]
+    B["2. COORDINATE AND ESCALATE<br/><b>Who needs what action,<br/>by whom, where and when?</b><br/><br/>Rank contacts and feasible crew actions<br/>Allocate approved reception capacity<br/>AI calls confirm ability and help needs<br/>Escalate uncertainty / human requests<br/>Revise unsafe plans; preserve commitments"]
+    C["3. ANALYST DASHBOARD<br/><b>How do we show, explain<br/>and supervise the response?</b><br/><br/>Map, priorities and resource status<br/>Reasons, evidence and missing data<br/>Human handoff and evacuation progress<br/>Approve, assign, override, acknowledge"]
+
+    F --> A
+    D --> A
+    A -->|"Versioned location snapshot<br/>Risk, value, timing, candidates, sources"| B
+    R --> B
+    B -->|"Proposed plan and persistent tasks<br/>Destinations, blockers, progress"| C
+    C -->|"Analyst decisions and updates"| B
+    B -.->|"Sourced household corrections"| A
+
+    classDef input fill:#f1f5f9,stroke:#64748b,color:#0f172a
+    classDef assessment fill:#dbeafe,stroke:#2563eb,color:#172554
+    classDef coordination fill:#ede9fe,stroke:#7c3aed,color:#2e1065
+    classDef dashboard fill:#dcfce7,stroke:#16a34a,color:#052e16
+    class F,D,R input
+    class A assessment
+    class B coordination
+    class C dashboard
+```
+
+### 1 — Assess locations: exposure, vulnerability, value and reception candidates
+
+**Questions:** What infrastructure/assets and associated populations are in the area? Which face
+the earliest fire impact? Who may need assistance or more time? What equipment/property or critical
+service is at stake? Which buildings merit evaluation as reception centres?
+
+**Inputs checked against the repository on 19 September 2026:**
+
+| Input | What the code/data currently provides | Remaining gap |
+|---|---|---|
+| Fire observation | `fire_input.py` normalizes Deepfire `satellite-perimeters` polygons, with `clusters` hotspot centres as fallback; incident ID, observation/receipt times, source and geometry kind accompany GeoJSON. Live and recorded paths exist. | A hotspot centre is not a measured boundary. Polling selects one incident/update; coordinated multi-incident state is not implemented. |
+| Spread model | `DeepfireClient.start_spread_simulation` accepts a cluster ID **or** latitude/longitude, plus model, duration and ensemble size. On `claude/window-ranking`, `forecast_input.py` converts recorded hourly burned-area polygons to facility arrival estimates. | Point-ignition simulation is separate from the observed incident. The adapter assumes `createdAt` is simulation start and uses the first covering hourly polygon; neither exact arrival nor arrival quantiles are established by that conversion. |
+| Facilities and people | Gencat API/register adapters and cached real-area facilities cover hospitals, schools, care homes and campsites. Matching extracts identity, coordinates where present, class and occupancy evidence. The latest colleague branch adds school-enrolment evidence. | No general API discovering every person/household, private equipment inventory or resident phone number. Enrolment/capacity are proxies, not confirmed people currently present. Authorized contact records are a separate input. |
+| Value and duration | Class-based `value_score`/`value_basis` are operational importance. The colleague's v1.1 producer supplies `evacuation_min`/`evacuation_source` from explicit class-policy assumptions, with override support. | These are not monetary valuations or confirmed household evacuation times. Flammability and actual mobility need evidence; travel/transport and receiving arrangements can change duration. |
+| Search extent | Current discovery uses the fixed Gavarres bounding box `(2.85, 41.80, 3.20, 42.05)` in longitude/latitude order. | No adaptive radius or validated confinement/suppression-capability model is wired into this path. |
+
+Checked baseline: `main` at `59d8c23`; colleague's integration branch
+[`claude/window-ranking`](https://github.com/rht/wildfire/tree/claude/window-ranking) at `f91178e`.
+Its committed real spread example reaches **0 of 99 located facilities within its 12-hour horizon**;
+those facilities have no arrival estimate. This demonstrates the adapter, not a usable automatic
+contact order for that example. Outside the simulated footprint/horizon does not mean safe.
+
+**Assessment workflow:** select the area, fetch/cache available datasets, resolve stable identities,
+calculate geometric exposure and attach forecast estimates, then enrich gaps with an LLM that
+uses cited evidence. The current agent can propose occupancy/capacity/class updates for analyst
+confirmation; monetary valuation, flammability and mobility proposals are extensions. The LLM can
+propose a monetary range with currency, inventory/area assumptions and source, and flag a care
+home as likely to need assisted evacuation. It must not present those assumptions as verified
+occupancy, ability, a burn probability or an exact market valuation. Keep unknown values null.
+Human vulnerability, critical-service importance and monetary value remain separate dimensions.
+
+**Reception candidates:** component 1 supplies location, forecast exposure, suitability evidence,
+accessible capacity and supported needs. Component 2 checks current approval, route feasibility,
+capacity reservations and the whole travel/reception time window before proposing a destination.
+A hospital with firefighters present is not automatically safe or able to receive evacuees.
+Reception is also distinct from sheltering in place; the latter needs its own authorized plan.
+
+### Shared output from component 1
+
+Reuse section 5's envelope and the colleague's **v1.1** location contract; do not replace it with an
+unversioned LLM JSON response. One record represents a location and its associated population,
+not a public list of named residents. Stable IDs link assessments to private contact/interview data.
+
+| Data group | Existing / agreed field names | Proposed additions, not yet in the shared validator |
+|---|---|---|
+| Snapshot | `schema_version`, `scenario_id`, `incident_id`, `snapshot_id`, `sequence`, `as_of`, `computed_at`, `input_mode`, `data_status`, `assets` | Search-area geometry, selection basis, forecast coverage and policy version |
+| Location | `asset_id`, `name`, `asset_type`, `latitude`, `longitude`, `geometry`, `area_m2` | Equipment/infrastructure inventory where sourced |
+| People and duration | `capacity`, `estimated_occupancy`, `occupancy_basis`, `evacuation_min`, `evacuation_source` | Mobility/assistance estimates with basis and confidence; explicit duration components and transport assumptions |
+| Exposure | `distance_to_fire_m`, `intersects_fire`, `fire_arrival_at`, `fire_arrival_basis`, `arrival_p10_at`, `arrival_p50_at`, `burn_probability`, `forecast_horizon_at`, `forecast_source` | Flammability evidence/estimate and its basis; keep it separate from forecast probability |
+| Value | `value_score`, `value_basis` | Monetary estimate range, currency, method, source and review state; `value_score` remains operational importance |
+| Reception candidates | Supplied separately in the readiness prototype as `ReceptionCentre` and `EvacuationRoute` records | Link candidates to `asset_id`; suitability, accessibility, approval authority, capacity freshness, supported needs and route evidence |
+| Evidence | `needs_review`, `review_reasons`, `sources` | Field-level estimate/confirmed distinction and confidence where applicable |
+
+Additions require a versioned producer/consumer agreement before implementation. Contact numbers,
+call results, allocations and task progress belong to separate operational records; a new exposure
+snapshot must not overwrite them. Component 1 supplies the baseline evacuation duration; component
+2 must reassess it when a call changes mobility/transport facts or a destination/crew changes.
+
+### How large should the search area be?
+
+Prefer the **union of forecast footprints over a planning horizon, expanded by an explicit
+uncertainty buffer**, to a circle around the ignition point. Include threatened access routes and
+search separately for reception candidates beyond the affected footprint. Retain already contacted
+locations and assigned work even when they fall outside the next search result.
+
+The planning horizon must cover the next review interval plus the relevant notification,
+mobilisation, preparation and onward-travel time, with an analyst-selected margin. If that exceeds
+forecast coverage, expose the gap rather than treating the uncovered period as safe. Where a
+defensible upper spread-speed estimate exists but only a circular API query is available, a
+discovery approximation is `buffer distance = upper spread speed * horizon + uncertainty distance`
+around the **current perimeter**. This is a query bound, not an evacuation boundary; it must account
+for the extent of the existing fire and any separate ignitions. Do not invent the speed from distance.
+
+**Do we have the inputs?** We have recorded spread geometry over time and a fixed discovery box.
+We do not have a validated operational suppression forecast, live containment effectiveness, or
+confirmed shelter-in-place capability in the current pipeline. Truck count alone cannot establish
+containment success. Do not shrink the search area because crews are present; only incorporate a
+sourced, current operational forecast with its uncertainty. For the MVP retain the explicit fixed
+area, show coverage limitations, and let the analyst expand it; there is no justified universal radius.
+
+### 2 — Coordinate and escalate: contacts, crews, destinations and human handoff
+
+**Questions:** Who needs contacting first? Who can self-evacuate and who needs help? Which crew
+action is feasible next, with what benefit? Where can people be received? Who owns unresolved cases?
+What must change when a new incident or forecast invalidates an existing plan?
+
+In addition to assessment snapshots, this component needs confirmed resource records: crew/truck
+counts, identities, positions with timestamps, availability, skills, vehicle capacity, travel/action
+times and existing commitments. A fire truck is not automatically an evacuation vehicle. The repo
+has a manual capability/availability roster and task store, but no verified live fleet feed or
+integrated multi-crew dispatch. The Bombers intervention feed identifies incidents, not a confirmed
+available-crew inventory. The static response planner supports one crew and at most eight actions.
+
+- **Contact order:** smallest `fire_arrival - now - evacuation_duration - buffer` first. Show exhausted
+  windows and missing estimates for analyst review. Monetary value never overrides this urgency.
+- **Crew recommendations:** require travel, action duration, capabilities, deadlines and explicit
+  protective effects/prerequisites. Preserve the existing ordering of assisted people, total people,
+  then asset value when comparing feasible response alternatives; proximity alone does not prove
+  that protecting one building protects another. Surface unavailable resources and unserved locations.
+- **Destination assignment:** use approved suitable centres, confirmed route information, current
+  remaining capacity and required accessibility/care. Reserve capacity across households and keep
+  existing reservations until explicitly changed. Nearby/valuable buildings are only candidates.
+- **AI interview:** use an authorized contact record; confirm current location and household coverage,
+  ability to self-evacuate, transport, need for assistance and whether a human is requested. Explain
+  only analyst-approved incident/destination instructions. Unknown/low confidence, missing answers,
+  contradiction, no answer, failed call/transfer or an explicit human request produce a persistent
+  escalation task. Missing phone numbers remain unresolved contact work.
+- **Human escalation:** attach the asset, deadline, concise evidence and reason; notify an operator,
+  record acceptance/ownership, attempt configured live transfer, and retain a callback task if it
+  fails. A transfer tool invocation is not proof of connection. A shrinking window can require an
+  immediate resource decision instead of repeated call retries.
+- **Progress:** track instruction version and acknowledgement, declared ability, assistance request,
+  departure and arrival separately. Agreement to evacuate does not establish that anyone has left.
+
+**Stable updates:** persist plans, tasks, reservations and communication history separately from
+snapshots. Recompute affected uncommitted work; keep accepted assignments and communicated
+destinations while they remain feasible. Raise an explicit revision for a newly threatened route,
+centre or deadline, resource loss, or urgent new incident. The analyst confirms the change and the
+system tracks who must receive and acknowledge revised instructions. Stability never hides an
+invalid plan. Multiple incidents need a shared resource/capacity ledger and per-incident update
+ordering so a truck or reception place cannot be allocated twice; that integration is future work.
+
+**Output:** a proposed plan with source snapshot IDs, contact order, feasible crew recommendations,
+destination reservations, reasons/uncertainties, unmet needs and persistent escalation/progress tasks.
+Analyst decisions and call facts feed back into coordination; sourced household corrections can
+also update the next assessment without rewriting the fire forecast.
+
+### 3 — Show the response: analyst dashboard
+
+**Questions:** What needs attention now, why, who owns it, and what changed? Which recommendations
+can be accepted, which need evidence, and which households still need assistance or confirmation?
+
+Show the fire observation and labelled forecast/horizon; risk/value layers; threatened locations;
+candidate versus approved reception centres; and known resource positions with age. Display separate
+contact, crew-action and human-escalation queues so their different objectives are visible. Each
+location should show timing arithmetic, value basis, mobility evidence, destination/capacity,
+contact outcome and acknowledgement/departure/arrival status. Unknown inputs remain visible.
+
+The analyst can inspect evidence, approve a proposal, assign a capable available team, accept an
+escalation, record a callback/outcome, override a sourced estimate and approve revised instructions.
+Show a change log and explicit reasons for replanning. The UI displays component 2's versioned
+results; it must not implement a competing priority formula. The existing Streamlit map, ranking,
+tasks and investigation UI are the foundation; voice handoff, destination reservations and live
+multi-crew views still need integration.
+
 ## Voice-agent delivery plan
 
 **Owner:** [@mirrdj](https://github.com/mirrdj). **Status:** planned; implementation and calling
@@ -216,6 +403,27 @@ make investigate  # one agent investigation; live with NEBIUS_API_KEY (or ANTHRO
 make fetch        # pull real Gencat registers and Open-Meteo wind into data/ (network)
 make precompute   # v0 engine demo (spread CA, routing, decisions); the same uncalibrated CA enriches gavarres_real_0001..0003 (labelled, see below)
 ```
+
+The coordination dashboard retains Michella's visual design and reads backend state through
+REST/WebSocket. Install the pinned development dependencies and run its checks:
+
+```sh
+npm ci
+npm test
+npm run lint
+```
+
+The tests verify that snapshot-controlled IDs, names, types, review reasons and provenance render
+as literal text across ranking, review selection, location detail, map tooltips and the change log.
+They cover supplied route/fire geometry, independent call outcomes, reconnects and revision order.
+Dispatch controls remain disabled; the screen cannot create tasks, assign teams or assert an
+evacuation. The jsdom installation is test-only and adds no production JavaScript framework.
+
+The earlier static mockup's Norma Livecheck returned zero findings for HTML under full coverage. Its extracted
+inline JavaScript and the identical JavaScript form of the CommonJS regression test also returned
+zero findings, but with reduced coverage because one Semgrep rule failed to load. Those JavaScript
+results therefore do not establish an unqualified clean scan or cover the newer modular dashboard.
+The live-dashboard section records its separate scan scope and limitations.
 
 `CONTRACTS.md` (v1.1) holds the module APIs that implement section 5 and the coordination side.
 `fireline/` has `snapshot.py` (producer), `fire_input.py` (Deepfire poll or recorded responses, stale
@@ -624,7 +832,7 @@ Implementation and verification plan:
 - [x] Preserve timestamp key precedence and policy values with single lookups, cache the HTTP session without global rebinding, return search results/counts from recursion without `nonlocal`, iterate slope factors directly, and replace the three assigned lambdas with named local functions. Verify cache reuse, explicit null/zero values, deterministic planning and existing spread/validation behavior.
 - [x] Harden JUnit XML parsing with `defusedxml` in the optional report dependencies; reject DTD/entity declarations and retain valid JUnit and failed-test behavior. Confirm ordinary ElementTree's internal-entity behavior rather than assuming the scanner's XXE label demonstrates external file access.
 - [x] Record each original finding and its resolution in `reports/norma-remediation-2026-09-19.json`, separate from the original audit. Re-run Norma on every changed Python file, run the full applicable test suite, obtain independent code review, and push checkpoints.
-- [ ] Create the PR, fetch/rebase onto the latest main, resolve any conflicts, repeat final verification and required checks, and merge only after they pass. Keep the fix and audit worktrees available.
+- [x] Create the PR, fetch/rebase onto the latest main, resolve any conflicts, repeat final verification and required checks, and merge only after they pass. PR #3 merged as `587f5bd53eb41bd04d693e49a60940b6a62530f1`; the fix and audit worktrees remain available.
 
 The connected MCP currently exposes rules and Livechecks, but no account-tier or remaining-quota tool. Its ruleset response supplies availability flags, not the account's plan or quota; these values must not be inferred from those flags.
 
@@ -635,6 +843,7 @@ Verification: the unchanged baseline passed 294 tests; the remediation passes 30
 XML behavior: the local stdlib parser (Expat 2.6.3) expanded a small internal entity but rejected an external entity reference with `ParseError`; external-file disclosure was not demonstrated. The report extra now includes `defusedxml>=0.7.1`, and JUnit parsing explicitly forbids DTDs as well as the library's default entity restrictions. Plain JUnit still renders and failed tests still prevent a success report. This does not replace parser updates or impose general input-size/resource limits. See [Python XML security](https://docs.python.org/3/library/xml.html#xml-security) and [defusedxml](https://github.com/tiran/defusedxml).
 
 UTF-8 is now explicit for the audited text formats. Legacy local files written in a different encoding require conversion; generated fixtures are UTF-8. The risk-assessment/location-snapshot/coordination boundary and snapshot schema remain unchanged.
+
 ## 17. Household evacuation readiness and voice contact
 
 @mirrdj owns this coordination extension. Every location stays in the output even when the
@@ -749,7 +958,7 @@ that model has not been verified. [Manufacturer specifications](https://brovi-te
 The provider transport, interview extraction, authenticated callbacks and human-transfer path are
 not implemented in this static extension; its input contract is ready to receive those outcomes.
 
-Verification: 253 tests pass, including 36 readiness cases; targeted lint and whitespace checks
+Historical verification (2026-09-19): 356 tests passed, including 47 readiness cases; whitespace checks
 pass. Independent code review found no important issues within the static scope.
 
 ### Priority queue for outbound calls
@@ -1390,3 +1599,1214 @@ to synchronous replay/Streamlit code and are documented as inapplicable.
 Repository-wide scan and audit registration were unavailable because repository
 linking returned `auto_import_not_available`; this is not a repository-wide
 compliance claim.
+
+## SLNG dispatch compatibility — task slng-dispatch
+
+The bounded fix preserves the fixed mock package and existing `CallRequest`,
+completed-call sync and shared SQLite queue interfaces. Read-only inspection on
+2026-09-20 confirmed that the deployed mock has empty `template_variables` and
+`template_defaults`, despite the adapter sending seven arguments. The fixed
+prompt cannot represent a different household; argument-free dispatch is not a
+supported workaround for dynamic requests.
+
+Implementation plan (authorized by @mirrdj):
+
+1. Add failing offline HTTP contract tests for all seven arguments, unsupported
+   or missing provider template metadata, required unbound variables, payload
+   limits and retained request/asset/snapshot associations.
+2. Validate the provider's advertised templates before outbound POST; reject
+   oversized arguments without truncating road restrictions. Keep target approval,
+   trunk matching, sanitized errors and ambiguous-outcome handling unchanged.
+3. Add a separate `voice-agent/dynamic/` Unmute package declaring the same seven
+   `source: call_start` variables, with no default identity bindings. Compile and
+   inspect its hosted artifact offline; keep conversation-result names compatible.
+4. Run relevant and full offline tests, scoped review and changed-file Norma
+   scans; commit, push and open a PR. Document deployment and a controlled live
+   smoke test as unperformed. No hosted configuration or live calls are changed.
+
+The accepted per-call variable names are `request_id`, `asset_id`, `snapshot_id`,
+`incident_brief`, `scenario_notice`, `language`, `road_warning_brief`. The
+call-briefings status export agrees to this existing interface; content generation
+remains in its module. SLNG limits argument values to 1,024 characters, keys to
+64 characters, 32 keys and 8,192 aggregate value characters. Oversized road
+warnings must be reviewed upstream, never silently shortened.
+
+Primary references inspected: [SLNG template arguments](https://docs.slng.ai/examples/agents-config),
+[agent metadata](https://docs.slng.ai/api-reference/agents/get-agent),
+[Unmute variable sources](https://github.com/slng-ai/unmute/blob/main/docs-site/reference/variables.mdx)
+and [hosted compilation](https://github.com/slng-ai/unmute/blob/main/docs-site/targets/slng.mdx).
+
+### Dynamic package deployment and unperformed live check
+
+`SlngClient.dispatch(request, *, approved_target=None)` keeps its signature and
+returns the provider response containing `call_id`. It now checks the GET agent
+response's `template_variables` object before POST: every sent key must be
+advertised, each metadata record must have boolean `required`, and every required
+variable must be supplied. Missing metadata fails closed. `call_arguments(request)`
+returns the same seven string fields and rejects provider-limit violations before
+HTTP. `agent_configuration(...)` now includes the request and snapshot template
+bindings even without a result-tool attachment. Completed-call fetching and the
+legacy explicit association path are unchanged. Queue workers still require one
+shared account database and identical configured rate/concurrency limits.
+
+The new package is `voice-agent/dynamic/`, named
+`fireline-dynamic-interview-slng` after compilation. It keeps the existing answer
+and evidence variable names, adds road-warning acknowledgement capture, and uses
+all seven per-call templates. Identity bindings have no defaults. The old
+`voice-agent/` mock remains available for its fixed fictional scenario. The
+package's `instructions.txt` is a deployment prompt, not a new project design doc.
+
+Offline checks (read-only reuse of installed tools; no installation required):
+
+```bash
+../slng-voice-agent/data/tools/unmute-0.5.5/unmute validate voice-agent/dynamic --target slng
+../slng-voice-agent/data/tools/unmute-0.5.5/unmute compile voice-agent/dynamic --target slng
+UNMUTE_BIN=../slng-voice-agent/data/tools/unmute-0.5.5/unmute PYTHONPATH=. \
+  ../slng-voice-agent/.venv/bin/python -m pytest -q
+```
+
+Generated files remain under ignored `voice-agent/dynamic/build/`. The package
+compile test runs both commands in a temporary copy and checks the emitted hosted
+contract; without `UNMUTE_BIN` or `unmute` on PATH that test explicitly skips.
+Unmute's SLNG target cannot initiate phone calls from package `channels`; this
+package declares the web channel only. Outbound calling is an external API
+operation against a separately attached trunk. Local package `capacity` does not
+prove or configure an account's provider concurrency.
+
+Required deployment steps for @mirrdj, **not performed by this task**:
+
+1. Review the compiled `agent.json` and `compile-report.json`. Ensure the new
+   agent name is distinct from the fixed mock. Check the selected models and
+   published `end_call` capability in the chosen organisation; compilation defers
+   those provider checks.
+2. Preview `unmute deploy voice-agent/dynamic --target slng --dry-run`, then deploy
+   this dedicated package after deployment authorization. Never point it at the
+   existing mock's agent ID. Tool references are resolved at deployment, so do not
+   POST the unresolved compiled JSON directly.
+3. Attach the approved existing outbound trunk and its compatible region to the
+   **new** agent. Unmute 0.5.5 still requires the `eu-north` compilation target;
+   the previously inspected trunk needs `eu-central`. Apply the region/trunk
+   update to the new ID together through the supported agent API/CLI and verify
+   with GET. Do not change carrier credentials or reuse the mock ID by mistake.
+4. Set private `SLNG_AGENT_ID` and `SLNG_OUTBOUND_CONNECTION_ID` for the new agent.
+   GET must advertise all seven templates. Bindings must remain per-call, with
+   no default request, asset or snapshot identity. Confirm provider account limits
+   separately; concurrency remains unverified.
+5. Only after explicit approval of a real test recipient, enqueue one controlled
+   simulation-labelled request in the shared account queue. Retain all three
+   binding IDs and call through the normal adapter with the approved target.
+   Use a fresh request ID for any subsequent approved attempt; never retry an
+   ambiguous dispatch blindly. No phone number is supplied by this document.
+6. Check correct location/brief, interruption, road readback, requests for a human,
+   and unknown answers. Fetch the completed call read-only; verify the returned
+   `arguments` match request/asset/snapshot IDs, sync it twice to prove durable
+   association and idempotence, and review captured evidence/provenance. If SLNG
+   omits these arguments or speech/memory behavior is wrong, stop and investigate;
+   do not bypass association checks or dispatch without arguments.
+
+No dynamic deployment, browser speech, live outbound smoke test, model availability
+check for this new agent, or account concurrency verification has been performed.
+Offline compilation does not establish live model quality, speech behavior,
+operational readiness, human transfer or resource dispatch.
+
+Verification for this task: **615 passed, 1 skipped**, including offline Unmute
+0.5.5 validation/compilation and exact HTTP payload checks; no live providers are
+called by the suite. Scoped independent review has no outstanding findings after
+clarifying the new-agent deployment instructions and asserting compiled required
+variables. Norma scans are clean for all five changed Python files; YAML, text
+and Markdown have no applicable rules. Norma audit registration was unavailable
+because the session is not linked to a repository. The protected capacity
+predicate was not changed.
+
+The verified `call-briefings` export at commit `8f1757d` was loaded read-only and
+exercised through this adapter's offline HTTP transport for readiness-only and
+approved-route examples, preserving all seven arguments and all three IDs.
+Its branch still needs integration alongside this PR. The package retains the
+existing English speech bindings; a language argument alone does not validate
+multilingual STT/TTS support.
+
+
+## Snapshot-call-adapter (2026-09-20)
+
+This task for @mirrdj connects validated snapshot v1.1 dictionaries to the existing
+`VoiceCallQueue` without changing admission or dispatch. Only explicit private contacts,
+exact asset/snapshot/phone approvals and trusted per-asset request data can enqueue.
+The adapter uses a supplied UTC scenario epoch, the configured 30-minute contact buffer,
+and the current evacuation-window ordering. Observed geometry distance remains separate
+from forecast arrival. Unknown inputs and their provenance remain in the report.
+
+- [x] Add failing producer-shaped tests for ranking, epoch conversion, authorization,
+  stale/missing evidence, ambiguous contacts, replay and provider isolation.
+- [x] Implement `fireline/snapshot_contacts.py`, stable request IDs and optional briefing
+  callback. Project supplied coordinates only; never create response actions or effects.
+- [x] Add an enqueue-only JSON CLI and privacy/error-path tests; document exact inputs.
+- [x] Run scoped/full offline tests, obtain scoped review and Norma checks, fix findings,
+  commit/push the task branch and open a PR to main. Keep the worktree available.
+
+### Public Python boundary
+
+```python
+from fireline.snapshot_contacts import (
+    enqueue_snapshot_contacts, snapshot_request_id,
+    briefing_adapter_from_recommendations,
+)
+
+report = enqueue_snapshot_contacts(
+    queue, snapshot, contacts, approvals, request_data,
+    epoch="2026-09-20T08:00:00Z", now_at="2026-09-20T08:20:00Z",
+    # Optional: max_age_min=60, buffer_min=30, briefing_adapter=callback
+)
+```
+
+`queue` is an existing `VoiceCallQueue` whose `VoiceStore.epoch` must match `epoch`.
+Both timestamps must explicitly be UTC; epoch must precede snapshot `as_of` and
+evaluation time. `snapshot` must pass `validate_snapshot` as version `1.1`.
+Historical/synthetic snapshots can be inspected but receive `snapshot_not_live`
+and never become live requests. JSON files have these separate private shapes:
+
+| Input | Exact shape |
+|---|---|
+| contacts | Array of `{asset_id, contact_number}` records, indexed only by stable `asset_id`; zero or multiple matches block that asset. |
+| approvals | Array of `{asset_id, snapshot_id, contact_number}` records. Exactly one match for this asset and snapshot must equal the complete E.164 contact number. An approval for another snapshot does not carry forward. |
+| request_data (`--requests`) | Object keyed by `asset_id`, each value containing trusted `language` and `incident_brief`, optionally `human_callback_number` and `road_warnings` in the existing `CallRequest` shape. Other fields are rejected. |
+
+Obtain contact records and exact target approvals explicitly; this command does not
+discover contacts. Keep these files and the queue database private and ignored.
+No operational contact fixture is supplied. Duplicate JSON object keys are rejected
+instead of silently replacing an approval or request. Duplicate array records remain
+visible as `ambiguous_contact` or `ambiguous_authorization`.
+
+The return value is a `snapshot-contacts-1` report containing `scenario_id`,
+`snapshot_id`, `epoch`, UTC evaluation `as_of`, original `input_mode`, `policy`,
+`observed_geometry`, `ranked`, `review`, `blocked`, `existing` and `enqueue`.
+Ranking rows contain `asset_id`, `rank`, `status`, `slack_min`, `latest_start_min`,
+`time_to_impact_min`, `components`, forecast/evacuation source labels and original
+snapshot `evidence.sources`. `components.fire_arrival_min` and `latest_start_min`
+are absolute minutes from `epoch`; `now_min` is elapsed time from that same epoch.
+Slack and ordering agree with `rank_snapshot(snapshot, now_at=now_at)` using the
+same buffer. Property values and criticality do not affect order.
+
+The report contains no private contact, approval or request payloads. `blocked`
+contains `{asset_id, request_id, reasons}`; it is separate from timing `review`
+because a ranked location may still lack a valid phone or approval. `enqueue` is
+the existing queue's report (`queued`, `review`, `missing_contact`, `existing`),
+and top-level `existing` identifies preserved or cancelled replay entries.
+Observed geometry status/distance is reported separately and never supplies a
+forecast. Null distance does not prevent contact ranking or enqueue.
+
+The default freshness limit is `config.FRESHNESS['stale_after_s'] / 60` (60 minutes).
+Expired forecast horizons, missing forecast observation timestamps, stale forecasts,
+stale/future snapshots and future forecast evidence block enqueue. Negative remaining
+windows stay ranked as `window_exhausted`; they do not produce evacuation instructions.
+Arrivals before the supplied epoch are reported as `arrival_before_epoch` because the
+existing queue's location contract accepts only nonnegative absolute arrival minutes.
+Missing lat/lon yields `queue_coordinates_unavailable`: the queue requires projected
+coordinates, and the adapter does not invent a location from an asset ID or distance.
+
+`snapshot_request_id(snapshot_id, asset_id)` returns `snapshot-` plus a SHA-256
+digest of the ordered identity pair. Replays cannot create a second queue entry for
+that pair. Started calls remain unchanged, including when updated inputs are blocked.
+Changed request content or stored ranking inputs on a pending replay produce
+`immutable_request_conflict` or `immutable_priority_conflict` and cancel that unstarted
+entry. Other blocked replays also cancel their own pending entry. Cancelled entries
+are not revived; use a new producer snapshot and fresh exact approval after review.
+Older snapshot entries are not automatically superseded: the coordinator must use
+the queue's explicit cancellation policy before admitting replacement work.
+
+### Enqueue-only command
+
+```bash
+PYTHONPATH=. .venv/bin/python -m scripts.snapshot_contacts \
+  --snapshot /private/incident/snapshot.json \
+  --contacts /private/incident/contacts.json \
+  --approvals /private/incident/approvals.json \
+  --requests /private/incident/requests.json \
+  --epoch 2026-09-20T08:00:00Z \
+  --db /private/incident/voice-queue.sqlite3
+```
+
+`--now-at UTC_ISO` enables deterministic offline evaluation; otherwise current UTC
+is used. Optional `--max-age-min` and `--buffer-min` override the configured policy
+and appear in the report. The command writes only to the queue database and stdout;
+there is no dispatch option. It reserves/enforces mode `0600` for the database and
+rejects symlinks. All workers for an account must use this same database and identical
+`MAX_CONCURRENT_CALLS` / `MAX_CALL_STARTS_PER_SECOND` values; the command reads the
+existing queue configuration. The account's effective provider limits remain a
+separate verification responsibility. Exit `0` returns a report, including blocked
+assets; exit `2` reports malformed inputs/database errors without echoing private data.
+
+### Optional call-briefings boundary
+
+With the sibling `fireline.call_briefing` module integrated, use
+`briefing_adapter_from_recommendations(snapshot_id, recommendations)` as the
+`briefing_adapter`. Recommendations are keyed by `asset_id` and follow that module's
+approved recommendation contract. The wrapper invokes
+`build_call_briefing(asset, recommendation_or_none, snapshot_id=...)` and copies only
+`incident_brief` and `road_warnings` into trusted request data. Missing recommendations
+remain readiness/human-help briefings; target approvals are still required separately.
+The wrapper is bound to one snapshot and cannot be reused for another snapshot.
+Tests/integrators can inject the same export with `build_briefing=callable`.
+Without the sibling module, callers can supply trusted request data directly or an
+explicit `briefing_adapter(asset, request_data)` callback returning only allowed request
+fields. No optional module is imported during the base enqueue flow.
+
+### Verification and remaining integration
+
+Offline verification: **31 adapter/CLI tests passed; full suite 632 passed, 1 skipped**.
+Tests build genuine v1.1 records with `build_snapshot` plus forecast attachment and
+check `rank_snapshot` parity, nonzero epoch arithmetic, 30-minute/default and custom
+buffers, null inputs/provenance, stale and missing forecast observations, exact approvals,
+duplicate contacts, immutable replay, started calls, private CLI output and zero dispatch.
+Scoped read-only review found two issues (missing forecast observation evidence and
+changed priority on pending replay); both have failing-before/passing-after regressions
+and the final re-review found no remaining actionable findings.
+
+Norma scanned only this task's changed files. Adapter and tests returned `clean` with
+full reported coverage. CLI finding `py-perf-open-no-with` is inapplicable to its
+`os.open` descriptor: the immediately following `try/finally` always closes it with
+`os.close`. Markdown returned `not_checkable` (no rules for that type). This is a
+changed-file check, not a repository-wide compliance claim.
+
+Committed sibling exports were consumed read-only in an offline integration check:
+fire-discovery `5a4549e` (`DiscoveryService.discover().assets_in`) flowed through
+`build_snapshot` v1.1 into this adapter; call-briefings `8f1757d`
+(`build_call_briefing`) supplied approved and readiness-only briefs, while unlocated
+unknown assets remained in review. No contact records were discovered and no calls
+were placed. These branches still require separate integration into main; the base
+adapter works without them. Dispatch/deployment, current provider limits, coordinator
+supersession policy and real approved private inputs remain separate dependencies.
+
+## Multi-crew response planning — task design and implementation plan
+
+For @mirrdj: this additive component leaves `plan_response` and its exact one-crew,
+eight-action contract intact. `fireline.multi_response.plan_multi_response(data, *, graph=None)`
+will accept `multi-response-input-1` and return `multi-response-plan-1`. It is an offline,
+deterministic greedy proposal, never an automatic dispatch or an optimality claim.
+
+Design: stable asset IDs join declared needs/effects to actions. Teams supply starting road
+nodes, availability windows, capabilities and cumulative transport places. Actions supply work
+nodes through assets, durations, deadlines, capabilities, prerequisites and evidenced effects.
+Directed routes explicitly declare travel time, confirmation, safety, expiry and provenance;
+an optional supplied `RoadGraph` instead uses existing time-dependent routing. Geometry is emitted
+only from supplied edge geometry. Unknown needs/readiness stay review. Benefits use maximum
+coverage per asset, with assisted people before total people before property; no inferred spread
+or protection relationships. A prerequisite may be proposed once and shared across teams.
+
+Committed assignments (informed, en-route, in-progress or explicitly completed) are supplied
+separately from replaceable proposals. Retain these records on replanning; reserve their team and
+action. Stale, changed, unsafe or lost-team commitments require review and block further proposals
+for that team. A new incident can use other available teams. This is a bounded scheduling heuristic:
+no backtracking, fleet optimisation, simultaneous staffing, unloading, reception allocation or
+implicit transport capacity reset. All elapsed times share one caller-owned scenario epoch.
+
+Implementation sequence (execute locally; no additional implementation agents):
+
+- [x] Add failing behavioral tests for two trucks, deadlines, capability/capacity constraints,
+  shared prerequisites, unknown readiness, route safety, geometry and no double assignment.
+- [x] Implement pure planner and input validation in `fireline/multi_response.py`; preserve
+  declared effects and public provenance, with explicit unassigned/review reasons.
+- [x] Test and implement preservation of committed work during team loss, stale assignments
+  and new incidents; add CLI and a clearly synthetic offline JSON demonstration.
+- [x] Run scoped/full offline tests, request scoped review and scan only changed files with
+  Norma when available; fix actual findings. Publish commits and a PR, retain this worktree.
+
+### Multi-crew public API and integration contract
+
+```python
+from fireline.multi_response import plan_multi_response
+proposal = plan_multi_response(data)                 # supplied directed route records
+proposal = plan_multi_response(data, graph=graph)    # supplied RoadGraph, data['routes'] == []
+```
+
+Run the clearly synthetic two-truck demonstration without network access:
+
+```bash
+PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m fireline.multi_response tests/fixtures/multi_response_demo.json
+```
+
+The JSON input uses `schema_version: "multi-response-input-1"`. Required fields:
+
+| Field | Contract |
+| --- | --- |
+| `scenario_id`, `snapshot_id` | Nonempty stable IDs; scenario owns one elapsed-time epoch. |
+| `now_min`, `horizon_min`, `buffer_min` | Finite nonnegative scenario minutes; now <= horizon. |
+| `assets` | Records with `asset_id`, explicit road `node_id`, `people`, `assisted`, `value`, `deadline_min`. Counts are nonnegative integers or null; value/deadline are finite nonnegative numbers or null. Unknown remains unknown and blocks affected benefit actions for review. |
+| `teams` | `team_id`, `start_node_id`, boolean `available`, `available_from_min`, `available_until_min`, `capabilities` string list, nonnegative integer `transport_capacity`. Starting nodes are supplied current locations. Capacity is the scenario budget including supplied historical commitments; do not also subtract those commitments upstream. |
+| `actions` | `action_id`, `asset_id`, positive `duration_min`, nullable `deadline_min`, `requires` action-ID list, `capabilities` list, integer `transport_people`, boolean `readiness_required`, and `effects`. Each effect has `asset_id`, coverage in [0,1], boolean `confirmed`, and public `source` provenance. Requirements must be acyclic; effects never propagate to nearby buildings. |
+| `routes` | Directed end-to-end records: `from_node`, `to_node`, `minutes`, booleans `confirmed` and `safe`, nullable `available_until_min`, public `source`. Missing, unsafe, unconfirmed or unknown-expiry routes are unusable. Expiry must be strictly later than arrival plus buffer. No reverse leg is inferred. Route records do not produce geometry. |
+| `readiness` | Optional latest normalized outcome per asset: `asset_id`, `status`, `observed_min`, `valid_until_min`, public `source`, `request_id`. Status is `assistance_required`, `unknown`, `no_answer`, `self_evacuating`, or `completed`. This is an adapter input, not a raw provider payload. |
+| `committed` | Optional persisted task records from an earlier result, with status explicitly changed to `informed`, `en_route`, `in_progress`, or `completed`. A proposal is never a commitment by itself. Preserve the original scenario/snapshot/action version and timings. Completed records additionally require nonnegative `actual_finish_min` no later than `now_min`; a status change alone is insufficient. |
+
+When `readiness_required` is true, only a supplied `assistance_required` outcome observed by
+`now_min` and valid through task completion plus buffer permits a proposal. Existing outcomes
+also constrain every action with nonzero `transport_people`; no-answer/unknown/completed or
+self-evacuating households do not acquire a new transport proposal. The caller must mark other
+assistance actions as `readiness_required` when they depend on household readiness. Call statements
+do not invent revised headcounts, deadlines, action durations or verified arrival. Upstream must
+map actual, sufficiently evidenced call/readiness results to this normalized contract. The planner
+never parses transcripts or equates `self_evacuating` with confirmed arrival.
+
+`RoadGraph` support reuses `earliest_arrival`/`path_to` on a private copy, retaining directedness.
+Every usable edge must supply finite nonnegative `travel_min` and `cut_min`, `confirmed=True`,
+`safe=True`, public `source`, and may set `closed=True`. Default infinite cuts do not establish
+safety. Only an explicit `geometry_lonlat` polyline on **every** selected edge produces
+`path_lonlat`; endpoints must match the supplied node lon/lat (reverse order is accepted).
+Unknown geometry is omitted. No nearest-node snapping, straight-line road invention, geocoder,
+provider fetch, or map download occurs. The caller owns all hazard/route freshness checks.
+
+Output is `multi-response-plan-1` with `scenario_id`, `snapshot_id`, `now_min`, `optimal=false`,
+`dispatch=false`, heuristic `method`, ordered `teams`, `coverage`, `objective`, `unassigned`,
+and `review`. Each team record contains `team_id`, ordered `tasks`, `locked`, and
+`remaining_transport_capacity`. Each task carries `action_id`, stable `asset_id`, `team_id`,
+`scenario_id`, `snapshot_id`, `action_version`, `status`, `from_node`, `to_node`, `depart_min`,
+`travel_min`, `start_min`, `finish_min`, `prerequisites`, declared `effects`, `transport_people`,
+`route_source`, and `coverage_gained`; current proposals may add normalized `readiness`,
+`path_nodes`, and grounded `path_lonlat`. Historical geometry is not reissued as current routing.
+Unassigned actions retain sorted reason codes such as `transport_capacity`, `capabilities`,
+`prerequisites`, `deadline`, `route_unavailable`, `unknown_needs`, and `readiness_review`.
+
+The heuristic selects the best assisted-person benefit, then total-person benefit, then property
+benefit among currently feasible action/team pairs. A prerequisite uses its best downstream
+benefit's priority as a hint; earlier finish and stable IDs break ties. It does not backtrack or
+prove that an entire downstream chain is feasible. Shared prerequisites finish before dependent
+work starts, and each action is assigned at most once. Coverage is the maximum declared fraction
+per asset, not the sum of overlapping effects. Objective units are declared coverage accounting,
+not predictions of lives saved. Unknown benefits are not counted as zero people.
+
+Every active commitment locks its team, reserves its action and transport places, and stays in
+output unchanged in identity/status/timing. It receives no completed benefit and satisfies no
+prerequisite. Snapshot changes, changed action definitions, missing/unavailable teams, overdue
+work and unavailable routes add explicit review reasons. No automatic cancellation, reassignment
+or completion occurs. Other teams may receive proposals for new incidents. Explicitly completed
+commitments use `actual_finish_min` for coverage deadlines. Current team loss or reduced capacity
+does not erase actual work. Compatible action versions satisfy prerequisites; the caller supplies each team's
+current starting node for its next leg. Keep historical assets/actions until commitments are
+reconciled. Removing or changing a historical action can lock its team pending analyst review.
+
+**Live-coordination boundary:** consume this pure result as `plan.response`; expose its team rows
+under the shared envelope's `teams`, and flatten each row's `tasks` into proposed work items as
+needed. Persist informed/en-route/completed transitions outside this module and pass them back in
+`committed`. Keep `scenario_id`/`snapshot_id` aligned; use the coordinator's UTC epoch to derive
+all elapsed minutes. `as_of`, `revision`, events and durable task IDs belong to the coordinator.
+This branch does not edit `fireline.coordination` or wire a live fleet into it. Its verified export
+still needs an explicit adapter from actual snapshot needs, current fleet/route inputs and normalized
+readiness outcomes. Extra private input keys are never forwarded; callers must keep public source
+labels and IDs free of contact details and supply no raw provider payloads.
+
+**Bounded MVP:** no automatic dispatch, continuous en-route tracking, automatic commitment release,
+return trips, unloading/reusable seats, reception-place reservations, road congestion, vehicle-specific
+road restrictions, simultaneous multi-team staffing, suppression simulation, optimal fleet search,
+or automatic scenario/time conversion. Capacity is a conservative cumulative budget; transport
+counts and action effects are caller-declared assumptions. All tests and the demonstration are offline.
+
+
+Multi-crew verification (2026-09-20): **644 passed, 1 skipped** in the full offline suite;
+**43** focused multi-crew tests. Scoped review identified completion-history, actual-timing and
+persisted-payload integrity defects; regression tests reproduced each before fixes. Actual
+completion may precede forecast arrival and is validated against the scenario epoch/current time.
+Norma scanned only the four changed files: test/JSON scans were clean; Markdown had no applicable
+rules. The planner retains one deliberate exact-built-in-integer count check flagged by Norma;
+booleans and custom numeric objects are not accepted as transport/headcount inputs. The existing
+`remaining_places` predicate and exact one-crew planner were not edited. Full live-coordination
+fleet/readiness wiring remains an integration dependency; the current export is a pure proposal.
+
+## Evacuation plans — durable destination allocations (2026-09-20)
+
+**Goal:** give @mirrdj and analyst coordination an explicit, auditable destination
+selection and reservation boundary. This is decision support using supplied evidence;
+it performs no live directions, calls, notifications or automatic resource dispatch.
+
+**Design:** keep `coordinate_evacuation` and its existing validation unchanged. Add
+`fireline/evacuation_plans.py` for candidate/group/road/context records and suitability,
+`fireline/evacuation_allocations.py` for SQLite transactions and lifecycle, and an additive
+readiness wrapper plus offline CLI. An explicit facility adapter consumes records now;
+raw discovery candidates never become approved reception centres automatically.
+
+Candidates need scoped analyst approval, a current forecast, origin/destination threat
+windows, sufficient capacity, known group needs matched by reception capabilities, and
+verified open roads through the entire supplied route. Missing evidence stays in review.
+Capacity is the planning budget inclusive of this ledger's reserved/departed/arrived
+occupants; external occupancy must already be excluded. A single database owns one
+scenario/UTC epoch, shared by all allocation writers; new incidents use that same ledger.
+
+Reservations require separate group/destination approval. SQLite immediate transactions
+serialize capacity checks, idempotent command records, releases and explicit reassignment.
+Communication, departure and arrival are separate sourced confirmations. Arrivals keep
+occupying slots until an explicit release. Routine updates retain destinations; danger,
+closure, stale/unknown evidence or incident changes retain occupied slots and produce
+human review/new-instruction tasks. Invalidated allocations require explicit reapproval
+through reassignment, even if later data looks safe. Assisted groups track transport and
+reception plans and confirmations separately; a crew action cannot fulfill those plans.
+Public exports omit free-text private confirmation/approval payloads.
+
+### Implementation plan
+
+Use Superpowers executing-plans inline in the existing worktree, with test-driven
+implementation and scoped review. The prior authorization covers routine design choices.
+No new Markdown documents or implementation agents are needed.
+
+- [x] Candidate boundary: add `CandidateFacility`, `EvacuationGroup`, `RoadEvidence`,
+  `PlanningContext`, `candidate_from_record`, and `evaluate_candidates`. Write failing
+  tests for hospital non-approval, missing/blocked roads, stale forecast, needs/access,
+  origin/destination threat deadlines and deterministic selection; then implement.
+- [x] Durable ledger: add `AllocationStore.update_inputs`, `reserve`, `reassign`,
+  `confirm`, `release`, `public_plan` and `briefing`. Write failing tests for competing
+  buildings, retries/conflicting command IDs, restart occupancy, rollback on failed
+  reassignment, distinct confirmations, closure/new incidents and assisted plans;
+  implement with SQLite immediate transactions and persisted evidence.
+- [x] Integration: add `coordinate_approved_evacuation` wrapper and
+  `scripts/evacuation_plans.py` JSON CLI; exercise them with real local databases and
+  synthetic fixtures. Preserve crew/contacts output and gate proposed destinations.
+- [x] Verify relevant and full tests, inspect sibling exports, scan only changed files
+  with Norma, obtain scoped review, fix actual findings, commit/push and open a PR.
+
+Verification command from this worktree:
+`PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m pytest -q`.
+
+### Published evacuation allocation interfaces
+
+All elapsed minutes use the one `PlanningContext.epoch` (UTC). `as_of` is explicit,
+including on reads; offline replay must advance it. A database rejects a new scenario
+or epoch and time moving behind its latest committed event. Keep using the same database
+when `incident_id` changes so existing occupants and reservations cannot disappear.
+
+| Interface | Contract |
+| --- | --- |
+| `fireline.evacuation_plans.PlanningContext(scenario_id, incident_id, snapshot_id, epoch, as_of, forecast_observed_min, max_age_min=15, buffer_min=0)` | Immutable snapshot identity and freshness policy. Forecast and road observations must be current, never future-dated. |
+| `CandidateFacility(centre, kind='unknown', approval=None, safe_until_min=None, threat_source=None, capabilities=None, closed=False, provenance=())` | Wraps existing `ReceptionCentre`. `remaining_places` is this ledger's total budget, inclusive of its allocations, or null if unknown. `safe_until_min` is the supplied destination threat deadline. Capabilities are known supported needs; null means unknown. |
+| `AnalystApproval(approval_id, analyst_id, incident_id, centre_id, evidence, group_id=None)` | A facility approval has no group; an allocation approval binds a specific group. Explicit evidence is required. This trusted local interface does not authenticate an analyst. |
+| `EvacuationGroup(group_id, asset_id, people, assisted, needs, fire_arrival_min, evacuation_min, forecast_source)` | Stable group and asset IDs; groups must partition the building population without overlap. Null size, assistance or needs requires review. Empty needs means explicitly assessed as none. |
+| `RoadEvidence(road_id, state, observed_min, available_until_min, source)` | State is `open`, `blocked` or `unknown`. Every ordered `EvacuationRoute.road_ids` member needs current positive evidence and a window covering the complete evacuation. |
+| `evaluate_candidates(group, candidates, routes, roads, context, occupied=None)` | Deterministic rows with `eligible`/`review`/`unsafe`, reason codes, remaining capacity and cited approval, threat, needs and route evidence. Does not reserve. |
+| `candidate_from_record(record)` / `candidates_from_discovery(discovery)` | The latter is in `fireline.evacuation_plan_adapter` and consumes `discovery-1.assets_in` with `classifications[id] == 'destination_candidate'`. Raw records retain stable IDs, class and sources; approval, capacity and safety remain unknown. |
+| `fireline.evacuation_allocations.AllocationStore(path)` | One shared SQLite file for this scenario's allocation writers. `update_inputs(context, candidates, groups, routes, roads)` saves a complete immutable snapshot. Repeating an identical snapshot does nothing; changing its contents under the same ID fails. |
+| `store.reserve(command_id, group_id, centre_id, approval, *, as_of, snapshot_id)` | Transactional capacity check and explicit allocation approval. Returns an allocation summary. A group may have only one active allocation. |
+| `store.reassign(command_id, allocation_id, centre_id, approval, *, as_of, snapshot_id)` | Atomic explicit release/reserve before departure, with a new approval ID. Failed checks leave the original reservation intact. Invalidated reservations can be explicitly reapproved for the same centre. Departure/arrival require physical-location reconciliation and explicit release before another allocation. |
+| `store.confirm(command_id, allocation_id, state, *, actor, evidence, as_of)` | `communicated`, then `departed`, then `arrived` are distinct sourced facts. New danger blocks communication but does not suppress subsequently reported physical departure/arrival. |
+| `store.release(command_id, allocation_id, *, actor, evidence, as_of)` | Explicitly frees slots, including confirmed arrivals. Actor and evidence are retained privately. |
+| `AssistancePlan(transport_id, reception_id, pickup_min, seats, capabilities)` and `store.set_assistance(command_id, allocation_id, plan, *, actor, evidence, as_of)` | Stores a group/destination-bound proposed booking. Separate `confirm(..., state='transport_confirmed')` and `reception_confirmed` facts are required. Pickup delay must fit all route, road, origin and destination windows. No crew dispatch fulfills these facts. |
+| `store.public_plan(*, as_of)` | `evacuation-plan-1`: `scenario_id`, `snapshot_id`, `revision`, `as_of`, `locations`, `remaining_capacity`, `response: null`, `tasks`, `events`. Rows join on `asset_id` and include group/allocation/destination IDs, lifecycle `state`, `safety`, `reasons`, `tasks`, `instruction_allowed`, and `evaluated_as_of`. Missing centre capacity stays null, overcommitment stays negative. |
+| `store.briefing(asset_id, *, as_of)` | Public allocation rows for that asset, including retained but invalid destinations. Consumers **must honor `instruction_allowed`**; presence of a destination alone is not permission to relay instructions. |
+| `store.view(*, as_of)` | One consistent `(public_plan, private_input_tuple)` for trusted adapters; the tuple is context/candidates/groups/routes/roads. Do not publish the private tuple. |
+| `coordinate_approved_evacuation(scenario, assessments, store, *, as_of, readiness_policy=None, road_warnings=())` | Additive wrapper in `fireline.evacuation_plan_adapter`. Preserves core crew/contact proposals, adds allocations and candidate reviews, checks full population coverage, current contact timing, assistance conflicts and blocked roads even after acknowledgement. Like the existing readiness API, this is a **private analyst result** containing interview/source evidence; use `public_plan` for the public envelope. |
+| `build_approved_recommendation(store, asset_id, *, as_of, snapshot_id, route_guidance, expected_people=None)` | Call-briefings mapping or `None`. Requires known current building population equal to allocated headcount, all groups allowed instructions, and one common destination. Verified `route_guidance` must contain `asset_id`, `centre_id`, `snapshot_id`, `confirmed: true`, `instructions`, ordered `road_ids`, `road_names`, `source`. It returns `asset_id`, `snapshot_id`, `approved`, `plan_id`, `revision`, `source`, `destination: {name}`, `route: {instructions, road_ids, road_names, feasible}`. Never generates directions. |
+
+Command IDs bind the full original command. Identical successful retries return the
+current durable allocation state at the latest event time (`evaluated_as_of`), even after
+a newer snapshot; changed arguments under the same command ID fail. Obtain a fresh
+`public_plan(as_of=...)` before using a retried command result for current instructions.
+All CLI commands commit individually; a later failing command does not roll back earlier
+successful commands. Replaying the file is safe through the same command IDs.
+
+Routine safe forecast changes preserve approved destinations. Closure, missing evidence,
+changed group facts, changed approved road sequence or a new incident invalidate existing
+allocations without releasing their slots or choosing a replacement. Human review and
+new-instruction tasks remain until explicit reapproval; restoration of good evidence alone
+does not clear stored invalidation. Route checks after departure/arrival are conservative:
+this prototype retains the supplied origin route context rather than inferring an occupant's
+new location. Re-routing moving occupants needs separately verified location and route data.
+
+### Offline CLI example and verification
+
+`fixtures/evacuation_plans.json` is entirely synthetic. From this worktree:
+
+```sh
+mkdir -p data
+PYTHONPATH=. ../slng-voice-agent/.venv/bin/python scripts/evacuation_plans.py \
+  --input fixtures/evacuation_plans.json --database data/evacuation-plans.sqlite \
+  --as-of 2026-09-20T00:00:00Z
+PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m pytest \
+  tests/test_evacuation_plans.py tests/test_evacuation_allocations.py \
+  tests/test_evacuation_plan_adapter.py -q
+```
+
+The CLI consumes context/candidates/groups/routes/roads and optional commands with a
+`kind` of `reserve`, `reassign`, `confirm`, `release` or `set_assistance`; other fields
+match the Python signatures. It emits only the public plan. No provider is contacted.
+
+Cross-branch offline verification consumed actual sibling modules read-only: discovery
+`563afdd55ba7263d72359b8297e938ba28afc8a5` produced unapproved hospital candidates;
+call-briefings `a904ab370d4f1485ef5ca23fc33f25aff54c1389` accepted the supplied approved
+mapping and fell back to readiness-only when forecast evidence expired. Live-coordination
+still needs to wire this wrapper or overlay `public_plan` into its `coordination-state-1`
+envelope; this branch does not change its module. Verified directions, analyst approvals,
+current facility/road/threat evidence and transport/reception confirmations remain external
+inputs. This is not a live evacuation, directions or notification service.
+
+Final branch verification: **646 passed, 1 skipped**, including **45 new evacuation
+tests**; the synthetic CLI and idempotent replay passed. Scoped read-only review
+accepted the fixes and independently reran all 45 tests. Norma reported all seven
+changed Python files clean after fixing one timeout naming finding. Compliance audit
+registration was unavailable because the repository is not linked in Norma; no repository
+configuration was changed. The existing readiness core and its capacity predicate are
+unchanged.
+
+
+## Household call briefings (call-briefings task)
+
+For @mirrdj: build household-specific call content from explicit analyst approval,
+without borrowing the Willow House demonstration. The module is pure and does not
+place calls, change provider configuration, infer safe routes, or rewrite call facts.
+
+Public boundary: `fireline.call_briefing.build_call_request(asset, recommendation,
+contact, *, snapshot_id, request_id, input_mode='synthetic') -> CallRequest`.
+`asset` is a snapshot asset mapping with stable `asset_id`, optional `name`, and
+optional current `road_warnings`. `contact` is a private mapping containing
+`contact_number`, optional `language` (default `en`), `human_callback_number`, and
+optional matching `asset_id`. This payload must not enter the public live-state envelope.
+
+An approved recommendation has `asset_id`, `snapshot_id`, `approved: true`,
+`plan_id`, `revision` (nonnegative integer), `source`, `destination: {name}`,
+`route: {instructions, road_ids, road_names, feasible: true}`, optional
+`road_warnings`, and optional `conflicts` (a list). Only actual supplied instructions
+are relayed. Unknown/unapproved/missing destination, infeasible route, mismatched
+identity, or road conflicts withhold destination/route guidance and request human
+help. Road warnings use the existing `{road_id, road_name, reason, source}` contract.
+Current asset warnings supersede recommendation warnings with the same road ID;
+additional recommendation restrictions are retained conservatively. Known route IDs,
+road names and named warnings appearing in instructions are checked for conflicts.
+
+SLNG template arguments stay exactly those from `slng_voice.call_arguments`:
+`request_id`, `asset_id`, `snapshot_id`, `incident_brief`, `scenario_notice`,
+`language`, `road_warning_brief`. Version and fresh acknowledgement requirements
+travel inside `incident_brief`; named road restrictions travel in `road_warning_brief`.
+The existing interview prompt asks self-evacuation ability, suitable transport,
+preparation, a human request and evidenced message/instruction acknowledgement.
+No new template variables or deployment mutations are required by this library.
+Provider deployment and verification of the dynamic template remain separate work.
+
+Implementation plan (executed inline in the existing task worktree):
+
+- [x] Add failing content tests in `tests/test_call_briefing.py`: two households and
+  destinations, missing/unauthorized/stale plans, infeasible/unsafe routes, explicit
+  road names/reasons, wrong contact identity, unknown values, and input immutability.
+  Run `PYTHONPATH=. ../slng-voice-agent/.venv/bin/python -m pytest tests/test_call_briefing.py`.
+- [x] Implement `fireline/call_briefing.py`, returning existing `CallRequest` objects
+  and `build_call_briefing(asset, recommendation, *, snapshot_id) -> CallBriefing`
+  with deterministic instruction and warning versions, guidance status and reasons.
+  Reject oversized content rather than silently truncating route instructions.
+- [x] Add failing version/evidence tests, then implement
+  `briefing_acknowledgement(briefing, request, result=None, *, instruction_receipt=None) -> dict` to keep receipt
+  separate from departure/arrival, require fresh acknowledgements after change,
+  and prevent model confidence from substituting for transcript verification.
+  Test immobility, missing transport and human requests through existing consumers.
+- [x] Read sibling export status and add an explicit adapter if a verified plan
+  export exists; otherwise name that dependency. Run relevant and full offline tests,
+  inspect changed-file Norma results, obtain scoped review, fix actual findings,
+  commit/push `codex/call-briefings`, and create a reviewable PR to main.
+
+
+### Briefing versions, receipt and sibling adapters
+
+`CallBriefing` exposes `asset_id`, `snapshot_id`, `instruction_version`,
+`road_warning_version`, `guidance_status` (`approved_instructions` or
+`readiness_only`), `human_followup_reasons`, `incident_brief`, `road_warnings`,
+`destination`, `route_instructions`, `plan_id`, `plan_revision`, and `source`.
+Treat this as private operational content. Do not publish the dataclass or a full
+`CallRequest` in the shared live-state envelope. The version hash binds the
+household, snapshot, complete accepted instructions, route membership, approval
+revision/source and warning version; irrelevant contact or confidence attributes
+do not alter it. Internal snapshot/version references are labelled not to be read
+aloud. Unavailable guidance and provenance stay null.
+
+`briefing_acknowledgement(briefing, request, result=None, *, instruction_receipt=None)`
+returns `instruction_version`, `road_warning_version`, `instruction_acknowledged`,
+`road_warning_acknowledged`, `requires_new_acknowledgement`,
+`human_followup_required`, and `instruction_receipt_source`. A separate analyst
+interpretation is required for instruction receipt:
+
+```python
+receipt = {
+    "request_id": request.request_id,
+    "instruction_version": briefing.instruction_version,
+    "acknowledged": True,  # explicit analyst interpretation; False is also preserved
+    "source": "analyst-reviewed instruction receipt",
+}
+status = briefing_acknowledgement(
+    briefing, request, stored_result, instruction_receipt=receipt,
+)
+```
+
+A transcript-verified excerpt proves the words occurred, not that they mean yes.
+General answer readback cannot substitute for affirmative instruction receipt.
+Identity, household authority and receipt evidence must be transcript verified;
+bad audio, contradictions, incomplete calls and non-observation timestamps retain
+uncertainty. A missing/stale receipt remains unknown. Road warning acknowledgement
+uses its own boolean and verified evidence. Neither score nor transcript matching
+establishes transcript accuracy or operational readiness; the existing live human
+review gate remains in effect. Source provenance belongs to the separate receipt,
+not an inferred model confidence. The caller must obtain request/result pairs from
+the provider-bound `VoiceStore`. This helper does not persist analyst receipts.
+
+Use a new immutable request ID for revised instructions; old results and evidence
+stay available. The current snapshot enqueue adapter allows one asset request per
+snapshot, so its caller must issue a fresh snapshot identity when requeueing a
+changed instruction version. A repeated request ID with changed content is
+rejected by `VoiceStore`, rather than rewriting an old call. This library computes
+receipt status and content; it does not automatically schedule another call.
+
+For `snapshot-call-adapter`, use the explicit content-only callback:
+
+```python
+from functools import partial
+from fireline.call_briefing import snapshot_request_data
+
+# Each request_data[asset_id] contains recommendation, optional language,
+# and optional human_callback_number. Contact authorization stays upstream.
+briefing_adapter = partial(snapshot_request_data, snapshot_id=snapshot["snapshot_id"])
+# Pass briefing_adapter to enqueue_snapshot_contacts(...).
+```
+
+`snapshot_request_data(asset, data, *, snapshot_id)` returns only `language`,
+`incident_brief`, `road_warnings`, and optional `human_callback_number`. It rejects
+raw incident briefs and identity/contact overrides. An absent recommendation
+produces readiness and human-help content. No contact numbers are invented.
+
+Integration evidence: committed snapshot adapter `cd9bdab` and SLNG dispatch
+`1f72a6a` were loaded read-only for an offline contract exercise with two synthetic
+contacts. Approved and warning-conflicting plans reached their correct queue
+requests and seven template arguments; dispatch state stayed `not_started`.
+The subsequently committed evacuation adapter `f8be75d` was also consumed
+read-only: `build_approved_recommendation` produced an approved request from a
+local allocation ledger and supplied route instructions; closing that destination
+produced `None` and a readiness-only briefing. The additive adapter takes
+`(store, asset_id, *, as_of, snapshot_id, route_guidance)`; it lives on the
+`evacuation-plans` task branch, so that branch must be integrated to use it.
+Do not treat a candidate ranking or proposed allocation as analyst approval.
+Deployment of the dynamic SLNG agent,
+region/trunk attachment, actual spoken behavior and a controlled live call remain
+unperformed and outside this task's authorization.
+
+
+Verification for this task: **662 passed, 1 skipped**, including **61 briefing
+content/receipt tests**. An independent scoped reviewer reproduced a false
+instruction-acknowledgement case, the regression failed before the separate
+receipt fix, and follow-up review reported no remaining scoped findings. Norma
+changed-file checks are clean for `fireline/call_briefing.py` and its test file;
+Markdown has no applicable rules. The catalog was generic because repository
+linking was unresolved; this is not a repository-wide compliance claim. Only
+this task's new revision validator was adjusted; the separate `remaining_places`
+contract was not touched.
+
+## Live coordination projection (live-coordination)
+
+Design for @mirrdj: `fireline.coordination.CoordinationStore` shares the existing
+VoiceStore/TaskStore SQLite database and scenario epoch. An explicit service tick
+reads durable assessments, the supplied current location snapshot, StaticScenario,
+ReceptionCentre and EvacuationRoute inputs. Snapshot timing, distance and occupancy
+are authoritative; scenario actions, assistance and explicit effects stay supplied.
+Stable asset IDs join records. Calls from snapshots accepted by coordination or TaskStore may carry
+forward with their original observation times; foreign snapshots and input modes
+cannot supply readiness. Negative assistance/human requests survive newer calls.
+No UI imports, calls, provider configuration writes or numeric live confidence.
+
+The projection and ordered revision events commit atomically with suggested task
+links under SQLite's write lock. Repeating a refresh at the same scenario time
+with unchanged facts is a no-op, including after restart. Time advances on explicit
+ticks in exact elapsed minutes; no background process runs implicitly. Snapshot
+identity is immutable, sequence/time cannot regress, and a database binds to one
+scenario and input mode. Human ownership and status always remain analyst-controlled.
+The public envelope excludes private call text/numbers and task notes/evidence.
+Unknown values, evidence availability, verification and provenance references remain.
+
+Public API (dashboard contract):
+
+```python
+CoordinationStore(path, *, epoch, clock=None)  # UTC datetime epoch and clock
+store.refresh(snapshot, scenario, centres, routes, *, road_warnings=(), response_plan=None)  # dict
+store.state()  # latest coordination-state-1 dict; None before first refresh
+store.updates(after_revision=0)  # ordered list of coordination-update-1 dicts
+store.close()
+```
+
+State fields: `schema_version`, `scenario_id`, `snapshot_id`, integer `revision`,
+UTC `as_of`, `input_mode`, snapshot `assets`, `contacts: {ranked, review}`,
+public `calls`, `plan: {locations, remaining_capacity, response, ...}`, `teams`,
+`tasks`, `events`, `errors`. Events identify `event_id`, `revision`, `scenario_id`,
+`snapshot_id`, UTC `as_of`, `kind`, `changed_asset_ids`, and `refresh: full_state`.
+Consumers fetch `state()` after an update; a later state may already be available.
+`voice` and `tasks` expose the existing stores for explicit local ingestion and
+analyst assignment/status operations, followed by a refresh to publish changes.
+
+Implementation plan (Python/SQLite; all documentation stays here):
+
+- [x] Restore commit 923d494's exact built-in integer capacity regression tests,
+  observe failure, restore only the capacity predicate, and verify road warnings.
+- [x] Write failing persistence, live-assistance, privacy, restart, sequence,
+  concurrent refresh and atomic rollback tests; implement the projection boundary.
+- [x] Add an offline `python -m fireline.coordination tick` CLI with explicit
+  database, epoch, snapshot, scenario and readiness JSON files, and test it.
+- [x] Consume verified sibling interfaces when available, review changed files,
+  run Norma on changed files only, run relevant/full tests, commit, push and PR.
+
+Destination capacity remains a proposal within one refresh. A durable allocation
+ledger from evacuation-plans requires an explicit adapter before reservation or
+arrival claims; multi-crew proposals use the optional export adapter described below.
+Actual telephone transfer and real evacuation completion remain unverified.
+
+The optional `response_plan` accepts `multi-response-plan-1` from the verified
+multi-crew producer (contract fixture generated from commit `c9c46cc`). Its scenario,
+snapshot and exact elapsed `now_min` must match the tick. The public export appears
+under `plan.response`; roster membership, assignments and task completion are not
+changed. The caller supplies current commitments and readiness to that planner.
+An omitted proposal is not reused across ticks. The CLI accepts the same export
+with `--response-plan FILE`. Destination allocation ledger integration remains pending.
+
+Run one local tick after durable provider facts have been ingested:
+
+```sh
+PYTHONPATH=. python -m fireline.coordination tick \
+  --database data/shared-voice.sqlite --epoch 2026-09-20T10:00:00Z \
+  --snapshot data/current-snapshot.json --scenario data/current-scenario.json \
+  --readiness data/current-readiness.json
+```
+
+`--as-of UTC_ISO` supplies an exact clock for offline fixtures; otherwise the clock
+is current UTC. Readiness JSON contains `centres`, `routes`, and optional
+`road_warnings`. No daemon, provider polling, LLM call or live call worker starts.
+Public `as_of` is the publication time; `snapshot_as_of` retains risk input time;
+`elapsed_min` uses the database epoch with fractional minutes intact. Advancing
+time is itself a changed input, so it can publish a revision without a new call.
+`events` contains the latest compact revision event; `updates(cursor)` gives the
+ordered durable history. Public asset records allowlist the current snapshot
+contract (including optional value-at-risk fields); arbitrary extensions are omitted.
+Call evidence stays private, with evidence field names, verification, observation
+basis/times and request references exposed. Task notes, free-text reasons, blocking
+answers and evidence are private; only enumerated voice task kinds are exposed.
+Tasks for current assets remain visible even if their earlier snapshot association
+is not known to coordination. Such call facts stay excluded with a structured
+`call_snapshot_not_accepted` error until snapshot history has an accepted association.
+Unresolved assistance tasks retain human review even when a delayed negative result
+was deliberately not substituted for a newer stored answer.
+
+Validation at handoff: 645 tests passed, 1 skipped, including 38 coordination
+behavior tests and the restored primitive-capacity cases. Independent scoped review
+reproduced and verified fixes for task visibility, metadata privacy, fractional
+epoch timing, delayed assistance, accepted snapshot history, initial-tick idempotency
+and retained missing-asset commitments. Norma scanned only changed Python/test files
+and readme.md: tests were clean; Markdown had no applicable rules. Retained findings
+are intentional primitive-type checks (including @mirrdj's exact remaining_places
+contract and the revision cursor contract) and JSON CLI output on stdout, which is
+program output rather than diagnostic logging. No operational call/transfer,
+provider deployment, durable destination reservation or evacuation was verified.
+The allocation sibling's public_plan/wrapper is still under integration review;
+it is not called by this projection. Integrate that ledger separately before treating
+proposed centre capacity as a durable reservation. All writers to that ledger must
+share its database; every automated call worker must share the voice queue database
+and identical configured limits.
+
+## Live dashboard integration — codex/live-dashboard
+
+For @mirrdj: Michella's terminal frame, map, cards, selection, evidence, database
+view and change log now consume backend state. The dashboard is read-only: loading,
+reconnecting or clicking a location never enqueues a call, assigns a task or
+confirms movement. Call approval/dispatch remain in the existing shared queue flow.
+Her `claude/workflow-setup` branch was merged into this task branch only.
+
+Public interface:
+
+- `fireline.dashboard_server.create_app(store, poll_interval=0.5)` accepts a
+  synchronous `state()` / `updates(after_revision)` store. `state()` returns a
+  `coordination-state-1` envelope or `None` before initialization. Updates may be
+  ordered full envelopes, wrapped full envelopes, or `coordination-update-1`
+  notifications with `refresh="full_state"` (the actual coordination export).
+- `GET /api/state` returns the public current envelope; unavailable/uninitialized
+  state returns HTTP 503 with `{"error":"state_unavailable"}`. Responses use
+  `Cache-Control: no-store`. There are no mutation endpoints.
+- `WS /api/updates?after_revision=N` sends complete public envelopes, plus
+  `{"type":"heartbeat","revision":N}` every ten seconds, or
+  `{"type":"error","code":"state_unavailable"}` before closing on failure.
+  Historical full states replay in revision order. Compact notifications resolve
+  to the latest full state and may coalesce intermediate revisions. Reconnect
+  fetches REST first, then subscribes from that revision; duplicate/older frames
+  are ignored. Missing history catches up from a full state. Source age uses
+  `snapshot_as_of` where present; stale/unavailable source and transport failure
+  remain visible while the last good state stays on screen.
+- `CoordinationDatabase(path)` reads the committed `coordination_revisions`
+  table using SQLite `mode=ro`. It never initializes, migrates or refreshes the
+  operational database. Point it at the database written by live-coordination;
+  dashboard polling does not cause coordination ticks or call-worker activity.
+
+The envelope keeps `schema_version, scenario_id, snapshot_id, revision, as_of,
+input_mode, assets, contacts:{ranked,review}, calls, plan:{locations,
+remaining_capacity,response}, teams, tasks, events, errors`. Browser order comes
+from `contacts`, joined by stable `asset_id`; no frontend score or routing exists.
+Null facts remain unknown. Call lifecycle/dispatch, reported assistance, human
+request, message acknowledgement and departure/arrival are separate fields.
+Allocation lifecycle and transport/reception confirmations are shown separately.
+The allowlist removes private call payloads and contact fields, redacts phone-like
+public text, preserves stable IDs, and replaces internal error details with a
+public error code. Adding public fields requires reviewing the projection.
+
+Verified sibling boundaries:
+
+- Actual `CoordinationStore` export at `ce9eb6b4870a85af1906b8635f728d4f1ff46501`
+  generated a local SQLite database; REST and WebSocket matched its public state
+  without modifying it. `fixtures/dashboard/coordination-export.json` records
+  its synthetic envelope for regression tests. The optional integration test
+  uses `fireline.coordination` when installed, or an explicitly supplied export.
+- `multi-response-plan-1` in `plan.response` is rendered with per-team tasks and
+  proposed timings. Only supplied `path_lonlat` geometry draws truck paths
+  (converted to Leaflet latitude/longitude order).
+- Optional `plan.locations[].routes[]` accepts `route_id, status, source` and
+  `path` in latitude/longitude order or GeoJSON `geometry`. Route absence draws
+  no line. Current evacuation exports provide allocation/destination facts but
+  do not provide route geometry; those facts display without inventing paths.
+  Their `state`, `instruction_allowed`, `safety` and assistance confirmations
+  are displayed when coordination includes the allocation overlay.
+
+Local usage (Python 3.12+, Node for UI tests):
+
+```sh
+python -m venv .venv
+.venv/bin/python -m pip install -e '.[dashboard,dashboard-test,dev]'
+.venv/bin/python -m fireline.dashboard_server --demo --port 8521
+# Or use the existing coordinator database, without a call worker:
+.venv/bin/python -m fireline.dashboard_server --database /absolute/path/to/coordination.sqlite --port 8521
+npm ci
+npm test
+npm run lint
+PYTHONPATH=. .venv/bin/python -m pytest
+```
+
+The CLI binds only `127.0.0.1`; open `http://127.0.0.1:8521/`. `--demo` is explicitly
+labelled, static and illustrative, using backend `rank_contacts` and the same
+store/API contract. It cannot call anyone. Port 8511 is untouched. The optional
+`npm run test:browser` expects the local demo on 8521 and an installed Playwright
+Chromium; `DASHBOARD_BROWSER_EXECUTABLE` can select an existing local binary.
+Screenshots are local ignored artifacts under `data/dashboard-verification/`.
+
+Implementation plan and validation:
+
+- [x] Failing API/privacy/revision tests, then server and offline store.
+- [x] Failing UI tests for backend order, unknown facts, reconnect and safe text,
+  then integrate the existing visual shell.
+- [x] Verify actual coordination export, full regression suite, real-browser
+  smoke and scoped review; fix review findings before final push/PR.
+
+No deployment or live calls were performed. Remaining integration is producer
+work: live-coordination must refresh its shared database and include approved
+allocation/multi-crew exports; route geometry must be supplied by the backend.
+Leaflet and the reference satellite basemap still require external network access;
+if Leaflet is unavailable, the location list and evidence remain usable. This is
+a local read-only viewer, without a hosted authentication/deployment layer.
+
+Validation at handoff: `DASHBOARD_COORDINATION_EXPORT=data/dashboard-verification/coordination.py
+PYTHONPATH=. .venv/bin/python -m pytest -q` passed **616 tests, 1 existing skip**
+(using the verified sibling export locally; without it the optional integration
+case skips until `fireline.coordination` is available). **13 Node tests**, ESLint
+and real Chromium REST/WebSocket/navigation/reconnect checks passed; browser
+requests were read-only and had no page errors. One dependency deprecation warning
+comes from Starlette's test client. Scoped review findings were fixed and rechecked.
+Norma scanned dashboard changes only; details are in
+`reports/norma-dashboard-review.json`. Remaining JS flags were reviewed as false
+positives (WebSocket handler, caller-caught fetch rejection); JS coverage was
+reduced, CJS unsupported, and the final package scan returned a tool error.
+
+Final compatibility check also passed against live-coordination PR #22 commit
+`946966190b85f942edf9204f1849b36f2cdd4133`: **15 API/integration tests** and the
+Chromium smoke passed. That export accepts `response_plan` for multi-crew proposals;
+the allocation overlay remains a producer-side integration dependency.
+
+### Sequential merge integration checkpoint (2026-09-20)
+
+The integrated tree includes SLNG bindings (#17), snapshot-to-queue adaptation
+(#19), multi-team proposals (#21), durable evacuation allocations (#24), call
+briefings (#20), coordination persistence (#22), and Michella's latest design
+(#9), followed by this live-dashboard integration (#23). Discovery (#18) remains
+separate under rht's ownership. Rebases retain each module's documentation and
+the selected `type(centre.remaining_places) is not int` capacity guard.
+
+The dashboard preserves the latest emoji-free buttons, fire-perimeter halo,
+escalation styling and fixed map frame, while rendering backend facts through
+the modular client. The old simulated dispatch/assignment actions are disabled.
+Verification on this combined tree: 915 Python tests passed, one skipped;
+15 Node tests and ESLint passed. The browser smoke passed against an isolated
+local demo server using Chrome: REST/WebSocket, selection, database, log and
+reconnect worked, with no mutating requests or page errors. The Python test
+environment reports an existing Starlette/AnyIO deprecation warning.
+
+Run Python checks with `PYTHONPATH=.` so subprocess CLI tests import this
+checkout. The optional browser smoke accepts `DASHBOARD_BASE_URL` and
+`DASHBOARD_BROWSER_EXECUTABLE` to test an isolated server/browser installation.
+
+Module merges do not configure a running workflow. The application still needs
+to supply the call-briefing callback to snapshot enqueueing, connect the
+allocation ledger to coordination, provide current fleet/route inputs and
+refresh the shared coordination database. Dynamic provider deployment and
+authorized end-to-end phone testing remain separate from these offline checks.
+
+
+### Historical architecture-branch Norma verification — 2026-09-19
+
+Rebased onto main `587f5bd`. Only readme.md differs from merged main. Documentation has no applicable deterministic file rules in the available Norma catalog, so it was not marked clean or sent as code. Rebase preserved the original patch exactly; git diff --check passed. No runtime code changed; no application test rerun was needed. That verification predates the authorized integration into main on 2026-09-20. Branch inventory, original backup heads and scan evidence are collected on `codex/norma-feature-rollup`.
+
+
+### Historical tooltip-branch Norma verification — 2026-09-19
+
+Rebased onto main `587f5bd`. The changed fireline/app.py returned clean from Norma Livecheck with full reported coverage. All 309 tests passed, including the Streamlit app tests. Rebase preserved the original tooltip patch exactly; no additional application change was needed. This records the earlier branch scan, before the authorized 2026-09-20 integration. Branch inventory, original backup heads and scan evidence are collected on `codex/norma-feature-rollup`.
+
+
+### Historical calibration-branch Norma verification — 2026-09-19
+
+Rebased onto merged remediation main `587f5bd`. All six added/modified Python and JSON files pass Norma Livecheck with unreduced coverage; the JSON check covers applicable Node rules, not calibration correctness. Markdown prose has no applicable deterministic rules and was not scanned. Local fixture paths are normalized before entering the cache, Git provenance has a five-second timeout and remains optional, and calibration JSON I/O explicitly uses UTF-8. Regression tests cover path aliases, Git success/failure/timeout, and the full suite passes 337 tests. Independent code review approved the remediation. Exact file hashes, outcomes and original-head backup refs are recorded on `codex/norma-feature-rollup`; the original audit is unchanged.
+
+
+### Calibration integration — 2026-09-20
+
+The calibration harness and recorded fit are integrated, with the current CA defaults and
+committed snapshots preserved. The CLI supports a reporting `--seed` outside
+`--stability-seeds`: it scores that seed separately without changing the seeds used to
+select parameters. A regression reproduces the earlier `KeyError` before the fix and
+verifies that the report is written with the requested scoring seed afterward. The
+Norma results above refer to the historical file revisions, not a rescan of this change.
+
+### Historical readiness-branch Norma verification — 2026-09-19
+
+Rebased onto merged remediation main `587f5bd`. At historical revision `d75d4b769940e0ca6b0a01949f5c7bf84daec44e`, all four added/modified Python and JSON files had zero Livecheck findings, and 350 tests passed. That as-of result remains in the phase-two evidence; it is superseded for the selected capacity check below. The JSON check covers applicable Node rules, not fixture semantics. Markdown prose was not scanned. Readiness input retains explicit UTF-8 and its ASCII-locale CLI regression. Exact file hashes, outcomes and original-head backup refs are recorded on `codex/norma-feature-rollup`; the original audit is unchanged.
+
+### Selected capacity contract and retained Norma finding
+
+The selected current contract accepts plain nonnegative Python integers only for `ReceptionCentre.remaining_places`. It rejects `bool` (including `False`), floats (including integral floats), strings, negative values, null and all `int` subclasses, including `IntEnum`. No coercion is performed. The original `type(centre.remaining_places) is not int or centre.remaining_places < 0` check is intentionally retained in `fireline/evacuation_readiness.py` (line 103 in the scanned revision) under @mirrdj's explicit keep-and-defend decision; all other remediation remains in place.
+
+At the recorded 2026-09-19 revision, Norma reported one retained finding: `py-arch-type-eq` (HIGH, architecture), line 103, column 12. That exact historical file was rechecked with unreduced coverage; it is not clean and the finding is not fixed. The rule generally favors accepting subtypes, while this input boundary deliberately requires primitive counts. A bare `isinstance(value, int)` would accept booleans as integers. The previous implementation explicitly rejected bool and accepted other integer subclasses; it was a valid broader policy, but the selected contract is narrower. Rejecting legitimate integer subclasses is the accepted interoperability tradeoff. Revisit the decision if the public input contract needs enum/subclass counts, numerical-library types or fractional units, or if normalization moves to another boundary. Preserve boolean rejection in any replacement.
+
+Verification: all 356 tests pass, including 47 readiness tests. Subclass and enum rejection tests fail against the previous implementation and pass with this check; tests also cover zero/positive capacity, both booleans, floats, strings, null, negative values and unchanged capacity reservation. The test file has zero Norma findings with unreduced coverage. This is one justified retained finding, separate from the fixed UTF-8 finding; no suppression or rule disablement is used. The evidence and defense are maintained in PRs [#10](https://github.com/rht/wildfire/pull/10) and [#11](https://github.com/rht/wildfire/pull/11), tied to the published branch SHA.
+
+Formal registration is unavailable through the exposed Norma MCP: no finding-scoped defense/exception endpoint is listed, and repository lookup reports no linked matching repository. The available applied-actions endpoint records fixed, prevented or verified-compliant rules, so it is not used for this retained finding. The defense approved by @mirrdj is documented, not registered as an exception. The implementation and subtype-rejection regressions were already incorporated through PR #22; this integration preserves that newer code, road warnings and assistance evidence. The remaining branch documentation is merged under the separate 2026-09-20 authorization.
+
+## Historical Norma feature-branch maintenance — 2026-09-19
+
+This section and its JSON ledgers preserve the exact 2026-09-19 audit state.
+Branch heads, test counts, open-PR status, deferred work and authorization statements
+below are historical. The later 2026-09-20 sequential integration supersedes that
+status; the original evidence is retained without claiming a new Norma scan.
+
+PR #3 was verified merged at `587f5bd53eb41bd04d693e49a60940b6a62530f1` before this phase began. This continuation rebases active, unmerged feature branches onto that main, checks only their added/modified supported files with MCP Livecheck, fixes applicable findings without suppressions, tests and pushes with explicit SHA-bound leases. Feature branches are not authorized for merge. Fully merged historical branches are excluded and `codex/qualityclouds-audit` remains frozen.
+
+Plan: inventory remote heads and worktree status; coordinate with local writers; preserve each original head in `refs/norma-backups/2026-09-19/<branch>`; rebase eligible clean worktrees; check changed files; fix and recheck; run applicable tests; obtain review and publish reviewable PRs. Busy or dirty worktrees are deferred, preserving untracked files and credentials. The coordinating session confirmed architecture-diagram, calling-research and evacuation-readiness are idle. SLNG is deferred because its voice/demo sessions are active and `uv.lock` is untracked.
+
+Livecheck limits: at most 30 calls per minute per user and 5,000 per day per organization. Calls are centrally scheduled with headroom. Content reuse requires the same SHA-256, language, repository/ruleset context and path where exclusions may apply; reused results are recorded explicitly. Unsupported or empty files are recorded as not checked, never clean. The MCP does not expose the account's actual tier or remaining daily quota, so shared organization usage cannot be inferred. No full scans or billing changes are performed.
+
+Machine-readable inventory and per-branch results are recorded in [the branch ledger](reports/norma-feature-branches-2026-09-19.json). This rollup PR is for review, not automatic merge.
+
+Current branch results (all based on `587f5bd`, all PRs remain open). The selected capacity decision supersedes the earlier all-zero readiness result:
+
+| Branch | Published head | Review PR | Verification |
+| --- | --- | --- | --- |
+| `codex/architecture-diagram` | `829313233ae53a443bc8316df521b17a6a745207` | [#4](https://github.com/rht/wildfire/pull/4) | Documentation only; whitespace passes; prose unscanned |
+| `codex/calling-research` | `fb9299f284dd433fb30e17aa3b2ffe0d74eb168d` | [#5](https://github.com/rht/wildfire/pull/5) | 312 Python tests; 2 Python files zero findings, unreduced coverage |
+| `claude/fix-map-tooltip-html` | `9ae3a3ffdaf1a601cdfeb8b7b01372f6df636ae9` | [#6](https://github.com/rht/wildfire/pull/6) | 309 Python tests; 1 Python file zero findings, unreduced coverage |
+| `claude/ca-calibration` | `ef845e9eabfa492ecf3eda94e22255b84f8d8491` | [#7](https://github.com/rht/wildfire/pull/7) | 337 Python tests; 5 Python files and 1 JSON file zero findings, unreduced coverage |
+| `codex/evacuation-readiness` | `923d49476ecca0276b5d3b88b5ce9bc065479fd0` | [#8](https://github.com/rht/wildfire/pull/8) | 356 Python tests; one retained `py-arch-type-eq` finding; other checked files zero findings, unreduced coverage |
+| `claude/workflow-setup` | `575f0ecb3f9faa251ac9a588b21aeedf6a8e8a2d` | [#9](https://github.com/rht/wildfire/pull/9) | 309 Python tests and 2 DOM tests; HTML zero findings, unreduced coverage; inline JavaScript and CJS test zero findings, reduced coverage |
+
+The maintenance fixed five calibration findings, the readiness UTF-8 finding, and eight initial mockup findings plus four findings discovered during recheck. The second readiness finding, `py-arch-type-eq`, is now deliberately retained under the selected strict primitive capacity contract: 18 finding records fixed and one retained. The earlier two-fixed readiness result at `d75d4b7` is historical, preserved in the ledger and unchanged raw checks. Fixes normalize local fixture paths before caching, bound optional Git provenance, specify UTF-8, preserve integer validation while rejecting booleans, pin verified Leaflet integrity hashes, and render dynamic mockup text through DOM nodes with shared event handlers. Independent code review approved each code remediation. Rebase conflicts were limited to README additions and retained both sections. Every original branch head remains available at its recorded local backup ref; every rebase push used an explicit lease bound to that original remote SHA.
+
+The [raw Livecheck evidence](reports/norma-feature-livechecks-2026-09-19.json) retains all 30 phase-two attempts, including three transient service errors followed by successful retries. The maximum observed rate was 10 calls in any 60 seconds. The initial verification matched each file's SHA-256 to its successful check at its recorded as-of revision. The selected capacity follow-up separately matches final source and test hashes to two fresh checks: one retained issue and one clean result; no cross-branch result reuse was used. The inline JavaScript is extracted with its source-line mapping. The CJS regression test is submitted unchanged under a recorded virtual `.js` filename because `.cjs` is absent from the exposed extension catalog.
+
+Coverage limits: one JavaScript Semgrep rule could not be evaluated and the service does not identify it. These JavaScript results are zero findings with reduced coverage, not full validation. Markdown prose, inline CSS and SVG have no matching deterministic checks in the catalog. JSON checks cover applicable Node rules, not domain/schema correctness. The mockup's DOM behavior and CDN integrity were tested, but no visual browser pass was performed. Machine-readable evidence files in this rollup receive JSON/schema-consistency and final-content/hash validation; they are not additional application files submitted to Livecheck.
+
+SLNG remains deferred: its voice/demo sessions are active and untracked `uv.lock` is preserved. Its initial local/remote head was `02e091443a13991e5832dc01c0528e57ea271d1f`; the active session has since advanced it independently. The ledger records the latest observed heads; this task made no SLNG changes. No merged historical branch was re-audited. The original audit worktree remains clean and unchanged at `92ae882545ae6b45fb6e2356e1f8aa17da599312`. Actual account tier and remaining organization quota are unavailable from the exposed MCP. Repository linking/applied-action registration remains unavailable; no defenses or exceptions were submitted. No feature PR was merged.
+
+### Current selected capacity defense
+
+At `923d49476ecca0276b5d3b88b5ce9bc065479fd0`, `codex/evacuation-readiness` intentionally restores the original strict check at `fireline/evacuation_readiness.py:103`: capacity accepts only plain nonnegative Python integers and rejects bool, floats, strings, negatives, null and int subclasses. A fresh Livecheck reports exactly one `py-arch-type-eq` HIGH architecture finding with unreduced coverage. It is retained with a documented defense, not fixed, suppressed or declared compliant. The updated test file has zero findings, and all 356 tests pass, including 47 readiness tests. Independent review approved the change; other remediation is preserved. The original historical raw Livechecks remain unchanged.
+
+[Current evidence](reports/norma-selected-capacity-defense-2026-09-19.json) records the exact SHA, file hash, line, rule, rationale, tests and both final scans. The decision trades integer-subclass interoperability for a strict primitive input boundary; revisit it if the supported input contract expands. [PR #11](https://github.com/rht/wildfire/pull/11) holds the selected defense. Formal exception registration is unavailable: the exposed MCP has no defense endpoint and repository context is unresolved. The fixed/verified applied-actions endpoint was not used. Feature PRs remain unmerged; the original audit and deferred SLNG worktree are unchanged.
+
+## Norma decision: selected capacity design and retained finding
+
+Evidence date: 2026-09-19. The strict primitive-capacity contract remains selected
+and is preserved in main. Exact revisions, line numbers, file hashes, test totals,
+scan results and authorization status below describe the original defense record;
+they do not claim a new scan after the 2026-09-20 integration.
+
+@mirrdj selected the strict capacity check to keep and defend. That decision is now implemented on `codex/evacuation-readiness` at **`923d49476ecca0276b5d3b88b5ce9bc065479fd0`**, published in [PR #8](https://github.com/rht/wildfire/pull/8). This is a current selected design with an intentionally open Norma finding, not merely a historical candidate. The prior zero-finding readiness result applies only to `d75d4b769940e0ca6b0a01949f5c7bf84daec44e`. Every other remediation remains in place. The feature PR is not authorized for automatic merge.
+
+**Exact finding:** [`fireline/evacuation_readiness.py:103`](https://github.com/rht/wildfire/blob/923d49476ecca0276b5d3b88b5ce9bc065479fd0/fireline/evacuation_readiness.py#L103), column 12, `py-arch-type-eq` (HIGH, architecture), statement `if type(centre.remaining_places) is not int or centre.remaining_places < 0:`. The final exact file was rescanned and Norma returned precisely this one finding with unreduced coverage and no cap. Its SHA-256 is `e69a2aed4396affbc6b9c31488cf0bd32464ae9e4b6571b9c3ed88fa3a2b23cf`. [Current selected-defense evidence](reports/norma-selected-capacity-defense-2026-09-19.json) ties the branch SHA, source/test hashes, raw scans, tests and registration limitations together.
+
+**Selected input contract:** `ReceptionCentre.remaining_places` accepts plain nonnegative built-in Python integers only. Booleans, floats (including integral floats), strings, negative values, null and all `int` subclasses—including `IntEnum`—are intentionally rejected. Inputs are not coerced. Zero is valid capacity but cannot receive a household; the positive-capacity reservation behavior is unchanged.
+
+**Defense rationale:** the rule generally favors accepting valid subtypes, but this boundary promises primitive counts rather than integer polymorphism. Python treats bool as an int subclass, so a plain `isinstance(value, int)` plus a nonnegative check would accept JSON `true` as an integer count. Exact-type validation expresses the selected strict boundary directly. Boolean rejection alone does not require rejecting all other integer subclasses; that additional strictness is a conscious, user-selected contract decision.
+
+**Tradeoff:** legitimate integer subclasses and enum counts are excluded, and callers using them must normalize explicitly under their own input contract. The previous implementation at `d75d4b7` explicitly rejected bool and accepted other nonnegative int subclasses; it was a valid broader alternative. The current change reflects the selected narrower policy, not a claim that the previous boolean handling was defective. Revisit this defense if the public API must support subclasses, enum/numerical-library counts or fractional units, or if normalization moves to another authoritative boundary. Preserve boolean rejection and avoid silent coercion in any replacement.
+
+**Validation:** all 356 tests pass, including 47 readiness tests. The two subclass/enum rejection tests fail against the preceding implementation and pass after restoring exact-type checking. Tests retain the UTF-8 CLI regression and capacity-reservation checks, and cover zero, positive counts, True, False, integral/fractional floats, strings, null, negatives, ordinary int subclasses and IntEnum. The final test file has zero Livecheck findings with unreduced coverage. Independent code review approved the three-file implementation and independently reran the 47 readiness tests.
+
+**Finding disposition:** `py-arch-type-eq` is **retained with a documented defense; it is not fixed or verified compliant**. The readiness UTF-8 finding remains fixed, and the other branches' completed fixes are unchanged. [PR #10](https://github.com/rht/wildfire/pull/10) now records 18 fixed finding records and one retained finding, preserving the previous as-of results separately. No suppression or whole-rule disablement is used.
+
+**Formal registration:** the user authorized a finding-scoped defense submission, but the exposed Norma MCP has no defense/exception endpoint. A fresh repository-scoped ruleset lookup reports an unresolved repository with no linked match. The available `register_applied_actions` endpoint accepts only verified-compliant, fixed or prevented outcomes, so it was not used as a substitute. The defense is documented in README, JSON and PRs for review; it has **not been formally registered**. No account-tier or remaining-quota endpoint is exposed.
+
+Historical evidence remains identifiable: zero-based phase-two raw attempt 13 captured this exact strict check at original branch revision `f86798cd9269c59b502c06fe7c78a590c7097ec9`; the file bytes match the now-selected implementation. The original/current-alternative comparison in [the historical branch-defense report](reports/norma-branch-defense-2026-09-19.json) is explicitly as of `f86798c` and `d75d4b7`: 36 original tests, 41 then-current tests and 11 public-API probes per revision. Those numbers are historical, not the current test totals. The frozen 42-finding main audit is unchanged.
+
+The same historical branch report retains two secondary candidates that were already refactored: calibration's local caller-selected cached file loaders (`fa-sec-path-traversal`, attempt 6, original `8564871`) and workflow-setup's synchronous forEach callbacks (`js-scl-foreach-async`, attempt 14, original `367dddc`). Their source hashes and line mappings were verified. Neither is selected for restoration or exception submission here; the synchronous-callback rationale does not defend the separate unsafe HTML assignments, which remain fixed. The older main-audit DFS example is a secondary [historical appendix](reports/norma-historical-defense-2026-09-19.json), not the selected current defense.
+
+**Accepted fix:** retain the merged JUnit XML hardening in [`scripts/build_priority_report.py:436`](https://github.com/rht/wildfire/blob/587f5bd53eb41bd04d693e49a60940b6a62530f1/scripts/build_priority_report.py#L436), with `defusedxml` and explicit DTD rejection. It addresses demonstrated internal-entity behavior; external-file disclosure was not demonstrated. [PR #3](https://github.com/rht/wildfire/pull/3) remains merged and its tests preserve valid JUnit/XML declarations and failed-test handling.
+
+To verify the selected branch, check out the exact SHA above and run `python -m pytest -q` with the project's development/report dependencies. Submit the complete `fireline/evacuation_readiness.py` to MCP Livecheck under that exact filename; expect the one retained finding, not zero findings. The final source and test hashes are in the current evidence JSON. No feature PR is merged by this decision. The frozen audit and deferred SLNG worktree, sessions and untracked lockfile remain untouched.
+
+## React incident dashboard — codex/ui-session (2026-09-20)
+
+**Approved design:** @mirrdj requested replacing the plain HTML dashboard with
+Mantis's React/MUI design: light sidebar, Public Sans typography, compact white
+cards, blue navigation, a map replacing the large chart, and separate pages.
+Streamlit remains a separate Python application. All web frontend code, vendor
+attribution, package/lock files, assets, build configuration and browser/Node tests
+live in `frontend/`. Python serves its production build; existing demo processes
+remain untouched.
+
+The overview has four counters: incidents, deployed resources, structures,
+and people/groups (including individuals). Navigation includes an Incidents table, per-incident
+summary/calls/response plan/evacuation/resources/buildings/log pages, global Buildings & risk,
+Resources and Activity log. Count cards navigate to their relevant lists. Calls
+separate pending contact, completed calls and human follow-up with explicit reasons.
+Response steps retain backend ordering, timing, prerequisites and proposal status.
+Evacuation distinguishes reported ability, assistance needed, departure and arrival.
+Buildings show incident, assessment date, valuation, expected loss band, risk
+indicators, remaining window and sources. Global and incident tables share filters.
+Logs display received order, event time, incident, type, severity and explanation;
+newest first is reversible. Missing ingestion sequence/time is explicitly unknown.
+
+**Data boundaries:** existing `coordination-state-1` remains the live source through
+REST/WebSocket. It is one incident; additional incidents are demonstrated only in
+an explicit, labelled frontend demonstration mode. Live source never fills missing
+fields with demo values. No crew deployment is inferred from availability or a
+proposal. No building occupancy is counted as confirmed evacuation progress.
+No numeric risk score is invented from operational `value_score`. Buildings with
+missing risk/valuation and unknown population remain visible. Current-state data
+is not a historical database; unavailable history is disclosed. Frontend demo
+fixtures are illustrative, never evidence of calls or dispatch.
+
+### Implementation plan
+
+**Goal:** deliver the approved navigable Mantis React UI and preserve the read-only
+coordination boundary. **Stack:** React, MUI, Vite, React Router, Leaflet, existing
+Python/Starlette server. **Spec:** this section, including the approved activity-log
+and frontend-directory additions.
+
+- [x] Task 1 — data adapter and fixtures (`frontend/src/state/`,
+  `frontend/tests/model.test.mjs`). Write failing cases for absent metrics, unique
+  location contact counts, follow-up reasons, incident/date filtering, confirmed
+  evacuation versus ability, and stable event arrival ordering. Run
+  `node --test frontend/tests/model.test.mjs`; implement pure selectors and an
+  isolated demonstration dataset; rerun. Interface: `toIncident(state)`,
+  `callRows(incident)`, `buildingRows(incidents)`, `filterBuildings(rows, filters)`,
+  `orderedEvents(incidents, filters)`, `metrics(incidents)`.
+- [x] Task 2 — React shell and pages (`frontend/src/`, `frontend/package.json`,
+  `frontend/vite.config.mjs`, `frontend/index.html`). Adapt upstream Mantis card and
+  typography with its MIT attribution. Relocate old dashboard and Node tests into
+  `frontend/legacy/` and `frontend/tests/`. Build overview, incident navigation,
+  calls/reasons, resource plan, evacuation, buildings/detail and activity log.
+  Port the proven full-state transport to an ES module. Add browser assertions for navigation,
+  filters and no write requests before implementing their pages. Run
+  `npm --prefix frontend test`, `npm --prefix frontend run lint` and
+  `npm --prefix frontend run build`.
+- [x] Task 3 — backend serving/projection (`fireline/dashboard_server.py`,
+  `fireline/dashboard_public.py`, `tests/test_dashboard_server.py`). Test and expose
+  existing valuation/criticality fields through the allowlist, preserving private
+  field redaction. Serve only `frontend/dist/index.html` and built assets; return
+  clear build instructions when missing. Keep API paths and WebSocket semantics.
+  Run targeted Python tests with `PYTHONPATH=.` and the existing sibling venv.
+- [x] Task 4 — verification and handoff. Start a separate server in this worktree,
+  run Chrome against production build (desktop and mobile), inspect screenshots,
+  verify live/demo separation, filters, detail and log order. Review implementation,
+  fix findings, run relevant Python/Node suites, record actual results here, commit
+  and push `codex/ui-session`. Keep worktree and existing demos available.
+
+
+### Preview, usage and verification
+
+Latest UI refinements requested by @mirrdj: white page background; **Incidents**
+throughout navigation and labels, including smoke events; remove the overview
+subtitle and explanations under its four cards; move the incident table to
+**Incidents** (`#/incidents`). Each incident summary has four cards: GPS coordinates, deployed resources,
+structures and people/groups, plus a zoomed map. The overview
+map opens incident details on **click**, with hover reserved for labels.
+Old `#/active-fires` links redirect. People/groups include individuals.
+
+The overview lists every supplied crew across incidents, one review entry per crew;
+incident summaries scope that list. Entries open ordered steps, destinations, GPS,
+and prerequisites. Analyst confirmation is visibly unavailable pending @mirrdj's
+choice between a demo-only interaction and saved backend approvals. Review never
+asserts dispatch. Call history contains individual attempts with caller, outcome,
+UTC date and search filters. **Voice assistant to call** shows pending locations
+in backend priority order. Call caller identity is shown only when explicit;
+unknown identity stays unavailable. Demo records explicitly distinguish agent and
+human calls. Incident, resource and people tables include search and relevant filters.
+Location tables, details, map tooltips and crew destinations display supplied WGS84
+GPS in latitude, longitude order; missing coordinates stay unavailable. Risk badges
+have equal width across statuses.
+
+All frontend source/configuration/packages/tests and build outputs are under
+`frontend/`. `frontend/legacy/` archives the old UI and its regression fixtures;
+production serves the React build. Mantis source attribution is in
+`frontend/vendor/mantis/` and the build includes `/assets/mantis-license.txt`.
+
+```bash
+# Node >=22.12 (verified here with Node 24)
+npm --prefix frontend ci
+npm --prefix frontend run build
+PYTHONPATH=. ../live-dashboard/.venv/bin/python -m fireline.dashboard_server --demo --port 18522
+# Optional development server, proxying the API above:
+npm --prefix frontend run dev
+```
+
+The new preview is <http://127.0.0.1:18522/?demo=1#/overview>. `?demo=1` explicitly
+selects the three-fire **Design demo**. Remove it or use **Connected backend** in
+the source selector to inspect the current read-only API. The original HTML demo
+on 18521 and Streamlit on 18511 remain running in their original worktrees. Port
+8511 and discovery PR18 were not touched. No live calls, dispatch or operational
+writes were performed.
+
+Verification: `npm --prefix frontend test` **30 passed**; frontend lint, formatting
+and production build passed. Chrome tests cover desktop/mobile navigation, fire
+scoping, filters, valuation details, call follow-up reasons, log order, real
+REST/WebSocket connection, and live/demo separation. A controlled WebSocket test
+also covers live dialog updates/removal, retained review explanations, hostile
+text rendering and delayed event receipt order. Screenshots are ignored local
+artifacts in `frontend/artifacts/`. Full Python suite: **947 passed, 2 skipped**,
+with the existing Starlette/AnyIO deprecation warning. Independent review findings
+about stale call details, retained assistance facts and missing review reasons
+were fixed and re-reviewed clean.
+
+Existing snapshot valuation/criticality fields and the existing
+`assistance_review_required` boolean now survive the public projection; private
+call details remain excluded. Live multi-fire aggregation, confirmed deployments,
+individual/group registries and persistent historical log retrieval still need
+backend inputs. The live log retains supplied events for the browser session,
+labels receipt time as browser receipt, and does not claim complete server history.
+
+Crew urgency refinements: the sidebar keeps the Incidents page link and removes
+individual incident entries. Crew review rows show the smallest supplied unfinished
+task deadline minus planned finish: at/below zero is red, up to 15 minutes amber,
+otherwise neutral. This is a display cue, not a dispatch/ranking policy or a claim
+of route safety. Missing/partial timing is explicit; completed tasks are excluded.
+Current backend task records omit deadlines, so connected urgency remains unknown
+until that data is supplied. Only Design demo fixtures include illustrative deadlines.
+
+The brand subtitle is “Wildfire coordination” beneath ResponsAra. The duplicate
+topbar label and location icon are removed. The main background remains white.
+
+Proposed crew plans now show **Awaiting analyst confirmation**, an explicit
+**Review & confirm** action, and a count of plans needing confirmation. The overview
+and firefighter plan page open the same review panel with a prominent confirmation
+requirement and a dedicated final action. Plans with no proposed steps are not
+labelled as awaiting approval. Saving is still unavailable until the approval
+service is connected; no approval or dispatch is inferred from opening the review.
+
+Status tags now share a fixed width across tables, including activity-log event
+types and severities. Full labels remain available on hover when truncated.
+
+The sidebar footer (read-only note, recommendation text and visible Mantis link)
+is removed. Required vendor attribution remains in the source and distributed
+license asset.
+
+The Resources table includes a Plan column linked by the supplied team identifier
+to the same crew review/confirmation panel. Missing plans are explicitly labelled.
+
+Activity log order uses a compact column sized to its heading and sequence number.
+
+The incident GPS card prefers a supplied incident point. When only a usable
+perimeter exists it shows the centre of its bounds, explicitly labelled “Perimeter
+centre”; missing coordinates are never filled from demonstration data.

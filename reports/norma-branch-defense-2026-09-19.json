@@ -1,0 +1,424 @@
+{
+  "schema_version": 1,
+  "purpose": "Historical candidate comparison at f86798c and d75d4b7; superseded by the selected CURRENT design in norma-selected-capacity-defense-2026-09-19.json",
+  "selection": "Historical rationale and comparison evidence; strict primitive capacity is now selected and implemented at 923d49476ecca0276b5d3b88b5ce9bc065479fd0",
+  "raw_evidence_source": {
+    "branch": "codex/norma-feature-rollup",
+    "commit": "271de8216e3ac58b09931098846c5e495aef5dc3",
+    "file": "reports/norma-feature-livechecks-2026-09-19.json",
+    "sha256": "98133ccb5ea9a5cdff695fbb75b60a09333a3980fdf94e033227548279250217"
+  },
+  "candidates": [
+    {
+      "zero_based_attempt_index": 13,
+      "original_revision": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
+      "source_file": "fireline/evacuation_readiness.py",
+      "source_file_sha256": "e69a2aed4396affbc6b9c31488cf0bd32464ae9e4b6571b9c3ed88fa3a2b23cf",
+      "recorded_attempt": {
+        "branch": "codex/evacuation-readiness",
+        "worktree": "evacuation-readiness",
+        "file": "fireline/evacuation_readiness.py",
+        "sha256": "e69a2aed4396affbc6b9c31488cf0bd32464ae9e4b6571b9c3ed88fa3a2b23cf",
+        "method": "live_check",
+        "result": {
+          "outcome": "issues",
+          "rules": {
+            "py-arch-type-eq": {
+              "rule_name": "type(x) == X",
+              "severity": "HIGH",
+              "impact_area": "architecture",
+              "description": "Checks an object's type too strictly; rejects valid subtypes that should also be accepted.",
+              "remediation_action": "Use isinstance.",
+              "good_code": "if isinstance(x, int): ...",
+              "bad_code": "if type(x) == int: ...",
+              "estimated_time_to_fix": 2
+            }
+          },
+          "issues": [
+            {
+              "rule_id": "py-arch-type-eq",
+              "file": "fireline/evacuation_readiness.py",
+              "line": 103,
+              "column": 12,
+              "snippet": "        if type(centre.remaining_places) is not int or centre.remaining_places < 0:"
+            }
+          ],
+          "issues_returned": 1,
+          "total_issues": 1,
+          "capped": false,
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      "recorded_content_matches_original_revision": true
+    },
+    {
+      "zero_based_attempt_index": 6,
+      "original_revision": "856487189fc122226a33fac11a7623e36b9bb918",
+      "source_file": "fireline/calibrate.py",
+      "source_file_sha256": "370bfc82bc1cdfa49f2e4eff41e9571ae12151305a91e9a58a1abb6008168c8b",
+      "recorded_attempt": {
+        "branch": "claude/ca-calibration",
+        "worktree": "norma-ca-calibration",
+        "file": "fireline/calibrate.py",
+        "sha256": "370bfc82bc1cdfa49f2e4eff41e9571ae12151305a91e9a58a1abb6008168c8b",
+        "method": "live_check",
+        "result": {
+          "outcome": "issues",
+          "rules": {
+            "fa-sec-path-traversal": {
+              "rule_name": "Path traversal via user input",
+              "severity": "HIGH",
+              "impact_area": "security",
+              "description": "User-provided filename passed directly into open()/Path() \u2014 attacker can read arbitrary files.",
+              "remediation_action": "Use Path().resolve() and check parent.",
+              "good_code": "@app.get(\"/file\")\nasync def f(name: str):\n    p = (Path(\"/data\")/name).resolve()\n    if Path(\"/data\").resolve() not in p.parents:\n        raise HTTPException(400)\n    return p.read_text()",
+              "bad_code": "@app.get(\"/file\")\nasync def f(name: str):\n    return open(f\"/data/{name}\").read()",
+              "estimated_time_to_fix": 15
+            }
+          },
+          "issues": [
+            {
+              "rule_id": "fa-sec-path-traversal",
+              "file": "fireline/calibrate.py",
+              "line": 82,
+              "column": 22,
+              "snippet": "    rec = json.loads(Path(path_str).read_text())"
+            },
+            {
+              "rule_id": "fa-sec-path-traversal",
+              "file": "fireline/calibrate.py",
+              "line": 132,
+              "column": 25,
+              "snippet": "    series = json.loads(Path(path_str).read_text())"
+            }
+          ],
+          "issues_returned": 2,
+          "total_issues": 2,
+          "capped": false,
+          "coverage": {
+            "reduced": false,
+            "reason": null
+          },
+          "rulesets_evaluated": [
+            "fastapi-norma-ruleset",
+            "python-norma-ruleset",
+            "sqlalchemy-norma-ruleset"
+          ]
+        }
+      },
+      "recorded_content_matches_original_revision": true
+    },
+    {
+      "zero_based_attempt_index": 14,
+      "original_revision": "367dddca72895bae50b25f0cfa33ab39ac9d1f96",
+      "source_file": "design/ui-mockup.html",
+      "source_file_sha256": "7ac8de22fba4725a304957e287f05ff0d731393a06aa30a014c11c22dec3cfb9",
+      "recorded_attempt": {
+        "branch": "claude/workflow-setup",
+        "worktree": "norma-workflow-setup",
+        "file": "design/ui-mockup.inline-1.js",
+        "source_file": "design/ui-mockup.html",
+        "start_tag_line": 207,
+        "sha256": "60475cbc9951be6d5ecad2601832c7b6f179cb88f94c1cc1833a178f288c0eec",
+        "method": "extracted_inline_live_check",
+        "result": {
+          "outcome": "issues",
+          "rules": {
+            "js-inner-html-assignment": {
+              "rule_name": "Direct innerHTML / outerHTML Assignment",
+              "severity": "HIGH",
+              "impact_area": "security",
+              "description": "Detects direct DOM innerHTML or outerHTML assignments outside of React render. AI-scaffolded apps that mix imperative DOM manipulation with React bypass React's built-in XSS escaping, exposing the app to injection attacks.",
+              "remediation_action": "Use React state and JSX for all DOM updates. If direct DOM manipulation is unavoidable, sanitise the value with DOMPurify.sanitize() before assignment.",
+              "good_code": "// Use React state instead\nconst [preview, setPreview] = useState('')\n\n// In JSX \u2014 React escapes by default\n<div>{preview}</div>\n\n// If you truly need HTML, sanitise first:\n<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(preview) }} />",
+              "bad_code": "// Bypasses React escaping \u2014 XSS risk\ndocument.getElementById('preview').innerHTML = templateString\n\nconst el = document.querySelector('.content')\nel.outerHTML = apiResponse.html",
+              "estimated_time_to_fix": 20
+            },
+            "js-scl-foreach-async": {
+              "rule_name": "Array.forEach() With Async Callback",
+              "severity": "MEDIUM",
+              "impact_area": "scalability",
+              "description": "Detects Array.prototype.forEach() with an async callback; forEach is synchronous and ignores returned promises.",
+              "remediation_action": "Use for...of (sequential) or map()+Promise.all() with p-limit (bounded parallel).",
+              "good_code": "for (const id of userIds) { await fetch(`/api/users/${id}/provision`); }",
+              "bad_code": "userIds.forEach(async (id) => { await fetch(`/api/users/${id}/provision`); });",
+              "estimated_time_to_fix": 15
+            }
+          },
+          "issues": [
+            {
+              "rule_id": "js-inner-html-assignment",
+              "file": "design/ui-mockup.inline-1.js",
+              "line": 132,
+              "column": 5,
+              "snippet": "    row.innerHTML = `\n      <div class=\"rank\">${i + 1}</div>\n      <div class=\"bar\">\n        <span class=\"b-prox\" style=\"width:${x.s.proximity * 100}%\"></span>\n        <span class=\"b-size\" style=\"width:${x.s.size * 100}%\"></span>\n        <span class=\"b-val\" style=\"width:${x.s.value * 100}%\"></span>\n      </div>\n      <div class=\"info\">\n        <div class=\"name\">${x.a.name} ${task ? `<span class=\"task-flag\">${task.status}</span>` : \"\"}</div>\n        <div class=\"sub\">${x.a.asset_type} \u00b7 ${Math.round(x.a.distance_to_fire_m)} m to fire</div>\n      </div>\n      <div class=\"score\">${x.s.total.toFixed(2)}</div>`;"
+            },
+            {
+              "rule_id": "js-inner-html-assignment",
+              "file": "design/ui-mockup.inline-1.js",
+              "line": 148,
+              "column": 3,
+              "snippet": "  q.innerHTML = review.length\n    ? `<div class=\"panelHead\" style=\"border-top:none\">Needs-review queue (${review.length})</div>` +\n      review.map(a => `<div class=\"qrow\" onclick=\"selectAsset('${a.asset_id}')\" style=\"cursor:pointer\">\n        <span>${a.name}</span><span class=\"qreason\">${(a.review_reasons || [\"exposure_unknown\"]).join(\", \")}</span></div>`).join(\"\")\n    : \"\";"
+            },
+            {
+              "rule_id": "js-inner-html-assignment",
+              "file": "design/ui-mockup.inline-1.js",
+              "line": 159,
+              "column": 3,
+              "snippet": "  document.getElementById(\"changeLog\").innerHTML = changeLog.slice().reverse()\n    .map(l => `<div class=\"cl-entry\">${l}</div>`).join(\"\") || '<div class=\"cl-entry\">No changes yet.</div>';"
+            },
+            {
+              "rule_id": "js-inner-html-assignment",
+              "file": "design/ui-mockup.inline-1.js",
+              "line": 245,
+              "column": 3,
+              "snippet": "  panel.innerHTML = `\n    <h3>${a.name}</h3>\n    <div class=\"kind\">${a.asset_type} \u00b7 asset_id <code>${a.asset_id}</code></div>\n    ${scoreHtml}\n    ${reviewHtml}\n    <div class=\"kv\">\n      <div class=\"k\">capacity</div><div class=\"v ${a.capacity == null ? \"null\" : \"\"}\">${a.capacity ?? \"null (unknown)\"}</div>\n      <div class=\"k\">estimated occupancy</div><div class=\"v ${a.estimated_occupancy == null ? \"null\" : \"\"}\">${a.estimated_occupancy ?? \"null (unknown)\"}</div>\n      <div class=\"k\">occupancy basis</div><div class=\"v\">${a.occupancy_basis ?? \"\u2014\"}</div>\n      <div class=\"k\">distance to fire</div><div class=\"v\">${a.distance_to_fire_m != null ? Math.round(a.distance_to_fire_m) + \" m\" : \"unknown\"}${a.intersects_fire ? \" (intersects)\" : \"\"}</div>\n      <div class=\"k\">value basis</div><div class=\"v\">${a.value_basis ?? \"\u2014\"}</div>\n    </div>\n    <div class=\"panelHead\" style=\"padding-left:0\">Evidence &amp; provenance</div>\n    ${sourcesHtml}\n    <div class=\"panelHead\" style=\"padding-left:0\">Follow-up task</div>\n    <div class=\"taskActions\">${actionsHtml}</div>\n    ${assignHtml}\n  `;"
+            },
+            {
+              "rule_id": "js-scl-foreach-async",
+              "file": "design/ui-mockup.inline-1.js",
+              "line": 114,
+              "column": 3,
+              "snippet": "  current.assets.forEach(a => {\n    const s = scoreAsset(a);\n    if (a.needs_review || s === null) review.push(a);\n    if (s !== null) scored.push({ a, s });\n  });"
+            },
+            {
+              "rule_id": "js-scl-foreach-async",
+              "file": "design/ui-mockup.inline-1.js",
+              "line": 127,
+              "column": 3,
+              "snippet": "  scored.forEach((x, i) => {\n    const row = document.createElement(\"div\");\n    row.className = \"row\" + (x.a.asset_id === selectedId ? \" selected\" : \"\");\n    row.onclick = () => selectAsset(x.a.asset_id);\n    const task = taskState[x.a.asset_id];\n    row.innerHTML = `\n      <div class=\"rank\">${i + 1}</div>\n      <div class=\"bar\">\n        <span class=\"b-prox\" style=\"width:${x.s.proximity * 100}%\"></span>\n        <span class=\"b-size\" style=\"width:${x.s.size * 100}%\"></span>\n        <span class=\"b-val\" style=\"width:${x.s.value * 100}%\"></span>\n      </div>\n      <div class=\"info\">\n        <div class=\"name\">${x.a.name} ${task ? `<span class=\"task-flag\">${task.status}</span>` : \"\"}</div>\n        <div class=\"sub\">${x.a.asset_type} \u00b7 ${Math.round(x.a.distance_to_fire_m)} m to fire</div>\n      </div>\n      <div class=\"score\">${x.s.total.toFixed(2)}</div>`;\n    list.appendChild(row);\n  });"
+            },
+            {
+              "rule_id": "js-scl-foreach-async",
+              "file": "design/ui-mockup.inline-1.js",
+              "line": 189,
+              "column": 3,
+              "snippet": "  all.forEach(({ a, total }) => {\n    const color = total === null ? \"#a8471f\" : tierColor(total);\n    const marker = L.circleMarker([a.latitude, a.longitude], {\n      radius: total === null ? 8 : 6 + total * 6, color: \"#fff\", weight: 1.5, fillColor: color, fillOpacity: 0.95,\n    }).addTo(markerLayer);\n    marker.bindTooltip(`<b>${a.name}</b><br/>${total === null ? \"needs review\" : \"priority \" + total.toFixed(2)}`, { className: \"fire-tip\" });\n    marker.on(\"click\", () => selectAsset(a.asset_id));\n  });"
+            }
+          ],
+          "issues_returned": 7,
+          "total_issues": 7,
+          "capped": false,
+          "coverage": {
+            "reduced": true,
+            "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+          },
+          "rulesets_evaluated": [
+            "javascript-norma-ruleset",
+            "nodejs-norma-ruleset",
+            "react-norma-ruleset",
+            "supabase-norma-ruleset",
+            "typescript-norma-ruleset",
+            "vite-norma-ruleset"
+          ]
+        }
+      },
+      "original_start_tag_line": 205,
+      "original_source_lines": [
+        318,
+        331,
+        393
+      ],
+      "recorded_content_matches_original_revision": true
+    }
+  ],
+  "probe_source": "import hashlib\nimport json\nimport os\nimport pathlib\nimport sys\nfrom enum import IntEnum\n\nroot = pathlib.Path(sys.argv[1]).resolve()\nexpected_hash = sys.argv[2]\nmode = sys.argv[3]\nsys.path.insert(0, str(root))\nos.chdir(root)\nfrom fireline import evacuation_readiness as er\nfrom tests.test_evacuation_readiness import run\n\nassert hashlib.sha256(pathlib.Path(er.__file__).read_bytes()).hexdigest() == expected_hash\nclass Capacity(int):\n    pass\nclass Places(IntEnum):\n    TEN = 10\n\ncases = [('zero', 0), ('positive', 10), ('negative', -1), ('true', True),\n         ('false', False), ('integral_float', 10.0), ('fractional_float', 1.5),\n         ('string', '10'), ('null', None), ('int_subclass', Capacity(10)),\n         ('int_enum', Places.TEN)]\nresults = []\nfor name, value in cases:\n    try:\n        result, house = run(centre_changes={'remaining_places': value})\n        accepted = True\n        if name == 'zero':\n            assert house['destination_id'] is None\n            assert result['remaining_capacity']['centre'] == 0\n        else:\n            assert house['destination_id'] == 'centre'\n            assert result['remaining_capacity']['centre'] == 2\n    except ValueError as exc:\n        assert str(exc) == 'remaining_places must be a nonnegative integer'\n        accepted = False\n    expected = name in {'zero', 'positive'} or (mode == 'current' and name in {'int_subclass', 'int_enum'})\n    assert accepted == expected, (name, accepted, expected)\n    results.append({'case': name, 'accepted': accepted})\ndecoded = json.loads('{\"remaining_places\": true}')['remaining_places']\nassert decoded is True and isinstance(decoded, int) and decoded >= 0\nprint(json.dumps({'mode': mode, 'source_sha256': expected_hash, 'public_api_cases_passed': len(results), 'cases': results, 'plain_isinstance_plus_nonnegative_accepts_json_true': True}, indent=2))\n",
+  "precise_file_recheck": {
+    "source_commit": "f86798cd9269c59b502c06fe7c78a590c7097ec9",
+    "file": "fireline/evacuation_readiness.py",
+    "sha256": "e69a2aed4396affbc6b9c31488cf0bd32464ae9e4b6571b9c3ed88fa3a2b23cf",
+    "call_started_at": "2026-09-19T19:06:49.879Z",
+    "result": {
+      "outcome": "issues",
+      "rules": {
+        "py-arch-type-eq": {
+          "rule_name": "type(x) == X",
+          "severity": "HIGH",
+          "impact_area": "architecture",
+          "description": "Checks an object's type too strictly; rejects valid subtypes that should also be accepted.",
+          "remediation_action": "Use isinstance.",
+          "good_code": "if isinstance(x, int): ...",
+          "bad_code": "if type(x) == int: ...",
+          "estimated_time_to_fix": 2
+        }
+      },
+      "issues": [
+        {
+          "rule_id": "py-arch-type-eq",
+          "file": "fireline/evacuation_readiness.py",
+          "line": 103,
+          "column": 12,
+          "snippet": "        if type(centre.remaining_places) is not int or centre.remaining_places < 0:"
+        }
+      ],
+      "issues_returned": 1,
+      "total_issues": 1,
+      "capped": false,
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    }
+  },
+  "verification": {
+    "public_api_probes": [
+      {
+        "mode": "original",
+        "source_sha256": "e69a2aed4396affbc6b9c31488cf0bd32464ae9e4b6571b9c3ed88fa3a2b23cf",
+        "public_api_cases_passed": 11,
+        "cases": [
+          {
+            "case": "zero",
+            "accepted": true
+          },
+          {
+            "case": "positive",
+            "accepted": true
+          },
+          {
+            "case": "negative",
+            "accepted": false
+          },
+          {
+            "case": "true",
+            "accepted": false
+          },
+          {
+            "case": "false",
+            "accepted": false
+          },
+          {
+            "case": "integral_float",
+            "accepted": false
+          },
+          {
+            "case": "fractional_float",
+            "accepted": false
+          },
+          {
+            "case": "string",
+            "accepted": false
+          },
+          {
+            "case": "null",
+            "accepted": false
+          },
+          {
+            "case": "int_subclass",
+            "accepted": false
+          },
+          {
+            "case": "int_enum",
+            "accepted": false
+          }
+        ],
+        "plain_isinstance_plus_nonnegative_accepts_json_true": true
+      },
+      {
+        "mode": "current",
+        "source_sha256": "d05131a74ca895f89ce5ca5dddf5a26938c7b6eb7bee48a306a212b24b272876",
+        "public_api_cases_passed": 11,
+        "cases": [
+          {
+            "case": "zero",
+            "accepted": true
+          },
+          {
+            "case": "positive",
+            "accepted": true
+          },
+          {
+            "case": "negative",
+            "accepted": false
+          },
+          {
+            "case": "true",
+            "accepted": false
+          },
+          {
+            "case": "false",
+            "accepted": false
+          },
+          {
+            "case": "integral_float",
+            "accepted": false
+          },
+          {
+            "case": "fractional_float",
+            "accepted": false
+          },
+          {
+            "case": "string",
+            "accepted": false
+          },
+          {
+            "case": "null",
+            "accepted": false
+          },
+          {
+            "case": "int_subclass",
+            "accepted": true
+          },
+          {
+            "case": "int_enum",
+            "accepted": true
+          }
+        ],
+        "plain_isinstance_plus_nonnegative_accepts_json_true": true
+      }
+    ],
+    "focused_suites": {
+      "original": {
+        "passed": 36
+      },
+      "current": {
+        "passed": 41
+      },
+      "command": "PYTHONPATH=. python -m pytest -q -p no:cacheprovider tests/test_evacuation_readiness.py",
+      "environment_note": "Initial archive runs without PYTHONPATH used another worktree's editable package in CLI subprocesses: original 35 passed/1 import failure; current 39 passed/2 import failures. Setting PYTHONPATH=. to the tested archive fixed isolation; both complete focused suites then passed without source changes."
+    },
+    "probe_reproduction": "Export original/current revisions into separate archives; run probe_source as a Python file with arguments ARCHIVE_PATH EXPECTED_FILE_SHA256 original|current. Requires project dev dependencies.",
+    "as_of_note": "The mode current in the preserved probe output means d75d4b7 at execution time; it is now a historical comparison revision, not the selected branch head."
+  },
+  "rationale": {
+    "rule_mismatch": "Rule assumes subtypes should be accepted. Strict primitive input deliberately does not promise that; bool is an int subclass but is not a place count.",
+    "tradeoff": "Rejects legitimate integer subclasses and IntEnum values; caller must normalize deliberately. Current bool-guarded isinstance policy is a valid alternative.",
+    "invalidated_if": [
+      "API contract requires integer subclasses or IntEnum/numerical-library values",
+      "upstream schema normalizes all values and strict runtime validation no longer serves a boundary",
+      "capacity semantics change to fractional units",
+      "strictness silently coerces invalid input instead of rejecting it"
+    ],
+    "limits": "Tests establish rejection/acceptance semantics, not operational evacuation safety or proof of original author intent.",
+    "proposed_contract": "Proposed nonnegative built-in int capacity contract; would reject bool and integer subclasses."
+  },
+  "formal_exception_submitted": false,
+  "source_reverted": false,
+  "review_status": "historical comparison approved; current selected design has separate evidence",
+  "independent_review": {
+    "provenance": "recorded attempts, original hashes and JS source-line mapping verified",
+    "behavior": "11 public API cases reproduced on both exact archives",
+    "wording_correction": "contract explicitly proposed; no claim of undocumented original author intent"
+  },
+  "comparison_revision": {
+    "branch": "codex/evacuation-readiness",
+    "commit": "d75d4b769940e0ca6b0a01949f5c7bf84daec44e",
+    "file": "fireline/evacuation_readiness.py",
+    "sha256": "d05131a74ca895f89ce5ca5dddf5a26938c7b6eb7bee48a306a212b24b272876",
+    "behavior": "At historical d75d4b7, bool was rejected and nonnegative int subclasses accepted. Superseded by the selected strict implementation."
+  },
+  "current_selected_evidence": "reports/norma-selected-capacity-defense-2026-09-19.json"
+}

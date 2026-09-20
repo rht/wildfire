@@ -10,3 +10,9 @@ data/
 .pytest_cache/
 *.egg-info/
 .env
+
+node_modules/
+test-results/
+frontend/dist/
+frontend/.vite/
+frontend/artifacts/

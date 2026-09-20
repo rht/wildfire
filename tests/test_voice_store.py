@@ -4,7 +4,7 @@ from datetime import timedelta
 import json
 import pytest
 from tests.test_voice_interview import EPOCH, request, result
-from tests.test_voice_provider import CALL, AGENT, TRUNK, Transport, client
+from tests.test_voice_provider import configured_agent, CALL, AGENT, TRUNK, Transport, client
 
 
 def store(path=':memory:', now=EPOCH):
@@ -169,7 +169,7 @@ def test_ambiguous_dispatch_cannot_repeat_after_restart(tmp_path):
     s = store(path)
     req = request(input_mode='live')
     s.register(req)
-    transport = Transport([{'id': AGENT, 'sip_outbound_trunk_id': TRUNK}, requests.Timeout('private synthetic text')])
+    transport = Transport([configured_agent(), requests.Timeout('private synthetic text')])
     c = client(transport)
     with pytest.raises(RuntimeError):
         s.start(c, req.request_id, mode='outbound', approved_target=req.contact_number)

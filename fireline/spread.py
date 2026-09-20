@@ -3,7 +3,8 @@
 Two sources, both normalised to an :class:`ArrivalRaster` on the shared grid:
 
 * :func:`run_ca` -- a numpy cellular automaton in the style of Alexandridis et al. (2008),
-  run as a stochastic ensemble that perturbs the wind per run.
+  run as a stochastic ensemble that perturbs the wind per run. The wind is one vector for the whole
+  run, or a ``wind_series`` of samples that take effect at given elapsed minutes.
 * :func:`arrival_from_polygons` -- Deepfire-style hourly polygons rasterised to arrival hours.
 
 :func:`combine` takes the elementwise earlier arrival of two rasters.
@@ -60,6 +61,24 @@ def _wind_factors(wind_dir_from_deg: float, wind_speed_mps: float, cfg: dict) ->
     return out
 
 
+def _wind_schedule(wind_series, n_steps: int, minutes_per_step: float):
+    """Split a wind series into its samples and a per-step index into them.
+
+    ``wind_series`` is a sequence of ``(minutes_from_start, wind_dir_from_deg, wind_speed_mps)``
+    ascending in ``minutes_from_start``. The sample in effect during a step is the last one at or
+    before the elapsed minutes at the START of that step; the first sample also covers any time
+    before it. Returns ``(samples, step_idx)`` with ``samples`` a list of ``(dir_deg, speed_mps)``
+    and ``step_idx`` an (n_steps,) int array.
+    """
+    samples = [(float(t), float(d), float(v)) for t, d, v in wind_series]
+    times = np.array([s[0] for s in samples], dtype=np.float64)
+    if np.any(np.diff(times) <= 0):
+        raise ValueError(f"wind_series minutes_from_start must ascend, got {list(times)}")
+    elapsed = np.arange(n_steps, dtype=np.float64) * minutes_per_step
+    step_idx = np.maximum(np.searchsorted(times, elapsed, side="right") - 1, 0)
+    return [(d, v) for _, d, v in samples], step_idx
+
+
 def _shift(arr: np.ndarray, dr: int, dc: int) -> np.ndarray:
     """out[i, j] = arr[i - dr, j - dc] (zero outside), i.e. the value at the upwind source cell."""
     h, w = arr.shape
@@ -111,9 +130,13 @@ def seed_mask(perimeter: Polygon | MultiPolygon, grid: Grid) -> np.ndarray:
 def _run_one(rng, seed, base, wind_k, fuel_ok, n_steps):
     """One stochastic CA run. Returns int32 array of arrival step (-1 = never burned).
 
+    ``wind_k`` is either an (8,) array of per-direction wind factors held for the whole run, or an
+    (n_steps, 8) array giving those factors per step.
+
     Vectorised on a window that starts at the bounding box of the seed cells and grows by one
     cell per step (fire cannot outrun that), so cost scales with the burned area, not the grid.
     """
+    per_step = wind_k.ndim == 2
     nrows, ncols = seed.shape
     arrival = np.full((nrows, ncols), -1, dtype=np.int32)
     arrival[seed] = 0
@@ -131,11 +154,12 @@ def _run_one(rng, seed, base, wind_k, fuel_ok, n_steps):
         padded = np.zeros((h + 2, w + 2), dtype=np.float32)
         padded[1:-1, 1:-1] = burning
         survive = np.ones((h, w), dtype=np.float32)
+        wk = wind_k[step] if per_step else wind_k
         for k, (dr, dc) in enumerate(_OFFSETS):
             b_k = padded[1 - dr:1 - dr + h, 1 - dc:1 - dc + w]
             base_k = base[k]
             p_k = base_k[win] if isinstance(base_k, np.ndarray) else base_k
-            p_k = np.minimum(p_k * wind_k[k], 1.0)
+            p_k = np.minimum(p_k * wk[k], 1.0)
             survive *= 1.0 - p_k * b_k
         u = rng.random((h, w), dtype=np.float32)
         new = (arr_w == -1) & (u < 1.0 - survive)
@@ -187,7 +211,7 @@ def aggregate_runs(minutes: np.ndarray, grid: Grid, horizon_min: int, source: st
 
 
 def run_ca(fire_state, grid, fuel=None, slope=None, n_runs=50, horizon_min=720, seed=0,
-           cfg: dict | None = None) -> ArrivalRaster:
+           cfg: dict | None = None, wind_series=None) -> ArrivalRaster:
     """Stochastic CA ensemble (Alexandridis et al. 2008 style) -> ArrivalRaster with source "ca".
 
     Each step every burning cell tries to ignite its 8 neighbours with
@@ -199,11 +223,21 @@ def run_ca(fire_state, grid, fuel=None, slope=None, n_runs=50, horizon_min=720, 
     ``fuel``: optional (nrows, ncols) multiplier on the ignition probability of the target cell;
     cells with fuel <= 0 never burn. ``slope``: optional (nrows, ncols) elevation in metres (DEM),
     from which the slope along each spread direction is derived; 1.0 everywhere when None.
+
+    ``wind_series``: optional sequence of ``(minutes_from_start, wind_dir_from_deg,
+    wind_speed_mps)`` ascending in ``minutes_from_start``, elapsed minutes after ``fire_state.t``.
+    A step uses the last sample at or before its start time; the first sample also covers the time
+    before it, so a series need not start at 0. Non-ascending raises ValueError. None or empty
+    means the constant ``fire_state`` wind. One run's speed factor and direction offset are drawn
+    once and applied to every sample, so a member is a coherent variant of the whole history.
     """
     cfg = dict(config.CA) if cfg is None else cfg
     mps = float(cfg["minutes_per_step"])
     n_steps = int(horizon_min // mps)
     rng = np.random.default_rng(seed)
+    series = None
+    if wind_series is not None and len(wind_series) > 0:
+        series, step_idx = _wind_schedule(wind_series, n_steps, mps)
 
     seed_cells = seed_mask(fire_state.perimeter, grid)
     if fuel is not None:
@@ -231,9 +265,13 @@ def run_ca(fire_state, grid, fuel=None, slope=None, n_runs=50, horizon_min=720, 
     v0 = float(fire_state.wind_speed_mps)
     d0 = float(fire_state.wind_dir_deg)
     for i in range(n_runs):
-        v = v0 * (1.0 + rng.uniform(-0.3, 0.3))
-        d = d0 + rng.uniform(-20.0, 20.0)
-        wind_k = _wind_factors(d, v, cfg)
+        speed_f = 1.0 + rng.uniform(-0.3, 0.3)
+        dir_off = rng.uniform(-20.0, 20.0)
+        if series is None:
+            wind_k = _wind_factors(d0 + dir_off, v0 * speed_f, cfg)
+        else:
+            per_sample = np.stack([_wind_factors(d + dir_off, v * speed_f, cfg) for d, v in series])
+            wind_k = per_sample[step_idx]
         arrival = _run_one(rng, seed_cells, base, wind_k, fuel_ok, n_steps)
         burned = arrival >= 0
         minutes[i][burned] = arrival[burned] * mps

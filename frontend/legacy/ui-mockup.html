@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Respons'Ara — Coordination dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --ink: #16191c;
+    --paper: #f4f2ee;
+    --panel: #ffffff;
+    --line: #e2ded7;
+    --muted: #6b6459;
+    --act-now: #c73a2f;
+    --prepare: #d98a1f;
+    --monitor: #7a8a7d;
+    --accent: #1f5c4d;
+    --accent-ink: #ffffff;
+    --review: #a8471f;
+    --stale: #b8862b;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #05080a;
+    color: var(--ink);
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+  }
+  /* device/vehicle-terminal bezel: the analyst dashboard sits inside this like a
+     panel-mounted screen, so the frame is dark even though the content is light */
+  #deviceFrame {
+    flex: 1;
+    margin: 14px;
+    padding: 16px;
+    border-radius: 22px;
+    background: linear-gradient(155deg, #26292b, #101214 60%);
+    box-shadow: inset 0 0 0 2px #000, inset 0 2px 6px rgba(255,255,255,0.06), 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+  }
+  #app {
+    flex: 1; display: flex; flex-direction: column;
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 0 0 1px #000;
+  }
+
+  /* ---------- top bar ---------- */
+  #topbar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 18px; background: linear-gradient(180deg, #333a3f, #282e32); color: #fff;
+    flex-shrink: 0; z-index: 20;
+  }
+  #topbar .brand { display: inline-flex; align-items: center; font-weight: 700; font-size: 18px; letter-spacing: 0.2px; }
+  #topbar .brand small { font-weight: 400; opacity: 0.7; font-size: 12px; margin-left: 6px; }
+  #topbar .brand .word-1 { color: #f5f3ef; }
+  #topbar .brand .word-2 { color: #b9bfc2; font-weight: 600; }
+  .badge {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 3px 9px; border-radius: 999px; font-weight: 600;
+  }
+  .badge.mode { background: #2c3236; color: #cfd6d3; }
+  .badge.current { background: #234f3f; color: #b9f0d4; }
+  .badge.stale { background: #4a3a1a; color: #f0d9a8; }
+  .badge.unavailable { background: #4a1f1f; color: #f0b9b9; }
+  #topbar .timestamps { font-size: 12px; color: #aab0ac; margin-left: auto; text-align: right; line-height: 1.4; }
+  #topbar .timestamps b { color: #e7e4de; }
+  #nextUpdateBtn {
+    background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px;
+    padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  #nextUpdateBtn:hover { background: #276b58; }
+
+  /* ---------- layout ---------- */
+  #main { flex: 1; display: flex; min-height: 0; background: var(--paper); }
+  /* map is now a bounded card within its column, not full-bleed, and the column
+     itself is narrower relative to the sidebar per the "map slightly smaller" note */
+  #mapCol { flex: 1; position: relative; padding: 14px; min-width: 0; }
+  .mapCardHead {
+    position: absolute; top: 24px; left: 24px; z-index: 12;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(2px);
+    padding: 5px 11px; border-radius: 7px; font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  /* mapFrame is the fixed rectangular card — border, radius and shadow never move.
+     #map (Leaflet's own container) sits inside it and is what tilts, clipped cleanly
+     by mapFrame's overflow:hidden, the way a real map product's camera pitch works. */
+  #mapFrame {
+    position: absolute; top: 14px; left: 14px; right: 14px; bottom: 74px;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.25), 0 0 0 1px var(--line);
+    perspective: 1000px;
+  }
+  #map {
+    position: absolute; inset: 0;
+    transition: transform 0.35s ease;
+    transform-origin: 50% 100%;
+  }
+  #map.tilt3d { transform: rotateX(38deg) scale(1.55); }
+  .mapButtonBar {
+    position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 12;
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .mapButtonBar button {
+    flex: 1; min-width: 92px; background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 9px 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; color: var(--ink);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  }
+  .mapButtonBar button:hover { border-color: var(--accent); color: var(--accent); }
+  .mapButtonBar button.primary { background: var(--act-now); color: #fff; border-color: var(--act-now); }
+  .mapButtonBar button.primary:hover { color: #fff; filter: brightness(1.08); }
+  .mapButtonBar button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .mapButtonBar button.notified { background: var(--monitor); color: #fff; border-color: var(--monitor); cursor: default; }
+
+  /* sidebar is one scrollable column of card "widgets", each visually separated,
+     rather than one continuous flush panel */
+  #sideCol {
+    flex: 1; display: flex; flex-direction: column; min-width: 440px; max-width: 500px;
+    background: var(--paper); border-left: 1px solid var(--line); overflow-y: auto;
+  }
+  .card {
+    flex-shrink: 0;
+    background: var(--panel); border-radius: 10px; margin: 10px 12px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 0 0 1px var(--line); overflow: hidden;
+  }
+  .card:last-child { margin-bottom: 10px; }
+
+  /* ---------- escalation & notification status ---------- */
+  #escalationPanel { flex-shrink: 0; border-top: 1px solid var(--line); }
+  .escStats { display: flex; gap: 1px; background: var(--line); }
+  .escStat { flex: 1; background: var(--panel); padding: 8px 10px; }
+  .escStat .n { font-size: 18px; font-weight: 700; }
+  .escStat .l { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .escStat.confirmed .n { color: var(--accent); }
+  .escStat.open .n { color: var(--review); }
+  .escStat.mobility .n { color: #244a75; }
+  .escListLabel { padding: 6px 14px 2px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .escList { max-height: 80px; overflow-y: auto; }
+  .escRow {
+    display: flex; align-items: center; gap: 8px; padding: 5px 14px; font-size: 12px;
+    border-bottom: 1px solid var(--line); cursor: pointer;
+  }
+  .escRow:hover { background: #f7f5f0; }
+  .escDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .escDot.open { background: var(--review); }
+  .escDot.mobility { background: #244a75; }
+  .escRow .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .metrics { display: flex; gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); flex-shrink: 0; }
+  .metric { flex: 1; background: var(--panel); padding: 10px 12px; }
+  .metric .n { font-size: 20px; font-weight: 700; }
+  .metric .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .metric.act-now .n { color: var(--act-now); }
+  .metric.prepare .n { color: var(--prepare); }
+  .metric.review .n { color: var(--review); }
+
+  .panelHead {
+    padding: 10px 14px 6px; font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--muted); border-top: 1px solid var(--line);
+  }
+
+  #rankedList { max-height: 240px; overflow-y: auto; }
+  .row {
+    display: flex; gap: 10px; align-items: center; padding: 9px 14px; border-bottom: 1px solid var(--line);
+    cursor: pointer; transition: background 0.1s;
+  }
+  .row:hover { background: #f7f5f0; }
+  .row.selected { background: #eef4f1; border-left: 3px solid var(--accent); padding-left: 11px; }
+  .row .rank { font-size: 12px; color: var(--muted); width: 18px; text-align: right; flex-shrink: 0; }
+  .row .info { flex: 1; min-width: 0; }
+  .row .name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .sub { font-size: 11.5px; color: var(--muted); }
+  .row .score { font-size: 15px; font-weight: 700; width: 40px; text-align: right; flex-shrink: 0; }
+  .bar { width: 54px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; display: flex; flex-shrink: 0; }
+  .bar span { display: block; height: 100%; }
+  .bar .b-prox { background: #c73a2f; }
+  .bar .b-size { background: #d98a1f; }
+  .bar .b-val  { background: #1f5c4d; }
+  .review-flag { font-size: 10px; background: #fbe4d5; color: var(--review); padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+  .task-flag { font-size: 10px; background: #e4ecf5; color: #244a75; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+
+  #detailPanel { max-height: 420px; overflow-y: auto; padding: 14px; }
+  #detailPanel h3 { margin: 0 0 2px; font-size: 16px; }
+  #detailPanel .kind { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .kv { display: grid; grid-template-columns: 130px 1fr; gap: 4px 10px; font-size: 12.5px; margin-bottom: 12px; }
+  .kv div.k { color: var(--muted); }
+  .kv div.v.null { color: #b0473a; font-style: italic; }
+  .scoreBreak { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .scoreBreak .sb-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .scoreBreak .sb-label { width: 78px; color: var(--muted); }
+  .scoreBreak .sb-bar { flex: 1; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .scoreBreak .sb-bar span { display: block; height: 100%; }
+  .scoreBreak .sb-val { width: 34px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .reviewBox { background: #fdf2ea; border: 1px solid #f0c9a6; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 12.5px; }
+  .reviewBox b { color: var(--review); }
+
+  .sourceItem { font-size: 11.5px; border-left: 2px solid var(--line); padding: 4px 0 4px 8px; margin-bottom: 6px; color: var(--muted); }
+  .sourceItem b { color: var(--ink); }
+
+  .taskActions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .taskActions button {
+    font-size: 12px; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line);
+    background: #fff; cursor: pointer; font-weight: 600; color: var(--ink);
+  }
+  .taskActions button:hover { border-color: var(--accent); color: var(--accent); }
+  .taskActions button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .assignRow { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .assignRow select {
+    flex: 1; font-size: 12.5px; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: #fff;
+  }
+  .teamUnavailable { color: #b0473a; }
+
+  #reviewQueue { border-top: 1px solid var(--line); max-height: 130px; overflow-y: auto; flex-shrink: 0; }
+  .qrow { padding: 6px 14px; font-size: 12px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 8px; }
+  .qrow .qreason { color: var(--review); }
+
+  #changeLogBtn {
+    position: absolute; top: 24px; right: 24px; z-index: 15; background: rgba(255,255,255,0.92); border: 1px solid var(--line);
+    border-radius: 6px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  #changeLog {
+    position: absolute; top: 62px; right: 24px; z-index: 15; background: #fff; border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 12px; font-size: 11.5px; width: 300px; max-height: 220px; overflow-y: auto;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16); display: none;
+  }
+  #changeLog.open { display: block; }
+
+  /* ---------- institutions database view ---------- */
+  #dbView { display: none; flex: 1; flex-direction: column; background: var(--paper); min-height: 0; }
+  #dbView.open { display: flex; }
+  .dbHeader {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; background: var(--panel); border-bottom: 1px solid var(--line); flex-shrink: 0;
+  }
+  .dbHeader h2 { margin: 0; font-size: 15px; }
+  .backBtn { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .backBtn:hover { border-color: var(--accent); color: var(--accent); }
+  .dbTable { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .dbTable th {
+    text-align: left; padding: 9px 14px; background: #eef1ef; color: var(--muted);
+    text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.04em; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0;
+  }
+  .dbTable td { padding: 9px 14px; border-bottom: 1px solid var(--line); }
+  .dbTable tr:hover td { background: #f7f5f0; }
+  .dbTable button {
+    font-size: 11px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--line);
+    background: #fff; cursor: pointer; font-weight: 700;
+  }
+  .dbTable button:hover { border-color: var(--accent); color: var(--accent); }
+  .dbTable button.notified { background: var(--accent); color: #fff; border-color: var(--accent); cursor: default; }
+  .stagePill {
+    font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .stagePill.act-now { background: #fbe0dd; color: var(--act-now); }
+  .stagePill.prepare { background: #fbead0; color: var(--prepare); }
+  .stagePill.monitor { background: #e7e9e8; color: var(--monitor); }
+  .stagePill.review { background: #fbe4d5; color: var(--review); }
+  #changeLog .cl-entry { padding: 4px 0; border-bottom: 1px dashed var(--line); }
+  #changeLog .cl-entry:last-child { border-bottom: none; }
+
+  button:disabled { opacity: 0.65; cursor: default; }
+  #responsePlan { padding: 0 14px 14px; }
+  .qrow .info { flex: 1; }
+  #detailPanel .v { overflow-wrap: anywhere; }
+  .leaflet-tooltip.fire-tip { font-size: 11px; }
+</style>
+</head>
+<body>
+<div id="deviceFrame">
+<div id="app">
+  <div id="topbar">
+    <div class="brand">
+      <span class="word-1">Respons</span><span class="word-2">'Ara</span>
+      <small>Which infrastructure, people and assets are in danger — and which hospital, which school, needs a call first.</small>
+    </div>
+    <span class="badge mode" id="modeBadge">Waiting for backend</span>
+    <span class="badge current" id="statusBadge">connecting</span>
+    <div class="timestamps">
+      <div>as_of <b id="asOf">—</b></div>
+      <div>state <b id="computedAt">—</b></div>
+    </div>
+    <button id="nextUpdateBtn">Reconnect</button>
+  </div>
+
+  <div id="main">
+    <div id="mapCol">
+      <div class="mapCardHead">Response map — supplied backend state</div>
+      <button id="changeLogBtn">Change log (<span id="logCount">0</span>)</button>
+      <div id="changeLog"></div>
+      <div id="mapFrame">
+        <div id="map"></div>
+      </div>
+      <div class="mapButtonBar">
+        <button id="notifyFireDeptBtn" disabled title="Read-only; use approved dispatch workflow">Dispatch: read-only</button>
+        <button id="notifyRadioBtn" disabled>Radio: read-only</button>
+        <button id="notifyPhoneBtn" disabled title="Use the explicitly approved shared call queue">Approved queue required</button>
+        <button id="toggle3dBtn">Tilt map</button>
+        <button id="openDbBtn">Institutions database →</button>
+      </div>
+    </div>
+
+    <div id="sideCol">
+      <div class="card"><div id="systemErrors" role="status" class="panelHead">Waiting for system state</div></div>
+      <div class="card">
+        <div class="panelHead" style="border-top:none">Backend contact urgency</div>
+        <div class="metrics">
+          <div class="metric act-now"><div class="n" id="mAct">0</div><div class="l">window exhausted</div></div>
+          <div class="metric prepare"><div class="n" id="mPrep">0</div><div class="l">window open</div></div>
+          <div class="metric review"><div class="n" id="mReview">0</div><div class="l">needs review</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div id="escalationPanel">
+          <div class="panelHead" style="border-top:none">Escalation &amp; notification status</div>
+          <div class="escStats">
+            <div class="escStat confirmed"><div class="n" id="escConfirmed">0</div><div class="l">acknowledged</div></div>
+            <div class="escStat open"><div class="n" id="escOpen">0</div><div class="l">human requested</div></div>
+            <div class="escStat mobility"><div class="n" id="escMobility">0</div><div class="l">assistance requested</div></div>
+          </div>
+          <div class="escListLabel">Human requests</div>
+          <div id="escOpenList" class="escList"></div>
+          <div class="escListLabel">Assistance requests</div>
+          <div id="escMobilityList" class="escList"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panelHead" style="border-top:none">Contact order — backend priority</div>
+        <div id="rankedList"></div>
+      </div>
+
+      <div class="card">
+        <div class="panelHead" style="border-top:none">Selected location</div>
+        <div id="detailPanel"><p style="color:var(--muted);font-size:13px;padding:0 14px">Select a location from the list, or a pin on the map.</p></div>
+      </div>
+
+      <div class="card"><div class="panelHead">Supplied response plan</div><div id="responsePlan"></div></div>
+      <div class="card">
+        <div id="reviewQueue"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dbView">
+    <div class="dbHeader">
+      <h2>Institutions &amp; infrastructure database</h2>
+      <button id="backToMapBtn" class="backBtn">← Back to map</button>
+    </div>
+    <div style="overflow-y:auto; flex:1;">
+      <table class="dbTable">
+        <thead>
+          <tr>
+            <th>Institution</th><th>Type</th><th>Proximity</th><th>Capacity</th>
+            <th>Size (occupancy)</th><th>Contact status</th><th>Contact rank</th>
+          </tr>
+        </thead>
+        <tbody id="dbTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="/dashboard-client.js"></script>
+<script src="/dashboard-view.js"></script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+{
+  "schema_version": "multi-response-input-1",
+  "scenario_id": "synthetic-two-trucks",
+  "snapshot_id": "s1",
+  "now_min": 0,
+  "horizon_min": 30,
+  "buffer_min": 0,
+  "assets": [
+    {
+      "asset_id": "A",
+      "node_id": "A",
+      "people": 2,
+      "assisted": 2,
+      "value": 10,
+      "deadline_min": 30
+    },
+    {
+      "asset_id": "B",
+      "node_id": "B",
+      "people": 2,
+      "assisted": 1,
+      "value": 10,
+      "deadline_min": 30
+    },
+    {
+      "asset_id": "C",
+      "node_id": "C",
+      "people": 2,
+      "assisted": 0,
+      "value": 999,
+      "deadline_min": 30
+    },
+    {
+      "asset_id": "D",
+      "node_id": "D",
+      "people": 2,
+      "assisted": 1,
+      "value": 10,
+      "deadline_min": 30
+    },
+    {
+      "asset_id": "E",
+      "node_id": "E",
+      "people": 2,
+      "assisted": 1,
+      "value": 10,
+      "deadline_min": 2
+    },
+    {
+      "asset_id": "F",
+      "node_id": "F",
+      "people": 2,
+      "assisted": 2,
+      "value": 10,
+      "deadline_min": 30
+    }
+  ],
+  "teams": [
+    {
+      "team_id": "truck-1",
+      "start_node_id": "BASE",
+      "available": true,
+      "available_from_min": 0,
+      "available_until_min": 30,
+      "transport_capacity": 2,
+      "capabilities": [
+        "access"
+      ]
+    },
+    {
+      "team_id": "truck-2",
+      "start_node_id": "SECOND_BASE",
+      "available": true,
+      "available_from_min": 0,
+      "available_until_min": 30,
+      "transport_capacity": 2,
+      "capabilities": []
+    }
+  ],
+  "actions": [
+    {
+      "action_id": "open-access",
+      "asset_id": "C",
+      "duration_min": 2,
+      "deadline_min": 30,
+      "requires": [],
+      "capabilities": [
+        "access"
+      ],
+      "transport_people": 0,
+      "readiness_required": false,
+      "effects": []
+    },
+    {
+      "action_id": "help-A",
+      "asset_id": "A",
+      "duration_min": 2,
+      "deadline_min": 30,
+      "requires": [
+        "open-access"
+      ],
+      "capabilities": [],
+      "transport_people": 2,
+      "readiness_required": false,
+      "effects": [
+        {
+          "asset_id": "A",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic assumption"
+        }
+      ]
+    },
+    {
+      "action_id": "help-B",
+      "asset_id": "B",
+      "duration_min": 2,
+      "deadline_min": 30,
+      "requires": [
+        "open-access"
+      ],
+      "capabilities": [],
+      "transport_people": 2,
+      "readiness_required": false,
+      "effects": [
+        {
+          "asset_id": "B",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic assumption"
+        }
+      ]
+    },
+    {
+      "action_id": "protect-D",
+      "asset_id": "D",
+      "duration_min": 2,
+      "deadline_min": 30,
+      "requires": [],
+      "capabilities": [],
+      "transport_people": 0,
+      "readiness_required": false,
+      "effects": [
+        {
+          "asset_id": "D",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic assumption"
+        }
+      ]
+    },
+    {
+      "action_id": "protect-E",
+      "asset_id": "E",
+      "duration_min": 2,
+      "deadline_min": 30,
+      "requires": [],
+      "capabilities": [],
+      "transport_people": 0,
+      "readiness_required": false,
+      "effects": [
+        {
+          "asset_id": "E",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic assumption"
+        }
+      ]
+    },
+    {
+      "action_id": "help-F",
+      "asset_id": "F",
+      "duration_min": 2,
+      "deadline_min": 30,
+      "requires": [],
+      "capabilities": [],
+      "transport_people": 3,
+      "readiness_required": false,
+      "effects": [
+        {
+          "asset_id": "F",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic assumption"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "from_node": "BASE",
+      "to_node": "A",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "BASE",
+      "to_node": "B",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "BASE",
+      "to_node": "C",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "A",
+      "to_node": "BASE",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "A",
+      "to_node": "B",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "A",
+      "to_node": "C",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "B",
+      "to_node": "BASE",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "B",
+      "to_node": "A",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "B",
+      "to_node": "C",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "C",
+      "to_node": "BASE",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "C",
+      "to_node": "A",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "C",
+      "to_node": "B",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "SECOND_BASE",
+      "to_node": "A",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "SECOND_BASE",
+      "to_node": "B",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "SECOND_BASE",
+      "to_node": "C",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "BASE",
+      "to_node": "D",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": false,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "SECOND_BASE",
+      "to_node": "D",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": false,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "BASE",
+      "to_node": "E",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "SECOND_BASE",
+      "to_node": "E",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "A",
+      "to_node": "E",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "B",
+      "to_node": "E",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "C",
+      "to_node": "E",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "BASE",
+      "to_node": "F",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "SECOND_BASE",
+      "to_node": "F",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "A",
+      "to_node": "F",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "B",
+      "to_node": "F",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    },
+    {
+      "from_node": "C",
+      "to_node": "F",
+      "minutes": 1,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 30,
+      "source": "synthetic route"
+    }
+  ],
+  "readiness": [],
+  "committed": []
+}

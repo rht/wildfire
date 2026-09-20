@@ -18,6 +18,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
+dashboard = ["starlette>=0.40,<1", "uvicorn>=0.30,<1", "websockets>=13,<16"]
+dashboard-test = ["httpx>=0.27,<1"]
 report = ["reportlab", "defusedxml>=0.7.1"]
 
 [build-system]

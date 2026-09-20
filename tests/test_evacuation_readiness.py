@@ -6,6 +6,7 @@ import subprocess
 import sys
 from dataclasses import replace
 from pathlib import Path
+from enum import IntEnum
 
 import pytest
 
@@ -170,17 +171,31 @@ def test_capacity_is_reserved_in_contact_order_and_never_overbooked():
     assert result["remaining_capacity"]["centre"] == 2
 
 
-def test_capacity_accepts_integer_subclasses():
+def test_capacity_rejects_integer_subclasses():
     class ReportedPlaces(int):
         pass
 
-    result, house = run(centre_changes={"remaining_places": ReportedPlaces(10)})
-    assert house["mode"] == "self_evacuate"
-    assert result["remaining_capacity"]["centre"] == 2
+    with pytest.raises(ValueError, match="nonnegative integer"):
+        run(centre_changes={"remaining_places": ReportedPlaces(10)})
 
 
-@pytest.mark.parametrize("remaining_places", [True, 10.0, -1])
-def test_capacity_rejects_booleans_floats_and_negative_integers(remaining_places):
+def test_capacity_rejects_integer_enums():
+    class Places(IntEnum):
+        TEN = 10
+
+    with pytest.raises(ValueError, match="nonnegative integer"):
+        run(centre_changes={"remaining_places": Places.TEN})
+
+
+def test_zero_capacity_is_valid_but_cannot_receive_household():
+    result, house = run(centre_changes={"remaining_places": 0})
+    assert house["destination_id"] is None
+    assert result["remaining_capacity"]["centre"] == 0
+    assert "insufficient_capacity" in house["destination_rejections"][0]["reasons"]
+
+
+@pytest.mark.parametrize("remaining_places", [True, False, 10.0, 1.5, "10", -1, None])
+def test_capacity_rejects_non_integer_and_negative_inputs(remaining_places):
     with pytest.raises(ValueError, match="nonnegative integer"):
         run(centre_changes={"remaining_places": remaining_places})
 
