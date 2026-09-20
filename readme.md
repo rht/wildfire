@@ -4,6 +4,44 @@ Track 4, "Values at risk": Norrsken x Deepfire "AI for Wildfire" challenge, Hack
 
 **One incident, one bounded area, one analyst workflow:** identify priority locations, assign follow-up tasks, and update the queue as the fire changes.
 
+## Try the demo
+
+**<https://fruits-computed-tub-parker.trycloudflare.com/>** — sign in with the access
+token from the coordinator. The link is a Cloudflare quick tunnel to a laptop: it only
+answers while that machine and process are running, and it gets a new address every time
+the tunnel restarts. Ask for the current one if it does not load.
+
+You land on the dashboard as it is configured — the connected coordination state, or the
+design demo from the data-source selector at the top right.
+
+**To run it on a jurisdiction of your own, open `#/onboarding`** (append it to the URL, or
+use the "Demo onboarding" link in the page footer). It is not in the sidebar: it is a demo
+tool, not part of the analyst workflow. A five-step form builds a whole dashboard from what
+you enter, and you then work that dashboard as if it were live:
+
+1. **Jurisdiction** — the fire department's name, and the fire station's GPS pair.
+2. **Fires** — one `latitude, longitude` per line, inside Catalonia. **The number of pairs
+   is the number of fires.** Anything outside the region or unreadable is listed as ignored
+   rather than silently dropped.
+3. **Call list** — the phone numbers the voice agent would work through, one per line.
+   Starts empty; at least one is required. Numbers are spread across the fires and each
+   becomes one contactable location; locations left without a number are flagged for human
+   follow-up instead of being called.
+4. **Resources** — how many ground crews and fire engines the jurisdiction has, each
+   starting either at the fire station or placed randomly across the territory.
+5. **Start demo** — opens the dashboard on everything that was generated: fire perimeters,
+   located buildings with occupancy and value at risk, a ranked call queue, agent call
+   outcomes, people groups, resource positions and proposed crew plans with deadlines.
+
+Next will not move past a step that is missing something; it says what is missing in place,
+and Back keeps whatever you already typed.
+
+Everything the demo generates is **simulated** — no number is dialled, no resource is
+dispatched, and nothing is written to the backend. The configuration lives in that browser
+tab only: **End demo** on the onboarding page, or closing the tab, returns the dashboard to
+its configured data source. Crew-plan confirmations are disabled while a demo is running,
+because generated data has no backend record to confirm against.
+
 This README is the current MVP scope and interface reference. Maintain project updates here; it supersedes the broader scope in `PLAN.md`.
 
 The colleague builds **risk assessment**, which consumes fire updates, discovers facilities and emits location assessments. [@mirrdj](https://github.com/mirrdj) builds **analyst coordination**, which ranks those assessments and turns them into tasks, assignments and questions for the fire analyst. The shared contract is in section 5.
