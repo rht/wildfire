@@ -132,9 +132,11 @@ export default function CrewPlans({ incidents, teamId }) {
                           ? row.confirmation.plan?.can_confirm
                             ? "Awaiting confirmation"
                             : "Crew not identified"
-                          : row.confirmation.phase === "loading"
-                            ? "Checking confirmation…"
-                            : "Confirmation unavailable"}
+                          : row.confirmation.phase === "historical"
+                            ? "Historical view"
+                            : row.confirmation.phase === "loading"
+                              ? "Checking confirmation…"
+                              : "Confirmation unavailable"}
                       </small>
                     )
                   )}
@@ -207,95 +209,101 @@ export default function CrewPlans({ incidents, teamId }) {
               Timing: {crewUrgency(selected.tasks).label}. Margin compares the
               supplied deadline with the planned finish.
             </Typography>
-            <CrewPlanMap
-              team={selected.team}
-              assets={selected.incident.assets}
-              name={selected.name}
-            />
-            {selected.tasks.map((step, index) => {
-              const location = selected.incident.assets.find(
-                (a) => a.asset_id === step.asset_id,
-              );
-              return (
-                <div className="call-record" key={step.action_id || index}>
-                  <Typography variant="h5">
-                    {index + 1}.{" "}
-                    {location?.name ||
-                      step.asset_id ||
-                      "Destination not supplied"}
-                  </Typography>
-                  <Coordinates location={location} />
-                  <Facts
-                    rows={[
-                      ["Status", humanize(step.status)],
-                      ["Action", humanize(step.action || step.action_id)],
-                      ["Start", `${count(step.start_min)} min`],
-                      ["Finish", `${count(step.finish_min)} min`],
-                      [
-                        "Deadline",
-                        step.deadline_min == null
-                          ? "Not supplied"
-                          : `${count(step.deadline_min)} min`,
-                      ],
-                      [
-                        "Prerequisites",
-                        step.prerequisites?.map(humanize).join(" · ") ||
-                          "None supplied",
-                      ],
-                    ]}
-                  />
-                </div>
-              );
-            })}
-            {!selected.tasks.length && (
-              <Empty title="No plan supplied for this crew" />
-            )}
-            {pending(selected) && (
-              <div className="crew-confirmation-action">
-                <Typography variant="h5">Awaiting confirmation</Typography>
-                <Typography color="text.secondary" sx={{ mt: 1, mb: 2 }}>
-                  {selected.confirmation.phase === "loading"
-                    ? "Checking saved confirmations…"
-                    : selected.confirmation.phase === "error"
-                      ? selected.confirmation.error
-                      : !selected.confirmation.plan?.can_confirm
-                        ? "A crew identifier and current proposed plan are needed before confirmation is available."
-                        : `Confirm this crew plan as ${selected.confirmation.analyst}. This records approval; dispatch remains separate.`}
-                </Typography>
-                {saveError && (
-                  <Alert severity="error" sx={{ mb: 2 }}>
-                    {saveError}
-                  </Alert>
+            <div className="crew-review-layout">
+              <CrewPlanMap
+                team={selected.team}
+                assets={selected.incident.assets}
+                name={selected.name}
+              />
+              <div className="crew-review-steps">
+                {selected.tasks.map((step, index) => {
+                  const location = selected.incident.assets.find(
+                    (a) => a.asset_id === step.asset_id,
+                  );
+                  return (
+                    <div className="call-record" key={step.action_id || index}>
+                      <Typography variant="h5">
+                        {index + 1}.{" "}
+                        {location?.name ||
+                          step.asset_id ||
+                          "Destination not supplied"}
+                      </Typography>
+                      <Coordinates location={location} />
+                      <Facts
+                        rows={[
+                          ["Status", humanize(step.status)],
+                          ["Action", humanize(step.action || step.action_id)],
+                          ["Start", `${count(step.start_min)} min`],
+                          ["Finish", `${count(step.finish_min)} min`],
+                          [
+                            "Deadline",
+                            step.deadline_min == null
+                              ? "Not supplied"
+                              : `${count(step.deadline_min)} min`,
+                          ],
+                          [
+                            "Prerequisites",
+                            step.prerequisites?.map(humanize).join(" · ") ||
+                              "None supplied",
+                          ],
+                        ]}
+                      />
+                    </div>
+                  );
+                })}
+                {!selected.tasks.length && (
+                  <Empty title="No plan supplied for this crew" />
                 )}
-                {selected.confirmation.phase === "error" && (
-                  <>
+                {pending(selected) && (
+                  <div className="crew-confirmation-action">
+                    <Typography variant="h5">Awaiting confirmation</Typography>
+                    <Typography color="text.secondary" sx={{ mt: 1, mb: 2 }}>
+                      {selected.confirmation.phase === "historical"
+                        ? "Historical view. Return to current state to confirm this crew plan."
+                        : selected.confirmation.phase === "loading"
+                          ? "Checking saved confirmations…"
+                          : selected.confirmation.phase === "error"
+                            ? selected.confirmation.error
+                            : !selected.confirmation.plan?.can_confirm
+                              ? "A crew identifier and current proposed plan are needed before confirmation is available."
+                              : `Confirm this crew plan as ${selected.confirmation.analyst}. This records approval; dispatch remains separate.`}
+                    </Typography>
+                    {saveError && (
+                      <Alert severity="error" sx={{ mb: 2 }}>
+                        {saveError}
+                      </Alert>
+                    )}
+                    {selected.confirmation.phase === "error" && (
+                      <>
+                        <Button
+                          onClick={() => approvals.refresh(selected.incident)}
+                        >
+                          Retry
+                        </Button>
+                        <Button onClick={() => window.location.reload()}>
+                          Reload latest plan
+                        </Button>
+                      </>
+                    )}
                     <Button
-                      onClick={() => approvals.refresh(selected.incident)}
+                      variant="contained"
+                      disabled={
+                        selected.confirmation.phase !== "ready" ||
+                        !selected.confirmation.plan?.can_confirm ||
+                        selected.confirmation.saving ||
+                        !!changed ||
+                        !reviewedVersion
+                      }
+                      onClick={save}
                     >
-                      Retry
+                      {selected.confirmation.saving
+                        ? "Saving confirmation…"
+                        : "Confirm crew plan"}
                     </Button>
-                    <Button onClick={() => window.location.reload()}>
-                      Reload latest plan
-                    </Button>
-                  </>
+                  </div>
                 )}
-                <Button
-                  variant="contained"
-                  disabled={
-                    selected.confirmation.phase !== "ready" ||
-                    !selected.confirmation.plan?.can_confirm ||
-                    selected.confirmation.saving ||
-                    !!changed ||
-                    !reviewedVersion
-                  }
-                  onClick={save}
-                >
-                  {selected.confirmation.saving
-                    ? "Saving confirmation…"
-                    : "Confirm crew plan"}
-                </Button>
               </div>
-            )}
+            </div>
           </>
         )}
       </DetailDialog>

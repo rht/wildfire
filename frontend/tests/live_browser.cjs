@@ -185,7 +185,7 @@ const assert = require("node:assert/strict");
     await expect(map.locator(".crew-position-pin")).toHaveCount(1);
     await expect(map.locator('path[stroke-dasharray="8 7"]')).toHaveCount(3);
     await expect(page.getByRole("dialog")).toContainText("GPS: 41.00000, 2.00000");
-    await expect(page.getByRole("dialog")).toContainText("Observed: 2026-09-20 10:30:00 UTC");
+    await expect(page.getByRole("dialog")).toContainText("Observed: " + await page.evaluate(() => new Intl.DateTimeFormat(undefined, {year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",timeZoneName:"short"}).format(new Date("2026-09-20T10:30:00Z"))));
     await expect(page.getByRole("dialog")).toContainText("Source: Operations <img data-injected>");
     assert.equal(await page.locator("[data-injected]").count(), 0);
     await map.scrollIntoViewIfNeeded();

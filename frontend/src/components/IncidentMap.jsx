@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
 import { responseTeams, gps } from "../state/model.mjs";
 import { crewMapData } from "../state/crew-map.mjs";
+import MapFrame from "./MapFrame";
 export default function IncidentMap({
   incidents,
   showRoutes = false,
@@ -19,6 +20,8 @@ export default function IncidentMap({
       scrollWheelZoom: false,
       zoomAnimation: false,
       fadeAnimation: false,
+      zoomControl: false,
+      attributionControl: false,
     }).setView([41.99, 2.9], 9);
     L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -155,11 +158,13 @@ export default function IncidentMap({
   }, [incidents, showRoutes, openIncidentOnClick, navigate]);
   return (
     <div className="map-wrap">
-      <div
-        ref={host}
-        className="incident-map"
-        aria-label="Incident and location map"
-      />
+      <MapFrame mapRef={mapRef}>
+        <div
+          ref={host}
+          className="incident-map"
+          aria-label="Incident and location map"
+        />
+      </MapFrame>
       <div className="map-legend">
         <span>
           <i className="dot fire" />

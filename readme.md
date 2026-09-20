@@ -2649,8 +2649,8 @@ To verify the selected branch, check out the exact SHA above and run `python -m 
 ## React incident dashboard — codex/ui-session (2026-09-20)
 
 **Approved design:** @mirrdj requested replacing the plain HTML dashboard with
-Mantis's React/MUI design: light sidebar, Public Sans typography, compact white
-cards, blue navigation, a map replacing the large chart, and separate pages.
+Mantis's React/MUI foundations, now with a black emergency-response theme, Public Sans typography and compact
+cards, ember navigation accents, a map replacing the large chart, and separate pages.
 Streamlit remains a separate Python application. All web frontend code, vendor
 attribution, package/lock files, assets, build configuration and browser/Node tests
 live in `frontend/`. Python serves its production build; existing demo processes
@@ -2718,7 +2718,7 @@ and frontend-directory additions.
 
 ### Preview, usage and verification
 
-Latest UI refinements requested by @mirrdj: white page background; **Incidents**
+Earlier UI refinements requested by @mirrdj (the black theme below supersedes the white background): **Incidents**
 throughout navigation and labels, including smoke events; remove the overview
 subtitle and explanations under its four cards; move the incident table to
 **Incidents** (`#/incidents`). Each incident summary has four cards: GPS coordinates, deployed resources,
@@ -2731,7 +2731,7 @@ incident summaries scope that list. Entries open ordered steps, destinations, GP
 and prerequisites. Explicit confirmation records analyst approval of the current
 plan version in a separate SQLite database; opening a review never asserts approval
 or dispatch. Call history contains individual attempts with caller, outcome,
-UTC date and search filters. **Voice assistant to call** shows locations with no call
+Local-date and search filters. **Voice assistant to call** shows locations with no call
 records or a supplied unstarted queued request, in backend priority order. Terminal
 attempts do not imply a retry. Call caller identity is shown only when explicit;
 unknown identity stays unavailable. Demo records explicitly distinguish agent and
@@ -2788,7 +2788,7 @@ Current backend task records omit deadlines, so connected urgency remains unknow
 until that data is supplied. Only Design demo fixtures include illustrative deadlines.
 
 The brand subtitle is “Wildfire coordination” beneath ResponsAra. The duplicate
-topbar label and location icon are removed. The main background remains white.
+topbar label and location icon are removed. The subsequent emergency-response refresh uses a black background.
 
 Proposed crew plans now show **Awaiting confirmation**, an explicit
 **Review & confirm** action, and a count of plans needing confirmation. The overview
@@ -2948,3 +2948,52 @@ membership, and still exits on completion. Runtime publication remains owned by
 `codex/end-to-end`; frontend consumes the field directly from REST/WebSocket data.
 Cancellation update verification passed: 36 Node tests, lint, formatting, production
 build and all four Chrome regression scripts, including saved confirmations.
+
+### Emergency-response visual refresh — approved scope
+
+@mirrdj requested a black dashboard, the reference ResponsAra wordmark and
+**Nobody left behind** badge, a smaller map with more space for crew confirmation,
+the legacy 3D-style map view, and building distance to fire. Use black `#000000`,
+charcoal `#111315`, neutral borders `#303438`, near-white `#f4f4f2`, ember
+`#ff974f` and warning amber `#f3bf62`. Keep the existing Public Sans family, with
+heavier wordmark lettering and the orange Ara treatment from the supplied reference.
+
+Implementation sequence: apply a shared dark MUI/CSS theme and wordmark/badge;
+allocate the larger overview column to crew plans; share a 2D/3D tilt frame between
+incident and crew maps (CSS perspective, matching the legacy implementation, not
+terrain elevation); display supplied `distance_to_fire_m` in global/scoped building
+tables and detail. Add geometry-control/distance browser regressions, check desktop
+and mobile screenshots, run frontend regression/build checks, then commit and push.
+Confirmation, call, dispatch and data-source behavior remain unchanged.
+
+Latest visual refinements: map and crew-plan regions are **50/50 on desktop** in
+overview and crew review, and stack on mobile. Dates and date filters use the
+browser's local timezone; stored timestamps remain ISO instants. The building table
+hides **Assessed at**, retains assessment filters/details and adds **Distance to fire**
+from supplied `distance_to_fire_m` (metres/kilometres, missing values explicit).
+
+### Persisted time travel
+
+Run `npm --prefix frontend run generate:history` to generate the explicitly synthetic
+`frontend/fixtures/design-history.json`. It contains three earlier demo moments;
+the build appends the current demo as the fourth. The generated earlier records
+have their own contemporaneous provenance and no invented historical call or dispatch
+records. Vite serves this history in development and emits it as a static JSON asset
+for the production dashboard. It is a saved drill fixture, not operational evidence.
+
+Connected public snapshots are archived in IndexedDB on the same browser/device,
+isolated by data source, incident, epoch and input mode. They survive reloads; they
+are not a shared server archive and do not recover earlier backend snapshots that
+this browser has never received. The generated design-demo history is available
+immediately without waiting for updates. Previous/Next and the time slider select
+saved full views, while incoming updates continue to be saved. Returning to current
+shows the latest received state. Historical views disable approval loads/saves and
+exclude current approval-event overlays; they never rewind the operational store.
+If browser storage is unavailable, the timeline explicitly reports that limitation.
+
+Dark-dashboard verification: 39 Node tests passed; lint, formatting and production
+build passed. Six Chrome regression scripts passed, including desktop/mobile
+visual checks, equal map/plan widths, 3D tilt/zoom, hidden assessment-date column,
+local dates, distances, saved-history reloads, historical approval guards, call
+queue handling and persisted confirmations. Independent review rechecked history
+provenance and Vite development serving; no blocking findings remain.

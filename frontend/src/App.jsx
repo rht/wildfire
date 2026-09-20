@@ -18,6 +18,8 @@ import HistoryOutlined from "@ant-design/icons/HistoryOutlined";
 import MenuOutlined from "@ant-design/icons/MenuOutlined";
 import { ApprovalProvider } from "./state/approvals";
 import { useDashboard } from "./state/useDashboard";
+import { useTimeline } from "./state/useTimeline";
+import TimelineControls from "./components/TimelineControls";
 import { Overview, Incidents } from "./pages/Overview";
 import Buildings from "./pages/Buildings";
 import ActivityLog from "./pages/ActivityLog";
@@ -120,8 +122,10 @@ export default function App() {
       () => new URLSearchParams(window.location.search).get("demo") === "1",
     ),
     [mobileOpen, setMobileOpen] = useState(false);
-  const { incidents, status } = useDashboard(demo),
+  const { incidents: latestIncidents, status } = useDashboard(demo),
     navigate = useNavigate();
+  const timeline = useTimeline(latestIncidents, demo);
+  const incidents = timeline.incidents;
   const changeSource = (value) => {
     const next = value === "demo";
     setDemo(next);
@@ -138,11 +142,11 @@ export default function App() {
         to="/overview"
         onClick={() => setMobileOpen(false)}
       >
-        <span className="brand-symbol">
-          <FireOutlined aria-hidden="true" />
-        </span>
         <span>
-          ResponsAra<small>Wildfire coordination</small>
+          <span className="brand-wordmark">
+            Respons<span>Ara</span>
+          </span>
+          <small>Wildfire coordination</small>
         </span>
       </Link>
       <div className="nav-label">Workspace</div>
@@ -166,6 +170,7 @@ export default function App() {
       key={demo ? "design_demo" : "connected"}
       source={demo ? "design_demo" : "connected"}
       incidents={incidents}
+      readOnly={timeline.historical}
     >
       <div className="app-shell">
         <aside className="desktop-sidebar">{sidebar}</aside>
@@ -186,6 +191,12 @@ export default function App() {
               >
                 <MenuOutlined />
               </IconButton>
+              <div className="mission-badge">
+                <svg viewBox="0 0 56 24" aria-hidden="true">
+                  <path d="M1 12h13l4-7 6 15 5-11 4 3h22" />
+                </svg>
+                Nobody left behind
+              </div>
             </div>
             <div className="topbar-right">
               <span
@@ -212,6 +223,7 @@ export default function App() {
             </div>
           </header>
           <main key={demo ? "demo" : "connected"}>
+            <TimelineControls timeline={timeline} />
             {demo ? (
               <Alert severity="info" className="mode-banner">
                 Design demo · Illustrative incidents, calls, deployments and

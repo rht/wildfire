@@ -30,6 +30,7 @@ import {
   count,
   stamp,
   humanize,
+  distanceToFire,
 } from "../state/model.mjs";
 const defaults = {
   incident: "",
@@ -132,11 +133,11 @@ export default function Buildings({ incidents, incident }) {
                   "Building / location",
                   ...(!incident ? ["Incident"] : []),
                   "Risk assessment",
+                  "Distance to fire",
                   "Valuation",
                   "Expected loss",
                   "People estimate",
                   "Remaining window",
-                  "Assessed at",
                 ].map((c) => (
                   <TableCell key={c}>{c}</TableCell>
                 ))}
@@ -171,6 +172,11 @@ export default function Buildings({ incidents, incident }) {
                     </div>
                   </TableCell>
                   <TableCell className="nowrap">
+                    <span className="distance-to-fire">
+                      {distanceToFire(r.distance_to_fire_m)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="nowrap">
                     {money(r.replacement_value_eur)}
                   </TableCell>
                   <TableCell className="nowrap">
@@ -182,9 +188,6 @@ export default function Buildings({ incidents, incident }) {
                   </TableCell>
                   <TableCell>{count(r.estimated_occupancy)}</TableCell>
                   <TableCell>{count(r.contact?.slack_min)} min</TableCell>
-                  <TableCell className="nowrap">
-                    {stamp(r.assessed_at)}
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -198,9 +201,8 @@ export default function Buildings({ incidents, incident }) {
       </MainCard>
       <Typography variant="body2" color="text.secondary">
         Valuations and forecast probabilities may be estimates. Contact priority
-        remains the backend’s remaining evacuation window. Only supplied
-        snapshots are shown; historical assessments are not available from the
-        current-state API.
+        remains the backend’s remaining evacuation window. Values reflect the
+        selected snapshot; use time travel to review saved assessments.
       </Typography>
       <DetailDialog
         title={selected?.name || "Building details"}
@@ -216,6 +218,10 @@ export default function Buildings({ incidents, incident }) {
               rows={[
                 ["Incident", selected.incident_name],
                 ["GPS (latitude, longitude)", gps(selected)],
+                [
+                  "Distance to fire",
+                  distanceToFire(selected.distance_to_fire_m),
+                ],
                 ["Assessment time", stamp(selected.assessed_at)],
                 ["Type", humanize(selected.asset_type)],
                 ["Estimated occupancy", count(selected.estimated_occupancy)],

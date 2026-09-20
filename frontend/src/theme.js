@@ -2,31 +2,34 @@ import { createTheme } from "@mui/material/styles";
 import typography from "../vendor/mantis/typography";
 export const theme = createTheme({
   palette: {
-    primary: { main: "#1677ff" },
-    background: { default: "#ffffff", paper: "#fff" },
-    text: { primary: "#262626", secondary: "#595959" },
-    divider: "#f0f0f0",
-    error: { main: "#cf1322" },
-    warning: { main: "#d48806" },
-    success: { main: "#389e0d" },
+    mode: "dark",
+    primary: { main: "#ff974f", contrastText: "#100b06" },
+    background: { default: "#000000", paper: "#111315" },
+    text: { primary: "#f4f4f2", secondary: "#afb5b9" },
+    divider: "#303438",
+    error: { main: "#ff7770" },
+    warning: { main: "#f3bf62", contrastText: "#100b06" },
+    success: { main: "#8ed69f" },
+    info: { main: "#82bdcf" },
   },
   typography: typography('"Public Sans", sans-serif'),
-  shape: { borderRadius: 4 },
+  shape: { borderRadius: 5 },
   components: {
+    MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
     MuiButton: {
       defaultProps: { disableElevation: true },
       styleOverrides: { root: { textTransform: "none" } },
     },
     MuiCard: {
       styleOverrides: {
-        root: { boxShadow: "none", border: "1px solid #e6ebf1" },
+        root: { boxShadow: "none", border: "1px solid #303438" },
       },
     },
     MuiTableCell: {
       styleOverrides: {
-        head: { background: "#fafafa", fontWeight: 600, color: "#595959" },
+        head: { background: "#1b1e20", fontWeight: 600, color: "#d1d5d7" },
         root: {
-          borderBottom: "1px solid #f0f0f0",
+          borderBottom: "1px solid #303438",
           padding: "14px 16px",
           fontSize: 13,
         },

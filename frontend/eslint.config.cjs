@@ -9,6 +9,7 @@ module.exports = [
       globals: {
         __DESIGN_DEMO_VERSION__: "readonly",
         window: "readonly",
+        indexedDB: "readonly",
         document: "readonly",
         location: "readonly",
         fetch: "readonly",
