@@ -3441,7 +3441,7 @@ Implementation sequence and verification:
 - [x] Map: retain qualified supplied geometry, show start-to-stop legs and
   direction, and synchronize hover/focus/tap with the corresponding table row.
   Run crew-map unit tests and browser checks for matching names/highlights.
-- [ ] Integration: verify synthetic demo and connected adapter behavior, restart
+- [x] Integration: verify synthetic demo and connected adapter behavior, restart
   persistence, source isolation and no dispatch writes; run Node, Python, lint,
   build and applicable browser suites, obtain independent code review, push a PR.
 
@@ -3575,3 +3575,16 @@ operational route evacuation totals and the established meaning of null forecast
 quantiles; the focused assessment suite has 14 passing tests. No real calls or
 crew dispatch were performed. The previously committed Norma report is unchanged
 and does not claim to scan this new branch.
+
+
+Crew-review integration verification after merging origin/main `242b52b`: **1,202
+Python tests passed, one skipped**, with the existing Starlette/AnyIO deprecation
+warning; **69 Node tests passed**. Lint, formatting and production build passed.
+All nine browser regression scripts passed, including full-screen fixed actions,
+map/table selection, valid and blocked permutations, real cross-tab invalidation,
+revalidation, saved order after restart/reload, historical read-only state and
+responsive containment. Desktop and tablet screenshots were inspected. Independent
+review verified fixes for completed-history departure position, exported deadline
+semantics, floating-point comparison tolerance and stale-preview recovery, and
+reviewed the latest-main conflict resolution. No dispatch was performed. Physical
+iPad/Safari testing remains outside the Chrome-emulation checks. PR: #32.

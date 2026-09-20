@@ -160,7 +160,7 @@ const fs = require("node:fs");
       .getByRole("button", { name: "Review plan for Crew 1A", exact: true })
       .click();
     await expect(page.getByRole("dialog")).toContainText(
-      "Fire analyst confirmation required",
+      "Confirm this crew plan as @mirrdj. This records approval; dispatch remains separate.",
     );
     await expect(page.getByRole("dialog")).toContainText(
       "Confirm this crew plan as @mirrdj",
