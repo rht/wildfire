@@ -248,12 +248,16 @@ been designated for that purpose. The readiness module provides the existing sta
 Use a brief, explicit AI introduction and a clearly labelled simulated scenario in the first demo.
 Relay only the incident brief supplied by the analyst. Ask one question at a time:
 
-1. Confirm the intended location and whether the respondent can answer for everyone there.
-2. Ask whether everyone can leave without emergency assistance; capture mobility or other help
-   needs without inferring ability from age, property value or facility class.
-3. Ask whether suitable transport is available for everyone and what preparation remains.
-4. Ask whether they want to speak with a person. Honour that request immediately rather than
-   requiring a low-confidence score first.
+1. Confirm a trusted display name/address; never speak internal asset IDs. If no name is supplied,
+   ask what building/address the person is at. Ask "Is anyone else with you?"
+2. Ask "Does anyone there need help leaving the building?" Mobility difficulties immediately
+   lead to concrete assistance and transport questions; do not repeat already answered questions.
+   Unknown information about others never prevents collecting the caller's own needs.
+3. Ask about unanswered transport/preparation needs, without inferring ability from a wheelchair,
+   age, property value or facility class. Household coverage needs explicit sufficient evidence.
+4. For uncertainty or unresolved needs, offer exactly "Would you like an emergency responder to
+   call you to further assist you?" An offer is not acceptance or a scheduled call. Honor no and
+   preserve unresolved needs for human review. Direct human requests and stop requests take priority.
 5. Read back the critical answers and obtain acknowledgement. If an approved instruction exists,
    confirm its receipt separately; do not equate acknowledgement with departure or arrival.
 
@@ -264,6 +268,7 @@ CallRequest = {
     "request_id": str, "asset_id": str, "snapshot_id": str,
     "contact_number": str,                 # E.164; local/private storage only
     "language": str, "incident_brief": str,
+    "location_display_name": str | None,  # trusted name/address, optional, private
     "human_callback_number": str | None,
     "input_mode": "synthetic" | "recorded" | "live",
 }
@@ -1633,7 +1638,8 @@ Implementation plan (authorized by @mirrdj):
    smoke test as unperformed. No hosted configuration or live calls are changed.
 
 The accepted per-call variable names are `request_id`, `asset_id`, `snapshot_id`,
-`incident_brief`, `scenario_notice`, `language`, `road_warning_brief`. The
+`incident_brief`, `scenario_notice`, `language`, `road_warning_brief`, plus optional
+`location_display_name` when a trusted name/address is available. The
 call-briefings status export agrees to this existing interface; content generation
 remains in its module. SLNG limits argument values to 1,024 characters, keys to
 64 characters, 32 keys and 8,192 aggregate value characters. Oversized road
@@ -1651,8 +1657,10 @@ returns the provider response containing `call_id`. It now checks the GET agent
 response's `template_variables` object before POST: every sent key must be
 advertised, each metadata record must have boolean `required`, and every required
 variable must be supplied. Missing metadata fails closed. `call_arguments(request)`
-returns the same seven string fields and rejects provider-limit violations before
-HTTP. `agent_configuration(...)` now includes the request and snapshot template
+returns the original seven string fields plus `location_display_name` only when supplied,
+and rejects provider-limit violations before HTTP. Updated agent packages advertise the new
+variable as optional with an empty default; old requests remain valid. A legacy deployed agent
+without that binding rejects a named request at preflight and must be updated before dialing. `agent_configuration(...)` now includes the request and snapshot template
 bindings even without a result-tool attachment. Completed-call fetching and the
 legacy explicit association path are unchanged. Queue workers still require one
 shared account database and identical configured rate/concurrency limits.
@@ -1776,7 +1784,7 @@ and never become live requests. JSON files have these separate private shapes:
 |---|---|
 | contacts | Array of `{asset_id, contact_number}` records, indexed only by stable `asset_id`; zero or multiple matches block that asset. |
 | approvals | Array of `{asset_id, snapshot_id, contact_number}` records. Exactly one match for this asset and snapshot must equal the complete E.164 contact number. An approval for another snapshot does not carry forward. |
-| request_data (`--requests`) | Object keyed by `asset_id`, each value containing trusted `language` and `incident_brief`, optionally `human_callback_number` and `road_warnings` in the existing `CallRequest` shape. Other fields are rejected. |
+| request_data (`--requests`) | Object keyed by `asset_id`, each value containing trusted `language` and `incident_brief`, optionally `human_callback_number`, `road_warnings` and `location_display_name` in the `CallRequest` shape. Missing display names are populated from trusted asset name/address, never the asset ID. Other fields are rejected. |
 
 Obtain contact records and exact target approvals explicitly; this command does not
 discover contacts. Keep these files and the queue database private and ignored.
@@ -2174,13 +2182,14 @@ Current asset warnings supersede recommendation warnings with the same road ID;
 additional recommendation restrictions are retained conservatively. Known route IDs,
 road names and named warnings appearing in instructions are checked for conflicts.
 
-SLNG template arguments stay exactly those from `slng_voice.call_arguments`:
+SLNG template arguments come from `slng_voice.call_arguments`:
 `request_id`, `asset_id`, `snapshot_id`, `incident_brief`, `scenario_notice`,
-`language`, `road_warning_brief`. Version and fresh acknowledgement requirements
+`language`, `road_warning_brief`, and optional `location_display_name`. Version and fresh acknowledgement requirements
 travel inside `incident_brief`; named road restrictions travel in `road_warning_brief`.
 The existing interview prompt asks self-evacuation ability, suitable transport,
 preparation, a human request and evidenced message/instruction acknowledgement.
-No new template variables or deployment mutations are required by this library.
+Named requests require the optional `location_display_name` binding in the deployed agent.
+Existing requests without a display name still use the original seven arguments.
 Provider deployment and verification of the dynamic template remain separate work.
 
 Implementation plan (executed inline in the existing task worktree):

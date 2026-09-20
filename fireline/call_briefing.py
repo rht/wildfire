@@ -10,7 +10,7 @@ import hashlib
 import json
 
 from .route_guidance import road_warning_version, validate_road_ids, validate_road_warnings
-from .voice_models import CallRequest, identifier, text
+from .voice_models import CallRequest, identifier, text, location_display_name
 
 
 @dataclass(frozen=True)
@@ -157,7 +157,8 @@ def build_call_request(asset, recommendation, contact, *, snapshot_id, request_i
         snapshot_id=snapshot_id, contact_number=contact.get('contact_number'),
         language=contact.get('language', 'en'), incident_brief=briefing.incident_brief,
         human_callback_number=contact.get('human_callback_number'), input_mode=input_mode,
-        road_warnings=deepcopy(briefing.road_warnings))
+        road_warnings=deepcopy(briefing.road_warnings),
+        location_display_name=location_display_name(asset))
 
 
 def snapshot_request_data(asset, data, *, snapshot_id):
@@ -172,6 +173,9 @@ def snapshot_request_data(asset, data, *, snapshot_id):
     briefing = build_call_briefing(asset, data.get('recommendation'), snapshot_id=snapshot_id)
     payload = dict(language=data.get('language', 'en'), incident_brief=briefing.incident_brief,
                    road_warnings=deepcopy(briefing.road_warnings))
+    display_name = location_display_name(asset)
+    if display_name is not None:
+        payload['location_display_name'] = display_name
     callback = data.get('human_callback_number')
     if callback is not None:
         payload['human_callback_number'] = callback

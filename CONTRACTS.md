@@ -572,3 +572,26 @@ Kept verbatim from CONTRACTS v0 for the gated modules. See git history (`13e0b74
 Grid, FireState, ArrivalRaster, v0 asset table (`asset_class, lon, lat, occupancy, burn_prob,
 arrival_p10_min, tier, needs_review: list[str]`), decide, routing, Scenario, seven-tool agent. The v4
 agent replaces the seven tools; `scenario.py` gains `to_snapshot()` delegating to `snapshot.build_snapshot`.
+
+
+## Voice interview display and assistance contract
+
+`fireline.voice_models.CallRequest.location_display_name` is an optional private trusted
+name/address (1–256 characters when present), separate from immutable request/asset/snapshot
+IDs. Briefing and snapshot-contact adapters use supplied asset `name` or `address`, never
+the asset ID as a display fallback. Existing persisted requests default to `None`; changing
+a display name on an existing request still fails immutable-association checks.
+
+`slng_voice.call_arguments` retains its seven original bindings and adds
+`location_display_name` only when present. Generic and Sable packages advertise it as an
+optional template variable with an empty default. Legacy deployed packages without that
+binding reject named requests before dialing; update and verify the agent first. An absent
+name causes a natural building/address question, never an invented place or spoken ID.
+
+`voice_dialogue.READINESS_DIALOGUE` supplies shared direct questions and proactive mobility,
+transport and uncertainty branches. The callback offer is exactly "Would you like an
+emergency responder to call you to further assist you?" Offers do not establish
+`wants_human`; only actual acceptance, refusal or a direct request supplies that evidence.
+Unknown group coverage does not stop individual help collection. No callback answer clears
+unresolved readiness needs or the existing human-review gate. No tool or model output alone
+confirms dispatched resources, a callback arrangement, evacuation or arrival.
