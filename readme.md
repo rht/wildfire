@@ -10,6 +10,47 @@ The colleague builds **risk assessment**, which consumes fire updates, discovers
 
 Use [Superpowers](https://github.com/obra/superpowers) for development. Work in a dedicated branch and worktree under this repository's `.worktrees/` directory, publish every task branch to `origin`, and push progress so colleagues can review it. See [AGENTS.md](AGENTS.md) for the persistent workflow.
 
+### Pipeline explainer slide
+
+`frontend/pipeline/` is a standalone 16:9 explainer with 132 words. It explains
+**Assess risk & value → Prioritise action → Analyst’s plan**, preserving valuation,
+call priorities, crew sequence planning, constraints and analyst review. Calls
+prioritise the shortest evacuation window and assess self-evacuation ability and
+assistance needs. The slide intentionally omits the formula; operational policy
+and its safety buffer are unchanged.
+
+The diagram-only theme matches the ResponsAra pitch film (session 155): warm
+brown `#15100D`, dark panels `#1D1714`, cream type `#EFE9E2`, red/orange/amber accents,
+and locally served Public Sans 400/600/700. It does not change the website theme.
+Only the requested provider brands are highlighted: **Nebius Token Factory** at
+assessment and **SLNG voice / Vonage telephony** at calls.
+
+The first arrow reads **Validated location data**: this is an internal validated
+snapshot/adapters handoff, not a network request. The second reads **Plans + live
+updates**, with REST/WebSocket communication: `/api/state` supplies initial state
+and `/api/updates` streams updates. No message broker or new service is implied.
+The static slide loads no incident data or operational API.
+
+`fireline/llm.py` retains its existing OpenAI-compatible Nebius AI Studio endpoint;
+[Nebius describes Token Factory as the evolution of AI Studio](https://nebius.com/newsroom/nebius-launches-nebius-token-factory-to-deliver-production-ai-inference-at-scale).
+The diagram describes intended integration including planner enhancements developed
+in PR #36. LLM estimates do not establish actual occupancy or confirmed mobility;
+crew operational value is distinct from monetary loss. Approval is separate from
+dispatch. The detailed contracts remain in the architecture sections below.
+
+From `frontend`, run `npm exec vite -- --config pipeline/vite.config.mjs --port
+18544 --strictPort` and open `http://127.0.0.1:18544/`. Build with `npm exec vite --
+build --config pipeline/vite.config.mjs`; output is `frontend/dist/pipeline/`.
+The ordinary dashboard build and its entry points are unchanged.
+
+The page provides download controls outside the exported slide. Shareable files:
+`frontend/pipeline/public/exports/responsara-pipeline.png` (1600×900) and
+`frontend/pipeline/public/exports/responsara-pipeline.pdf` (one landscape page,
+selectable vector text). Regenerate exports and verify layouts/downloads with
+`node frontend/pipeline/verify.cjs` from the repository root, with the preview
+running. Verification uses installed Chrome, Playwright, and Poppler's `pdfinfo`
+`pdftotext` and `pdffonts`. The slide loads no incident data or operational API.
+
 ## Three-component architecture
 
 Architecture baseline recorded on 2026-09-19. The responsibility split remains current;

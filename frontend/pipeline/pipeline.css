@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  background: #15100d;
+}
+.pitch-page {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+.export-controls {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #2e2622;
+}
+.pitch-slide {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+a:focus-visible {
+  outline: 3px solid #e4705c;
+  outline-offset: 4px;
+}
+@media screen and (max-width: 600px) {
+  .export-controls {
+    justify-content: center;
+    padding: 12px;
+  }
+}
+@media print {
+  @page {
+    size: 1600px 900px;
+    margin: 0;
+  }
+  html,
+  body,
+  .pitch-page {
+    width: 1600px;
+    height: 900px;
+    margin: 0;
+    padding: 0;
+  }
+  .export-controls {
+    display: none;
+  }
+  .pitch-slide {
+    width: 1600px;
+    height: 900px;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
