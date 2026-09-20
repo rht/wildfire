@@ -2,7 +2,11 @@ import { useEffect, useMemo, useRef } from "react";
 import { Typography } from "@mui/material";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { crewMapData, crewRouteArrows } from "../state/crew-map.mjs";
+import {
+  crewMapData,
+  crewMapsData,
+  crewRouteArrows,
+} from "../state/crew-map.mjs";
 import { gps, stamp } from "../state/model.mjs";
 import MapFrame from "./MapFrame";
 
@@ -14,6 +18,7 @@ const textLabel = (text) => {
 
 export default function CrewPlanMap({
   team,
+  teams,
   assets,
   name,
   activeStopId = null,
@@ -23,9 +28,16 @@ export default function CrewPlanMap({
   const mapRef = useRef(null);
   const layersRef = useRef([]);
   const callbackRef = useRef(onActiveStopChange);
-  const data = useMemo(() => crewMapData(team, assets), [team, assets]);
+  const data = useMemo(
+    () => (teams ? crewMapsData(teams, assets) : crewMapData(team, assets)),
+    [team, teams, assets],
+  );
   const hasPosition =
-    data.start || data.current || data.stops.some((stop) => stop.position);
+    data.start ||
+    data.current ||
+    data.starts?.length ||
+    data.currentLocations?.length ||
+    data.stops.some((stop) => stop.position);
   useEffect(() => {
     callbackRef.current = onActiveStopChange;
   }, [onActiveStopChange]);
@@ -64,14 +76,16 @@ export default function CrewPlanMap({
     };
     for (const stop of data.stops) {
       if (stop.path.length) {
+        const color = stop.color || "#69b1ff";
         const line = L.polyline(stop.path, {
-          color: "#69b1ff",
+          color,
           weight: 4,
           dashArray: "8 7",
+          dashOffset: String((stop.crewIndex || 0) * 8),
         }).addTo(map);
         line.bindTooltip(
           textLabel(
-            `To stop ${stop.number}: ${stop.name} · Supplied planned path`,
+            `${stop.crewName ? `${stop.crewName} · ` : ""}To stop ${stop.number}: ${stop.name} · Supplied planned path`,
           ),
         );
         line.on("mouseover click", () => callbackRef.current?.(stop.id));
@@ -99,29 +113,51 @@ export default function CrewPlanMap({
             }),
           }).addTo(map);
         });
-        layers.push({ ids: [stop.id], line, arrows });
+        layers.push({ ids: [stop.id], line, arrows, color });
         bounds.push(...stop.path);
       }
-      if (!stop.position) continue;
+      if (!stop.position || data.pointGroups) continue;
       const key = stop.position.join(",");
       if (!destinations.has(key)) destinations.set(key, []);
       destinations.get(key).push(stop);
       bounds.push(stop.position);
     }
+    for (const group of data.pointGroups || []) {
+      destinations.set(group[0].position.join(","), group);
+      bounds.push(group[0].position);
+    }
     for (const stops of destinations.values()) {
-      const numbers = stops.map((stop) => stop.number).join(" · ");
-      const labels = stops.map(
-        (stop) =>
-          `${stop.number}. ${stop.name} · GPS: ${gps({ latitude: stop.position[0], longitude: stop.position[1] })} · ${stop.positionSource}`,
-      );
+      const symbol = (stop) =>
+        stop.pointKind && stop.pointKind !== "stop"
+          ? stop.kind === "planned"
+            ? "S"
+            : "C"
+          : stop.number;
+      const numbers = stops.map(symbol).join(" · ");
+      const labels = stops.map((stop) => {
+        const prefix = stop.crewName ? `${stop.crewName} · ` : "";
+        const coordinates = gps({
+          latitude: stop.position[0],
+          longitude: stop.position[1],
+        });
+        if (stop.pointKind && stop.pointKind !== "stop")
+          return `${prefix}${symbol(stop)}. ${stop.name} · ${stop.kind === "planned" ? "Planned starting point" : "Reported crew location"} · GPS: ${coordinates} · ${stop.kind === "planned" ? "Timestamp" : "Observed"}: ${stamp(stop.observed_at)} · Source: ${stop.source || "Not supplied"}`;
+        return `${prefix}${stop.number}. ${stop.name} · GPS: ${coordinates} · ${stop.positionSource}`;
+      });
       const content = document.createElement("span");
       const buttons = stops.map((stop, index) => {
         const button = document.createElement("button");
         button.type = "button";
-        button.textContent = stop.number;
+        button.textContent = symbol(stop);
+        if (stop.color) {
+          button.style.backgroundColor = stop.color;
+          button.style.color = "#102332";
+        }
+        if (stop.pointKind === "start") button.className = "crew-start-button";
         button.title = labels[index];
         button.setAttribute("aria-label", labels[index]);
         button.dataset.stopId = stop.id;
+        if (stop.crewId) button.dataset.crewId = stop.crewId;
         content.append(button);
         return button;
       });
@@ -142,7 +178,12 @@ export default function CrewPlanMap({
         .getElement()
         ?.setAttribute("aria-label", `Planned stop ${numbers}`);
       buttons.forEach((button, index) =>
-        bindSelection(button, stops[index].id, marker, labels[index]),
+        bindSelection(
+          button,
+          stops[index].pointKind === "current" ? null : stops[index].id,
+          marker,
+          labels[index],
+        ),
       );
       layers.push({
         ids: stops.map((stop) => stop.id),
@@ -225,14 +266,15 @@ export default function CrewPlanMap({
   useEffect(() => {
     for (const layer of layersRef.current) {
       const active = layer.ids.includes(activeStopId);
+      const highlight = data.crews ? "#ffedb2" : "#ffb45b";
       if (layer.line) {
         layer.line.setStyle({
-          color: active ? "#ffb45b" : "#69b1ff",
+          color: active ? highlight : layer.color,
           weight: active ? 6 : 4,
         });
         for (const arrow of layer.arrows) {
           const element = arrow.getElement();
-          if (element) element.style.color = active ? "#ffb45b" : "#69b1ff";
+          if (element) element.style.color = active ? highlight : layer.color;
         }
       }
       if (layer.marker) {
@@ -254,14 +296,14 @@ export default function CrewPlanMap({
   }, [activeStopId, data, name]);
   const missingPaths = data.stops
     .filter((stop) => !stop.path.length)
-    .map((stop) => stop.number);
+    .map((stop) => `${stop.crewName ? `${stop.crewName} ` : ""}${stop.number}`);
   const missingStops = data.stops
     .filter((stop) => !stop.position)
-    .map((stop) => stop.number);
+    .map((stop) => `${stop.crewName ? `${stop.crewName} ` : ""}${stop.number}`);
   return (
     <section className="crew-route-review" aria-label="Crew route review">
       <Typography variant="h5" sx={{ mb: 1 }}>
-        Planned route
+        {teams ? "Crew routes" : "Planned route"}
       </Typography>
       {hasPosition ? (
         <MapFrame mapRef={mapRef}>
@@ -277,24 +319,59 @@ export default function CrewPlanMap({
         </Typography>
       )}
       <div className="map-legend">
-        {data.start?.kind === "planned" && (
+        {data.crews?.map((crew) => (
+          <span
+            key={crew.crewId}
+            className="crew-map-legend-item"
+            data-crew-id={crew.crewId}
+          >
+            <i
+              aria-hidden="true"
+              style={{
+                display: "inline-block",
+                width: 14,
+                height: 5,
+                backgroundColor: crew.color,
+                marginRight: 5,
+              }}
+            />
+            {crew.crewName}
+          </span>
+        ))}
+        {(data.start?.kind === "planned" ||
+          data.starts?.some((start) => start.kind === "planned")) && (
           <span>S: planned starting point</span>
         )}
-        <span>Numbered stops: plan order</span>
+        <span>
+          Numbered stops: {teams ? "each crew’s plan order" : "plan order"}
+        </span>
         <span>Arrows: supplied path direction</span>
         <span>Dashed: planned path, not recorded movement</span>
-        {data.current && <span>C: reported crew location</span>}
+        {(data.current || !!data.currentLocations?.length) && (
+          <span>C: reported crew location</span>
+        )}
       </div>
-      {!data.start && (
+      {data.crews?.map((crew) => (
+        <Typography key={crew.crewId} variant="body2" sx={{ mt: 1 }}>
+          {crew.crewName} ·{" "}
+          {crew.current
+            ? `Reported crew location · GPS: ${gps(crew.current)} · Observed: ${stamp(crew.current.observed_at)} · Source: ${crew.current.source || "Not supplied"}`
+            : "Current crew location not supplied."}
+          {!crew.start && " Starting-point coordinates not supplied."}
+        </Typography>
+      ))}
+      {!teams && !data.start && (
         <Typography variant="body2" color="text.secondary">
           Starting-point coordinates not supplied.
         </Typography>
       )}
-      <Typography variant="body2" sx={{ mt: 1 }}>
-        {data.current
-          ? `Reported crew location · GPS: ${gps(data.current)} · Observed: ${stamp(data.current.observed_at)} · Source: ${data.current.source || "Not supplied"}`
-          : "Current crew location not supplied."}
-      </Typography>
+      {!teams && (
+        <Typography variant="body2" sx={{ mt: 1 }}>
+          {data.current
+            ? `Reported crew location · GPS: ${gps(data.current)} · Observed: ${stamp(data.current.observed_at)} · Source: ${data.current.source || "Not supplied"}`
+            : "Current crew location not supplied."}
+        </Typography>
+      )}
       {!!missingPaths.length && (
         <Typography variant="body2" color="text.secondary">
           Path not supplied for stops: {missingPaths.join(", ")}.

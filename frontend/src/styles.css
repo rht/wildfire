@@ -1902,3 +1902,121 @@ main > * {
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+/* The incident plan shares the full-screen review layout on tablets and desktop. */
+.incident-plan-dialog .MuiDialogContent-root {
+  overflow: hidden;
+  min-height: 0;
+}
+.incident-plan-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+}
+.incident-plan-actions > .MuiButton-root {
+  flex-shrink: 0;
+  min-height: 44px;
+}
+.incident-plan-summary {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+  font-size: 12px;
+  line-height: 18px;
+}
+.incident-plan-dialog .incident-crew-plan {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  align-items: stretch;
+}
+.incident-plan-dialog .incident-crew-plan > .crew-route-review {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+}
+.incident-plan-dialog .incident-crew-plan .map-frame {
+  flex: 1;
+  min-height: 0;
+}
+.incident-plan-dialog .incident-crew-plan .map-viewport {
+  min-height: 100px;
+}
+.incident-plan-dialog .incident-crew-plan .crew-route-map {
+  height: 100%;
+  min-height: 0;
+}
+.incident-plan-dialog .plan-teams {
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  height: 100%;
+  overflow: auto;
+  gap: 20px;
+  overscroll-behavior: contain;
+}
+.crew-table-section {
+  min-width: 860px;
+  flex-shrink: 0;
+  border-top: 5px solid;
+  border-radius: 5px;
+}
+.crew-table-section .MuiCard-root {
+  overflow: visible;
+}
+.crew-table-section .MuiCardHeader-root {
+  position: sticky;
+  top: 0;
+  height: 44px;
+  padding: 8px 12px;
+  background: white;
+  z-index: 4;
+}
+.incident-plan-dialog .crew-stop-table-wrap {
+  max-height: none;
+  overflow: visible;
+  border: 0;
+}
+.incident-plan-dialog .crew-stop-table {
+  width: 100%;
+  min-width: 860px;
+}
+.incident-plan-dialog .crew-stop-table thead th {
+  top: 45px;
+  z-index: 3;
+}
+.incident-plan-dialog .crew-stop-heading {
+  min-width: 145px;
+}
+.incident-plan-dialog .crew-stop-table td,
+.incident-plan-dialog .crew-stop-table th {
+  padding: 10px;
+}
+.crew-overview-approval {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #28733a;
+}
+@media (max-width: 1023px) {
+  .incident-plan-dialog .detail-dialog-header {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .incident-plan-dialog .detail-dialog-title {
+    font-size: 15px;
+  }
+  .incident-plan-dialog .detail-dialog-header-action {
+    max-width: 65%;
+  }
+  .incident-plan-dialog .MuiDialogContent-root {
+    padding: 12px;
+  }
+  .incident-plan-dialog .incident-crew-plan {
+    gap: 12px;
+  }
+}

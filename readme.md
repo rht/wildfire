@@ -3590,11 +3590,18 @@ reviewed the latest-main conflict resolution. No dispatch was performed. Physica
 iPad/Safari testing remains outside the Chrome-emulation checks. PR: #32.
 
 
-The incident Firefighter plan page uses a Crew selector and renders one crew's map
-and visit table at a time. The selected crew's saved approved order is shown, and
-Review & confirm opens its full-screen review. Selection is scoped to the incident;
-if a selected crew disappears, the view falls back to an available crew. Blockers
-and uncovered locations remain incident-wide. Verified with 69 Node tests,
-lint/format/build, the crew-order browser regression (single map, crew/incident
-switching, saved approval, reorder and mobile checks), screenshot inspection and
-independent code review.
+The incident Firefighter plan opens full-screen with a fixed back/review header.
+One map on the left shows every crew's supplied route and starting point, with
+crew colours matched to clearly separated visit tables on the right. Each table
+starts with its crew's starting point and shows its saved approved visit order.
+Map selections reveal the matching crew row; co-located points remain individually
+selectable. Review buttons open each crew's existing reorder/confirmation view;
+closing it returns to the shared plan. Blockers remain incident-wide.
+
+The screen and map fit the viewport at desktop and tablet portrait/landscape sizes;
+only the table pane scrolls vertically or horizontally for its full evidence.
+Verified with 73 Node tests, lint/format/build, the crew-order browser regression,
+desktop/tablet screenshot inspection and independent code review. Browser coverage
+includes shared routes, crew-scoped selection, fixed headers, contained scrolling,
+nested review/back navigation, reordering and saved approval persistence. Physical
+iPad/Safari testing remains outside the Chrome-emulation checks.

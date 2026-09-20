@@ -86,9 +86,7 @@ const fs = require("node:fs");
       .click();
     await expect(page).toHaveURL(/incidents\/gavarres\/summary/);
     await expect(page.getByTestId("metric-active")).toHaveCount(0);
-    await expect(page.getByTestId("metric-gps")).toContainText(
-      "41.96, 3.05",
-    );
+    await expect(page.getByTestId("metric-gps")).toContainText("41.96, 3.05");
     await expect(page.getByTestId("metric-gps")).toContainText(
       "Perimeter centre",
     );
@@ -105,8 +103,12 @@ const fs = require("node:fs");
       .click();
     await expect(page.getByTestId("metric-deployed")).toContainText("3");
     await expect(page.getByTestId("metric-structures")).toContainText("4");
-    await expect(page.getByTestId("metric-people")).toContainText("Assistance logs");
-    await expect(page.getByTestId("metric-people")).toContainText("1 confirmed need");
+    await expect(page.getByTestId("metric-people")).toContainText(
+      "Assistance logs",
+    );
+    await expect(page.getByTestId("metric-people")).toContainText(
+      "1 confirmed need",
+    );
     await page.getByTestId("metric-deployed").getByRole("link").click();
     await expect(page.locator("tbody tr")).toHaveCount(3);
     await expect(
@@ -149,11 +151,11 @@ const fs = require("node:fs");
     await page
       .getByRole("link", { name: "Firefighter plan", exact: true })
       .click();
-    await page
-      .getByRole("heading", { name: "Firefighter plan", exact: true })
-      .waitFor();
+    await expect(
+      page.getByRole("dialog").locator(".detail-dialog-title"),
+    ).toHaveText("Firefighter plan");
     assert.match(
-      await page.locator("main").innerText(),
+      await page.locator(".incident-crew-plan").innerText(),
       /Accessible transport confirmed/,
     );
     await page
@@ -166,7 +168,7 @@ const fs = require("node:fs");
       "Confirm this crew plan as @mirrdj",
     );
     await page.getByRole("button", { name: "Close details" }).click();
-    await page.getByRole("dialog").waitFor({ state: "hidden" });
+    await expect(page.getByRole("dialog")).toContainText("Firefighter plan");
     await page.waitForFunction(() => {
       const tiles = [...document.querySelectorAll(".leaflet-tile")];
       return (
