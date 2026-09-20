@@ -1,10 +1,10 @@
 """Recalculate an analyst's permutation using only supplied planning evidence."""
-from copy import deepcopy
 import hashlib
 import json
 import math
+from copy import deepcopy
 
-from .dashboard_approvals import PlanChanged, _TASK_FIELDS, plans_for
+from .dashboard_approvals import _TASK_FIELDS, PlanChanged, plans_for
 from .dashboard_public import _clean
 from .response_priority import after_deadline
 
@@ -55,7 +55,17 @@ def preview_order(state, *, source, incident_id, revision, snapshot_id, team_id,
         blockers.append(row)
 
     for task in ordered:
+        if (task.get('evacuation') or task.get('mission_status') == 'complete_evacuation'
+                or task.get('required_team_count', 1) > 1):
+            block('coordinated_mission_review',
+                  'Transport journeys and joint crew work require a coordinated replan; a single-crew reorder cannot validate them.', task)
+
+    for task in ordered:
         if task.get('status') == 'proposed':
+            if isinstance(task.get('sensitivity'), dict):
+                bounds = {k: task['sensitivity'][k] for k in ('duration_high_min', 'deadline_early_min') if k in task['sensitivity']}
+                task['sensitivity'] = dict(bounds, status='unknown',
+                    reasons=['analyst_order_requires_sensitivity_reassessment'])
             for key in ('from_node', 'depart_min', 'travel_min', 'start_min', 'finish_min',
                         'path_lonlat', 'path_nodes', 'route_id', 'route_road_ids',
                         'route_source', 'route_status', 'ordering_evidence', 'ordering_reason'):
@@ -171,8 +181,8 @@ def preview_order(state, *, source, incident_id, revision, snapshot_id, team_id,
                         or not _number(readiness.get('observed_min'))
                         or not _number(readiness.get('valid_until_min'))
                         or readiness['observed_min'] > context['now_min']
-                        or readiness['valid_until_min'] <= finish + buffer):
-                    block('readiness_review', 'Assistance readiness evidence is absent or expired at the revised finish.', task)
+                        or readiness['valid_until_min'] <= arrival):
+                    block('readiness_review', 'Assistance readiness evidence is absent or expired at the revised intervention start.', task)
             node, clock = task['to_node'], finish
             done[task['action_id']] = finish
     reviewed = dict(team_id=team_id, revision=revision, action_ids=list(action_ids), original_action_ids=original_ids,

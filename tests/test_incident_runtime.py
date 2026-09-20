@@ -287,3 +287,26 @@ def test_synthetic_result_retry_recovers_interrupted_projection(tmp_path, monkey
     assert (
         next(c for c in state["calls"] if c["asset_id"] == "A")["status"] == "no_answer"
     )
+
+
+def test_refresh_reconciles_confirmed_arrival_without_erasing_property_work(tmp_path):
+    from fireline.evacuation_allocations import AllocationStore
+
+    runtime = IncidentRuntime(tmp_path, settings())
+    initial = runtime.trigger(demo_trigger(NOW))
+    store = AllocationStore(tmp_path / 'allocations.sqlite')
+    row = next(row for row in store.public_plan(as_of=NOW.isoformat())['locations']
+               if row['asset_id'] == 'B')
+    for status in ('communicated', 'departed', 'arrived'):
+        store.confirm('confirm-B-' + status, row['allocation_id'], status, actor='analyst',
+                      evidence='synthetic physical reception observation', as_of=NOW.isoformat())
+    updated = runtime.refresh()
+    response = updated['plan']['response']
+    need = next(need for need in response['remaining_needs'] if need['asset_id'] == 'B')
+    assert need['remaining_people'] == 0 and need['remaining_assisted'] == 0
+    assert need['confirmed_arrived'] > 0
+    assert next(a for a in updated['assets'] if a['asset_id'] == 'B')['value_score'] == next(
+        a for a in initial['assets'] if a['asset_id'] == 'B')['value_score']
+    assert any(task['action_id'] == 'protect-B'
+               for team in response['teams'] for task in team['tasks'])
+    assert IncidentRuntime(tmp_path, settings()).refresh()['plan']['response']['remaining_needs'] == response['remaining_needs']

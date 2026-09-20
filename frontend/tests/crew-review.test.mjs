@@ -182,3 +182,144 @@ test("analyst ordering evidence identifies the selected rank without inventing s
   assert.equal(facts.orderReason, "Analyst requested stop 2");
   assert.equal(facts.action, "Check access");
 });
+
+test("mission facts distinguish pickup from planned arrival without inventing delivery", () => {
+  const incident = {
+    assets: [],
+    teams: [
+      { team_id: "a", name: "Engine 12" },
+      { team_id: "b", name: "Rescue 4" },
+    ],
+    calls: [],
+    plan: { locations: [] },
+  };
+  assert.equal(typeof review.crewMissionFacts, "function");
+  const pickup = review.crewMissionFacts(incident, {
+    mission_status: "pickup_only",
+  });
+  assert.match(pickup.label, /Pickup only/);
+  assert.equal(pickup.plannedPeople, "Unknown");
+  const mission = review.crewMissionFacts(incident, {
+    mission_status: "complete_evacuation",
+    delivered_people: 16,
+    team_ids: ["a", "b"],
+    required_team_count: 2,
+    evacuation: {
+      destination_id: "shelter",
+      unload_min: 3,
+      places_reserved: 16,
+      confirmed: true,
+      safe: true,
+    },
+    mission_legs: [
+      { kind: "transport", people: 8 },
+      { kind: "return" },
+      { kind: "transport", people: 8 },
+    ],
+  });
+  assert.equal(mission.label, "Complete evacuation planned");
+  assert.equal(mission.plannedPeople, "16");
+  assert.equal(mission.crews, "Engine 12 · Rescue 4");
+  assert.equal(mission.destination, "shelter");
+  assert.equal(mission.legs.length, 3);
+});
+
+test("advanced missions and joint work prevent isolated reorder of the entire plan", () => {
+  assert.equal(typeof review.crewReorderBlocked, "function");
+  for (const extra of [
+    { mission_status: "complete_evacuation" },
+    { team_ids: ["a", "b"] },
+    { required_team_count: 2 },
+  ]) {
+    const plan = [
+      { ...tasks[1], ...extra },
+      { ...tasks[2] },
+      { ...tasks[1], action_id: "c" },
+    ];
+    assert.equal(review.crewReorderBlocked(plan), true);
+    assert.equal(review.moveCrewStop(plan, 1, 1), plan);
+  }
+  assert.equal(review.crewReorderBlocked(tasks), false);
+  assert.equal(
+    review.crewReorderBlocked([{ ...tasks[1], mission_status: "pickup_only" }]),
+    false,
+  );
+});
+
+test("sensitivity keeps missing bounds unknown and fragile stress failures explicit", () => {
+  assert.equal(typeof review.crewSensitivityFacts, "function");
+  assert.equal(review.crewSensitivityFacts({}).label, "Sensitivity unknown");
+  const fragile = review.crewSensitivityFacts({
+    sensitivity: {
+      status: "fragile",
+      duration_high_min: 25,
+      deadline_early_min: 20,
+      stress_finish_min: 30,
+      reasons: ["stress_deadline_exceeded"],
+    },
+  });
+  assert.equal(fragile.label, "Fragile under supplied uncertainty");
+  assert.equal(fragile.tone, "warning");
+  assert.match(fragile.reasons, /Stress deadline exceeded/);
+  assert.equal(
+    review.crewSensitivityFacts({ sensitivity: { status: "robust" } }).label,
+    "Passes supplied stress case",
+  );
+});
+
+test("urgent reviews combine both channels without losing reasons or late candidate evidence", () => {
+  assert.equal(typeof review.urgentInterventionReviews, "function");
+  const result = review.urgentInterventionReviews({
+    assets: [{ asset_id: "a", name: "Care home" }],
+    plan: {
+      response: {
+        review: [
+          {
+            action_id: "rescue",
+            asset_id: "a",
+            reason: "urgent_intervention_review",
+            human_decision_required: true,
+            reasons: ["deadline_exceeded"],
+          },
+        ],
+        unassigned: [
+          {
+            action_id: "rescue",
+            asset_id: "a",
+            reason: "urgent_intervention_review",
+            candidate_attempts: [{ finish_min: 40, deadline_min: 30 }],
+          },
+          { asset_id: "b", reason: "ordinary" },
+        ],
+      },
+    },
+  });
+  assert.equal(result.length, 1);
+  assert.equal(result[0].name, "Care home");
+  assert.deepEqual(result[0].reasons, ["deadline_exceeded"]);
+  assert.equal(result[0].candidate_attempts[0].finish_min, 40);
+});
+
+test("known people benefit remains visible with unknown value dimensions", () => {
+  const facts = review.crewStopFacts(
+    { assets: [], calls: [], plan: { locations: [] } },
+    {
+      unknown_dimensions: ["replacement_value_eur"],
+      ordering_evidence: { people_gain: 8, assisted_gain: 4, value_gain: null },
+    },
+  );
+  assert.equal(facts.valuation, "Unknown");
+  assert.match(facts.orderReason, /People benefit: 8/);
+  assert.match(facts.unknownDimensions, /Replacement value eur/);
+});
+
+test("joint mission totals stay separate from this crew's planned arrivals and trip count stays sourced", () => {
+  const facts = review.crewMissionFacts(
+    { teams: [] },
+    { delivered_people: 8, mission_delivered_people: 16, trip_count: 2 },
+  );
+  assert.equal(facts.plannedPeople, "8");
+  assert.equal(facts.missionPeople, "16");
+  assert.equal(facts.tripCount, "2");
+  assert.equal(review.crewMissionFacts({}, {}).tripCount, "Unknown");
+});

@@ -23,7 +23,8 @@ import {
   PageHeading,
   Metric,
 } from "../components/Common";
-import CrewPlans from "../components/CrewPlans";
+import CrewPlans, { UrgentInterventionReviews } from "../components/CrewPlans";
+import { urgentInterventionReviews } from "../state/crew-review.mjs";
 import CrewItinerary from "../components/CrewItinerary";
 import {
   gps,
@@ -375,6 +376,9 @@ export function Calls({ incident }) {
 export function ResponsePlan({ incident }) {
   const navigate = useNavigate();
   const [showBlockers, setShowBlockers] = useState(false);
+  const urgentCount = urgentInterventionReviews(incident).filter(
+    (review) => review.reason === "urgent_intervention_review",
+  ).length;
   const teams = responseTeams(incident),
     response = incident.plan.response;
   const crewName = (team) =>
@@ -400,7 +404,15 @@ export function ResponsePlan({ incident }) {
               />
             ))}
             {response && (
-              <Button onClick={() => setShowBlockers(true)}>Blockers</Button>
+              <Button
+                aria-label="Blockers"
+                color={urgentCount ? "error" : "primary"}
+                onClick={() => setShowBlockers(true)}
+              >
+                {urgentCount
+                  ? `Urgent intervention reviews: ${urgentCount}`
+                  : "Blockers"}
+              </Button>
             )}
           </div>
         }
@@ -425,6 +437,7 @@ export function ResponsePlan({ incident }) {
         onClose={() => setShowBlockers(false)}
         title="Blockers & uncovered locations"
       >
+        <UrgentInterventionReviews incident={incident} />
         {response && (
           <MainCard title="Blockers & uncovered locations">
             {Object.entries(response.unserved || {}).map(([id, reason]) => (

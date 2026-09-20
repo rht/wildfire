@@ -164,7 +164,7 @@ def test_infeasible_work_has_explicit_reason(change, reason):
         else:
             data['routes'] = []
     else:
-        data['assets'][0]['assisted'] = None
+        data['assets'][0].update(assisted=None, people=None, value=None)
     result = plan(data)
     assert not tasks(result)
     assert reason in result['unassigned'][0]['reasons']

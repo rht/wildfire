@@ -548,3 +548,22 @@ def test_dashboard_login_refuses_plain_http_and_only_sets_secure_cookie(tmp_path
         )
         assert response.status_code == 303
         assert "secure" in response.headers["set-cookie"].lower()
+
+
+def test_login_preserves_same_origin_form_submission_without_allowing_opaque_origins(tmp_path):
+    server = app(runtime(tmp_path), dashboard_token=DASHBOARD_TOKEN,
+                 allowed_hosts=["incident.example"])
+    with TestClient(server, base_url="https://incident.example") as c:
+        page = c.get("/login")
+        # no-referrer makes Chrome form submissions send Origin: null.
+        assert page.headers["referrer-policy"] == "same-origin"
+        for origin in ("null", "https://evil.example"):
+            rejected = c.post("/login", data={"token": DASHBOARD_TOKEN},
+                              headers={"Origin": origin}, follow_redirects=False)
+            assert rejected.status_code == 401
+            assert "set-cookie" not in rejected.headers
+        accepted = c.post("/login", data={"token": DASHBOARD_TOKEN},
+                          headers={"Origin": "https://incident.example"},
+                          follow_redirects=False)
+        assert accepted.status_code == 303
+        assert "secure" in accepted.headers["set-cookie"].lower()

@@ -421,7 +421,8 @@ class IncidentRuntime:
             )
             saved["enqueue"] = self._enqueue(saved, coordinator, allocation, now)
             response = response_from_snapshot(
-                snapshot, scenario, ops, coordinator.voice, now, utc(saved["epoch"])
+                snapshot, scenario, ops, coordinator.voice, now, utc(saved["epoch"]),
+                allocation_store=allocation,
             )
             roster = [
                 {

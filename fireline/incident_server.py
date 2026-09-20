@@ -307,7 +307,11 @@ def create_app(
         if request.url.scheme != "https":
             return JSONResponse({"error": "https_required"}, 400, headers=HEADERS)
         if request.method == "GET":
-            return HTMLResponse(LOGIN_HTML, headers=HEADERS)
+            # Keep same-origin form POSTs attributable in browsers; no-referrer
+            # makes Chrome send Origin: null, which the check above rejects.
+            return HTMLResponse(
+                LOGIN_HTML, headers={**HEADERS, "Referrer-Policy": "same-origin"}
+            )
         try:
             data = await _body(request, 8192)
             token = parse_qs(data.decode(), strict_parsing=True).get("token", [""])[0]

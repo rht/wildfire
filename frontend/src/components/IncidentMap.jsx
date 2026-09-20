@@ -1,6 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerIconRetina from "leaflet/dist/images/marker-icon-2x.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+// Bundle GeoJSON point icons explicitly; Leaflet's CSS path detection cannot
+// resolve Vite's hashed or inline assets in the production build.
+L.Icon.Default.imagePath = "";
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIconRetina,
+  shadowUrl: markerShadow,
+});
 import { useNavigate } from "react-router-dom";
 import { responseTeams, gps } from "../state/model.mjs";
 import { crewMapData } from "../state/crew-map.mjs";

@@ -1,15 +1,15 @@
 """Version-bound analyst confirmations for public dashboard crew plans."""
+import hashlib
+import json
+import sqlite3
 from collections.abc import Mapping
 from contextlib import contextmanager
 from datetime import datetime, timezone
-import hashlib
-import json
 from pathlib import Path
-import sqlite3
 from uuid import uuid4
 
 from .dashboard_public import _CALL_FIELDS, _clean
-
+from .response_contract import RESPONSE_TASK_DETAILS
 
 _TASK_FIELDS = (
     'action_id', 'task_id', 'asset_id', 'site_id', 'action', 'status',
@@ -22,6 +22,7 @@ _TASK_FIELDS = (
     'readiness_required', 'ordering_evidence', 'ordering_reason', 'action_name',
     'actual_finish_min', 'team_id', 'scenario_id', 'snapshot_id',
 )
+_TASK_FIELDS += RESPONSE_TASK_DETAILS
 _TEAM_FIELDS = ('locked', 'remaining_transport_capacity', 'planning_context',
                 'starting_location', 'current_location', 'current_position', 'ordering_reason')
 
