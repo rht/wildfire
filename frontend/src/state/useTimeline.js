@@ -5,9 +5,12 @@ import {
   historyEntry,
   mergeHistory,
 } from "./history-store.mjs";
-export function useTimeline(incidents, demo) {
+export function useTimeline(incidents, source) {
+  // Only live coordination snapshots are kept on the device; generated data stays in memory.
+  const simulated = source === "design_demo";
+  const persist = source === "connected";
   const scope = JSON.stringify([
-    demo,
+    source,
     ...incidents.map((i) => [i.id, i.epoch, i.input_mode]),
   ]);
   const key = historyKey(incidents);
@@ -19,11 +22,13 @@ export function useTimeline(incidents, demo) {
     setStorageError(false);
     const load = async () => {
       try {
-        const entries = demo
+        const entries = simulated
           ? (
               await (await fetch("/assets/design-history.json")).json()
             ).entries.map((row) => historyEntry(row.incidents))
-          : await savedHistory(scope);
+          : persist
+            ? await savedHistory(scope)
+            : [];
         if (!cancelled)
           setArchive((previous) => ({
             scope,
@@ -40,7 +45,7 @@ export function useTimeline(incidents, demo) {
     return () => {
       cancelled = true;
     };
-  }, [demo, scope]);
+  }, [simulated, persist, scope]);
   useEffect(() => {
     if (!incidents.length) return;
     const entry = historyEntry(incidents);
@@ -51,13 +56,13 @@ export function useTimeline(incidents, demo) {
         entry,
       ]),
     }));
-    if (!demo)
+    if (persist)
       void savedHistory(scope, entry).catch(() => setStorageError(true));
-  }, [incidents, demo, scope]);
+  }, [incidents, persist, scope]);
   const entries =
     archive.scope === scope
       ? archive.entries.filter(
-          (entry) => demo || entry.revision <= incidents[0]?.revision,
+          (entry) => simulated || entry.revision <= incidents[0]?.revision,
         )
       : [];
   const selected = entries.find((entry) => entry.key === selection);
@@ -73,10 +78,12 @@ export function useTimeline(incidents, demo) {
     index,
     historical,
     storageError,
-    simulated: demo,
-    historyLabel: demo
+    simulated,
+    historyLabel: simulated
       ? "Generated demo history · illustrative simulated spread"
-      : "History saved on this device",
+      : persist
+        ? "History saved on this device"
+        : "This browser session only",
     incidents: historical ? selected.incidents : incidents,
     select: (index) =>
       setSelection(

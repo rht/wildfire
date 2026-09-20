@@ -11,6 +11,7 @@ export default function IncidentMap({
   incidents,
   showRoutes = false,
   openIncidentOnClick = false,
+  interactive = true,
 }) {
   const [heat, setHeat] = useState(false);
   const heatPoints = riskHeatPoints(incidents);
@@ -113,7 +114,7 @@ export default function IncidentMap({
           asset.risk_label === "High" || contact?.status === "window_exhausted"
             ? "#ff603e"
             : "#1677ff";
-        L.circleMarker(position, {
+        const marker = L.circleMarker(position, {
           radius: 7,
           color: "#fff",
           weight: 2,
@@ -121,12 +122,14 @@ export default function IncidentMap({
           fillOpacity: 1,
         })
           .bindTooltip(label)
-          .on("click", () =>
+          .addTo(layers);
+        // A preview of unsaved incidents has nothing to open.
+        if (interactive)
+          marker.on("click", () =>
             navigate(
               `/incidents/${encodeURIComponent(incident.id)}/buildings?building=${encodeURIComponent(asset.asset_id)}`,
             ),
-          )
-          .addTo(layers);
+          );
       }
       if (showRoutes) {
         const crew = responseTeams(incident).flatMap((team) =>
@@ -159,7 +162,7 @@ export default function IncidentMap({
       });
       fittedScope.current = scope;
     }
-  }, [incidents, showRoutes, openIncidentOnClick, navigate]);
+  }, [incidents, showRoutes, openIncidentOnClick, interactive, navigate]);
   useEffect(() => {
     if (!heat || !mapRef.current) return;
     const layer = riskHeatLayer(riskHeatPoints(incidents)).addTo(

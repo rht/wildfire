@@ -1,0 +1,87 @@
+.onboarding > * + * {
+  margin-top: 20px;
+}
+.onboarding-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.onboarding-field {
+  display: block;
+}
+.onboarding-field + .onboarding-field,
+.onboarding-field + .onboarding-problems {
+  margin-top: 20px;
+}
+.onboarding-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #595959;
+}
+.onboarding-field input,
+.onboarding-field textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  background: #fff;
+  color: inherit;
+}
+.onboarding-field textarea {
+  resize: vertical;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.onboarding-field small {
+  display: block;
+  margin-top: 6px;
+  color: #8c8c8c;
+  font-size: 12px;
+}
+.onboarding-count {
+  width: 76px;
+  padding: 6px 8px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+}
+.onboarding-problems ul,
+.onboarding-actions + ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+.onboarding-problems code {
+  background: #0000000d;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.onboarding-summary {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  margin-bottom: 20px;
+}
+.onboarding-summary > div {
+  padding: 14px 16px;
+  border: 1px solid #e6ebf1;
+  border-radius: 4px;
+  background: #fafafa;
+}
+.onboarding-summary strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.onboarding-summary span {
+  color: #595959;
+  font-size: 12px;
+}
+.onboarding-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}

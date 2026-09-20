@@ -18,6 +18,8 @@ module.exports = [
         setInterval: "readonly",
         clearInterval: "readonly",
         ResizeObserver: "readonly",
+        sessionStorage: "readonly",
+        indexedDB: "readonly",
         URL: "readonly",
         URLSearchParams: "readonly",
       },

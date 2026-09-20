@@ -252,6 +252,7 @@ export function Calls({ incident }) {
                   {[
                     "Priority",
                     "Location",
+                    "Number",
                     "Call state",
                     "Remaining window",
                     "Review reasons",
@@ -268,6 +269,9 @@ export function Calls({ incident }) {
                     <TableCell>
                       <strong>{r.name}</strong>
                       <Coordinates location={r} />
+                    </TableCell>
+                    <TableCell className="nowrap">
+                      {r.contact_phone || "Not supplied"}
                     </TableCell>
                     <TableCell>
                       {r.queued ? "Queued request" : "No call records"}
@@ -310,7 +314,12 @@ export function Calls({ incident }) {
       >
         {selected && (
           <>
-            <Facts rows={[["GPS (latitude, longitude)", gps(selected)]]} />
+            <Facts
+              rows={[
+                ["GPS (latitude, longitude)", gps(selected)],
+                ["Number on file", selected.contact_phone || "Not supplied"],
+              ]}
+            />
             <Typography variant="h5">Human follow-up reasons</Typography>
             {selected.reasons.length ? (
               <ul>
@@ -342,6 +351,7 @@ export function Calls({ incident }) {
                   <Facts
                     rows={[
                       ["Request", c.request_id],
+                      ["Number dialled", c.contact_phone],
                       ["Caller", callerLabel(callActor(c))],
                       ["Status", humanize(c.status)],
                       ["Queue state", humanize(c.queue_state)],

@@ -3351,3 +3351,70 @@ Safari check. Backend source files and existing preview processes remain unchang
 
 The separate tmux session `wildfire-time-travel` implemented the saved simulation
 stages in this UI worktree and remains available (`tmux attach -t wildfire-time-travel`).
+
+## Demo onboarding — session-generated dashboard (claude/demo-onboarding, 2026-09-20)
+
+`/onboarding` (hash route `#/onboarding`) builds a whole dashboard from a short form,
+so the product can be demonstrated on any jurisdiction without a backend, a register
+or a roster. It is deliberately **not** a navigation item: the sidebar is unchanged,
+and the page is reached by address, by the quiet footer link, or from the banner shown
+while session data is in use. Everything it produces lives in `frontend/src/onboarding/`
+(`config.mjs` parsing and validation, `generate.mjs` data generation, `session.js`
+session storage, `Onboarding.jsx` the form, `onboarding.css` its styles).
+
+The form takes five inputs:
+
+- **Fire department name** — recorded as the source of every crew record.
+- **Fire GPS pairs, one per line** — the number of accepted pairs is the number of
+  fires. Pairs outside an approximate Catalonia bounding box (40.5–42.9 N, 0.15–3.35 E)
+  and unparseable lines are listed as ignored rather than silently dropped. Each fire is
+  placed at exactly the supplied point and labelled with the nearest town from a short
+  built-in list; that label is presentation only, not a gazetteer or boundary lookup.
+- **Phone numbers, one per line** — the voice agent's call list. Numbers are spread
+  evenly across the fires and each becomes one contactable location. A fire with fewer
+  numbers than locations leaves the rest in the review queue with `no_contact_number`.
+- **Crews per type** — a count per type (ground crew, fire engine, water tanker,
+  forestry unit, medical unit, evacuation bus, helicopter), each with a starting
+  location: at the fire station, or randomly across the territory. The territory is the
+  envelope covering the supplied fires and station, widened by about 13 km and clipped
+  to the Catalonia box. Crews are shared across the fires in turn; station coordinates
+  are required only when a type starts there.
+- **Fire station GPS** — where station-placed crews start.
+
+Generation is deterministic: the same configuration always produces the same dashboard,
+seeded from a hash of the configuration itself. It emits ordinary `coordination-state-1`
+incidents, so every existing view works unchanged — perimeter geometry, located assets
+with occupancy, replacement value, expected-loss bands, burn probability and risk score,
+a ranked contact queue with evacuation windows, agent call records (assisted-evacuation
+request, self-evacuation with confirmed departure, a no-answer, and the rest queued),
+people groups, crew rosters with positions, proposed multi-crew plans with routes and
+deadlines, unserved reasons, and an event log. Deadlines and remaining windows both
+derive from one illustrative spread rate applied to the supplied fire point, so crew
+margins and contact slack stay consistent with each other.
+
+The configuration is held in `sessionStorage` only (`responsara.onboarding.v1`); it
+never reaches the backend, ends with the browser tab, and is validated on read so a
+stale or corrupt entry falls back rather than breaking the dashboard. **Without a stored
+configuration the dashboard behaves exactly as before** — the connected API, or the
+design demo. With one, it takes over until the analyst picks another source from the
+data-source selector, which gains a third "Session onboarding" option while the
+configuration exists. Crew confirmations are disabled for generated data and say so:
+there is no backend record to confirm against, and no approval request is sent.
+
+Every surface states what it is. The page, the mode banner and the footer mark the data
+as synthetic; no call is placed and no crew is dispatched. A "Number" column was added to
+the call queue, and the number on file to the call detail dialog, so the supplied call
+list is visible where the agent would work it; both read "Not supplied" for backend data
+that carries no number.
+
+Verification: 62 Node tests passed (11 new onboarding tests covering coordinate and
+number parsing, required-input reporting, configuration round-trips, one incident per
+pair, determinism, number distribution, crew counts per type and placement inside the
+station radius or the envelope, and the generated state driving `callRows`, `metrics`,
+`evacuationTotals` and `responseTeams`). Lint, Prettier and the production build passed.
+Nine Chrome regression scripts passed, including a new `onboarding_browser.cjs` that
+checks the page is absent from the navigation, fills the form, builds the dashboard,
+verifies incident, crew and call-queue counts, and confirms the session survives a reload
+and that clearing it returns the dashboard to its configured source. Screenshots of the
+form, overview, resources and call queue were inspected. Backend source files are
+unchanged.
