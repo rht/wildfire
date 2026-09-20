@@ -51,7 +51,7 @@ const root = path.resolve(__dirname, "../..");
         { timeout: 15000 },
       )
       .toBe(true);
-    for (const file of ["react_browser.cjs", "live_browser.cjs", "call_counts_browser.cjs", "appearance_browser.cjs", "ipad_browser.cjs", "timeline_browser.cjs", "fire_simulation_browser.cjs"]) {
+    for (const file of ["react_browser.cjs", "live_browser.cjs", "call_counts_browser.cjs", "appearance_browser.cjs", "theme_browser.cjs", "ipad_browser.cjs", "timeline_browser.cjs", "fire_simulation_browser.cjs"]) {
       const child = spawn(process.execPath, [path.join(__dirname, file)], {
         cwd: path.join(root, "frontend"),
         env: { ...process.env, DASHBOARD_BASE_URL: base },

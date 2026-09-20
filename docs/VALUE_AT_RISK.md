@@ -147,6 +147,19 @@ protected and is about half of market value at a decades-old revision date, so i
 Fallback when area is unknown: per-class default with `value_basis = "assumed"` and a review
 reason, or `null`; never zero.
 
+**Where this table gives up, and what now stands in its place (2026-09-20).** The rows above price an
+average building of a class, which is the wrong question for `research_facility`, `university`,
+`aerodrome` and `fire_station`: `VALUE_AT_RISK_POLICY` has no row for any of them, because within those
+classes one building is not like another and a EUR/m² table prices a national computing centre and a
+university annexe the same. Those four classes now take the per-asset route instead
+(`config.CUSTOM_VALUATION_POLICY`, handoff 004): the investigation agent proposes one bespoke figure for
+one building from references it quotes verbatim out of `fixtures/valuation_references.json`, an analyst
+confirms it, and the confirmed mid replaces `replacement_value_eur` while the confirmed band compounds
+with the damage band. The corpus holds the published lines of this section (ATC docent and sanitari
+modules, the 1.3–1.5 fees/VAT/contents multiplier) marked `basis: "published"`, alongside project
+placeholders marked `basis: "assumed"` with the `[assumed]` marker inside the quotable sentence. It is
+still not a market valuation: the guards make a figure traceable and banded, not correct.
+
 Insurance angle: wildfire is not an extraordinary risk under RD 300/2004, so the Consorcio de
 Compensación de Seguros does not cover property loss; it falls on private policies. The figure
 computed here is total economic loss, insured plus uninsured, not an insurer's number.
@@ -197,23 +210,48 @@ disruption as **counts** (facility-days, people served), not euros. Per-evacuee 
 
 ## 8. Where it plugs into the code
 
+*Status 2026-09-20: the per-location layer of this section is implemented (handoff 002/003) and the
+per-asset valuation upgrade it calls for now exists for the four classes the class table cannot price
+(handoff 004). The unimplemented items below — Catastro built area, the land ledger, the fatality chain,
+CVaR — are still the upgrade path.*
+
 - Flag: add `"value_at_risk": False` to `config.FEATURES` (`config.py:15-20`), enabled only via a
-  per-call `cfg` shim like the other flags (`scripts/make_snapshots.py:598-602`).
+  per-call `cfg` shim like the other flags (`scripts/make_snapshots.py:598-602`). **Done**, alongside
+  `"asset_criticality"` and `"custom_valuation"`, both on.
 - Policy: a versioned `VALUE_AT_RISK_POLICY` next to `VALUE_POLICY` (`config.py:27-38`) holding
   d_c bands, ATC EUR/m² by class, multipliers, t_warn, and the land defaults. The existing
   `value_score` (0.4–1.0 operational importance, "not a monetary valuation") stays as it is.
+  **Done**, minus the land defaults and t_warn. A second policy, `CUSTOM_VALUATION_POLICY`, holds the
+  per-asset escape hatch for the four classes with no row in the first: a closed method enum with a
+  minimum priced-component count, a minimum band ratio, a component-sum rule, a ceiling, and its own
+  wider damage band.
 - Fields: `replacement_value_eur`, `replacement_value_basis`, `expected_loss_eur_low/mid/high`,
   `people_exposed`, `people_at_risk`, computed in `snapshot.asset_record`
   (`snapshot.py:329-357`), added to `ASSET_KEYS` (`snapshot.py:56-61`), `_COMPUTED_FIELDS`
   (`snapshot.py:64-67`) and `validate_snapshot`, each with a `sources` entry. Re-derive on
-  `asset_type` override like `value_score` (`priority.py:156-167`).
+  `asset_type` override like `value_score` (`priority.py:156-167`). **Done** in
+  `snapshot.derive_value_at_risk`, which runs after the forecast pass rather than inside
+  `asset_record`, and re-derives on every confirmed override (`priority._rederive_value_at_risk`).
+  The per-asset upgrade adds six more keys, `custom_value_eur_low/mid/high`, `custom_value_method`,
+  `custom_value_components`, `custom_value_basis`, written only by an analyst-confirmed
+  `custom_valuation` override; `derive_value_at_risk` then takes the confirmed mid as
+  `replacement_value_eur` and multiplies each end of the band by the matching damage ratio, so
+  `expected_loss_eur_low/_mid/_high` states the valuation uncertainty as well as the damage
+  uncertainty. That answers the caveat this document put on the class table: the band is no longer the
+  damage-ratio band alone for an asset somebody has valued.
 - Data: a Catastro fetch in `scripts/fetch_data.py` producing built area and use per asset;
-  land cover per burned cell for the hectare ledger.
+  land cover per burned cell for the hectare ledger. **Not built.** `fixtures/valuation_references.json`
+  (served offline by `fireline/valuation_reference.py`) is the stand-in for the classes that need a
+  per-asset figure most, and it is a quotable cost corpus, not measured built area.
 - Aggregates: `ui_state.Session.status()` counts (`ui_state.py:276-291`) feeding the metrics
   row (`app.py:430-436`): people exposed, people at risk, assets with p10 slack < 0, expected
   loss mid with band, upper bound (p10 scenario or CVaR where members exist).
 - Per-asset columns: `app.ranked_frame` / `review_frame` (`app.py:153-174`), never as sort keys;
-  detail in `components_frame`.
+  detail in `components_frame`. **Done**, and measured: `scripts/validate.py` `check_valuation` gives
+  every asset of the real-area snapshot a huge confirmed valuation and records that the ranked contact
+  order is byte-identical, and that neither `priority.ranked_sort_key` nor
+  `contact_priority.contact_sort_key` mentions a euro field. The one ordering a confirmed figure does
+  is `priority.strategic_queue`, after the criticality tier.
 - Response planner: `priority_models.Location.value` (`priority_models.py:16-18`) can carry
   `replacement_value_eur`; the lexicographic objective assisted > people > value
   (`response_priority.py:158-163`) already matches the INFOCAT ordering.

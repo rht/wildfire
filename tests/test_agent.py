@@ -104,7 +104,7 @@ class StubTasks:
 # ---------------------------------------------------------------------------
 def test_tools_schema_names():
     assert [t["name"] for t in TOOLS] == ["get_asset", "lookup_facility", "lookup_notability",
-                                          "propose_update", "escalate"]
+                                          "lookup_valuation_reference", "propose_update", "escalate"]
     for t in TOOLS:
         assert t["input_schema"]["type"] == "object" and "required" in t["input_schema"]
     assert set(agent.TOOL_FUNCTIONS) == {t["name"] for t in TOOLS}

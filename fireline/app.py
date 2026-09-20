@@ -24,9 +24,17 @@ GREY = [198, 192, 186, 225]
 RED, ORANGE, YELLOW = [232, 62, 46, 240], [240, 150, 40, 240], [236, 208, 60, 240]
 FIRE_FILL, FIRE_LINE = [198, 48, 38, 95], [255, 96, 74, 255]
 # Esri World Imagery: the satellite basemap of the mockup, public XYZ tiles with no API key.
+# It is the deck's MapLibre basemap style, not a deck TileLayer. deck.gl's TileLayer defaults
+# renderSubLayers to a GeoJsonLayer, and a raster basemap needs that prop replaced by a function
+# returning a BitmapLayer - which the deck.gl JSON dialect st.pydeck_chart speaks cannot carry, so a
+# TileLayer of image tiles silently draws nothing. SATELLITE_STYLE names the style document instead;
+# server.enableStaticServing (.streamlit/config.toml) publishes fireline/static/ at app/static/, and
+# the URL stays relative so it resolves against whatever base URL the app is served from.
+SATELLITE_STYLE = "app/static/esri-world-imagery-style.json"
 SATELLITE_URL = ("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/"
-                 "tile/{z}/{y}/{x}")
-SATELLITE_CREDIT = "Basemap Esri World Imagery (Esri, Maxar, Earthstar Geographics) - reference only."
+                 "tile/{z}/{y}/{x}")    # the tiles that style declares; tests keep the two in step
+SATELLITE_CREDIT = ("Basemap tiles Esri World Imagery - source: Esri, Maxar, Earthstar Geographics, "
+                    "and the GIS User Community - reference only.")
 TAGLINE = ("Which infrastructure, people and assets are in danger - and which hospital, which school, "
            "needs a call first.")
 SMALL_WINDOW_MIN = config.CONTACT_POLICY["attention_min"]   # "small window" threshold shared with task flagging
@@ -34,6 +42,29 @@ SMALL_WINDOW_MIN = config.CONTACT_POLICY["attention_min"]   # "small window" thr
 # cost, shown with its damage-ratio band, that must never order or filter the table (handoff 002).
 LOSS_COLUMN = "expected loss (estimate, assumed replacement cost, damage-ratio band)"
 DEFAULT_SCENARIO = "gavarres_real"      # the real-area scenario opens first; the synthetic one stays selectable
+# The approve-all preview: every pending agent proposal applied in memory at once, so the ranked queue
+# can be read with and without them. It confirms nothing - no override reaches the store - and the fields
+# the agent proposes are mostly absent from the contact sort key (readme 6), so the order usually does not
+# move at all. The caption has to say that plainly instead of looking like a button that failed.
+APPROVE_ALL_LABEL = "Preview proposals as approved"      # short: it sits in the narrow header slot
+APPROVE_ALL_HELP = ("A what-if view, not an approval. Every pending agent proposal is applied in memory and "
+                    "the queue re-ranked; the SQLite store is untouched, no override is confirmed, and no "
+                    "analyst has checked these proposals. Switch it off to return to the confirmed data.")
+RANK_DELTA_COLUMN = "rank change if all approved (+ = up the queue)"
+# Per-asset custom valuation (config.CUSTOM_VALUATION_POLICY). Four classes - research_facility,
+# university, aerodrome, fire_station - have no row in the per-class euro table at all, so the agent may
+# propose ONE bespoke figure for ONE building from quoted evidence and an analyst confirms it. Every
+# place that prints such a figure has to say what it is: an assumption, with a band that is wide on
+# purpose, that replaces the class figure for that building and orders nothing an analyst is contacted by.
+CUSTOM_VALUATION_CAUTION = (
+    "Assumed figure, not a market valuation: proposed by the investigation agent from the quoted "
+    "evidence and confirmed by an analyst, never measured or quoted by an insurer. The band is wide on "
+    "purpose. It replaces the per-class replacement cost for this one building and never reorders the "
+    "contact queue.")
+CUSTOM_VALUE_COLUMN = "bespoke value (assumed, analyst-confirmed)"
+SORT_KEY_NOTE = ("Occupancy, capacity and criticality_tier are absent from contact_priority.contact_sort_key "
+                 "(readme 6), so approving them changes what the analyst knows about a location, not who is "
+                 "contacted first; only asset_type and evacuation_min can move a row.")
 
 
 # ----------------------------------------------------------------------------- helpers
@@ -95,6 +126,51 @@ def loss_eur(asset: dict) -> str:
         return "not valued" if asset.get("burn_probability") is not None else "-"
     low, high = asset.get("expected_loss_eur_low"), asset.get("expected_loss_eur_high")
     return f"EUR {mid:,.0f} ({low:,.0f} - {high:,.0f})"
+
+
+def eur(amount) -> str:
+    """`EUR 12,500,000`, "-" for a null amount. A display string: euros never order anything here."""
+    return "-" if amount is None else f"EUR {amount:,.0f}"
+
+
+def method_label(method) -> str:
+    """`component replacement` for a `CUSTOM_VALUATION_POLICY["methods"]` member; "" for none."""
+    return (method or "").replace("_", " ")
+
+
+def valuation_band_text(asset: dict) -> str:
+    """One asset's bespoke valuation band as `low - mid - high`, or what its absence means.
+
+    Three numbers, never one: `priority.custom_valuation_value` refuses a point estimate, so the band is
+    the figure. A confirmed `not_valued` is a real answer - the agent looked and the evidence supported
+    nothing - and reads differently from an asset nobody has assessed yet."""
+    method = asset.get("custom_value_method")
+    if not method:
+        return "not assessed"
+    if method == "not_valued":
+        return "no bespoke figure (the agent looked; the evidence supports none)"
+    low, mid, high = (asset.get(f"custom_value_eur_{k}") for k in ("low", "mid", "high"))
+    if mid is None:
+        return "no bespoke figure"
+    return f"{eur(low)} - {eur(mid)} - {eur(high)}"
+
+
+def custom_value_label(asset: dict) -> str:
+    """The strategic table's bespoke-value cell: a display string, never a number, so it cannot sort
+    the table into a ranking. "not valued" and "not assessed" are different answers and say so."""
+    method = asset.get("custom_value_method")
+    if not method:
+        return "not assessed"
+    if method == "not_valued":
+        return "not valued (looked; no figure)"
+    mid = asset.get("custom_value_eur_mid")
+    return "no bespoke figure" if mid is None else f"{eur(mid)} (assumed)"
+
+
+def valuation_components_frame(components) -> pd.DataFrame:
+    """The priced components of a bespoke valuation, the arithmetic the method claims to have done."""
+    return pd.DataFrame([{"priced component": (c or {}).get("label"),
+                          "amount": eur((c or {}).get("amount_eur"))} for c in components or []])
 
 
 def horizon_hours(horizon_at, as_of) -> str:
@@ -234,8 +310,8 @@ def polygon_rows(geometry: dict, geometry_kind: str | None = None) -> list[dict]
 
 def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
     snap, status = sess.snapshot, sess.status()
-    # Satellite basemap first so every other layer draws over it; no key, no style server.
-    layers = [pdk.Layer("TileLayer", data=SATELLITE_URL, min_zoom=0, max_zoom=19, tile_size=256)]
+    # The satellite imagery is the basemap (SATELLITE_STYLE, applied below), under every deck layer.
+    layers = []
     lons, lats = [], []
     geometry = snap.get("fire_geometry")
     if geometry and geometry.get("type") in ("Polygon", "MultiPolygon"):
@@ -278,7 +354,10 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
     clat = sum(lats) / len(lats) if lats else 41.9
     view = pdk.ViewState(longitude=clon, latitude=clat, zoom=10.5, pitch=0)
     tooltip = {"html": "<b>{title}</b><br/>{tip}", "style": {"whiteSpace": "pre-line"}}
-    deck = pdk.Deck(layers=layers, initial_view_state=view, tooltip=tooltip, map_style=None)
+    # map_provider="maplibre" keeps Streamlit from substituting its Carto basemap, which is what
+    # map_style=None used to get us: a grey street map with nothing satellite about it.
+    deck = pdk.Deck(layers=layers, initial_view_state=view, tooltip=tooltip,
+                    map_provider="maplibre", map_style=SATELLITE_STYLE)
     return deck, status["counts"]["unlocated"]
 
 
@@ -301,26 +380,113 @@ def criticality_label(asset: dict) -> str:
 
 
 def strategic_frame(assets: list[dict]) -> pd.DataFrame:
+    """The strategic view's table: criticality tier, the bespoke valuation beside it, and the timing.
+
+    `priority.strategic_queue` orders tier first and then `custom_value_eur_mid` (largest first, unvalued
+    last), so the euro column is shown in the order that produced the rows - and, like every euro in this
+    page, as a display string that cannot be sorted into a different ranking."""
     return pd.DataFrame([{
-        "criticality": criticality_label(a), "name": a["name"], "type": a["asset_type"],
+        "criticality": criticality_label(a), CUSTOM_VALUE_COLUMN: custom_value_label(a),
+        "valuation method": method_label(a.get("custom_value_method")),
+        "name": a["name"], "type": a["asset_type"],
         "municipality": a.get("municipality"), "distance m": a.get("distance_to_fire_m"),
         "predicted arrival": a.get("fire_arrival_at"), "remaining window (min)": a.get("slack_min"),
-        "basis": a.get("criticality_basis"), "asset_id": a["asset_id"],
+        "basis": a.get("criticality_basis"), "valuation basis": a.get("custom_value_basis"),
+        "asset_id": a["asset_id"],
     } for a in assets])
 
 
-def ranked_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFrame:
-    return pd.DataFrame([{
-        "rank": a["priority_rank"], "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
-        "distance m": a.get("distance_to_fire_m"), "predicted arrival": a.get("fire_arrival_at"),
-        "forecast source": a.get("forecast_source"),
-        "evacuation min": a.get("evacuation_min"), "latest start (min from now)": a.get("latest_start_min"),
-        "remaining window (min)": a.get("slack_min"), "status": a.get("priority_status"),
-        "review flags": ", ".join(a.get("review_reasons") or []), "people": people(a),
-        "people exposed": exposed(a), "people at risk p50 / p10": at_risk(a), LOSS_COLUMN: loss_eur(a),
-        "criticality": criticality_label(a),
-        "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
-    } for a in assets])
+def rank_delta(asset: dict) -> str:
+    """One asset's rank movement under the approve-all preview, signed: `+3 (up)` is three places nearer
+    the top of the contact queue, `-2 (down)` is two places further from it, `0 (no move)` is the usual
+    answer. Only meaningful while the preview is on; `ranked_frame` leaves the column out otherwise."""
+    delta, baseline = asset.get("preview_rank_delta"), asset.get("preview_baseline_rank")
+    if delta is None:
+        return "new (not ranked before)" if baseline is None else "-"
+    d = int(delta)
+    if d == 0:
+        return "0 (no move)"
+    return f"+{d} (up)" if d > 0 else f"{d} (down)"
+
+
+# `custom_valuation` is the name of an override, not of a snapshot field: its payload fans out into the
+# six `snapshot.CUSTOM_VALUATION_KEYS`, and "custom_valuation 3" alone reads like three fields rather
+# than three buildings given a bespoke euro band. The gloss keeps the override name and says which.
+FIELD_GLOSS = {"custom_valuation": "bespoke euro band(s), one per building"}
+
+
+def by_field_text(by_field: dict | None) -> str:
+    """`capacity 2, criticality_tier 13`: which fields the preview's proposals would write.
+
+    A field with an entry in `FIELD_GLOSS` carries its gloss in brackets, so the line still names the
+    override field an analyst would confirm while saying what the count counts."""
+    parts = []
+    for field, n in sorted((by_field or {}).items()):
+        gloss = FIELD_GLOSS.get(field)
+        parts.append(f"{field} {n} ({gloss})" if gloss else f"{field} {n}")
+    return ", ".join(parts) or "no field"
+
+
+def approve_all_caption(report: dict | None, brief: bool = False) -> str:
+    """What approving every agent proposal actually changed - including, in the usual case, nothing at
+    all about the contact order. `report` is `Session.preview_report`; "" when the preview is off.
+
+    Zero rows moved is the designed separation (readme 6, measured in VALIDATION.md), not an empty result,
+    so the caption states it and names the sort key rather than leaving a column of zeros unexplained.
+    """
+    if not report or not report.get("on"):
+        return ""
+    moved, total = report["rows_moved"], report["ranked_after"]
+    if not report["proposals"]:
+        if brief:
+            return ("Preview on, but the agent has proposed nothing on this snapshot: the list below is the "
+                    "confirmed ranking.")
+        return (f"Preview on, and there is nothing to approve: the agent has made no proposals on this "
+                f"snapshot ({report['investigated']} location(s) investigated, llm mode "
+                f"`{report['llm_label']}`). The {total} ranked row(s) below are the confirmed ranking, "
+                f"unchanged, and the store holds no new overrides.")
+    if brief:
+        tail = (f"{moved} of {total} row(s) moved." if moved else
+                f"contact order unchanged, 0 of {total} rows moved - these fields are not in the sort key.")
+        return (f"Preview: {report['proposals']} proposal(s) applied in memory, nothing written to the "
+                f"store; {tail}")
+    head = (f"Preview only: {report['proposals']} agent proposal(s) from {report['investigated']} "
+            f"investigated location(s), applied in memory (llm mode `{report['llm_label']}`) - "
+            f"{by_field_text(report['by_field'])}. No analyst confirmed them and the store holds no new "
+            f"overrides. {report['flags_cleared']} review flag(s) cleared, {report['tiers_set']} "
+            f"criticality tier(s) set, {report['valuations_set']} bespoke valuation(s) set "
+            f"(assumed figures, and no euro figure is in the contact sort key either).")
+    if moved:
+        return (f"{head} Contact order: {moved} of {total} ranked row(s) moved, "
+                f"{len(report['entered_ranked'])} entered the ranked queue and {len(report['left_ranked'])} "
+                f"left it ({report['ranked_before']} ranked before, {total} after).")
+    return (f"{head} Contact order: unchanged - 0 of {total} ranked rows moved. That is the designed "
+            f"separation, not a failed button. {SORT_KEY_NOTE} VALIDATION.md records the same result for "
+            f"criticality: the contact order with every asset at the top tier is identical to the untiered "
+            f"order.")
+
+
+def ranked_frame(assets: list[dict], open_counts: dict[str, int], preview: bool = False) -> pd.DataFrame:
+    """The ranked table. `preview` adds the rank-movement column, and only then: with the approve-all
+    preview off the table is exactly the confirmed one, same columns as ever."""
+    rows = []
+    for a in assets:
+        row: dict = {"rank": a["priority_rank"]}
+        if preview:
+            row[RANK_DELTA_COLUMN] = rank_delta(a)
+        row.update({
+            "name": a["name"], "type": a["asset_type"], "municipality": a.get("municipality"),
+            "distance m": a.get("distance_to_fire_m"), "predicted arrival": a.get("fire_arrival_at"),
+            "forecast source": a.get("forecast_source"), "evacuation min": a.get("evacuation_min"),
+            "latest start (min from now)": a.get("latest_start_min"),
+            "remaining window (min)": a.get("slack_min"), "status": a.get("priority_status"),
+            "review flags": ", ".join(a.get("review_reasons") or []), "people": people(a),
+            "people exposed": exposed(a), "people at risk p50 / p10": at_risk(a), LOSS_COLUMN: loss_eur(a),
+            "criticality": criticality_label(a),
+            "open tasks": open_counts.get(a["asset_id"], 0), "asset_id": a["asset_id"],
+        })
+        rows.append(row)
+    return pd.DataFrame(rows)
 
 
 def review_frame(assets: list[dict], open_counts: dict[str, int]) -> pd.DataFrame:
@@ -364,24 +530,54 @@ def value_frame(asset: dict) -> pd.DataFrame | None:
     replacement value with its policy basis, the three damage ratios and the three expected losses, and
     which arrival quantile made each `people_at_risk` flag fire. The policy note itself is already in the
     asset's `sources` entry for these fields, rendered below; it is not repeated here.
+
+    When the asset carries a confirmed **bespoke** valuation the first rows say so before any euro figure
+    is read: the method, the band, and the plain statement that this per-asset assumption replaced the
+    per-class figure - which for these four classes was no figure at all. The rows below it then describe
+    the bespoke arithmetic instead of the class one: the damage band is the wider
+    `CUSTOM_VALUATION_POLICY["damage_ratio"]`, and the expected-loss band compounds the valuation band
+    with it (low x d_low ... high x d_high) rather than moving the damage ratio alone.
     """
     if not any(k in asset for k in snapshot.VALUE_AT_RISK_KEYS):
         return None
     occ, bp = asset.get("estimated_occupancy"), asset.get("burn_probability")
-    band = config.VALUE_AT_RISK_POLICY["by_type"].get(asset.get("asset_type"))
+    custom = snapshot.custom_valuation_band(asset)
+    method = asset.get("custom_value_method")
+    band = (dict(config.CUSTOM_VALUATION_POLICY["damage_ratio"]) if custom
+            else config.VALUE_AT_RISK_POLICY["by_type"].get(asset.get("asset_type")))
     ratios = "-" if band is None else f"{band['d_low']:g} / {band['d_mid']:g} / {band['d_high']:g}"
     value, basis = asset.get("replacement_value_eur"), asset.get("replacement_value_basis")
     rows = [
         {"component": "people exposed", "value": exposed(asset),
          "basis / source": (f"occupancy {occ} x burn probability {bp:g}" if occ is not None and bp is not None
                             else "null: no headcount or no burn probability, never zero")},
-        {"component": "replacement value", "value": "not valued" if value is None else f"EUR {value:,.0f}",
-         "basis / source": basis or f"class {asset.get('asset_type')} has no replacement value in the policy"},
+    ]
+    if method:
+        rows.append({"component": "custom valuation method", "value": method_label(method),
+                     "basis / source": asset.get("custom_value_basis")
+                                       or config.CUSTOM_VALUATION_POLICY["version"]})
+        rows.append({"component": "custom valuation band (low - mid - high)",
+                     "value": valuation_band_text(asset),
+                     "basis / source": CUSTOM_VALUATION_CAUTION})
+    rows += [
+        {"component": "replacement value", "value": "not valued" if value is None else eur(value),
+         "basis / source": (
+             ("this ASSUMED bespoke figure replaced the per-class one; the per-class table prices no "
+              f"building of class {asset.get('asset_type')} at all. " + (basis or ""))
+             if custom else
+             basis or f"class {asset.get('asset_type')} has no replacement value in the policy")},
         {"component": "damage ratio low / mid / high", "value": ratios,
-         "basis / source": (band or {}).get("note") or config.VALUE_AT_RISK_POLICY["version"]},
+         "basis / source": (f"assumed damage band for a bespoke valuation, "
+                            f"{config.CUSTOM_VALUATION_POLICY['version']}; wider than any class row"
+                            if custom else
+                            (band or {}).get("note") or config.VALUE_AT_RISK_POLICY["version"])},
         {"component": "expected loss", "value": loss_eur(asset),
-         "basis / source": "burn probability x damage ratio x replacement value; the band is the "
-                           "damage-ratio band only, so the value uncertainty is at least as large"},
+         "basis / source": ("burn probability x damage ratio x the bespoke valuation; the band compounds "
+                            "BOTH bands - low x d_low to high x d_high - so it states the valuation "
+                            "uncertainty as well as the damage uncertainty"
+                            if custom else
+                            "burn probability x damage ratio x replacement value; the band is the "
+                            "damage-ratio band only, so the value uncertainty is at least as large")},
     ]
     for q in ("p50", "p10"):
         at = asset.get(f"people_at_risk_{q}")
@@ -502,6 +698,39 @@ def sidebar(sess: Session) -> None:
 
 
 # ----------------------------------------------------------------------------- selected asset
+def render_valuation_proposal(p: dict) -> None:
+    """One pending `custom_valuation` proposal, read as a valuation rather than as a dict.
+
+    The payload (`priority.custom_valuation_value`) is an object, not a number, so the generic
+    `{value!r}` line renders it as an unreadable mapping. This shows what an analyst has to decide
+    about: the method, the band, the components the method claims to have added up, the agent's note
+    and the evidence it quoted - and, above the Confirm button, what confirming it would mean.
+    """
+    value = p["value"] if isinstance(p["value"], dict) else {}
+    method = value.get("method")
+    st.markdown(f"**Proposal `{p['proposal_id']}`**: bespoke valuation for this building - method "
+                f"**{method_label(method) or 'unstated'}** ({p['confidence']}) from {p['source']} "
+                f"{p.get('url') or ''}")
+    if method == "not_valued":
+        st.markdown("Band: **no bespoke figure**. The agent looked and the evidence supports none, which "
+                    "is the ordinary answer; confirming records that the look happened and clears the "
+                    "`valuation_unassessed` flag without putting any euro figure on the asset.")
+    else:
+        low, mid, high = (value.get(f"amount_eur_{k}") for k in ("low", "mid", "high"))
+        st.markdown(f"Band (low - mid - high): **{eur(low)} - {eur(mid)} - {eur(high)}**  \n"
+                    f"Confirming replaces the per-class replacement cost for this building with the mid "
+                    f"figure and re-derives its expected loss from the band.")
+        components = value.get("components") or []
+        if components:
+            st.caption(f"{len(components)} priced component(s) the method adds up:")
+            st.dataframe(valuation_components_frame(components), width="stretch", hide_index=True)
+    if value.get("note"):
+        st.caption(f"agent note: {value['note']}")
+    if p.get("quoted_snippet"):
+        st.markdown(f"> {p['quoted_snippet']}")
+    st.caption(CUSTOM_VALUATION_CAUTION)
+
+
 def render_agent(sess: Session, asset: dict) -> None:
     aid = asset["asset_id"]
     live = llm_available()
@@ -521,8 +750,11 @@ def render_agent(sess: Session, asset: dict) -> None:
                 st.json(c["result"])
         st.info(rec["final_text"])
     for p in sess.pending_proposals(aid):
-        st.markdown(f"**Proposal `{p['proposal_id']}`**: {p['field']} {p['previous']!r} -> {p['value']!r} "
-                    f"({p['confidence']}) from {p['source']} {p.get('url') or ''}  \n> {p['quoted_snippet']}")
+        if p["field"] == "custom_valuation":
+            render_valuation_proposal(p)
+        else:
+            st.markdown(f"**Proposal `{p['proposal_id']}`**: {p['field']} {p['previous']!r} -> {p['value']!r} "
+                        f"({p['confidence']}) from {p['source']} {p.get('url') or ''}  \n> {p['quoted_snippet']}")
         c1, c2 = st.columns(2)
         if c1.button("Confirm", key=f"ok-{p['proposal_id']}", type="primary"):
             if try_action("confirm", sess.confirm, p["proposal_id"]):
@@ -675,16 +907,25 @@ def select_asset(asset_id: str | None) -> None:
 
 
 def render_header(sess: Session, s: dict) -> None:
-    """The header bar on the dark shell, with the sequence's forward control at its right."""
-    head, action = st.columns([0.86, 0.14], vertical_alignment="center")
+    """The header bar on the dark shell: the approve-all preview switch and both sequence controls sit
+    at its right, in reading order - the preview, then back, then forward, so Next stays rightmost."""
+    head, preview, back, action = st.columns([0.58, 0.16, 0.12, 0.14], vertical_alignment="center")
     head.html(ui_theme.header_html(
         product="Respons'Ara", tagline=TAGLINE, mode=s["input_mode"] or "unknown",
         status=s["data_status_now"] or "unknown", status_tone=STATUS_COLOUR.get(s["data_status_now"], "grey"),
         as_of=stamp(s["as_of"]), computed_at=stamp(s["computed_at"])))
+    with preview.container(key="ra-approve"):
+        render_approve_all_toggle(sess)
+    with back.container(key="ra-prev"):
+        if st.button("← Previous", width="stretch", disabled=not sess.has_previous, key="ra-prev-btn",
+                     help="Step back to the previous snapshot of this scenario as a view; the store stays "
+                          "where it is (the sidebar has the time-travel slider)."):
+            sess.previous_update()
+            st.rerun()
     with action.container(key="ra-next"):
         if st.button("Next update →", width="stretch", disabled=not sess.has_next, key="ra-next-btn",
-                     help="Apply the next snapshot of this scenario (the sidebar has Previous and the "
-                          "time-travel slider)."):
+                     help="Apply the next snapshot of this scenario (the sidebar has the time-travel "
+                          "slider)."):
             sess.next_update()
             st.rerun()
 
@@ -770,11 +1011,27 @@ def render_escalation_card(sess: Session) -> None:
                                     "never a dispatch order."))
 
 
+def render_approve_all_toggle(sess: Session) -> None:
+    """The preview switch, in the page header beside the forward control. `Session.set_approve_all`
+    applies every pending proposal in memory and rescores; nothing here confirms a proposal or
+    writes to the store."""
+    on = bool(st.toggle(APPROVE_ALL_LABEL, value=bool(sess.approve_all), key="ra-approve-all",
+                        help=APPROVE_ALL_HELP))
+    if on != bool(sess.approve_all):
+        sess.set_approve_all(on)
+        st.rerun()
+
+
 def render_ranked_card(sess: Session, current: str | None) -> None:
-    """Ranked locations: the rank number is the button that selects the location."""
+    """Ranked locations: the rank number is the button that selects the location. The approve-all
+    switch is in the page header; its caption stays here, where the order it might change is read."""
     ranked = sess.scored["ranked"]
+    report = sess.preview_report
     with st.container(key="racard-ranked"):
         st.html(ui_theme.card_title_html("Ranked locations - analyst priority", len(ranked)))
+        brief = approve_all_caption(report, brief=True)
+        if brief:
+            st.caption(brief)
         if not ranked:
             st.html(ui_theme.empty_state_html("No location has both a forecast arrival and an evacuation estimate."))
         with st.container(key="ra-ranklist", height=300, border=False):
@@ -789,8 +1046,11 @@ def render_ranked_card(sess: Session, current: str | None) -> None:
                     name=a["name"], subtitle=location_subtitle(a), value=f"{a['slack_min']:.0f} min",
                     segments=window_segments(a), value_tone=window_tone(a),
                     selected=a["asset_id"] == current))
-        st.html('<div class="ra-card-foot">Smallest remaining evacuation window first. The bar is that '
-                'window\'s arithmetic: evacuation duration, buffer and the window that is left.</div>')
+        foot = ("Smallest remaining evacuation window first. The bar is that window's arithmetic: "
+                "evacuation duration, buffer and the window that is left.")
+        if brief:
+            foot += " " + SORT_KEY_NOTE
+        st.html(f'<div class="ra-card-foot">{ui_theme.esc(foot)}</div>')
 
 
 def render_selected_card(sess: Session, current: str | None) -> None:
@@ -848,13 +1108,18 @@ def render_detail_sections(sess: Session, s: dict, c: dict, current: str | None)
         else:
             render_selected(sess, sess.asset(current))
 
+    preview = approve_all_caption(sess.preview_report)
     with st.expander(f"Ranked assets ({c['ranked']})"):
         st.caption("Smallest remaining window first, then earlier predicted arrival, nearer distance, asset id. "
                    "A farther asset can rank higher when the fire reaches it sooner or its evacuation takes longer.")
-        st.dataframe(ranked_frame(sess.scored["ranked"], open_counts), width="stretch", hide_index=True)
+        if preview:
+            st.caption(preview)
+        st.dataframe(ranked_frame(sess.scored["ranked"], open_counts, bool(preview)), width="stretch",
+                     hide_index=True)
         if sess.scored["flagged"]:
             st.caption(f"Ranked assets that still carry review flags ({len(sess.scored['flagged'])}):")
-            st.dataframe(ranked_frame(sess.scored["flagged"], open_counts), width="stretch", hide_index=True)
+            st.dataframe(ranked_frame(sess.scored["flagged"], open_counts, bool(preview)), width="stretch",
+                         hide_index=True)
 
     with st.expander(f"Needs-review queue ({c['needs_review']})"):
         st.caption("Unranked: no forecast arrival (forecast_unavailable, a producer gap) or no evacuation estimate "
@@ -866,10 +1131,16 @@ def render_detail_sections(sess: Session, s: dict, c: dict, current: str | None)
     if strategic or c.get("criticality_unassessed"):
         with st.expander(f"Strategic exposure ({len(strategic)})"):
             st.caption("A separate view, not a contact order: property value never overrides contact urgency "
-                       "(readme 6), so nothing here changes the ranked queue. Most critical tier first, "
-                       "then the same remaining window. Every tier is an analyst-confirmed proposal from the "
-                       f"investigation agent, quoting its evidence; {c.get('criticality_unassessed', 0)} asset(s) "
-                       f"are still unassessed. Policy {config.CRITICALITY_POLICY['version']}, assumed.")
+                       "(readme 6), so nothing here changes the ranked queue - neither the tier nor the "
+                       "bespoke euro figure beside it is in the contact sort key. Most critical tier first, "
+                       f"then the largest bespoke value ({CUSTOM_VALUE_COLUMN}, unvalued last), then the same "
+                       "remaining window. Every tier and every euro figure is an analyst-confirmed proposal "
+                       f"from the investigation agent, quoting its evidence; {c.get('criticality_unassessed', 0)} "
+                       f"asset(s) are still unassessed for criticality and "
+                       f"{c.get('valuation_unassessed', 0)} for valuation. Policies "
+                       f"{config.CRITICALITY_POLICY['version']} and "
+                       f"{config.CUSTOM_VALUATION_POLICY['version']}, both assumed: the euro figures are "
+                       "per-asset assumptions from quoted evidence, not market valuations.")
             if strategic:
                 st.dataframe(strategic_frame(strategic), width="stretch", hide_index=True)
 
@@ -891,12 +1162,25 @@ def render_detail_sections(sess: Session, s: dict, c: dict, current: str | None)
                              f"is modelled, and {v['excluded_people']} located assets are excluded for want of an input")
             n[2].metric("Expected loss (mid)", f"EUR {v['expected_loss_eur_mid']:,.0f}",
                         help=f"band EUR {v['expected_loss_eur_low']:,.0f} to {v['expected_loss_eur_high']:,.0f} from the "
-                             f"class damage ratios; assumed per-class replacement costs ({v['policy_version']}), not a "
-                             f"per-asset valuation, and {v['excluded_eur']} of {v['located']} located assets are not valued")
+                             f"class damage ratios; assumed per-class replacement costs ({v['policy_version']}), and "
+                             f"{v['excluded_eur']} of {v['located']} located assets are not valued. "
+                             + (f"{v['custom_valued']} location(s) instead carry an analyst-confirmed bespoke "
+                                f"per-asset figure ({v['custom_valuation_policy_version']}), assumed from quoted "
+                                f"evidence rather than measured." if v['custom_valued'] else
+                                "No location carries a per-asset valuation."))
             n[3].metric("Excluded from totals", f"{v['excluded_people']} people / {v['excluded_eur']} eur",
                         help=f"located assets left out of each total because an input is null (no headcount, no burn "
                              f"probability, or a class the policy does not value), so neither total is complete. "
                              f"{v['located']} located assets in all")
+            st.caption(
+                f"{v['custom_valued']} of {v['located']} located location(s) carry an analyst-confirmed "
+                f"bespoke valuation: a per-asset assumed figure, proposed by the investigation agent from "
+                f"quoted evidence, that replaces the per-class replacement cost for that one building - "
+                f"the four classes it applies to have no row in the class table at all. Its expected-loss "
+                f"band compounds the valuation band with the damage band, so those assets leave the "
+                f"{v['excluded_eur']} not valued above and their euros are softer than the class ones. "
+                f"Policy {v['custom_valuation_policy_version']}; not a market valuation, and no euro "
+                f"figure reaches the contact queue.")
         limits = value_limits(v)
         st.caption(value_summary(v, s["as_of"]) + (f" {limits}" if limits else ""))
         st.caption(f"Contact priority is the remaining evacuation window: forecast arrival - total evacuation "

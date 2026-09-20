@@ -872,6 +872,196 @@ def check_criticality() -> dict:
         "contact_order_unchanged": same, "strategic_assets": len(strat)})
 
 
+def check_valuation() -> dict:
+    """Per-asset custom valuation: the policy guards, the flag gating, what a confirmed figure does to
+    the expected-loss band, and that no euro reaches the contact queue."""
+    details, ok = [], True
+    pol = config.CUSTOM_VALUATION_POLICY
+    ratios = pol["damage_ratio"]
+    details.append(f"policy {pol['version']}: methods "
+                   + ", ".join(f"{m} (min {pol['min_components'][m]} priced component(s))" for m in pol["methods"])
+                   + f"; a band, never a point: amount_eur_high >= {pol['min_band_ratio']:g}x amount_eur_low; "
+                   f"component_replacement components must sum to amount_eur_mid within "
+                   f"{pol['component_sum_tolerance']:.0%}; ceiling {pol['max_eur']:,.0f} EUR")
+    priced = [c for c in pol["assess_classes"] if c in config.VALUE_AT_RISK_POLICY["by_type"]]
+    details.append(f"assessed classes: {', '.join(pol['assess_classes'])}; of these the per-class euro table "
+                   f"(VALUE_AT_RISK_POLICY) prices {priced or 'none'}, which is why these are the classes a "
+                   f"bespoke figure is asked for; FEATURES['custom_valuation'] = {config.FEATURES['custom_valuation']}; "
+                   f"damage ratio applied to a confirmed figure {ratios['d_low']:g} / {ratios['d_mid']:g} / "
+                   f"{ratios['d_high']:g} (low / mid / high)")
+
+    # The guards, probed the way check_criticality probes the inflation guard: accept and refuse cases
+    # through priority.custom_valuation_value, the one function a proposal and a confirmation both pass.
+    def payload(method, low, mid, high, components=()):
+        return {"method": method, "amount_eur_low": low, "amount_eur_mid": mid, "amount_eur_high": high,
+                "components": [{"label": label, "amount_eur": amount} for label, amount in components]}
+
+    budget = [("annual budget x stated rebuild years", 3_000_000)]
+    cases = [
+        ("method not in the enum (market_appraisal)", payload("market_appraisal", 1e6, 2e6, 4e6), False),
+        ("service_continuity, band 1.0x (a point)", payload("service_continuity", 2e6, 2e6, 2e6, budget), False),
+        ("service_continuity, band 2.0x", payload("service_continuity", 2e6, 3e6, 4e6, budget), True),
+        ("band out of order (low > mid)", payload("service_continuity", 4e6, 3e6, 8e6, budget), False),
+        ("service_continuity with no priced component", payload("service_continuity", 2e6, 3e6, 4e6), False),
+        ("component_replacement with one component", payload("component_replacement", 1e6, 2e6, 4e6,
+                                                             [("shell", 2e6)]), False),
+        ("component_replacement, two components summing to the mid",
+         payload("component_replacement", 1e6, 2e6, 4e6, [("installation", 1.4e6), ("shell", 0.6e6)]), True),
+        ("component_replacement, components 30% below the mid",
+         payload("component_replacement", 1e6, 2e6, 4e6, [("installation", 1.0e6), ("shell", 0.4e6)]), False),
+        (f"high above the {pol['max_eur']:,.0f} EUR ceiling (a misplaced decimal point)",
+         payload("service_continuity", 4e9, 6e9, 9e9, budget), False),
+        ("not_valued with no amounts", payload("not_valued", None, None, None), True),
+        ("not_valued carrying an amount", payload("not_valued", None, 3e6, None), False),
+    ]
+    guard = []
+    for label, value, want_ok in cases:
+        try:
+            priority.custom_valuation_value(value)
+            got = True
+        except ValueError:
+            got = False
+        guard.append(f"{label} -> {'accepted' if got else 'refused'}")
+        ok = ok and (got is want_ok)
+    details.append("policy guards: " + "; ".join(guard))
+
+    # The producer never asserts a figure, and is inert while the flag is off. Both cfgs are explicit,
+    # so the check measures the gate rather than whichever way the deployed flag is set.
+    row = {"asset_id": "equipaments:probe", "name": "Probe", "asset_class": "research_facility",
+           "lat": 41.98, "lon": 2.99, "occupancy": None, "occupancy_source": "unknown",
+           "municipality": "Monells", "register": "gencat:equipaments (8gmd-gz7i)", "category": None,
+           "seasonal": False, "class_ambiguous": False, "address": None}
+    consts = {k: getattr(config, k) for k in dir(config) if k.isupper()}
+    off_cfg = SimpleNamespace(**dict(consts, FEATURES=dict(config.FEATURES, custom_valuation=False)))
+    on_cfg = SimpleNamespace(**dict(consts, FEATURES=dict(config.FEATURES, custom_valuation=True)))
+    off = snapshot.asset_record(row, off_cfg)
+    on = snapshot.asset_record(row, on_cfg)
+    values = {k: (off.get(k), on.get(k)) for k in snapshot.CUSTOM_VALUATION_KEYS}
+    producer_ok = (all(v == (None, None) for v in values.values())
+                   and snapshot.VALUATION_UNASSESSED not in off["review_reasons"]
+                   and snapshot.VALUATION_UNASSESSED in on["review_reasons"])
+    ok = ok and producer_ok
+    details.append(f"producer: all six custom-valuation keys are null with the flag off and on ({producer_ok}); "
+                   f"the reason appears only with the flag on (off {off['review_reasons']}, on "
+                   f"{on['review_reasons']}); a figure can reach an asset only through an analyst-confirmed "
+                   f"override, like criticality_tier ({'custom_valuation' in priority.OVERRIDE_FIELDS})")
+
+    # A confirmed valuation replaces the class replacement value and compounds its own band with the
+    # damage band, instead of the damage band alone. Measured on one record through the producer's own
+    # derive_value_at_risk, with the class table's school row alongside for the contrast.
+    burn = 0.4
+    valued_rec = {"asset_type": "research_facility", "latitude": 41.98, "longitude": 2.99,
+                  "burn_probability": burn, "estimated_occupancy": None, "evacuation_min": 90.0,
+                  "forecast_source": None, "sources": [],
+                  "custom_value_method": "component_replacement", "custom_value_basis": "validate probe",
+                  "custom_value_components": [{"label": "probe", "amount_eur": 50_000_000}],
+                  "custom_value_eur_low": 30_000_000, "custom_value_eur_mid": 50_000_000,
+                  "custom_value_eur_high": 80_000_000}
+    snapshot.derive_value_at_risk(valued_rec, None, config)
+    expected = {level: round(burn * ratios[f"d_{level}"] * valued_rec[f"custom_value_eur_{level}"])
+                for level in ("low", "mid", "high")}
+    got = {level: valued_rec[f"expected_loss_eur_{level}"] for level in ("low", "mid", "high")}
+    class_rec = dict(valued_rec, asset_type="school", sources=[],
+                     **{k: None for k in snapshot.CUSTOM_VALUATION_KEYS})
+    snapshot.derive_value_at_risk(class_rec, None, config)
+    class_band = {level: class_rec[f"expected_loss_eur_{level}"] for level in ("low", "mid", "high")}
+    damage_only = {level: round(burn * ratios[f"d_{level}"] * valued_rec["custom_value_eur_mid"])
+                   for level in ("low", "mid", "high")}
+    band_ok = got == expected and got != damage_only and \
+        valued_rec["replacement_value_eur"] == valued_rec["custom_value_eur_mid"] and \
+        "custom valuation" in (valued_rec["replacement_value_basis"] or "")
+    ok = ok and band_ok
+    details.append(
+        f"confirmed valuation of one research_facility (band {valued_rec['custom_value_eur_low']:,} / "
+        f"{valued_rec['custom_value_eur_mid']:,} / {valued_rec['custom_value_eur_high']:,} EUR, "
+        f"burn_probability {burn}): replacement_value_eur {valued_rec['replacement_value_eur']:,} "
+        f"(basis {valued_rec['replacement_value_basis']!r}); expected_loss low/mid/high {got} compounds the "
+        f"valuation band with the damage band, against {damage_only} from the damage band alone - the spread "
+        f"widens from {damage_only['high'] / damage_only['low']:.1f}x to {got['high'] / got['low']:.1f}x: "
+        f"{band_ok}; the same record as a class-priced school (no bespoke figure) gives {class_band} from "
+        f"config.VALUE_AT_RISK_POLICY, damage band only")
+
+    # The one place a bespoke figure orders anything: tier first, then the figure, then the window.
+    def strat(asset_id, value, slack):
+        return {"asset_id": asset_id, "criticality_tier": "high", "criticality_factors": ["sole_regional_service"],
+                "custom_value_eur_mid": value, "slack_min": slack}
+    strategic = [a["asset_id"] for a in priority.strategic_queue(
+        [strat("probe:cheap", 2_000_000, 10.0), strat("probe:unvalued", None, 5.0),
+         strat("probe:dear", 90_000_000, 900.0)], config)]
+    strategic_ok = strategic == ["probe:dear", "probe:cheap", "probe:unvalued"]
+    ok = ok and strategic_ok
+    details.append(f"strategic_queue with three same-tier assets orders {strategic}: the larger confirmed "
+                   f"figure first and the unvalued asset last, ahead of the remaining window (probe:dear has "
+                   f"the largest window of the three): {strategic_ok}")
+
+    # Euro neutrality, the point of the layer: give every asset a huge confirmed valuation and re-rank.
+    snap = json.loads((SNAP_DIR / "gavarres_real_0002.json").read_text(encoding="utf-8"))
+    before = [a["asset_id"] for a in priority.rank_snapshot(snap, config)["ranked"]]
+    # Confirm through the real override path rather than writing the six keys on directly: _apply_one
+    # is what an analyst's click runs, and it is also what clears `valuation_unassessed`. Writing the
+    # keys by hand would build a record the product cannot produce (a confirmed figure sitting beside
+    # the reason that asks for one) and would measure the wrong thing.
+    payload = {"method": "component_replacement",
+               "components": [{"label": "validate probe A", "amount_eur": 2_000_000_000},
+                              {"label": "validate probe B", "amount_eur": 2_000_000_000}],
+               "amount_eur_low": 1_000_000_000, "amount_eur_mid": 4_000_000_000,
+               "amount_eur_high": 5_000_000_000, "note": "validate probe"}
+    overrides = [{"override_id": f"ovr-probe-{i}", "asset_id": a["asset_id"], "field": "custom_valuation",
+                  "value": payload, "source": "validate probe", "confirmed_at": snap["as_of"],
+                  "confidence": "low", "snippet": None, "url": None, "observed_at": None}
+                 for i, a in enumerate(snap["assets"])]
+    valued = dict(snap, assets=priority.apply_overrides(snap["assets"], overrides, config,
+                                                        now_at=snap["as_of"]))
+    after = priority.rank_snapshot(valued, config)
+    after_ids = [a["asset_id"] for a in after["ranked"]]
+    same = json.dumps(before) == json.dumps(after_ids)
+    errs = snapshot.validate_snapshot(valued)
+    ok = ok and same and not errs
+    details.append(f"contact order with a {valued['assets'][0]['custom_value_eur_mid']:,} EUR confirmed "
+                   f"valuation on every one of the {len(valued['assets'])} assets is byte-identical to the "
+                   f"unvalued order: {same} ({len(before)} ranked); validate_snapshot errors on the valued "
+                   f"snapshot: {errs or 'none'}")
+
+    # No contact-queue path reads a euro: grep the two sort keys the queue actually uses.
+    src = (ROOT / "fireline" / "priority.py").read_text(encoding="utf-8")
+    sort_src = src[src.index("def ranked_sort_key"):src.index("def _needs_review_key")]
+    contact_src = (ROOT / "fireline" / "contact_priority.py").read_text(encoding="utf-8")
+    contact_sort_src = contact_src[contact_src.index("def contact_sort_key"):contact_src.index("def rank_contacts")]
+    field_names = (*snapshot.CUSTOM_VALUATION_KEYS, "custom_valuation", "amount_eur", "replacement_value_eur",
+                   "expected_loss")
+    in_ranked = [n for n in field_names if n in sort_src]
+    in_contact = [n for n in field_names if n in contact_src]
+    clean = not in_ranked and not in_contact
+    ok = ok and clean
+    details.append(f"priority.ranked_sort_key mentions none of {list(field_names)} ({not in_ranked}), and "
+                   f"fireline/contact_priority.py - contact_sort_key and the whole module - mentions none of "
+                   f"them either ({not in_contact}): {clean}"
+                   + (f"; found in ranked_sort_key: {in_ranked}" if in_ranked else "")
+                   + (f"; found in contact_priority.py: {in_contact}" if in_contact else ""))
+
+    # The classes the layer admits, and what the committed extract and snapshot actually carry today.
+    payload = json.loads(REAL_ASSETS.read_text(encoding="utf-8"))
+    admitted = [a for a in payload["assets"] if a["asset_type"] in pol["assess_classes"]]
+    by_class = dict(sorted(Counter(a["asset_type"] for a in admitted).items()))
+    flagged = [a for a in snap["assets"] if snapshot.VALUATION_UNASSESSED in (a.get("review_reasons") or [])]
+    keyed = sum(all(k in a for k in snapshot.CUSTOM_VALUATION_KEYS) for a in snap["assets"])
+    confirmed = [a["name"] for a in snap["assets"] if a.get("custom_value_method")]
+    details.append(
+        f"assets of an assessed class in the committed extract: {len(admitted)} {by_class}; in "
+        f"gavarres_real_0002 {len(flagged)} carry {snapshot.VALUATION_UNASSESSED} "
+        + (", ".join(f"{a['name']} ({a['asset_type']})" for a in flagged[:6]) if flagged else
+           "- the committed snapshots predate this layer and have not been rebuilt with the flag on, so the "
+           "producer gate above is measured on a constructed row instead")
+        + f"; {keyed}/{len(snap['assets'])} records carry the six keys; confirmed valuations in the committed "
+        f"snapshot: {confirmed or 'none'} (none is expected: a figure arrives only through an analyst)")
+
+    return _result("Custom valuation", ok, details, {
+        "methods": list(pol["methods"]), "assess_classes": list(pol["assess_classes"]),
+        "flag": config.FEATURES["custom_valuation"], "contact_order_unchanged": same,
+        "admitted_assets": len(admitted), "flagged_unassessed": len(flagged),
+        "expected_loss": got, "damage_band_only": damage_only})
+
+
 def check_latency(repeats: int = 3) -> dict:
     """Readme 11 latency: processing time from receipt of the recorded seq-2 perimeter to snapshot built,
     ranked and suggestions queued for the 180 real-area assets; source age reported separately."""
@@ -958,7 +1148,7 @@ def check_stale() -> dict:
 
 
 CHECKS = [check_coverage, check_geometry, check_priority, check_updates, check_tasks, check_agent, check_agent_live,
-          check_criticality, check_latency, check_stale]
+          check_criticality, check_valuation, check_latency, check_stale]
 
 LIVE_LLM_NOT_VERIFIED = (
     "Live LLM investigation: the live agent check did not run (no key, or --live not passed), so the agent check "
@@ -1022,6 +1212,10 @@ def _measured_summary(r: dict) -> str:
         return (f"{m['model']}: {m['investigations']} runs, {m['proposals']} proposals {m['by_field']}, "
                 f"{m['escalations']} escalations, {m['unsupported_proposals']} unsupported, "
                 f"{m['occupancy_from_capacity']} occupancy-from-capacity")
+    if n == "Custom valuation":
+        return (f"{m['admitted_assets']} assets of {len(m['assess_classes'])} unpriced classes; "
+                f"contact order unchanged by a confirmed figure: {m['contact_order_unchanged']}; "
+                f"expected loss {m['expected_loss']} vs damage band alone {m['damage_band_only']}")
     if n == "Latency":
         return f"median {m['median_s']:.3f} s for {m['assets']} assets (target < {m['target_s']:.0f} s); source age {m['source_age_s']:.0f} s"
     if n == "Stale data":
