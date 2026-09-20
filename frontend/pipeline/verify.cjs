@@ -17,6 +17,13 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
     });
     const errors = [],
       requests = [];
+    page.on("response", (response) => {
+      if (
+        response.status() >= 400 &&
+        /\.(woff2?|js|css)(?:\?|$)/.test(response.url())
+      )
+        errors.push(`Asset ${response.status()}: ${response.url()}`);
+    });
     page.on("pageerror", (error) => errors.push(error.message));
     page.on("request", (request) => requests.push(request.url()));
     await page.goto(base);
@@ -27,19 +34,71 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
       }),
     ).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
+    expect(
+      await page.evaluate(() =>
+        [...document.fonts]
+          .filter(
+            (font) =>
+              font.family.replaceAll('"', "") === "Public Sans" &&
+              font.status === "loaded",
+          )
+          .map((font) => font.weight)
+          .sort(),
+      ),
+    ).toEqual(["400", "600", "700"]);
+    expect(await page.locator(".slide-background").getAttribute("fill")).toBe(
+      "#15100D",
+    );
+    expect(
+      await page
+        .locator(".card-frame")
+        .evaluateAll((cards) =>
+          cards.every((card) => card.getAttribute("fill") === "#1D1714"),
+        ),
+    ).toBe(true);
+    // Every non-gradient text label clears normal-text AA contrast on its actual surface.
+    expect(
+      await page.locator(".pitch-slide text").evaluateAll((elements) => {
+        const luminance = (color) => {
+          const channels = color
+            .match(/[\d.]+/g)
+            .slice(0, 3)
+            .map(Number)
+            .map((n) => n / 255)
+            .map((n) =>
+              n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4,
+            );
+          return (
+            channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722
+          );
+        };
+        return elements
+          .filter((el) => {
+            const container =
+              el.closest(".tech-badge") || el.closest("[data-card]");
+            const surface = container
+              ? container.querySelector("rect")
+              : document.querySelector(".slide-background");
+            const fg = luminance(getComputedStyle(el).fill),
+              bg = luminance(getComputedStyle(surface).fill);
+            return (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05) < 4.5;
+          })
+          .map((el) => el.textContent);
+      }),
+    ).toEqual([]);
     const text = await page.locator(".pitch-slide text").allTextContents();
     expect(text.join(" ").trim().split(/\s+/).length).toBeLessThanOrEqual(150);
     for (const title of [
       "Assess risk & value",
       "Prioritise action",
       "Analyst’s plan",
-      "LLMs · Nebius Token Factory",
+      "Nebius Token Factory",
+      "Prioritise the shortest evacuation window.",
+      "Calls assess self-evacuation ability",
+      "and assistance needs.",
       "SLNG voice · Vonage telephony",
-      "Python planning",
-      "React + Leaflet",
       "Validated location data",
-      "(JSON)",
-      "Plans + outcomes",
+      "Plans + live updates",
       "(REST / WebSocket)",
       "Call answers + new conditions → updated priorities",
     ])
@@ -47,6 +106,10 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
     expect(text.join(" ").trim().split(/\s+/).length).toBeGreaterThanOrEqual(
       100,
     );
+    expect(text.join(" ")).not.toMatch(
+      /Python|React|Leaflet|JSON|safety buffer/,
+    );
+    await expect(page.locator(".tech-badge")).toHaveCount(2);
     // Check actual rendered bounds against each card and the full slide.
     expect(
       await page.locator(".pitch-slide text").evaluateAll((elements) =>
@@ -155,6 +218,13 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
       [path.join(exportsDir, "responsara-pipeline.pdf")],
       { encoding: "utf8" },
     );
+    const fontInfo = execFileSync(
+      "pdffonts",
+      [path.join(exportsDir, "responsara-pipeline.pdf")],
+      { encoding: "utf8" },
+    );
+    expect(fontInfo).toMatch(/PublicSans/);
+    expect(fontInfo).not.toMatch(/Helvetica|Arial|Roboto/);
     expect(info).toMatch(/Pages:\s+1\b/);
     const dimensions = info.match(/Page size:\s+([\d.]+) x ([\d.]+) pts/);
     expect(Number(dimensions[1])).toBeCloseTo(1200, 0);
@@ -168,18 +238,20 @@ const artifacts = path.resolve(__dirname, "../artifacts/pipeline");
       "Assess risk & value",
       "Prioritise action",
       "Analyst’s plan",
-      "LLMs · Nebius Token Factory",
+      "Nebius Token Factory",
+      "Prioritise the shortest evacuation window.",
+      "Calls assess self-evacuation ability",
+      "and assistance needs.",
       "SLNG voice · Vonage telephony",
-      "Python planning",
-      "React + Leaflet",
       "Validated location data",
-      "(JSON)",
-      "Plans + outcomes",
+      "Plans + live updates",
       "(REST / WebSocket)",
       "Call answers + new conditions → updated priorities",
     ])
       expect(pdfText).toContain(title);
-    expect(pdfText).not.toMatch(/PNG image|Vector PDF|schema|PR #/);
+    expect(pdfText).not.toMatch(
+      /PNG image|Vector PDF|schema|PR #|Python|React|Leaflet|JSON|safety buffer/,
+    );
     for (const name of ["PNG image", "Vector PDF"]) {
       const [download] = await Promise.all([
         page.waitForEvent("download"),

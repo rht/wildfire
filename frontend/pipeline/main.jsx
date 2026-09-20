@@ -5,11 +5,10 @@ import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
 import EnvironmentOutlined from "@ant-design/icons-svg/es/asn/EnvironmentOutlined";
 import NodeIndexOutlined from "@ant-design/icons-svg/es/asn/NodeIndexOutlined";
 import DashboardOutlined from "@ant-design/icons-svg/es/asn/DashboardOutlined";
-import { theme } from "../src/theme";
+import { theme, film } from "./theme.mjs";
 import "@fontsource/public-sans/400.css";
 import "@fontsource/public-sans/600.css";
 import "@fontsource/public-sans/700.css";
-import "@fontsource/public-sans/800.css";
 import "./pipeline.css";
 
 const colors = theme.palette;
@@ -19,9 +18,7 @@ const steps = [
     icon: EnvironmentOutlined,
     x: 80,
     width: 410,
-    badges: [
-      { x: 28, y: 110, width: 354, text: "LLMs · Nebius Token Factory" },
-    ],
+    badges: [{ x: 28, y: 110, width: 354, text: "Nebius Token Factory" }],
     blocks: [
       {
         y: 177,
@@ -52,16 +49,15 @@ const steps = [
     width: 580,
     badges: [
       { x: 110, y: 111, width: 352, text: "SLNG voice · Vonage telephony" },
-      { x: 110, y: 261, width: 176, text: "Python planning" },
     ],
     blocks: [
       { y: 133, lines: ["Calls"], label: true },
       {
         y: 173,
         lines: [
-          "Least time left first:",
-          "time until fire − evacuation time",
-          "− safety buffer",
+          "Prioritise the shortest evacuation window.",
+          "Calls assess self-evacuation ability",
+          "and assistance needs.",
         ],
       },
       { y: 283, lines: ["Crews"], label: true },
@@ -82,17 +78,17 @@ const steps = [
     icon: DashboardOutlined,
     x: 1150,
     width: 370,
-    badges: [{ x: 28, y: 110, width: 181, text: "React + Leaflet" }],
+    badges: [],
     blocks: [
       {
-        y: 177,
+        y: 135,
         lines: [
           "Where crews go.",
           "Where people evacuate.",
           "Who needs follow-up.",
         ],
       },
-      { y: 333, lines: ["Analyst reviews", "and approves."], label: true },
+      { y: 295, lines: ["Analyst reviews", "and approves."], label: true },
     ],
   },
 ];
@@ -119,24 +115,23 @@ function PitchSlide() {
       <title id="slide-title">From fire alert to coordinated response</title>
       <desc id="slide-description">
         Assessment uses LLMs on Nebius Token Factory. Validated location data
-        passes as JSON to coordination. Calls use SLNG voice and Vonage
-        telephony. Crews use deterministic Python planning. Plans and outcomes
-        reach the React and Leaflet analyst view through REST and WebSocket
-        updates. Discover nearby buildings, infrastructure and people. LLM
+        passes internally to coordination. Calls use SLNG voice and Vonage
+        telephony. Plans and live updates reach the analyst view through REST
+        and WebSocket. Discover nearby buildings, infrastructure and people. LLM
         estimates monetary value and vulnerability; sourced exposure, mobility
         and evacuation time inform urgency. Unknowns stay visible. Calls
-        prioritise the least time left: time until fire minus evacuation time
-        minus safety buffer. Crews compare short sequences, prioritising
-        assisted people, then total people, then operational value, accounting
-        for travel/help time, safe routes and capacity. Late or unsafe actions
-        need urgent review. The analyst reviews crew routes, evacuation
-        destinations and follow-up, then approves. Calls and changing fire
-        conditions update the plan.
+        prioritise the shortest evacuation window and assess self-evacuation
+        ability and assistance needs. Crews compare short sequences,
+        prioritising assisted people, then total people, then operational value,
+        accounting for travel/help time, safe routes and capacity. Late or
+        unsafe actions need urgent review. The analyst reviews crew routes,
+        evacuation destinations and follow-up, then approves. Calls and changing
+        fire conditions update the plan.
       </desc>
       <defs>
         <linearGradient id="brand-orange">
-          <stop stopColor="#e75632" />
-          <stop offset="1" stopColor="#ffb02e" />
+          <stop stopColor={film.red} />
+          <stop offset="1" stopColor={film.amber} />
         </linearGradient>
         <marker
           id="arrow"
@@ -150,16 +145,21 @@ function PitchSlide() {
           <path
             d="M1 1 9 5 1 9"
             fill="none"
-            stroke={colors.primary.main}
+            stroke={film.amber}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         </marker>
       </defs>
-      <rect width="1600" height="900" fill={colors.background.paper} />
+      <rect
+        className="slide-background"
+        width="1600"
+        height="900"
+        fill={film.bg}
+      />
       <g fontFamily="Public Sans, sans-serif" fill={colors.text.primary}>
-        <text x="80" y="72" fontSize="31" fontWeight="800" letterSpacing="-1">
+        <text x="80" y="72" fontSize="31" fontWeight="700" letterSpacing="-1">
           Respons<tspan fill="url(#brand-orange)">Ara</tspan>
         </text>
         <text
@@ -188,7 +188,7 @@ function PitchSlide() {
         <path
           d="M260 276 V307"
           fill="none"
-          stroke={colors.primary.main}
+          stroke={film.amber}
           strokeWidth="2"
           markerEnd="url(#arrow)"
         />
@@ -257,7 +257,8 @@ function PitchSlide() {
                   width={badge.width}
                   height="32"
                   rx="4"
-                  fill="#fff0e5"
+                  fill={film.bg2}
+                  stroke={film.line}
                 />
                 <text
                   x={badge.x + 12}
@@ -292,7 +293,7 @@ function PitchSlide() {
         ))}
         <g
           fill="none"
-          stroke={colors.primary.main}
+          stroke={film.amber}
           strokeWidth="2"
           markerEnd="url(#arrow)"
         >
@@ -312,26 +313,17 @@ function PitchSlide() {
           fontSize="19"
           fill={colors.text.secondary}
         >
-          <text x="625" y="248">
+          <text x="625" y="265">
             Validated location data
           </text>
-          <text x="625" y="273" fontSize="18">
-            (JSON)
-          </text>
           <text x="1178" y="248">
-            Plans + outcomes
+            Plans + live updates
           </text>
           <text x="1178" y="273" fontSize="18">
             (REST / WebSocket)
           </text>
         </g>
-        <rect
-          x="492"
-          y="828"
-          width="616"
-          height="42"
-          fill={colors.background.paper}
-        />
+        <rect x="492" y="828" width="616" height="42" fill={film.bg} />
         <text
           x="800"
           y="856"
