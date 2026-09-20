@@ -1,0 +1,168 @@
+/* Colours come from the shared theme tokens in styles.css so the form follows
+   the light and dark appearance like every other page. */
+.onboarding > * + * {
+  margin-top: 20px;
+}
+.onboarding-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.onboarding-field {
+  display: block;
+}
+.onboarding-field + .onboarding-field,
+.onboarding-field + .onboarding-problems {
+  margin-top: 20px;
+}
+.onboarding-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ui-text-secondary);
+}
+.onboarding-field input,
+.onboarding-field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid var(--ui-border);
+  border-radius: 4px;
+  background: var(--ui-paper);
+  color: var(--ui-text-primary);
+}
+.onboarding-field textarea {
+  resize: vertical;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.onboarding-field small {
+  display: block;
+  margin-top: 6px;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+.onboarding-count {
+  width: 76px;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--ui-border);
+  border-radius: 4px;
+  background: var(--ui-paper);
+  color: var(--ui-text-primary);
+}
+.onboarding-problems ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+.onboarding-problems code {
+  background: var(--ui-surface-muted);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.onboarding-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.onboarding-actions-spacer {
+  flex: 1 1 auto;
+}
+.onboarding-progress {
+  padding: 16px 20px 8px;
+  border: 1px solid var(--ui-divider);
+  border-radius: 4px;
+  background: var(--ui-paper);
+}
+.onboarding-progress .MuiLinearProgress-root {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ui-surface-muted);
+}
+.onboarding-steps {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.onboarding-step {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+.onboarding-step:hover {
+  background: var(--ui-hover);
+}
+.onboarding-step[aria-current="step"] {
+  border-color: var(--ui-accent);
+  background: var(--ui-selected);
+}
+.onboarding-step strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.onboarding-step small {
+  display: block;
+  margin-top: 2px;
+  color: var(--ui-text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.onboarding-step-mark {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-paper);
+  color: var(--ui-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+.onboarding-step.complete .onboarding-step-mark {
+  border-color: var(--ui-success);
+  background: var(--ui-success-bg);
+  color: var(--ui-success);
+}
+.onboarding-step.invalid .onboarding-step-mark {
+  border-color: var(--ui-error);
+  background: var(--ui-error-bg);
+  color: var(--ui-error);
+}
+.onboarding-step[aria-current="step"] .onboarding-step-mark {
+  border-color: var(--ui-accent);
+  color: var(--ui-accent);
+}
+.onboarding-blocking {
+  margin-bottom: 20px;
+}
+.onboarding-blocking ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+.onboarding-jump {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-accent);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}

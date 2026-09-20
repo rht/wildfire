@@ -4,6 +4,44 @@ Track 4, "Values at risk": Norrsken x Deepfire "AI for Wildfire" challenge, Hack
 
 **One incident, one bounded area, one analyst workflow:** identify priority locations, assign follow-up tasks, and update the queue as the fire changes.
 
+## Try the demo
+
+**<https://fruits-computed-tub-parker.trycloudflare.com/>** — sign in with the access
+token from the coordinator. The link is a Cloudflare quick tunnel to a laptop: it only
+answers while that machine and process are running, and it gets a new address every time
+the tunnel restarts. Ask for the current one if it does not load.
+
+You land on the dashboard as it is configured — the connected coordination state, or the
+design demo from the data-source selector at the top right.
+
+**To run it on a jurisdiction of your own, open `#/onboarding`** (append it to the URL, or
+use the "Demo onboarding" link in the page footer). It is not in the sidebar: it is a demo
+tool, not part of the analyst workflow. A five-step form builds a whole dashboard from what
+you enter, and you then work that dashboard as if it were live:
+
+1. **Jurisdiction** — the fire department's name, and the fire station's GPS pair.
+2. **Fires** — one `latitude, longitude` per line, inside Catalonia. **The number of pairs
+   is the number of fires.** Anything outside the region or unreadable is listed as ignored
+   rather than silently dropped.
+3. **Call list** — the phone numbers the voice agent would work through, one per line.
+   Starts empty; at least one is required. Numbers are spread across the fires and each
+   becomes one contactable location; locations left without a number are flagged for human
+   follow-up instead of being called.
+4. **Resources** — how many ground crews and fire engines the jurisdiction has, each
+   starting either at the fire station or placed randomly across the territory.
+5. **Start demo** — opens the dashboard on everything that was generated: fire perimeters,
+   located buildings with occupancy and value at risk, a ranked call queue, agent call
+   outcomes, people groups, resource positions and proposed crew plans with deadlines.
+
+Next will not move past a step that is missing something; it says what is missing in place,
+and Back keeps whatever you already typed.
+
+Everything the demo generates is **simulated** — no number is dialled, no resource is
+dispatched, and nothing is written to the backend. The configuration lives in that browser
+tab only: **End demo** on the onboarding page, or closing the tab, returns the dashboard to
+its configured data source. Crew-plan confirmations are disabled while a demo is running,
+because generated data has no backend record to confirm against.
+
 This README is the current MVP scope and interface reference. Maintain project updates here; it supersedes the broader scope in `PLAN.md`.
 
 The colleague builds **risk assessment**, which consumes fire updates, discovers facilities and emits location assessments. [@mirrdj](https://github.com/mirrdj) builds **analyst coordination**, which ranks those assessments and turns them into tasks, assignments and questions for the fire analyst. The shared contract is in section 5.
@@ -3637,3 +3675,103 @@ saved modes, keyboard toggling, storage failure, readable text contrast, preserv
 map/draft state and tablet containment. Desktop and tablet screenshots and an
 independent code review found no blockers. These are Chrome checks; physical
 Safari/iPad testing remains outstanding.
+The incident Firefighter plan page uses a Crew selector and renders one crew's map
+and visit table at a time. The selected crew's saved approved order is shown, and
+Review & confirm opens its full-screen review. Selection is scoped to the incident;
+if a selected crew disappears, the view falls back to an available crew. Blockers
+and uncovered locations remain incident-wide. Verified with 69 Node tests,
+lint/format/build, the crew-order browser regression (single map, crew/incident
+switching, saved approval, reorder and mobile checks), screenshot inspection and
+independent code review.
+## Demo onboarding — session-generated dashboard (claude/demo-onboarding, 2026-09-20)
+
+`/onboarding` (hash route `#/onboarding`) builds a whole dashboard from a short form,
+so the product can be demonstrated on any jurisdiction without a backend, a register
+or a roster. It is deliberately **not** a navigation item: the sidebar is unchanged,
+and the page is reached by address, by the quiet footer link, or from the banner shown
+while session data is in use. Everything it produces lives in `frontend/src/onboarding/`
+(`config.mjs` parsing and validation, `generate.mjs` data generation, `session.js`
+session storage, `Onboarding.jsx` the form, `onboarding.css` its styles).
+
+The form is a five-step wizard — Jurisdiction, Fires, Call list, Crews, Start demo —
+one section per step, Back and Next, and a single progress bar with the step list above
+it. Next validates the step it is on: if something is missing it names it in place and
+stays put rather than advancing, while parse problems (a pair outside Catalonia, an
+unreadable number) are always listed line by line with the offending text. Completed
+steps are marked, and any step can be revisited from the progress list without losing
+what was entered. Validation that spans steps — station coordinates are required only
+when a resource type starts there — is reported on the step that can fix it.
+
+The call list and the resource roster start empty: nothing is generated from numbers or
+resource types nobody entered, and neither step can be left until at least one number and
+at least one resource are supplied. The final step only starts the demo — one line confirming
+what will be simulated, and the button. It does not preview the dashboard; the point is
+to run the response, not to read a summary of it. Starting opens the dashboard on the
+described jurisdiction to be worked as if it were live; ending the demo returns it to
+its configured data source.
+
+The wizard collects five inputs:
+
+- **Fire department name** — recorded as the source of every resource record.
+- **Fire GPS pairs, one per line** — the number of accepted pairs is the number of
+  fires. Pairs outside an approximate Catalonia bounding box (40.5–42.9 N, 0.15–3.35 E)
+  and unparseable lines are listed as ignored rather than silently dropped. Each fire is
+  placed at exactly the supplied point and labelled with the nearest town from a short
+  built-in list; that label is presentation only, not a gazetteer or boundary lookup.
+- **Phone numbers, one per line** — the voice agent's call list. Numbers are spread
+  evenly across the fires and each becomes one contactable location. A fire with fewer
+  numbers than locations leaves the rest in the review queue with `no_contact_number`.
+- **Resources per type** — a count for each of the two types the Resources page already
+  shows, ground crew and fire engine, each with a starting location: at the fire station,
+  or randomly across the territory. The territory is the envelope covering the supplied
+  fires and station, widened by about 13 km and clipped to the Catalonia box. Resources
+  are shared across the fires in turn; station coordinates are required only when a type
+  starts there. Their capability tags come from the roster contract (section 5:
+  `occupancy_check`, `facility_contact`, `access_check`, `transport`, plus
+  `assisted_evacuation` from the allocation model), so a generated task never asks for a
+  capability the system does not model — this project plans coordination work, not
+  suppression, and no suppression or aerial unit is offered. A location that reported
+  needing assistance is only given to a resource carrying `assisted_evacuation`; when
+  none is free it stays in `unserved` with that reason rather than being mis-tasked.
+- **Fire station GPS** — where station-placed resources start.
+
+Generation is deterministic: the same configuration always produces the same dashboard,
+seeded from a hash of the configuration itself. It emits ordinary `coordination-state-1`
+incidents, so every existing view works unchanged — perimeter geometry, located assets
+with occupancy, replacement value, expected-loss bands, burn probability and risk score,
+a ranked contact queue with evacuation windows, agent call records (assisted-evacuation
+request, self-evacuation with confirmed departure, a no-answer, and the rest queued),
+people groups, resource rosters with positions, proposed multi-crew plans with routes and
+deadlines, unserved reasons, and an event log. Deadlines and remaining windows both
+derive from one illustrative spread rate applied to the supplied fire point, so crew
+margins and contact slack stay consistent with each other.
+
+The configuration is held in `sessionStorage` only (`responsara.onboarding.v1`); it
+never reaches the backend, ends with the browser tab, and is validated on read so a
+stale or corrupt entry falls back rather than breaking the dashboard. **Without a stored
+configuration the dashboard behaves exactly as before** — the connected API, or the
+design demo. With one, it takes over until the analyst picks another source from the
+data-source selector, which gains a third "Session onboarding" option while the
+configuration exists. Crew confirmations are disabled for generated data and say so:
+there is no backend record to confirm against, and no approval request is sent.
+
+Every surface states what it is. The page, the mode banner and the footer mark the data
+as synthetic; no call is placed and no resource is dispatched. A "Number" column was added to
+the call queue, and the number on file to the call detail dialog, so the supplied call
+list is visible where the agent would work it; both read "Not supplied" for backend data
+that carries no number.
+
+Verification: 82 Node tests passed (13 new onboarding tests covering coordinate and
+number parsing, required-input reporting, configuration round-trips, one incident per
+pair, determinism, number distribution, resource counts per type, capability-matched
+tasking, and placement inside the station radius or the envelope, and the generated state driving `callRows`, `metrics`,
+`evacuationTotals` and `responseTeams`). Lint, Prettier and the production build passed.
+Ten Chrome regression scripts passed, including a new `onboarding_browser.cjs` that
+checks the page is absent from the navigation, walks all five steps with the progress bar
+advancing, confirms an empty call list, an empty resource roster and a coordinate outside
+Catalonia each report their error and refuse to advance, that Back and Next preserve
+entered values, that the final step previews no dashboard, starts the demo, verifies
+incident, resource and call-queue counts, and confirms the session survives a reload and that
+ending the demo returns the dashboard to its configured source. Screenshots of the
+form, overview, resources and call queue were inspected. Backend source files are
+unchanged.

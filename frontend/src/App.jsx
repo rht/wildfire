@@ -25,6 +25,12 @@ import { Overview, Incidents } from "./pages/Overview";
 import Buildings from "./pages/Buildings";
 import ActivityLog from "./pages/ActivityLog";
 import { Calls, ResponsePlan, Evacuation, Resources } from "./pages/Operations";
+import Onboarding from "./onboarding/Onboarding";
+import {
+  useOnboarding,
+  saveOnboarding,
+  clearOnboarding,
+} from "./onboarding/session";
 import { Empty, MainCard, Status } from "./components/Common";
 const nav = [
   ["/overview", "Overview", DashboardOutlined],
@@ -119,22 +125,49 @@ function LegacyIncidentRoute() {
   );
 }
 export default function App() {
-  const [demo, setDemo] = useState(
-      () => new URLSearchParams(window.location.search).get("demo") === "1",
+  const onboarding = useOnboarding();
+  // A session configuration takes over until the analyst picks a source explicitly.
+  const [chosen, setChosen] = useState(() =>
+    new URLSearchParams(window.location.search).get("demo") === "1"
+      ? "design_demo"
+      : null,
+  );
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const source =
+    chosen === "onboarding" && !onboarding
+      ? "connected"
+      : (chosen ?? (onboarding ? "onboarding" : "connected"));
+  const demo = source !== "connected";
+  const { incidents: latestIncidents, status } = useDashboard(
+      source,
+      onboarding,
     ),
-    [mobileOpen, setMobileOpen] = useState(false);
-  const { incidents: latestIncidents, status } = useDashboard(demo),
     navigate = useNavigate();
-  const timeline = useTimeline(latestIncidents, demo);
+  const location = useLocation();
+  // The onboarding form describes a source rather than reporting on one.
+  const onboardingPage = location.pathname === "/onboarding";
+  const timeline = useTimeline(latestIncidents, source);
   const incidents = timeline.incidents;
+  // The selector keeps its published values; "demo" stays the design demo.
   const changeSource = (value) => {
-    const next = value === "demo";
-    setDemo(next);
+    const next = value === "demo" ? "design_demo" : value;
+    setChosen(next);
     const url = new URL(window.location.href);
-    if (next) url.searchParams.set("demo", "1");
+    if (next === "design_demo") url.searchParams.set("demo", "1");
     else url.searchParams.delete("demo");
     window.history.replaceState(null, "", url);
     navigate("/overview");
+  };
+  const applyOnboarding = (config) => {
+    saveOnboarding(config);
+    setChosen("onboarding");
+    const url = new URL(window.location.href);
+    url.searchParams.delete("demo");
+    window.history.replaceState(null, "", url);
+  };
+  const resetOnboarding = () => {
+    clearOnboarding();
+    setChosen(null);
   };
   const sidebar = (
     <div className="sidebar-content">
@@ -168,10 +201,11 @@ export default function App() {
   );
   return (
     <ApprovalProvider
-      key={demo ? "design_demo" : "connected"}
-      source={demo ? "design_demo" : "connected"}
+      key={source}
+      source={source}
       incidents={incidents}
       readOnly={timeline.historical}
+      offline={source === "onboarding"}
     >
       <div className="app-shell">
         <aside className="desktop-sidebar">{sidebar}</aside>
@@ -214,28 +248,40 @@ export default function App() {
                 className={`connection ${status.connection === "connected" ? "ok" : ""}`}
               >
                 <i />
-                {status.connection === "connected"
-                  ? "Connected"
-                  : demo
-                    ? "Design demo"
-                    : status.connection === "connecting"
-                      ? "Connecting"
-                      : "Reconnecting"}
+                {source === "onboarding"
+                  ? "Session demo"
+                  : status.connection === "connected"
+                    ? "Connected"
+                    : demo
+                      ? "Design demo"
+                      : status.connection === "connecting"
+                        ? "Connecting"
+                        : "Reconnecting"}
               </span>
               <select
                 aria-label="Data source"
-                value={demo ? "demo" : "connected"}
+                value={source === "design_demo" ? "demo" : source}
                 onChange={(e) => changeSource(e.target.value)}
               >
                 <option value="connected">Connected backend</option>
                 <option value="demo">Design demo</option>
+                {onboarding && (
+                  <option value="onboarding">Session onboarding</option>
+                )}
               </select>
               <span className="avatar">RA</span>
             </div>
           </header>
-          <main key={demo ? "demo" : "connected"}>
-            <TimelineControls timeline={timeline} />
-            {demo ? (
+          <main key={source}>
+            {!onboardingPage && <TimelineControls timeline={timeline} />}
+            {onboardingPage ? null : source === "onboarding" ? (
+              <Alert severity="info" className="mode-banner">
+                Session demo · Built from the onboarding form for this browser
+                session. Synthetic locations, calls, crews and plans; nothing is
+                dispatched or called.{" "}
+                <Link to="/onboarding">Edit the session configuration</Link>
+              </Alert>
+            ) : demo ? (
               <Alert severity="info" className="mode-banner">
                 Design demo · Illustrative incidents, calls, deployments and
                 people. Confirmations here apply only to this demo.
@@ -246,69 +292,97 @@ export default function App() {
                 calls or deployments.
               </Alert>
             ) : null}
-            {!demo && status.stale && (
+            {!demo && !onboardingPage && status.stale && (
               <Alert severity="warning">
                 Source is stale or unavailable. Last supplied data remains
                 visible; check assessment times.
               </Alert>
             )}
-            {!demo && status.errors > 0 && (
+            {!demo && !onboardingPage && status.errors > 0 && (
               <Alert severity="error">
                 The coordination source reported errors. Some information may be
                 incomplete.
               </Alert>
             )}
-            {!demo && !incidents.length ? (
-              <MainCard>
-                <Empty title="Waiting for coordination data">
-                  Connect the read-only dashboard API to view current incidents.
-                  You can explore the separate Design demo using the data-source
-                  selector.
-                </Empty>
-              </MainCard>
-            ) : (
-              <Routes>
-                <Route path="/active-fires" element={<LegacyIncidentRoute />} />
+            <Routes>
+              <Route
+                path="/onboarding"
+                element={
+                  <Onboarding
+                    config={onboarding}
+                    onSave={applyOnboarding}
+                    onClear={resetOnboarding}
+                  />
+                }
+              />
+              {!demo && !incidents.length ? (
                 <Route
-                  path="/active-fires/:id/:page"
-                  element={<LegacyIncidentRoute />}
+                  path="*"
+                  element={
+                    <MainCard>
+                      <Empty title="Waiting for coordination data">
+                        Connect the read-only dashboard API to view current
+                        incidents. You can explore the separate Design demo
+                        using the data-source selector, or build a session demo
+                        from <Link to="/onboarding">demo onboarding</Link>.
+                      </Empty>
+                    </MainCard>
+                  }
                 />
-                <Route
-                  path="/overview"
-                  element={<Overview incidents={incidents} />}
-                />
-                <Route
-                  path="/incidents"
-                  element={<Incidents incidents={incidents} />}
-                />
-                <Route
-                  path="/incidents/:id/:page"
-                  element={<IncidentPage incidents={incidents} demo={demo} />}
-                />
-                <Route
-                  path="/buildings"
-                  element={<Buildings incidents={incidents} />}
-                />
-                <Route
-                  path="/resources"
-                  element={<Resources incidents={incidents} />}
-                />
-                <Route
-                  path="/people"
-                  element={<Evacuation incidents={incidents} />}
-                />
-                <Route
-                  path="/log"
-                  element={<ActivityLog incidents={incidents} demo={demo} />}
-                />
-                <Route path="*" element={<Navigate to="/overview" replace />} />
-              </Routes>
-            )}
+              ) : (
+                <>
+                  <Route
+                    path="/active-fires"
+                    element={<LegacyIncidentRoute />}
+                  />
+                  <Route
+                    path="/active-fires/:id/:page"
+                    element={<LegacyIncidentRoute />}
+                  />
+                  <Route
+                    path="/overview"
+                    element={<Overview incidents={incidents} />}
+                  />
+                  <Route
+                    path="/incidents"
+                    element={<Incidents incidents={incidents} />}
+                  />
+                  <Route
+                    path="/incidents/:id/:page"
+                    element={<IncidentPage incidents={incidents} demo={demo} />}
+                  />
+                  <Route
+                    path="/buildings"
+                    element={<Buildings incidents={incidents} />}
+                  />
+                  <Route
+                    path="/resources"
+                    element={<Resources incidents={incidents} />}
+                  />
+                  <Route
+                    path="/people"
+                    element={<Evacuation incidents={incidents} />}
+                  />
+                  <Route
+                    path="/log"
+                    element={<ActivityLog incidents={incidents} demo={demo} />}
+                  />
+                  <Route
+                    path="*"
+                    element={<Navigate to="/overview" replace />}
+                  />
+                </>
+              )}
+            </Routes>
             <footer className="page-footer">
               <span>ResponsAra · Analyst coordination</span>
               <span>
-                {demo ? "Illustrative scenario" : "Source: coordination state"}{" "}
-                · Plan review
+                {source === "onboarding"
+                  ? "Source: session onboarding"
+                  : demo
+                    ? "Illustrative scenario"
+                    : "Source: coordination state"}{" "}
+                · Plan review · <Link to="/onboarding">Demo onboarding</Link>
               </span>
             </footer>
           </main>

@@ -2,7 +2,9 @@ import { useEffect, useState, useMemo } from "react";
 import { DashboardClient } from "./transport.mjs";
 import { toIncident } from "./model.mjs";
 import { demoIncidents } from "./demo.mjs";
-export function useDashboard(demo) {
+import { onboardingIncidents } from "../onboarding/generate.mjs";
+// source: connected (live API) | design_demo (shipped scenario) | onboarding (this session's form).
+export function useDashboard(source, onboarding) {
   const [live, setLive] = useState(null),
     [status, setStatus] = useState({
       connection: "connecting",
@@ -10,7 +12,7 @@ export function useDashboard(demo) {
       errors: 0,
     });
   useEffect(() => {
-    if (demo) return;
+    if (source !== "connected") return;
     const events = new Map();
     let sequence = 0;
     const client = new DashboardClient({
@@ -49,13 +51,22 @@ export function useDashboard(demo) {
     });
     client.start();
     return () => client.stop();
-  }, [demo]);
-  const incidents = useMemo(
-    () => (demo ? demoIncidents : live ? [live] : []),
-    [demo, live],
-  );
+  }, [source]);
+  const incidents = useMemo(() => {
+    if (source === "onboarding")
+      return onboarding ? onboardingIncidents(onboarding) : [];
+    if (source === "design_demo") return demoIncidents;
+    return live ? [live] : [];
+  }, [source, onboarding, live]);
   return {
     incidents,
-    status: demo ? { connection: "demo", stale: false, errors: 0 } : status,
+    status:
+      source === "connected"
+        ? status
+        : {
+            connection: source === "onboarding" ? "session" : "demo",
+            stale: false,
+            errors: 0,
+          },
   };
 }

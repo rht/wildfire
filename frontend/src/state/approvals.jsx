@@ -50,11 +50,16 @@ async function responseData(response, expected) {
   return data;
 }
 
+// Generated session data has no backend record to confirm a crew plan against.
+const OFFLINE =
+  "Crew confirmations are unavailable for generated onboarding data. Switch to the connected backend to record one.";
+
 export function ApprovalProvider({
   incidents,
   source,
   children,
   readOnly = false,
+  offline = false,
 }) {
   const [entries, setEntries] = useState({});
   const [saving, setSaving] = useState({});
@@ -67,7 +72,7 @@ export function ApprovalProvider({
   const sequence = useRef(0);
 
   async function load(incident) {
-    if (readOnly) return;
+    if (readOnly || offline) return;
     const key = contextKey(incident),
       serial = (requests.current.get(key) || 0) + 1;
     requests.current.set(key, serial);
@@ -115,16 +120,17 @@ export function ApprovalProvider({
     };
   }, []);
   useEffect(() => {
-    if (readOnly) return;
+    if (readOnly || offline) return;
     for (const incident of incidents) void load(incident);
     const timer = setInterval(() => {
       for (const incident of current.current) void load(incident);
     }, 5000);
     return () => clearInterval(timer);
-  }, [incidents, source, readOnly]);
+  }, [incidents, source, readOnly, offline]);
 
   function info(incident, teamId) {
     if (readOnly) return { phase: "historical", saving: false };
+    if (offline) return { phase: "error", error: OFFLINE, saving: false };
     const entry = entries[contextKey(incident)] || { phase: "loading" };
     const plan = entry.data?.plans.find((p) => p.team_id === teamId);
     return {
@@ -176,6 +182,7 @@ export function ApprovalProvider({
   async function confirm(incident, teamId, reviewedVersion, review = null) {
     if (readOnly)
       throw new Error("Return to current state before confirming a plan.");
+    if (offline) throw new Error(OFFLINE);
     const key = contextKey(incident),
       saveKey = `${key}:${teamId}`;
     const entry = info(incident, teamId);
@@ -272,7 +279,7 @@ export function ApprovalProvider({
         (event) => event.incident_id === incident.id,
       ),
     }));
-  }, [incidents, entries, source, readOnly]);
+  }, [incidents, entries, source, readOnly, offline]);
 
   return (
     <ApprovalContext.Provider
