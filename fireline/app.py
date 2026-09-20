@@ -752,19 +752,25 @@ def select_asset(asset_id: str | None) -> None:
 
 
 def render_header(sess: Session, s: dict) -> None:
-    """The header bar on the dark shell: the approve-all preview switch and the sequence's forward
-    control sit at its right, the preview first so the forward control stays the rightmost button."""
-    head, preview, action = st.columns([0.70, 0.16, 0.14], vertical_alignment="center")
+    """The header bar on the dark shell: the approve-all preview switch and both sequence controls sit
+    at its right, in reading order - the preview, then back, then forward, so Next stays rightmost."""
+    head, preview, back, action = st.columns([0.58, 0.16, 0.12, 0.14], vertical_alignment="center")
     head.html(ui_theme.header_html(
         product="Respons'Ara", tagline=TAGLINE, mode=s["input_mode"] or "unknown",
         status=s["data_status_now"] or "unknown", status_tone=STATUS_COLOUR.get(s["data_status_now"], "grey"),
         as_of=stamp(s["as_of"]), computed_at=stamp(s["computed_at"])))
     with preview.container(key="ra-approve"):
         render_approve_all_toggle(sess)
+    with back.container(key="ra-prev"):
+        if st.button("← Previous", width="stretch", disabled=not sess.has_previous, key="ra-prev-btn",
+                     help="Step back to the previous snapshot of this scenario as a view; the store stays "
+                          "where it is (the sidebar has the time-travel slider)."):
+            sess.previous_update()
+            st.rerun()
     with action.container(key="ra-next"):
         if st.button("Next update →", width="stretch", disabled=not sess.has_next, key="ra-next-btn",
-                     help="Apply the next snapshot of this scenario (the sidebar has Previous and the "
-                          "time-travel slider)."):
+                     help="Apply the next snapshot of this scenario (the sidebar has the time-travel "
+                          "slider)."):
             sess.next_update()
             st.rerun()
 

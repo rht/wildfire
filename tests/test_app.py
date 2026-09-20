@@ -84,6 +84,29 @@ def test_sequence_controls_step_back_to_an_earlier_snapshot_without_rewinding_th
     assert not at.warning
 
 
+def test_the_header_carries_the_same_step_pair_as_the_sidebar(tmp_path, monkeypatch):
+    """The page header holds Previous beside Next update: dead on the first snapshot, and after a
+    forward step it takes the session back to the earlier moment. The sidebar pair is untouched."""
+    from streamlit.testing.v1 import AppTest
+
+    monkeypatch.setenv("FIRELINE_DB", str(tmp_path / "header.sqlite"))
+    at = AppTest.from_file(str(APP), default_timeout=180).run()
+    assert not at.exception
+    assert at.button(key="ra-prev-btn").label == "← Previous"
+    assert at.button(key="ra-prev-btn").disabled            # sequence 1: nowhere to step back to
+    assert not at.button(key="ra-next-btn").disabled
+    first, second = at.sidebar.select_slider[0].options[:2]
+
+    at = at.button(key="ra-next-btn").click().run()          # forward, from the header
+    assert not at.exception and at.sidebar.select_slider[0].value == second
+    assert not at.button(key="ra-prev-btn").disabled
+
+    at = at.button(key="ra-prev-btn").click().run()          # back, from the header
+    assert not at.exception and at.sidebar.select_slider[0].value == first
+    assert any("store stays at 2" in w.value for w in at.warning)   # an earlier moment, view only
+    assert [b.label for b in at.sidebar.button[:2]] == ["Previous", "Next update"]
+
+
 # --------------------------------------------------------------- dashboard display helpers
 def test_window_segments_are_the_window_components_not_a_new_score():
     """The ranked row's bar re-draws the snapshot's own arithmetic: evacuation + buffer + window."""

@@ -284,6 +284,7 @@ def fake_page(monkeypatch):
 
 class HeaderSession(StubSession):
     has_next = True
+    has_previous = True
 
 
 STATUS = {"input_mode": "snapshot", "data_status_now": "current", "as_of": "2026-07-03T13:20:00+00:00",
@@ -298,12 +299,15 @@ def test_the_header_renders_the_toggle_between_the_title_and_the_forward_control
     render_header(sess, STATUS)
     log, keys = fake_page["log"], [row[1] for row in fake_page["log"] if row[0] == "enter"]
     assert fake_page["toggled"] == [sess]                  # rendered exactly once, by the header
-    assert keys == ["ra-approve", "ra-next"]               # the preview first, the forward control last
+    assert keys == ["ra-approve", "ra-prev", "ra-next"]    # preview, back, then the forward control last
     spec = next(row for row in log if row[0] == "columns")
-    assert len(spec[1]) == 3 and spec[2] == "center"       # title, preview, forward control
-    assert spec[1] == (0.70, 0.16, 0.14) and sum(spec[1]) == pytest.approx(1.0)
+    assert len(spec[1]) == 4 and spec[2] == "center"       # title, preview, back, forward control
+    assert spec[1] == (0.58, 0.16, 0.12, 0.14) and sum(spec[1]) == pytest.approx(1.0)
+    assert spec[1][0] > sum(spec[1][1:])                   # the title keeps most of the header
+    assert ("button", "\u2190 Previous", "ra-prev-btn") in log
     assert ("button", "Next update \u2192", "ra-next-btn") in log
-    assert log.index(("enter", "ra-approve")) < log.index(("enter", "ra-next"))
+    assert log.index(("enter", "ra-approve")) < log.index(("enter", "ra-prev")) \
+        < log.index(("enter", "ra-next"))
 
 
 def test_the_ranked_card_no_longer_hosts_the_toggle_and_keeps_its_heading_row(fake_page):

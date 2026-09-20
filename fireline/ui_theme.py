@@ -146,9 +146,11 @@ CSS = f"""
   border-color: #C33A2C; }}
 [data-testid="stMain"] .stButton > button[kind="primary"]:hover {{ background: #AC3125; color: #FFF7F4; }}
 [data-testid="stMain"] .stButton > button:disabled {{ opacity: .45; box-shadow: none; }}
-[class*="st-key-ra-next"] .stButton > button, [class*="st-key-ra-next"] > button {{
-  background: #1C5C3E; color: #EAF6EF; border-color: #1C5C3E; }}
-[class*="st-key-ra-next"] .stButton > button:hover {{ background: #16704A; color: #EAF6EF; }}
+[class*="st-key-ra-next"] .stButton > button, [class*="st-key-ra-next"] > button,
+[class*="st-key-ra-prev"] .stButton > button, [class*="st-key-ra-prev"] > button {{
+  background: #1C5C3E; color: #EAF6EF; border-color: #1C5C3E; white-space: nowrap; }}
+[class*="st-key-ra-next"] .stButton > button:hover,
+[class*="st-key-ra-prev"] .stButton > button:hover {{ background: #16704A; color: #EAF6EF; }}
 
 /* ---- the approve-all preview switch, on the dark shell beside it -------------- */
 [class*="st-key-ra-approve"] [data-testid="stWidgetLabel"] p,
