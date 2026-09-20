@@ -334,9 +334,9 @@ def test_fire_requests_wait_for_running_tick_before_mutating_incident(tmp_path):
             assert release_tick.wait(2)
             return super().tick()
 
-        def trigger(self, value):
+        def activate_trigger(self, value):
             trigger_entered.set()
-            return super().trigger(value)
+            return super().activate_trigger(value)
 
     r = ObservedRuntime(tmp_path, settings())
     server = importlib.import_module("fireline.incident_server").create_app(

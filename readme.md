@@ -3351,3 +3351,93 @@ Safari check. Backend source files and existing preview processes remain unchang
 
 The separate tmux session `wildfire-time-travel` implemented the saved simulation
 stages in this UI worktree and remains available (`tmux attach -t wildfire-time-travel`).
+
+### Per-location LLM assessment in the fire-trigger pipeline
+
+`IncidentRuntime` now assesses **every discovered location** with the LLM before
+activating its snapshot for contact ranking and crew planning. This is separate
+from the workbench investigator that creates pending analyst proposals. The new
+stage estimates operational importance, replacement value and conditional damage
+fractions, contextual vulnerability, possible mobility concerns and, where the
+required evidence exists, a missing evacuation duration.
+
+Configure the incident service settings:
+
+```json
+{
+  "llm_assessment": {
+    "mode": "live",
+    "concurrency": 2,
+    "min_confidence": 0.7
+  }
+}
+```
+
+Live incidents default to this configuration. Recorded and synthetic incidents
+retain `mode: "disabled"` unless explicitly configured. `mode: "fake"` is an
+explicit synthetic-only test option that produces unknown estimates for review.
+The existing environment loader selects Nebius (`NEBIUS_API_KEY`) first, otherwise
+Anthropic (`ANTHROPIC_API_KEY`), using `FIRELINE_MODEL` when set. Missing credentials
+never silently select a fake model. No phone numbers or private interview records
+are included in model inputs. The model assesses supplied evidence; it does not
+browse the web or retrieve additional facility records during this stage.
+
+Each asset gains an optional `llm_assessment` record: policy, model, mode,
+snapshot/asset identifiers, status and a structured assessment with confidence,
+reasoning, assumptions, evidence-field references, value score, replacement value,
+damage fractions, risk score, mobility concern and evacuation-duration estimate.
+Statuses are `assessed`, `needs_review`, `failed` or `unavailable`. The record and
+redacted explanation survive the public REST/WebSocket projection; fixed activity
+events report completion status per location. Raw provider errors are withheld.
+
+Accepted estimates above the configured confidence threshold populate the existing
+`value_score` and `replacement_value_eur` fields. Expected monetary loss is computed
+in code as supplied burn probability × model-estimated damage fraction × estimated
+replacement value. The crew planner consumes `value_score`; monetary loss remains
+a displayed estimate, not a new crew-ranking objective. `risk_score` is labelled
+**LLM vulnerability estimate**, not a calibrated fire probability. Fire arrival,
+burn probability, actual headcounts and confirmed assistance remain source-owned.
+A model mobility concern never establishes a confirmed assisted-person count.
+
+A missing evacuation duration may be estimated only with known occupancy and a
+snapshot-matched, confirmed timed evacuation route; it cannot be shorter than the
+longest supplied candidate route travel time. Existing operational durations are
+preserved, including totals supplied on confirmed routes (the conservative maximum
+when several candidate routes are supplied). The resulting duration enters the existing evacuation-window contact
+ranking, with the configured buffer unchanged. Unknown or low-confidence data
+remains reviewable; a self-reported model confidence is not a calibration guarantee.
+Failed/low-confidence assessments retain the original sourced/policy fields and
+carry an explicit review reason, so their fallback values are not labelled as
+successful LLM estimates.
+
+Model calls run with bounded concurrency (1–8), outside the incident mutation
+lock, so existing voice callbacks and ticks can continue. A separate fire lock
+serializes fire preparations; activation rejects a prepared snapshot if the active
+incident changed. The HTTP fire request waits for the batch; the CLI now accepts
+`--timeout SECONDS` (default 600). A client timeout does not prove the server stopped;
+retry the same trigger ID and identical payload. The old active snapshot remains
+visible until the new assessment is validated and activated. Results are cached
+locally in `llm_assessments.sqlite` by exact inputs, policy, configuration and model;
+failed results are not automatically retried in a loop. New inputs/model settings
+produce a new assessment key. No new dispatch authority or analyst approval action
+is introduced.
+
+Implementation sequence completed: strict assessor and replay tests; both-planner
+integration tests; callback-concurrency/stale-activation checks; Nebius plain-JSON
+request regression. Live testing used three public Gencat facilities near 42° N,
+3° E, without triggering calls. Nebius responded after its empty-tools request
+compatibility issue was fixed. Two responses validated but had low confidence
+(0.35 and 0.30); one response was rejected. A separate check of that location
+returned a valid response with confidence 0.35. These are evidence of provider
+connectivity and uncertainty handling, not validation of valuation accuracy.
+
+Crew-plan UI, manual reordering/approval and protection/assistance benefit changes
+remain owned by their separate session. This branch changes only their input data.
+
+Final verification for this integration: **1,152 Python tests passed, one skipped**,
+with the existing Starlette/AnyIO deprecation warning. New-module and runtime/server
+Ruff checks passed. Independent review found and verified fixes for preserving
+operational route evacuation totals and the established meaning of null forecast
+quantiles; the focused assessment suite has 14 passing tests. No real calls or
+crew dispatch were performed. The previously committed Norma report is unchanged
+and does not claim to scan this new branch.

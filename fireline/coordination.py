@@ -52,7 +52,7 @@ def _public(value):
 def _public_assets(assets):
     public = []
     for asset in assets:
-        row = {k: asset[k] for k in ASSET_KEYS + VALUE_AT_RISK_KEYS if k in asset}
+        row = {k: asset[k] for k in ASSET_KEYS + VALUE_AT_RISK_KEYS + ('llm_assessment', 'risk_score', 'risk_label') if k in asset}
         row['sources'] = [{k: source.get(k) for k in SOURCE_KEYS}
                           for source in asset['sources']]
         public.append(row)
