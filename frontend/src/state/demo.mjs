@@ -58,6 +58,7 @@ export const demoIncidents = specs.map((s, index) => {
     latitude: s.centre[0] + [0.013, -0.014, 0.004, -0.022][n],
     longitude: s.centre[1] + [-0.018, 0.025, 0.04, -0.028][n],
     estimated_occupancy: s.people[n],
+    distance_to_fire_m: [420, 860, 1280, null][n],
     occupancy_basis: "Illustrative population estimate",
     replacement_value_eur: [3200000, 2100000, 480000, 720000][n],
     replacement_value_basis: "Illustrative replacement cost, not an appraisal",

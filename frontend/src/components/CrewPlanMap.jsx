@@ -4,9 +4,11 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { crewMapData } from "../state/crew-map.mjs";
 import { gps, stamp } from "../state/model.mjs";
+import MapFrame from "./MapFrame";
 
 export default function CrewPlanMap({ team, assets, name }) {
   const host = useRef(null);
+  const mapRef = useRef(null);
   const data = useMemo(() => crewMapData(team, assets), [team, assets]);
   const hasPosition = data.current || data.stops.some((stop) => stop.position);
   useEffect(() => {
@@ -15,7 +17,10 @@ export default function CrewPlanMap({ team, assets, name }) {
       scrollWheelZoom: false,
       zoomAnimation: false,
       fadeAnimation: false,
+      zoomControl: false,
+      attributionControl: false,
     });
+    mapRef.current = map;
     L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       { attribution: "Esri World Imagery · reference basemap", maxZoom: 18 },
@@ -89,6 +94,7 @@ export default function CrewPlanMap({ team, assets, name }) {
     return () => {
       observer.disconnect();
       map.remove();
+      mapRef.current = null;
     };
   }, [data, name]);
   const missingPaths = data.stops
@@ -103,11 +109,13 @@ export default function CrewPlanMap({ team, assets, name }) {
         Planned route
       </Typography>
       {hasPosition ? (
-        <div
-          ref={host}
-          className="crew-route-map"
-          aria-label={`Plan map for ${name}`}
-        />
+        <MapFrame mapRef={mapRef}>
+          <div
+            ref={host}
+            className="crew-route-map"
+            aria-label={`Plan map for ${name}`}
+          />
+        </MapFrame>
       ) : (
         <Typography color="text.secondary">
           No map coordinates supplied.

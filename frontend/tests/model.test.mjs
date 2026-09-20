@@ -526,3 +526,35 @@ test('queue membership excludes cancelled, held and started requests despite que
   }))[0];
   assert.equal(terminal.toCall, false, 'stale pending membership must not requeue a terminal attempt');
 });
+
+test('distance to fire formats supplied metres without inventing missing distances', async () => {
+  const { distanceToFire } = await import(path);
+  assert.equal(distanceToFire(0), '0 m');
+  assert.equal(distanceToFire(425), '425 m');
+  assert.equal(distanceToFire(1250), '1.25 km');
+  for (const value of [null, undefined, -1, NaN, '1250']) assert.equal(distanceToFire(value), 'Not supplied');
+});
+
+test('local date display and filters agree across the UTC day boundary', async () => {
+  const {stamp, withinDate} = await import(path);
+  const previous = process.env.TZ;
+  process.env.TZ = 'America/Los_Angeles';
+  try {
+    assert.equal(withinDate('2026-09-20T00:30:00Z', '2026-09-19', '2026-09-19'), true);
+    assert.equal(withinDate('2026-09-20T00:30:00Z', '2026-09-20', ''), false);
+    assert.equal(stamp('2026-09-20T00:30:00Z'), new Intl.DateTimeFormat(undefined, {year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'}).format(new Date('2026-09-20T00:30:00Z')));
+    assert.equal(stamp(null), 'Not supplied');
+  } finally { if(previous === undefined) delete process.env.TZ; else process.env.TZ=previous; }
+});
+
+test('generated historical fixtures do not expose future observations or final call-derived plans', () => {
+  const history = JSON.parse(fs.readFileSync(new URL('../fixtures/design-history.json', import.meta.url), 'utf8'));
+  assert.equal(history.generated, true);
+  assert.equal(history.entries.length, 3);
+  for(const entry of history.entries) for(const incident of entry.incidents) {
+    assert.equal(incident.calls.length, 0);
+    assert.equal(incident.plan.response, null);
+    for(const asset of incident.assets) for(const source of asset.sources || []) assert.ok(Date.parse(source.observed_at) <= Date.parse(entry.as_of));
+    for(const location of incident.plan.locations) {assert.deepEqual(location.reasons, []); assert.equal(location.destination_name, null);}
+  }
+});

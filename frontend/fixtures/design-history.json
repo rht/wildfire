@@ -1,0 +1,1534 @@
+{
+  "schema_version": "dashboard-history-1",
+  "source": "design_demo",
+  "generated": true,
+  "entries": [
+    {
+      "as_of": "2026-09-20T09:45:00Z",
+      "incidents": [
+        {
+          "schema_version": "coordination-state-1",
+          "scenario_id": "gavarres",
+          "incident_id": "gavarres",
+          "name": "Gavarres forest fire",
+          "incident_status": "active",
+          "area": "Baix Empordà, Girona",
+          "revision": 1,
+          "snapshot_id": "gavarres-illustrative-history-1",
+          "as_of": "2026-09-20T09:45:00Z",
+          "input_mode": "offline_demo",
+          "assets": [
+            {
+              "asset_id": "gavarres-0",
+              "name": "Vall Repòs care home",
+              "asset_type": "care_home",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.952999999999996,
+              "longitude": 3.0220000000000002,
+              "estimated_occupancy": 78,
+              "distance_to_fire_m": 420,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 3200000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 480000,
+              "expected_loss_eur_mid": 960000,
+              "expected_loss_eur_high": 1600000,
+              "burn_probability": 0.62,
+              "risk_score": 82,
+              "risk_label": "High",
+              "criticality_tier": "critical",
+              "evacuation_min": 45,
+              "assessed_at": "2026-09-20T09:45:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T09:45:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "gavarres-1",
+              "name": "Escola de la Bisbal",
+              "asset_type": "school",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.925999999999995,
+              "longitude": 3.065,
+              "estimated_occupancy": 140,
+              "distance_to_fire_m": 860,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 2100000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 210000,
+              "expected_loss_eur_mid": 420000,
+              "expected_loss_eur_high": 840000,
+              "burn_probability": 0.38,
+              "risk_score": 64,
+              "risk_label": "High",
+              "criticality_tier": "high",
+              "evacuation_min": 25,
+              "assessed_at": "2026-09-20T09:45:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T09:45:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            }
+          ],
+          "contacts": {
+            "ranked": [
+              {
+                "asset_id": "gavarres-0",
+                "rank": 1,
+                "slack_min": 12,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "gavarres-1",
+                "rank": 2,
+                "slack_min": 28,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              }
+            ],
+            "review": []
+          },
+          "calls": [],
+          "resources": [],
+          "peopleClusters": [],
+          "events": [
+            {
+              "event_id": "generated-history-1-gavarres",
+              "as_of": "2026-09-20T09:45:00Z",
+              "received_at": "2026-09-20T09:45:00Z",
+              "kind": "assessment",
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
+            }
+          ],
+          "teams": [],
+          "fire_geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  3.0438124999999996,
+                  41.961875
+                ],
+                [
+                  3.0533124999999997,
+                  41.964625
+                ],
+                [
+                  3.0590624999999996,
+                  41.959875
+                ],
+                [
+                  3.0508124999999997,
+                  41.955625
+                ],
+                [
+                  3.0438124999999996,
+                  41.961875
+                ]
+              ]
+            ]
+          },
+          "plan": {
+            "locations": [
+              {
+                "asset_id": "gavarres-0",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "gavarres-1",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              }
+            ],
+            "response": null
+          },
+          "id": "gavarres",
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T09:45:00Z",
+            "stage": 1,
+            "total_stages": 4,
+            "linear_scale": 0.25,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
+        }
+      ]
+    },
+    {
+      "as_of": "2026-09-20T10:00:00Z",
+      "incidents": [
+        {
+          "schema_version": "coordination-state-1",
+          "scenario_id": "gavarres",
+          "incident_id": "gavarres",
+          "name": "Gavarres forest fire",
+          "incident_status": "active",
+          "area": "Baix Empordà, Girona",
+          "revision": 2,
+          "snapshot_id": "gavarres-illustrative-history-2",
+          "as_of": "2026-09-20T10:00:00Z",
+          "input_mode": "offline_demo",
+          "assets": [
+            {
+              "asset_id": "gavarres-0",
+              "name": "Vall Repòs care home",
+              "asset_type": "care_home",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.952999999999996,
+              "longitude": 3.0220000000000002,
+              "estimated_occupancy": 78,
+              "distance_to_fire_m": 420,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 3200000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 480000,
+              "expected_loss_eur_mid": 960000,
+              "expected_loss_eur_high": 1600000,
+              "burn_probability": 0.62,
+              "risk_score": 82,
+              "risk_label": "High",
+              "criticality_tier": "critical",
+              "evacuation_min": 45,
+              "assessed_at": "2026-09-20T10:00:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:00:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "gavarres-1",
+              "name": "Escola de la Bisbal",
+              "asset_type": "school",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.925999999999995,
+              "longitude": 3.065,
+              "estimated_occupancy": 140,
+              "distance_to_fire_m": 860,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 2100000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 210000,
+              "expected_loss_eur_mid": 420000,
+              "expected_loss_eur_high": 840000,
+              "burn_probability": 0.38,
+              "risk_score": 64,
+              "risk_label": "High",
+              "criticality_tier": "high",
+              "evacuation_min": 25,
+              "assessed_at": "2026-09-20T10:00:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:00:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "gavarres-2",
+              "name": "Mas Gavarres",
+              "asset_type": "residential",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.943999999999996,
+              "longitude": 3.08,
+              "estimated_occupancy": 32,
+              "distance_to_fire_m": 1280,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 480000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 24000,
+              "expected_loss_eur_mid": 96000,
+              "expected_loss_eur_high": 192000,
+              "burn_probability": 0.25,
+              "risk_score": 43,
+              "risk_label": "Moderate",
+              "criticality_tier": "standard",
+              "evacuation_min": 15,
+              "assessed_at": "2026-09-20T10:00:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:00:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "gavarres-3",
+              "name": "Can Puig",
+              "asset_type": "farm",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.918,
+              "longitude": 3.012,
+              "estimated_occupancy": 16,
+              "distance_to_fire_m": null,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 720000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 36000,
+              "expected_loss_eur_mid": 72000,
+              "expected_loss_eur_high": 144000,
+              "burn_probability": null,
+              "risk_score": null,
+              "risk_label": "Not assessed",
+              "criticality_tier": "standard",
+              "evacuation_min": 20,
+              "assessed_at": "2026-09-20T10:00:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:00:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            }
+          ],
+          "contacts": {
+            "ranked": [
+              {
+                "asset_id": "gavarres-0",
+                "rank": 1,
+                "slack_min": 12,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "gavarres-1",
+                "rank": 2,
+                "slack_min": 28,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "gavarres-2",
+                "rank": 3,
+                "slack_min": 54,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              }
+            ],
+            "review": [
+              {
+                "asset_id": "gavarres-3",
+                "review_reasons": [
+                  "forecast_unavailable"
+                ]
+              }
+            ]
+          },
+          "calls": [],
+          "resources": [],
+          "peopleClusters": [],
+          "events": [
+            {
+              "event_id": "generated-history-2-gavarres",
+              "as_of": "2026-09-20T10:00:00Z",
+              "received_at": "2026-09-20T10:00:00Z",
+              "kind": "assessment",
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
+            }
+          ],
+          "teams": [],
+          "fire_geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  3.035875,
+                  41.96325
+                ],
+                [
+                  3.054875,
+                  41.96875
+                ],
+                [
+                  3.066375,
+                  41.95925
+                ],
+                [
+                  3.049875,
+                  41.95075
+                ],
+                [
+                  3.035875,
+                  41.96325
+                ]
+              ]
+            ]
+          },
+          "plan": {
+            "locations": [
+              {
+                "asset_id": "gavarres-0",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "gavarres-1",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "gavarres-2",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "gavarres-3",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              }
+            ],
+            "response": null
+          },
+          "id": "gavarres",
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:00:00Z",
+            "stage": 2,
+            "total_stages": 4,
+            "linear_scale": 0.5,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
+        },
+        {
+          "schema_version": "coordination-state-1",
+          "scenario_id": "cap-creus",
+          "incident_id": "cap-creus",
+          "name": "Cap de Creus fire",
+          "incident_status": "active",
+          "area": "Alt Empordà, Girona",
+          "revision": 2,
+          "snapshot_id": "cap-creus-illustrative-history-2",
+          "as_of": "2026-09-20T10:00:00Z",
+          "input_mode": "offline_demo",
+          "assets": [
+            {
+              "asset_id": "cap-creus-0",
+              "name": "Càmping Port de la Selva",
+              "asset_type": "campsite",
+              "municipality": "Alt Empordà, Girona",
+              "latitude": 42.333,
+              "longitude": 3.1820000000000004,
+              "estimated_occupancy": 24,
+              "distance_to_fire_m": 420,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 3200000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 480000,
+              "expected_loss_eur_mid": 960000,
+              "expected_loss_eur_high": 1600000,
+              "burn_probability": 0.62,
+              "risk_score": 82,
+              "risk_label": "High",
+              "criticality_tier": "critical",
+              "evacuation_min": 45,
+              "assessed_at": "2026-09-20T10:00:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:00:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "cap-creus-1",
+              "name": "Centre Cívic de Roses",
+              "asset_type": "community_centre",
+              "municipality": "Alt Empordà, Girona",
+              "latitude": 42.306,
+              "longitude": 3.225,
+              "estimated_occupancy": 64,
+              "distance_to_fire_m": 860,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 2100000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 210000,
+              "expected_loss_eur_mid": 420000,
+              "expected_loss_eur_high": 840000,
+              "burn_probability": 0.38,
+              "risk_score": 64,
+              "risk_label": "High",
+              "criticality_tier": "high",
+              "evacuation_min": 25,
+              "assessed_at": "2026-09-20T10:00:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:00:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "cap-creus-2",
+              "name": "Mas Ventós",
+              "asset_type": "farm",
+              "municipality": "Alt Empordà, Girona",
+              "latitude": 42.324,
+              "longitude": 3.24,
+              "estimated_occupancy": 12,
+              "distance_to_fire_m": 1280,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 480000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 24000,
+              "expected_loss_eur_mid": 96000,
+              "expected_loss_eur_high": 192000,
+              "burn_probability": 0.25,
+              "risk_score": 43,
+              "risk_label": "Moderate",
+              "criticality_tier": "standard",
+              "evacuation_min": 15,
+              "assessed_at": "2026-09-20T10:00:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:00:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "cap-creus-3",
+              "name": "Sant Pere community",
+              "asset_type": "residential",
+              "municipality": "Alt Empordà, Girona",
+              "latitude": 42.298,
+              "longitude": 3.172,
+              "estimated_occupancy": 8,
+              "distance_to_fire_m": null,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 720000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 36000,
+              "expected_loss_eur_mid": 72000,
+              "expected_loss_eur_high": 144000,
+              "burn_probability": null,
+              "risk_score": null,
+              "risk_label": "Not assessed",
+              "criticality_tier": "standard",
+              "evacuation_min": 20,
+              "assessed_at": "2026-09-20T10:00:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:00:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            }
+          ],
+          "contacts": {
+            "ranked": [
+              {
+                "asset_id": "cap-creus-0",
+                "rank": 1,
+                "slack_min": 12,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "cap-creus-1",
+                "rank": 2,
+                "slack_min": 28,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "cap-creus-2",
+                "rank": 3,
+                "slack_min": 54,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              }
+            ],
+            "review": [
+              {
+                "asset_id": "cap-creus-3",
+                "review_reasons": [
+                  "forecast_unavailable"
+                ]
+              }
+            ]
+          },
+          "calls": [],
+          "resources": [],
+          "peopleClusters": [],
+          "events": [
+            {
+              "event_id": "generated-history-2-cap-creus",
+              "as_of": "2026-09-20T10:00:00Z",
+              "received_at": "2026-09-20T10:00:00Z",
+              "kind": "assessment",
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
+            }
+          ],
+          "teams": [],
+          "fire_geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  3.195875,
+                  42.34325
+                ],
+                [
+                  3.214875,
+                  42.348749999999995
+                ],
+                [
+                  3.226375,
+                  42.33925
+                ],
+                [
+                  3.2098750000000003,
+                  42.330749999999995
+                ],
+                [
+                  3.195875,
+                  42.34325
+                ]
+              ]
+            ]
+          },
+          "plan": {
+            "locations": [
+              {
+                "asset_id": "cap-creus-0",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "cap-creus-1",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "cap-creus-2",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "cap-creus-3",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              }
+            ],
+            "response": null
+          },
+          "id": "cap-creus",
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:00:00Z",
+            "stage": 2,
+            "total_stages": 4,
+            "linear_scale": 0.5,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
+        }
+      ]
+    },
+    {
+      "as_of": "2026-09-20T10:15:00Z",
+      "incidents": [
+        {
+          "schema_version": "coordination-state-1",
+          "scenario_id": "gavarres",
+          "incident_id": "gavarres",
+          "name": "Gavarres forest fire",
+          "incident_status": "active",
+          "area": "Baix Empordà, Girona",
+          "revision": 3,
+          "snapshot_id": "gavarres-illustrative-history-3",
+          "as_of": "2026-09-20T10:15:00Z",
+          "input_mode": "offline_demo",
+          "assets": [
+            {
+              "asset_id": "gavarres-0",
+              "name": "Vall Repòs care home",
+              "asset_type": "care_home",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.952999999999996,
+              "longitude": 3.0220000000000002,
+              "estimated_occupancy": 78,
+              "distance_to_fire_m": 420,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 3200000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 480000,
+              "expected_loss_eur_mid": 960000,
+              "expected_loss_eur_high": 1600000,
+              "burn_probability": 0.62,
+              "risk_score": 82,
+              "risk_label": "High",
+              "criticality_tier": "critical",
+              "evacuation_min": 45,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "gavarres-1",
+              "name": "Escola de la Bisbal",
+              "asset_type": "school",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.925999999999995,
+              "longitude": 3.065,
+              "estimated_occupancy": 140,
+              "distance_to_fire_m": 860,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 2100000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 210000,
+              "expected_loss_eur_mid": 420000,
+              "expected_loss_eur_high": 840000,
+              "burn_probability": 0.38,
+              "risk_score": 64,
+              "risk_label": "High",
+              "criticality_tier": "high",
+              "evacuation_min": 25,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "gavarres-2",
+              "name": "Mas Gavarres",
+              "asset_type": "residential",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.943999999999996,
+              "longitude": 3.08,
+              "estimated_occupancy": 32,
+              "distance_to_fire_m": 1280,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 480000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 24000,
+              "expected_loss_eur_mid": 96000,
+              "expected_loss_eur_high": 192000,
+              "burn_probability": 0.25,
+              "risk_score": 43,
+              "risk_label": "Moderate",
+              "criticality_tier": "standard",
+              "evacuation_min": 15,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "gavarres-3",
+              "name": "Can Puig",
+              "asset_type": "farm",
+              "municipality": "Baix Empordà, Girona",
+              "latitude": 41.918,
+              "longitude": 3.012,
+              "estimated_occupancy": 16,
+              "distance_to_fire_m": null,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 720000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 36000,
+              "expected_loss_eur_mid": 72000,
+              "expected_loss_eur_high": 144000,
+              "burn_probability": null,
+              "risk_score": null,
+              "risk_label": "Not assessed",
+              "criticality_tier": "standard",
+              "evacuation_min": 20,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            }
+          ],
+          "contacts": {
+            "ranked": [
+              {
+                "asset_id": "gavarres-0",
+                "rank": 1,
+                "slack_min": 12,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "gavarres-1",
+                "rank": 2,
+                "slack_min": 28,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "gavarres-2",
+                "rank": 3,
+                "slack_min": 54,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              }
+            ],
+            "review": [
+              {
+                "asset_id": "gavarres-3",
+                "review_reasons": [
+                  "forecast_unavailable"
+                ]
+              }
+            ]
+          },
+          "calls": [],
+          "resources": [],
+          "peopleClusters": [],
+          "events": [
+            {
+              "event_id": "generated-history-3-gavarres",
+              "as_of": "2026-09-20T10:15:00Z",
+              "received_at": "2026-09-20T10:15:00Z",
+              "kind": "assessment",
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
+            }
+          ],
+          "teams": [],
+          "fire_geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  3.0279375,
+                  41.964625
+                ],
+                [
+                  3.0564375,
+                  41.972874999999995
+                ],
+                [
+                  3.0736875,
+                  41.958625
+                ],
+                [
+                  3.0489375,
+                  41.945874999999994
+                ],
+                [
+                  3.0279375,
+                  41.964625
+                ]
+              ]
+            ]
+          },
+          "plan": {
+            "locations": [
+              {
+                "asset_id": "gavarres-0",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "gavarres-1",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "gavarres-2",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "gavarres-3",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              }
+            ],
+            "response": null
+          },
+          "id": "gavarres",
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:15:00Z",
+            "stage": 3,
+            "total_stages": 4,
+            "linear_scale": 0.75,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
+        },
+        {
+          "schema_version": "coordination-state-1",
+          "scenario_id": "cap-creus",
+          "incident_id": "cap-creus",
+          "name": "Cap de Creus fire",
+          "incident_status": "active",
+          "area": "Alt Empordà, Girona",
+          "revision": 3,
+          "snapshot_id": "cap-creus-illustrative-history-3",
+          "as_of": "2026-09-20T10:15:00Z",
+          "input_mode": "offline_demo",
+          "assets": [
+            {
+              "asset_id": "cap-creus-0",
+              "name": "Càmping Port de la Selva",
+              "asset_type": "campsite",
+              "municipality": "Alt Empordà, Girona",
+              "latitude": 42.333,
+              "longitude": 3.1820000000000004,
+              "estimated_occupancy": 24,
+              "distance_to_fire_m": 420,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 3200000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 480000,
+              "expected_loss_eur_mid": 960000,
+              "expected_loss_eur_high": 1600000,
+              "burn_probability": 0.62,
+              "risk_score": 82,
+              "risk_label": "High",
+              "criticality_tier": "critical",
+              "evacuation_min": 45,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "cap-creus-1",
+              "name": "Centre Cívic de Roses",
+              "asset_type": "community_centre",
+              "municipality": "Alt Empordà, Girona",
+              "latitude": 42.306,
+              "longitude": 3.225,
+              "estimated_occupancy": 64,
+              "distance_to_fire_m": 860,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 2100000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 210000,
+              "expected_loss_eur_mid": 420000,
+              "expected_loss_eur_high": 840000,
+              "burn_probability": 0.38,
+              "risk_score": 64,
+              "risk_label": "High",
+              "criticality_tier": "high",
+              "evacuation_min": 25,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "cap-creus-2",
+              "name": "Mas Ventós",
+              "asset_type": "farm",
+              "municipality": "Alt Empordà, Girona",
+              "latitude": 42.324,
+              "longitude": 3.24,
+              "estimated_occupancy": 12,
+              "distance_to_fire_m": 1280,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 480000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 24000,
+              "expected_loss_eur_mid": 96000,
+              "expected_loss_eur_high": 192000,
+              "burn_probability": 0.25,
+              "risk_score": 43,
+              "risk_label": "Moderate",
+              "criticality_tier": "standard",
+              "evacuation_min": 15,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "cap-creus-3",
+              "name": "Sant Pere community",
+              "asset_type": "residential",
+              "municipality": "Alt Empordà, Girona",
+              "latitude": 42.298,
+              "longitude": 3.172,
+              "estimated_occupancy": 8,
+              "distance_to_fire_m": null,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 720000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 36000,
+              "expected_loss_eur_mid": 72000,
+              "expected_loss_eur_high": 144000,
+              "burn_probability": null,
+              "risk_score": null,
+              "risk_label": "Not assessed",
+              "criticality_tier": "standard",
+              "evacuation_min": 20,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            }
+          ],
+          "contacts": {
+            "ranked": [
+              {
+                "asset_id": "cap-creus-0",
+                "rank": 1,
+                "slack_min": 12,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "cap-creus-1",
+                "rank": 2,
+                "slack_min": 28,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "cap-creus-2",
+                "rank": 3,
+                "slack_min": 54,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              }
+            ],
+            "review": [
+              {
+                "asset_id": "cap-creus-3",
+                "review_reasons": [
+                  "forecast_unavailable"
+                ]
+              }
+            ]
+          },
+          "calls": [],
+          "resources": [],
+          "peopleClusters": [],
+          "events": [
+            {
+              "event_id": "generated-history-3-cap-creus",
+              "as_of": "2026-09-20T10:15:00Z",
+              "received_at": "2026-09-20T10:15:00Z",
+              "kind": "assessment",
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
+            }
+          ],
+          "teams": [],
+          "fire_geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  3.1879375000000003,
+                  42.344625
+                ],
+                [
+                  3.2164375,
+                  42.352875
+                ],
+                [
+                  3.2336875000000003,
+                  42.338625
+                ],
+                [
+                  3.2089375,
+                  42.325874999999996
+                ],
+                [
+                  3.1879375000000003,
+                  42.344625
+                ]
+              ]
+            ]
+          },
+          "plan": {
+            "locations": [
+              {
+                "asset_id": "cap-creus-0",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "cap-creus-1",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "cap-creus-2",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "cap-creus-3",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              }
+            ],
+            "response": null
+          },
+          "id": "cap-creus",
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:15:00Z",
+            "stage": 3,
+            "total_stages": 4,
+            "linear_scale": 0.75,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
+        },
+        {
+          "schema_version": "coordination-state-1",
+          "scenario_id": "montseny",
+          "incident_id": "montseny",
+          "name": "Montseny hillside fire",
+          "incident_status": "active",
+          "area": "Vallès Oriental, Barcelona",
+          "revision": 3,
+          "snapshot_id": "montseny-illustrative-history-3",
+          "as_of": "2026-09-20T10:15:00Z",
+          "input_mode": "offline_demo",
+          "assets": [
+            {
+              "asset_id": "montseny-0",
+              "name": "Can Montseny residence",
+              "asset_type": "care_home",
+              "municipality": "Vallès Oriental, Barcelona",
+              "latitude": 41.783,
+              "longitude": 2.382,
+              "estimated_occupancy": 45,
+              "distance_to_fire_m": 420,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 3200000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 480000,
+              "expected_loss_eur_mid": 960000,
+              "expected_loss_eur_high": 1600000,
+              "burn_probability": 0.62,
+              "risk_score": 82,
+              "risk_label": "High",
+              "criticality_tier": "critical",
+              "evacuation_min": 45,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "montseny-1",
+              "name": "Escola del Bosc",
+              "asset_type": "school",
+              "municipality": "Vallès Oriental, Barcelona",
+              "latitude": 41.756,
+              "longitude": 2.425,
+              "estimated_occupancy": 26,
+              "distance_to_fire_m": 860,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 2100000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 210000,
+              "expected_loss_eur_mid": 420000,
+              "expected_loss_eur_high": 840000,
+              "burn_probability": 0.38,
+              "risk_score": 64,
+              "risk_label": "High",
+              "criticality_tier": "high",
+              "evacuation_min": 25,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "montseny-2",
+              "name": "Mas Sant Roc",
+              "asset_type": "farm",
+              "municipality": "Vallès Oriental, Barcelona",
+              "latitude": 41.774,
+              "longitude": 2.44,
+              "estimated_occupancy": 10,
+              "distance_to_fire_m": 1280,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 480000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 24000,
+              "expected_loss_eur_mid": 96000,
+              "expected_loss_eur_high": 192000,
+              "burn_probability": 0.25,
+              "risk_score": 43,
+              "risk_label": "Moderate",
+              "criticality_tier": "standard",
+              "evacuation_min": 15,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            },
+            {
+              "asset_id": "montseny-3",
+              "name": "La Costa homes",
+              "asset_type": "residential",
+              "municipality": "Vallès Oriental, Barcelona",
+              "latitude": 41.748000000000005,
+              "longitude": 2.372,
+              "estimated_occupancy": 18,
+              "distance_to_fire_m": null,
+              "occupancy_basis": "Illustrative population estimate",
+              "replacement_value_eur": 720000,
+              "replacement_value_basis": "Illustrative replacement cost, not an appraisal",
+              "expected_loss_eur_low": 36000,
+              "expected_loss_eur_mid": 72000,
+              "expected_loss_eur_high": 144000,
+              "burn_probability": null,
+              "risk_score": null,
+              "risk_label": "Not assessed",
+              "criticality_tier": "standard",
+              "evacuation_min": 20,
+              "assessed_at": "2026-09-20T10:15:00Z",
+              "sources": [
+                {
+                  "source": "Generated demo assessment",
+                  "observed_at": "2026-09-20T10:15:00Z",
+                  "fields": [
+                    "risk",
+                    "valuation",
+                    "distance_to_fire_m"
+                  ],
+                  "notes": "Illustrative historical fixture; not an operational observation."
+                }
+              ]
+            }
+          ],
+          "contacts": {
+            "ranked": [
+              {
+                "asset_id": "montseny-0",
+                "rank": 1,
+                "slack_min": 12,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "montseny-1",
+                "rank": 2,
+                "slack_min": 28,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              },
+              {
+                "asset_id": "montseny-2",
+                "rank": 3,
+                "slack_min": 54,
+                "status": "window_open",
+                "policy": "Illustrative remaining evacuation window"
+              }
+            ],
+            "review": [
+              {
+                "asset_id": "montseny-3",
+                "review_reasons": [
+                  "forecast_unavailable"
+                ]
+              }
+            ]
+          },
+          "calls": [],
+          "resources": [],
+          "peopleClusters": [],
+          "events": [
+            {
+              "event_id": "generated-history-3-montseny",
+              "as_of": "2026-09-20T10:15:00Z",
+              "received_at": "2026-09-20T10:15:00Z",
+              "kind": "assessment",
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
+            }
+          ],
+          "teams": [],
+          "fire_geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  2.3879375,
+                  41.79462500000001
+                ],
+                [
+                  2.4164375,
+                  41.802875
+                ],
+                [
+                  2.4336875,
+                  41.788625
+                ],
+                [
+                  2.4089375,
+                  41.775875
+                ],
+                [
+                  2.3879375,
+                  41.79462500000001
+                ]
+              ]
+            ]
+          },
+          "plan": {
+            "locations": [
+              {
+                "asset_id": "montseny-0",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "montseny-1",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "montseny-2",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              },
+              {
+                "asset_id": "montseny-3",
+                "mode": "undetermined",
+                "evacuation_status": "not_confirmed",
+                "reasons": [],
+                "destination_name": null
+              }
+            ],
+            "response": null
+          },
+          "id": "montseny",
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:15:00Z",
+            "stage": 3,
+            "total_stages": 4,
+            "linear_scale": 0.75,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
+        }
+      ]
+    }
+  ]
+}

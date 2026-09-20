@@ -2940,8 +2940,8 @@ connectivity check around a test coordinate, not an active-fire validation.
 ## React incident dashboard — codex/ui-session (2026-09-20)
 
 **Approved design:** @mirrdj requested replacing the plain HTML dashboard with
-Mantis's React/MUI design: light sidebar, Public Sans typography, compact white
-cards, blue navigation, a map replacing the large chart, and separate pages.
+Mantis's React/MUI foundations, now with a black emergency-response theme, Public Sans typography and compact
+cards, ember navigation accents, a map replacing the large chart, and separate pages.
 Streamlit remains a separate Python application. All web frontend code, vendor
 attribution, package/lock files, assets, build configuration and browser/Node tests
 live in `frontend/`. Python serves its production build; existing demo processes
@@ -3009,7 +3009,7 @@ and frontend-directory additions.
 
 ### Preview, usage and verification
 
-Latest UI refinements requested by @mirrdj: white page background; **Incidents**
+Earlier UI refinements requested by @mirrdj (the black theme below supersedes the white background): **Incidents**
 throughout navigation and labels, including smoke events; remove the overview
 subtitle and explanations under its four cards; move the incident table to
 **Incidents** (`#/incidents`). Each incident summary has four cards: GPS coordinates, deployed resources,
@@ -3022,7 +3022,7 @@ incident summaries scope that list. Entries open ordered steps, destinations, GP
 and prerequisites. Explicit confirmation records analyst approval of the current
 plan version in a separate SQLite database; opening a review never asserts approval
 or dispatch. Call history contains individual attempts with caller, outcome,
-UTC date and search filters. **Voice assistant to call** shows locations with no call
+Local-date and search filters. **Voice assistant to call** shows locations with no call
 records or a supplied unstarted queued request, in backend priority order. Terminal
 attempts do not imply a retry. Call caller identity is shown only when explicit;
 unknown identity stays unavailable. Demo records explicitly distinguish agent and
@@ -3079,7 +3079,7 @@ Current backend task records omit deadlines, so connected urgency remains unknow
 until that data is supplied. Only Design demo fixtures include illustrative deadlines.
 
 The brand subtitle is “Wildfire coordination” beneath ResponsAra. The duplicate
-topbar label and location icon are removed. The main background remains white.
+topbar label and location icon are removed. The subsequent emergency-response refresh uses a black background.
 
 Proposed crew plans now show **Awaiting confirmation**, an explicit
 **Review & confirm** action, and a count of plans needing confirmation. The overview
@@ -3277,3 +3277,77 @@ membership, and still exits on completion. Runtime publication remains owned by
 `codex/end-to-end`; frontend consumes the field directly from REST/WebSocket data.
 Cancellation update verification passed: 36 Node tests, lint, formatting, production
 build and all four Chrome regression scripts, including saved confirmations.
+
+### iPad-first response workspace
+
+@mirrdj's latest direction supersedes the earlier black theme: the application,
+widgets and dialogs use a white background with dark text, ember accents and
+legible warning/error colours. ResponsAra retains the reference wordmark and
+Nobody left behind badge. iPads use drawer navigation, compact KPI cards and
+44px minimum primary touch controls. Map and crew-plan frames remain **50/50**
+from 768px wide in portrait and landscape; phones stack them. The header stays
+in place, crew lists and tables scroll inside their frames, and review steps
+scroll alongside the crew map. Dates and date filters use the browser's local
+timezone; stored timestamps remain ISO instants. Building tables hide
+**Assessed at**, retain assessment filters/details and show **Distance to fire**
+from supplied `distance_to_fire_m`.
+
+The shared 2D/**3D tilt** control uses CSS perspective, matching the legacy map;
+it is not terrain elevation. Incident maps also offer a **Heat map** toggle with
+an in-map **Building risk · 0–100** scale. Colours use only supplied numeric
+`risk_score` values and valid location GPS. Unscored locations are omitted; an
+empty layer says why. The soft halos indicate assessed location risk, not measured
+fire temperature, interpolated fire intensity or a fire-spread prediction.
+
+The fourth overview KPI is **Assistance logs**: unique location records (stable `asset_id`, including across incidents)
+with a reported assistance need or an explicit assistance review. Confirmed need
+means `needsAssistance === true` without a conflicting assistance report/review;
+pending review means explicit `assistance_review_required` or conflicting
+assistance reports, including contradictory needs across incidents. These categories are disjoint and do not assert delivery,
+transport assignment or evacuation completion. The card opens the people/location
+page. Unassessed locations are not silently counted as assistance requests.
+
+Identified people/groups and locations have a numbered priority column sorted by
+supplied remaining evacuation window (`contacts.ranked[].slack_min`, shortest
+first). Resources have a numbered priority column sorted by the minimum known
+unfinished-task `deadline_min - finish_min` margin. Completed tasks are excluded;
+partial timing stays labeled. Missing timing stays visible and unranked. This is
+presentation ordering, not a replacement crew optimizer or a dispatch action.
+
+### Persisted time travel
+
+Run `npm --prefix frontend run generate:history` to generate the explicitly synthetic
+`frontend/fixtures/design-history.json`. It contains three earlier demo moments;
+the build appends the current demo as the fourth. Earlier perimeters expand at
+25%, 50% and 75% of the current polygon’s linear dimensions, followed by the
+unchanged current perimeter. The timeline labels each stage as illustrative
+simulated spread: it is not a predictive fire model or live observation, and
+building risk/distance values are not recomputed. Per-stage simulation provenance
+is persisted with the geometry. The generated earlier records
+have their own contemporaneous provenance and no invented historical call or dispatch
+records. Vite serves this history in development and emits it as a static JSON asset
+for the production dashboard. It is a saved drill fixture, not operational evidence.
+
+Connected public snapshots are archived in IndexedDB on the same browser/device,
+isolated by data source, incident, epoch and input mode. They survive reloads; they
+are not a shared server archive and do not recover earlier backend snapshots that
+this browser has never received. The generated design-demo history is available
+immediately without waiting for updates. Previous/Next and the time slider select
+saved full views, while incoming updates continue to be saved. Returning to current
+shows the latest received state. Historical views disable approval loads/saves and
+exclude current approval-event overlays; they never rewind the operational store.
+If browser storage is unavailable, the timeline explicitly reports that limitation.
+
+Verification of the current iPad-first workspace: 47 Node tests passed; lint,
+formatting and production build passed. Eight Chrome regression scripts passed,
+including touch viewports 768×1024, 1024×768, 820×1180 and 1366×1024, white
+surfaces, fixed equal panels, reachable final table rows, heat-scale rendering,
+3D tilt/zoom, priorities, assistance deduplication, visible simulated perimeter
+expansion, persisted-history reloads, historical confirmation guards, local dates,
+call-queue handling and saved approvals. Review findings about cross-incident
+assistance duplication and clipped table cards were fixed and regression-tested.
+Screenshots were inspected. Chrome emulation does not replace a physical iPad /
+Safari check. Backend source files and existing preview processes remain unchanged.
+
+The separate tmux session `wildfire-time-travel` implemented the saved simulation
+stages in this UI worktree and remains available (`tmux attach -t wildfire-time-travel`).

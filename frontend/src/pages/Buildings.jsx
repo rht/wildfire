@@ -30,7 +30,9 @@ import {
   count,
   stamp,
   humanize,
+  distanceToFire,
 } from "../state/model.mjs";
+import { locationPriority, priorityList } from "../state/priority.mjs";
 const defaults = {
   incident: "",
   from: "",
@@ -43,10 +45,17 @@ export default function Buildings({ incidents, incident }) {
   const [filters, setFilters] = useState(defaults),
     [params, setParams] = useSearchParams();
   const set = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
-  const rows = useMemo(
-    () => buildingRows(incident ? [incident] : incidents),
-    [incident, incidents],
-  );
+  const rows = useMemo(() => {
+    const scope = incident ? [incident] : incidents;
+    return priorityList(
+      scope.flatMap((item) =>
+        buildingRows([item]).map((row) => ({
+          ...row,
+          priority: locationPriority(item, row.asset_id),
+        })),
+      ),
+    );
+  }, [incident, incidents]);
   const filtered = filterBuildings(rows, filters);
   const selected = rows.find(
     (r) =>
@@ -129,14 +138,15 @@ export default function Buildings({ incidents, incident }) {
             <TableHead>
               <TableRow>
                 {[
+                  "Priority",
                   "Building / location",
                   ...(!incident ? ["Incident"] : []),
                   "Risk assessment",
+                  "Distance to fire",
                   "Valuation",
                   "Expected loss",
                   "People estimate",
                   "Remaining window",
-                  "Assessed at",
                 ].map((c) => (
                   <TableCell key={c}>{c}</TableCell>
                 ))}
@@ -145,6 +155,12 @@ export default function Buildings({ incidents, incident }) {
             <TableBody>
               {filtered.map((r) => (
                 <TableRow key={r.key} hover>
+                  <TableCell className="priority-cell">
+                    {r.priorityRank && (
+                      <strong className="rank">{r.priorityRank}</strong>
+                    )}
+                    <div className="small-muted">{r.priority.label}</div>
+                  </TableCell>
                   <TableCell>
                     <Button
                       className="table-link"
@@ -171,6 +187,11 @@ export default function Buildings({ incidents, incident }) {
                     </div>
                   </TableCell>
                   <TableCell className="nowrap">
+                    <span className="distance-to-fire">
+                      {distanceToFire(r.distance_to_fire_m)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="nowrap">
                     {money(r.replacement_value_eur)}
                   </TableCell>
                   <TableCell className="nowrap">
@@ -182,9 +203,6 @@ export default function Buildings({ incidents, incident }) {
                   </TableCell>
                   <TableCell>{count(r.estimated_occupancy)}</TableCell>
                   <TableCell>{count(r.contact?.slack_min)} min</TableCell>
-                  <TableCell className="nowrap">
-                    {stamp(r.assessed_at)}
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -198,9 +216,8 @@ export default function Buildings({ incidents, incident }) {
       </MainCard>
       <Typography variant="body2" color="text.secondary">
         Valuations and forecast probabilities may be estimates. Contact priority
-        remains the backend’s remaining evacuation window. Only supplied
-        snapshots are shown; historical assessments are not available from the
-        current-state API.
+        remains the backend’s remaining evacuation window. Values reflect the
+        selected snapshot; use time travel to review saved assessments.
       </Typography>
       <DetailDialog
         title={selected?.name || "Building details"}
@@ -215,7 +232,13 @@ export default function Buildings({ incidents, incident }) {
             <Facts
               rows={[
                 ["Incident", selected.incident_name],
+                ["Priority", selected.priorityRank ?? "Not ranked"],
+                ["Priority basis", selected.priority.label],
                 ["GPS (latitude, longitude)", gps(selected)],
+                [
+                  "Distance to fire",
+                  distanceToFire(selected.distance_to_fire_m),
+                ],
                 ["Assessment time", stamp(selected.assessed_at)],
                 ["Type", humanize(selected.asset_type)],
                 ["Estimated occupancy", count(selected.estimated_occupancy)],

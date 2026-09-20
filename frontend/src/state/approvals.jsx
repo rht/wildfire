@@ -43,7 +43,12 @@ async function responseData(response, expected) {
   return data;
 }
 
-export function ApprovalProvider({ incidents, source, children }) {
+export function ApprovalProvider({
+  incidents,
+  source,
+  children,
+  readOnly = false,
+}) {
   const [entries, setEntries] = useState({});
   const [saving, setSaving] = useState({});
   const requests = useRef(new Map()),
@@ -55,6 +60,7 @@ export function ApprovalProvider({ incidents, source, children }) {
   const sequence = useRef(0);
 
   async function load(incident) {
+    if (readOnly) return;
     const key = contextKey(incident),
       serial = (requests.current.get(key) || 0) + 1;
     requests.current.set(key, serial);
@@ -100,14 +106,16 @@ export function ApprovalProvider({ incidents, source, children }) {
     };
   }, []);
   useEffect(() => {
+    if (readOnly) return;
     for (const incident of incidents) void load(incident);
     const timer = setInterval(() => {
       for (const incident of current.current) void load(incident);
     }, 5000);
     return () => clearInterval(timer);
-  }, [incidents, source]);
+  }, [incidents, source, readOnly]);
 
   function info(incident, teamId) {
+    if (readOnly) return { phase: "historical", saving: false };
     const entry = entries[contextKey(incident)] || { phase: "loading" };
     const plan = entry.data?.plans.find((p) => p.team_id === teamId);
     return {
@@ -118,6 +126,8 @@ export function ApprovalProvider({ incidents, source, children }) {
     };
   }
   async function confirm(incident, teamId, reviewedVersion) {
+    if (readOnly)
+      throw new Error("Return to current state before confirming a plan.");
     const key = contextKey(incident),
       saveKey = `${key}:${teamId}`;
     const entry = info(incident, teamId);
@@ -171,6 +181,7 @@ export function ApprovalProvider({ incidents, source, children }) {
   }
 
   const logIncidents = useMemo(() => {
+    if (readOnly) return incidents;
     const receive = (incident, event, prefix) => {
       const key = `${incident.id}:${prefix}:${event.event_id || JSON.stringify(event)}`;
       if (!receipts.current.has(key))
@@ -198,7 +209,7 @@ export function ApprovalProvider({ incidents, source, children }) {
         (event) => event.incident_id === incident.id,
       ),
     }));
-  }, [incidents, entries, source]);
+  }, [incidents, entries, source, readOnly]);
 
   return (
     <ApprovalContext.Provider

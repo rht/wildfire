@@ -10,17 +10,44 @@ const serverDemo = demoIncidents.map((incident) => ({
   ...incident,
   snapshot_id: `${incident.id}-snapshot-${demoVersion}`,
 }));
+const historyFixture = JSON.parse(
+  readFileSync(
+    new URL("./fixtures/design-history.json", import.meta.url),
+    "utf8",
+  ),
+);
+const serverHistory = {
+  ...historyFixture,
+  entries: [
+    ...historyFixture.entries,
+    { as_of: serverDemo[0].as_of, incidents: serverDemo },
+  ],
+};
 export default defineConfig({
   define: { __DESIGN_DEMO_VERSION__: JSON.stringify(demoVersion) },
   plugins: [
     react(),
     {
       name: "mantis-attribution",
+      configureServer(server) {
+        server.middlewares.use(
+          "/assets/design-history.json",
+          (_request, response) => {
+            response.setHeader("Content-Type", "application/json");
+            response.end(JSON.stringify(serverHistory));
+          },
+        );
+      },
       generateBundle() {
         this.emitFile({
           type: "asset",
           fileName: "assets/design-demo.json",
           source: JSON.stringify(serverDemo),
+        });
+        this.emitFile({
+          type: "asset",
+          fileName: "assets/design-history.json",
+          source: JSON.stringify(serverHistory),
         });
         this.emitFile({
           type: "asset",

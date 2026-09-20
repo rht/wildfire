@@ -1,14 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
 import { responseTeams, gps } from "../state/model.mjs";
 import { crewMapData } from "../state/crew-map.mjs";
+import MapFrame from "./MapFrame";
+import { riskHeatPoints } from "../state/risk-heat.mjs";
+import { riskHeatLayer } from "./risk-heat-layer";
 export default function IncidentMap({
   incidents,
   showRoutes = false,
   openIncidentOnClick = false,
 }) {
+  const [heat, setHeat] = useState(false);
+  const heatPoints = riskHeatPoints(incidents);
   const host = useRef(null),
     mapRef = useRef(null),
     layersRef = useRef(null),
@@ -19,6 +24,8 @@ export default function IncidentMap({
       scrollWheelZoom: false,
       zoomAnimation: false,
       fadeAnimation: false,
+      zoomControl: false,
+      attributionControl: false,
     }).setView([41.99, 2.9], 9);
     L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -73,8 +80,8 @@ export default function IncidentMap({
                 zIndexOffset: 1000,
                 icon: L.divIcon({
                   className: "fire-map-pin",
-                  iconSize: [30, 34],
-                  iconAnchor: [15, 17],
+                  iconSize: [44, 44],
+                  iconAnchor: [22, 22],
                   html: '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M13 2c1 5-3 5-2 9 1-1 2-2 2-4 4 3 6 6 5 10-1 3-3 5-6 5-4 0-7-3-7-7 0-4 3-6 4-9 0 3 1 4 2 4-1-4 2-5 2-8Z"/></svg>',
                 }),
               })
@@ -153,13 +160,27 @@ export default function IncidentMap({
       fittedScope.current = scope;
     }
   }, [incidents, showRoutes, openIncidentOnClick, navigate]);
+  useEffect(() => {
+    if (!heat || !mapRef.current) return;
+    const layer = riskHeatLayer(riskHeatPoints(incidents)).addTo(
+      mapRef.current,
+    );
+    return () => layer.remove();
+  }, [heat, incidents]);
   return (
     <div className="map-wrap">
-      <div
-        ref={host}
-        className="incident-map"
-        aria-label="Incident and location map"
-      />
+      <MapFrame
+        mapRef={mapRef}
+        heat={heat}
+        onHeatChange={setHeat}
+        heatCount={heatPoints.length}
+      >
+        <div
+          ref={host}
+          className="incident-map"
+          aria-label="Incident and location map"
+        />
+      </MapFrame>
       <div className="map-legend">
         <span>
           <i className="dot fire" />

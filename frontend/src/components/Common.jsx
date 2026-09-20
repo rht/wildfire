@@ -30,13 +30,13 @@ export function MainCard({
             title={title}
             action={action}
             slotProps={{ title: { variant: "subtitle1", component: "h2" } }}
-            sx={{ p: 2.5 }}
+            sx={{ p: 1.5 }}
           />
           <Divider />
         </>
       )}
       {content ? (
-        <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
+        <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
           {children}
         </CardContent>
       ) : (
@@ -49,6 +49,7 @@ export function Metric({
   label,
   value,
   valueText,
+  detail,
   note,
   to,
   icon: Icon,
@@ -63,6 +64,7 @@ export function Metric({
         {Icon && <Icon aria-hidden="true" className={`metric-icon ${tone}`} />}
       </div>
       <div className="metric-value">{valueText ?? count(value)}</div>
+      {detail && <div className="metric-detail">{detail}</div>}
       {!compact && note && <div className="metric-note">{note}</div>}
       {to && !compact && <span className="metric-open">View details</span>}
     </>
