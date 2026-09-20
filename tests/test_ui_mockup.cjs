@@ -17,13 +17,13 @@ function sample() {
 }
 function load() {
  const dom=new JSDOM(html,{runScripts:'outside-only',url:'http://localhost:8521/'}),{window}=dom;
- const markers=[],lines=[],geometryLayers=[];
+ const markers=[],lines=[],geometryLayers=[],fitted=[];
  const layer=()=>({addTo(){return this;},clearLayers(){}});
- window.L={map:()=>({setView(){return this;},invalidateSize(){}}),tileLayer:layer,layerGroup:layer,
+ window.L={map:()=>({setView(){return this;},invalidateSize(){},fitBounds(points){fitted.push(points);}}),tileLayer:layer,layerGroup:layer,
  circleMarker:()=>{const m={...layer(),bindTooltip(t){this.tooltip=t;return this;},on(k,f){this.click=f;return this;}};markers.push(m);return m;},
  geoJSON:(g,options)=>{lines.push(g);geometryLayers.push({geometry:g,options});return layer();},polyline:(g)=>{lines.push(g);return layer();}};
  window.eval(fs.readFileSync(path.join(__dirname,'../design/dashboard-view.js'),'utf8'));
- return {dom,window,document:window.document,markers,lines,geometryLayers,view:window.DashboardView};
+ return {dom,window,document:window.document,markers,lines,geometryLayers,fitted,view:window.DashboardView};
 }
 test('supplied fire perimeter retains a white halo without introducing fixture geometry',()=>{
  const h=load(),s=sample();h.view.render(s);assert.equal(h.geometryLayers.length,0);
@@ -121,5 +121,37 @@ test('response panel exposes uncovered and unassigned assets with backend reason
  blocked_actions:{'act-a':['missing_route']}};
  h.view.render(s);const text=h.document.getElementById('responsePlan').textContent;
  for(const reason of ['needs additional resources','no_available_team','unknown_transport','missing_route']) assert.ok(text.includes(reason),reason);
+ h.dom.window.close();
+});
+test('no answer shows a pending callback without inventing a human or assistance request',()=>{
+ const h=load(),s=sample();s.calls=[{asset_id:'a',status:'no_answer',wants_human:null,
+ reported_needs_assistance:null,can_self_evacuate:null,acknowledged:null}];
+ s.tasks=[{task_id:'callback-a',asset_id:'a',kind:'human_callback',status:'open'}];
+ h.view.render(s);
+ assert.equal(h.document.getElementById('escOpen').textContent,'0');
+ assert.equal(h.document.getElementById('escMobility').textContent,'0');
+ const row=h.document.querySelector('#escCallbackList .escRow');
+ assert.match(row.textContent,/First.*no_answer.*open/);row.click();
+ assert.match(h.document.getElementById('detailPanel').textContent,/Can self evacuateunknown/);
+ s.tasks[0].status='done';h.view.render(s);
+ assert.equal(h.document.querySelectorAll('#escCallbackList .escRow').length,0);
+ h.dom.window.close();
+});
+test('nested ledger allocation renders reservation and permission separately from evacuation status',()=>{
+ const h=load(),s=sample();s.plan.locations=[{asset_id:'a',mode:'self_evacuate',evacuation_status:'not_confirmed',
+ allocations:[{allocation_id:'alloc-a',state:'reserved',destination_id:'hall',instruction_allowed:true,
+ safety:'valid',assistance:{transport_confirmed:null,reception_confirmed:null}}]}];
+ h.view.render(s);h.document.querySelector('[data-asset-id="a"]').click();
+ const text=h.document.getElementById('detailPanel').textContent;
+ for(const expected of ['Allocationalloc-a','Allocation statereserved','Destinationhall','Instruction allowedyes','Evacuation statusnot_confirmed']) assert.ok(text.includes(expected),expected);
+ h.dom.window.close();
+});
+
+test('initial map fits supplied locations without resetting analyst view on each revision',()=>{
+ const h=load(),s=sample();h.view.render(s);
+ assert.equal(h.fitted.length,1);
+ assert.deepEqual(Array.from(h.fitted[0],p=>Array.from(p)),[[41.9,3.1],[41.9,3.1]]);
+ s.revision=2;h.view.render(s);assert.equal(h.fitted.length,1);
+ s.scenario_id='new-scenario';h.view.render(s);assert.equal(h.fitted.length,2);
  h.dom.window.close();
 });

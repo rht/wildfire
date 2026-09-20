@@ -2645,3 +2645,74 @@ The same historical branch report retains two secondary candidates that were alr
 **Accepted fix:** retain the merged JUnit XML hardening in [`scripts/build_priority_report.py:436`](https://github.com/rht/wildfire/blob/587f5bd53eb41bd04d693e49a60940b6a62530f1/scripts/build_priority_report.py#L436), with `defusedxml` and explicit DTD rejection. It addresses demonstrated internal-entity behavior; external-file disclosure was not demonstrated. [PR #3](https://github.com/rht/wildfire/pull/3) remains merged and its tests preserve valid JUnit/XML declarations and failed-test handling.
 
 To verify the selected branch, check out the exact SHA above and run `python -m pytest -q` with the project's development/report dependencies. Submit the complete `fireline/evacuation_readiness.py` to MCP Livecheck under that exact filename; expect the one retained finding, not zero findings. The final source and test hashes are in the current evidence JSON. No feature PR is merged by this decision. The frozen audit and deferred SLNG worktree, sessions and untracked lockfile remain untouched.
+
+## Offline connected scenario — no-answer escalation
+
+Owner: @mirrdj. This integration exercises existing modules with three fictional
+locations and an explicitly synthetic clock, contacts, approvals and routes. It
+never loads provider credentials or calls a phone. The highest-priority household
+has a `no_answer` outcome; ability, transport and acknowledgement remain unknown,
+and a persistent human-callback task appears in the analyst dashboard.
+
+The runner connects the existing snapshot producer, exact contact approvals,
+priority queue, approved call briefing adapter, call-result store, allocation
+ledger, multi-crew proposal planner and coordination database. The dashboard reads
+that database through REST and WebSockets. This is an integration test with mock
+inputs, not a completed live deployment or an audio/telephony test.
+
+| Location | Synthetic outcome | Result |
+| --- | --- | --- |
+| A — Demo Cedar Care Home | No answer | Human callback stays open; ability, transport and acknowledgement unknown. Assisted action remains in readiness review. |
+| B — Demo Willow House | Confirms ability and transport | Four places reserved at Demo Reception Hall; Town Road guidance and Forest Road warning in the call brief. Departure/arrival still unconfirmed. |
+| C — Demo Pine House | Reports needing assistance | Assistance task and proposed crew action; no claim that transport or evacuation has happened. |
+
+Contact priority is A, B, C using forecast arrival minus evacuation time minus the
+configured 30-minute buffer. The crew planner uses supplied directed road legs and
+geometry, action durations, deadlines and team capabilities. Values come from the
+snapshot's `value_score`, not inferred euro losses. All road safety, intervention
+effects, approvals and the 240-minute call-readiness validity are **fictional
+fixture assumptions**, anchored to a single saved epoch. None is provider evidence.
+
+Run from a checkout with the project's base and `dashboard` dependencies installed:
+
+```bash
+# First publish the queued state (use a new directory for a fresh scenario).
+python -m fireline.offline_integration --directory data/offline-connected --phase queued
+
+# Leave this running in another terminal. Choose an unused local port.
+python -m fireline.dashboard_server --database data/offline-connected/coordination.sqlite --port 18531
+
+# With the dashboard open, publish the synthetic outcomes over its WebSocket.
+python -m fireline.offline_integration --directory data/offline-connected --phase outcomes
+```
+
+Open `http://127.0.0.1:18531/`. The unanswered call appears under **Pending human
+callbacks**; it does not increment **human requested** or **assistance requested**.
+Selecting a location shows independent call facts, allocation records and tasks.
+Crew routes are proposals, never dispatch confirmations. Repeating either command
+preserves completed outcomes; restarting after an interrupted result resumes it.
+The scenario clock stays at its scripted time and its source will eventually show
+as stale against wall time. A fresh directory starts a fresh run.
+
+`allow_synthetic=True` is an explicit enqueue-only test option. Live-only remains
+the default; recorded snapshots remain blocked, and synthetic requests are rejected
+before outbound provider configuration or dispatch. Keep this scenario in its own
+directory/database. The runner never loads credentials or makes a real phone call.
+Allocation and coordination SQLite files are separate because their existing table
+names overlap. The coordination attachment checks exact scenario, snapshot,
+incident, epoch, observation time and buffer before publishing the ledger projection.
+
+Validation includes no-answer escalation, unknown facts, capacity, supplied crew
+paths, road warnings, restart/replay after partial results, actual REST/WebSocket
+updates and private-data filtering. UI tests cover callback visibility and nested
+allocation destinations. A Chrome check exercises the queued-to-outcomes transition,
+selection, database view and reconnect without any browser write requests.
+Verified on this branch: **954 Python tests passed, 1 skipped; 18 Node tests
+passed; JavaScript lint and the new Python files' Ruff checks passed.** The full
+Python run retains one dependency deprecation warning.
+
+Remaining live integration: feed actual incoming snapshots and trusted operational
+inputs into a long-running coordinator/queue worker, connect authenticated provider
+outcomes to refreshes, and verify the Vonage/SLNG unanswered-call lifecycle end to
+end. Public hosting additionally needs configurable hosts/ports, dashboard access
+control and persistent storage. The mock runner does not replace those services.

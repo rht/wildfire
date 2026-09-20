@@ -4,7 +4,7 @@ One store/connection per worker; no UI or provider I/O. Revisions and suggested
 work publish in the same SQLite transaction. Public state is a persisted view,
 not a claim that a call connected a human or that anyone evacuated.
 """
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import json
 import re
@@ -202,6 +202,32 @@ def _response_proposal(response, snapshot, elapsed):
     return public
 
 
+@dataclass(frozen=True)
+class _AllocationView:
+    """One consistent ledger read shared by validation and readiness projection."""
+    observed_at: str
+    data: tuple
+
+    def view(self, *, as_of):
+        if as_of != self.observed_at:
+            raise ValueError('allocation projection time mismatch')
+        return self.data
+
+
+def _allocated_plan(store, snapshot, scenario, assessments, epoch, now, road_warnings):
+    from .evacuation_plan_adapter import coordinate_approved_evacuation
+    data = store.view(as_of=now.isoformat())
+    context = data[1][0]
+    if (context.scenario_id != snapshot['scenario_id']
+            or context.incident_id != snapshot['incident_id']
+            or context.snapshot_id != snapshot['snapshot_id']
+            or utc(context.epoch) != epoch or utc(context.as_of) != now
+            or context.buffer_min != scenario.buffer_min):
+        raise ValueError('allocation context does not match coordination')
+    return coordinate_approved_evacuation(scenario, assessments,
+        _AllocationView(now.isoformat(), data), as_of=now.isoformat(), road_warnings=road_warnings)
+
+
 class CoordinationStore:
     """Persistent public projection; use a single scenario and input mode per DB.
 
@@ -292,12 +318,13 @@ class CoordinationStore:
             records.append(record)
         return _merge_assessments(assessments), summaries, records, errors
 
-    def refresh(self, snapshot, scenario, centres, routes, *, road_warnings=(), response_plan=None):
+    def refresh(self, snapshot, scenario, centres, routes, *, road_warnings=(), response_plan=None, allocation_store=None):
         """Recompute at the exact elapsed scenario time and atomically publish changes.
 
         Snapshot records are authoritative for timing, distance and occupancy.
-        Call evidence keeps its exact UTC observation time. Capacity is proposed,
-        never durably reserved here. Existing analyst task ownership/status survive.
+        Call evidence keeps its exact UTC observation time. Capacity is proposed
+        unless allocation_store supplies an already-reserved ledger. This method
+        never reserves places. Existing analyst task ownership/status survive.
         """
         now = utc(self.clock().isoformat())
         if now < self.epoch:
@@ -314,9 +341,12 @@ class CoordinationStore:
             assessments = [replace(a, confidence=None) if a.asset_id in pending_assistance else a
                            for a in assessments]
             elapsed = (now - self.epoch).total_seconds() / 60
-            plan = coordinate_evacuation(current, assessments, centres, routes,
-                contact_policy=ContactPolicy(now_min=elapsed, buffer_min=scenario.buffer_min),
-                road_warnings=road_warnings)
+            plan = (_allocated_plan(allocation_store, snapshot, current, assessments,
+                                    self.epoch, now, road_warnings)
+                    if allocation_store is not None else
+                    coordinate_evacuation(current, assessments, centres, routes,
+                        contact_policy=ContactPolicy(now_min=elapsed, buffer_min=scenario.buffer_min),
+                        road_warnings=road_warnings))
             for row in plan['locations']:
                 row['assistance_review_required'] = row['asset_id'] in pending_assistance
                 if row['assistance_review_required']:
@@ -338,13 +368,14 @@ class CoordinationStore:
                                                   if c['asset_id'] == row['asset_id']]
                 row['call_id'] = None  # provider IDs remain in the private store
             plan['input_mode'] = snapshot['input_mode']
-            plan['capacity_status'] = 'proposal_only'
+            plan['capacity_status'] = 'reserved_ledger' if allocation_store is not None else 'proposal_only'
             candidate = _public(dict(schema_version='coordination-state-1',
                 scenario_id=snapshot['scenario_id'], snapshot_id=snapshot['snapshot_id'],
                 input_mode=snapshot['input_mode'], epoch=self.epoch.isoformat(), elapsed_min=elapsed,
                 assets=_public_assets(snapshot['assets']), contacts=plan['contacts'], calls=calls, plan=plan,
                 teams=self.tasks.teams(), tasks=[_task_summary(t) for t in tasks], errors=errors,
                 snapshot_as_of=snapshot['as_of'], data_status=snapshot['data_status'],
+                fire_geometry=snapshot.get('fire_geometry'), fire_geometry_kind=snapshot.get('fire_geometry_kind'),
                 dispatch=False, live_validation=False))
             # Private text affects the revision digest but never the public payload.
             fingerprint = digest([candidate, records, tasks])

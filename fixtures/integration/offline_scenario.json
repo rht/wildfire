@@ -1,0 +1,254 @@
+{
+  "schema_version": "offline-integration-1",
+  "scenario_id": "offline-connected",
+  "incident_id": "fictional-fire",
+  "buffer_min": 30,
+  "horizon_min": 300,
+  "locations": [
+    {
+      "asset_id": "A",
+      "name": "Demo Cedar Care Home \u2014 no answer",
+      "asset_class": "care_home",
+      "lon": 3.01,
+      "lat": 41.91,
+      "estimated_occupancy": 6,
+      "assisted": 4,
+      "arrival_min": 220,
+      "node_id": "A"
+    },
+    {
+      "asset_id": "B",
+      "name": "Demo Willow House",
+      "asset_class": "masia",
+      "lon": 3.025,
+      "lat": 41.9,
+      "estimated_occupancy": 4,
+      "assisted": 0,
+      "arrival_min": 120,
+      "node_id": "B"
+    },
+    {
+      "asset_id": "C",
+      "name": "Demo Pine House \u2014 assistance needed",
+      "asset_class": "masia",
+      "lon": 3.04,
+      "lat": 41.89,
+      "estimated_occupancy": 2,
+      "assisted": 2,
+      "arrival_min": 150,
+      "node_id": "C"
+    }
+  ],
+  "teams": [
+    {
+      "team_id": "crew-1",
+      "start_node_id": "BASE",
+      "available": true,
+      "available_from_min": 0,
+      "available_until_min": 300,
+      "transport_capacity": 0,
+      "capabilities": [
+        "protection"
+      ]
+    },
+    {
+      "team_id": "crew-2",
+      "start_node_id": "BASE",
+      "available": true,
+      "available_from_min": 0,
+      "available_until_min": 300,
+      "transport_capacity": 8,
+      "capabilities": [
+        "assisted_evacuation"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "action_id": "protect-B",
+      "asset_id": "B",
+      "duration_min": 5,
+      "deadline_min": 120,
+      "requires": [],
+      "capabilities": [
+        "protection"
+      ],
+      "transport_people": 0,
+      "readiness_required": false,
+      "effects": [
+        {
+          "asset_id": "B",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic protection effect, not predicted lives saved"
+        }
+      ]
+    },
+    {
+      "action_id": "assist-C",
+      "asset_id": "C",
+      "duration_min": 8,
+      "deadline_min": 150,
+      "requires": [],
+      "capabilities": [
+        "assisted_evacuation"
+      ],
+      "transport_people": 2,
+      "readiness_required": true,
+      "effects": [
+        {
+          "asset_id": "C",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic assisted pickup effect"
+        }
+      ]
+    },
+    {
+      "action_id": "assist-A",
+      "asset_id": "A",
+      "duration_min": 20,
+      "deadline_min": 220,
+      "requires": [],
+      "capabilities": [
+        "assisted_evacuation"
+      ],
+      "transport_people": 6,
+      "readiness_required": true,
+      "effects": [
+        {
+          "asset_id": "A",
+          "coverage": 1,
+          "confirmed": true,
+          "source": "synthetic assisted pickup effect"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "from_node": "BASE",
+      "to_node": "A",
+      "minutes": 5,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected road",
+      "path_lonlat": [
+        [
+          3.015,
+          41.88
+        ],
+        [
+          3.005,
+          41.895
+        ],
+        [
+          3.01,
+          41.91
+        ]
+      ]
+    },
+    {
+      "from_node": "BASE",
+      "to_node": "B",
+      "minutes": 3,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected road",
+      "path_lonlat": [
+        [
+          3.015,
+          41.88
+        ],
+        [
+          3.02,
+          41.895
+        ],
+        [
+          3.025,
+          41.9
+        ]
+      ]
+    },
+    {
+      "from_node": "BASE",
+      "to_node": "C",
+      "minutes": 4,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected road",
+      "path_lonlat": [
+        [
+          3.015,
+          41.88
+        ],
+        [
+          3.03,
+          41.88
+        ],
+        [
+          3.04,
+          41.89
+        ]
+      ]
+    },
+    {
+      "from_node": "C",
+      "to_node": "A",
+      "minutes": 8,
+      "confirmed": true,
+      "safe": true,
+      "available_until_min": 260,
+      "source": "synthetic inspected road",
+      "path_lonlat": [
+        [
+          3.04,
+          41.89
+        ],
+        [
+          3.03,
+          41.905
+        ],
+        [
+          3.01,
+          41.91
+        ]
+      ]
+    }
+  ],
+  "road_warnings": [
+    {
+      "road_id": "forest-road",
+      "road_name": "Forest Road",
+      "reason": "blocked by the fictional fire",
+      "source": "synthetic road desk"
+    }
+  ],
+  "outcomes": {
+    "A": "no_answer",
+    "B": "self_evacuate",
+    "C": "assistance_required"
+  },
+  "readiness_validity_min": 240,
+  "road_nodes": {
+    "BASE": [
+      3.015,
+      41.88
+    ],
+    "A": [
+      3.01,
+      41.91
+    ],
+    "B": [
+      3.025,
+      41.9
+    ],
+    "C": [
+      3.04,
+      41.89
+    ]
+  }
+}

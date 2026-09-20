@@ -369,3 +369,23 @@ def test_bound_briefing_cannot_be_reused_for_another_snapshot(queue):
     result = enqueue(queue, briefing_adapter=adapter)
     assert not result['enqueue']['queued']
     assert all('invalid_request_data' in r['reasons'] for r in result['blocked'][:2])
+
+
+def test_explicit_synthetic_enqueue_preserves_mode_and_cannot_dispatch(queue):
+    snap = produced_snapshot()
+    snap['input_mode'] = 'synthetic'
+    assert not enqueue(queue, snap)['enqueue']['queued']
+    report = enqueue(queue, snap, allow_synthetic=True)
+    assert len(report['enqueue']['queued']) == 2
+    assert all(queue.store.get(rid)['request']['input_mode'] == 'synthetic'
+               for rid in report['enqueue']['queued'])
+
+    class NeverCall:
+        def configuration_status(self):
+            pytest.fail('synthetic dispatch inspected a provider')
+        def dispatch(self, *args, **kwargs):
+            pytest.fail('synthetic dispatch called a provider')
+
+    with pytest.raises(ValueError, match='synthetic'):
+        queue.dispatch_next(NeverCall())
+    assert queue.status()['active'] == 0

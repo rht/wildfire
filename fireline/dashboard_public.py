@@ -8,6 +8,7 @@ _SECRET = re.compile(r'(?i)(?:bearer\s+\S+|(?:api[_-]?key|token|password)\s*[:=]
 
 # Unknown *values* remain null. Unknown fields are withheld until explicitly reviewed.
 _FIELDS = set('''review unserved blocked_actions assisted_units people_units value_units
+allocations allocation_revision allocation_tasks destination_candidates
 allocation_id group_id previous_allocation_id incident_id last_at safety
 instruction_allowed assistance transport_confirmed reception_confirmed pickup_min
 teams tasks locked remaining_transport_capacity path_lonlat path_nodes
