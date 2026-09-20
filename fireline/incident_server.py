@@ -181,6 +181,7 @@ def create_app(
     ):
         raise ValueError("invalid worker interval")
     lock = asyncio.Lock()
+    fire_lock = asyncio.Lock()
     stop = asyncio.Event()
 
     async def run(operation, *args):
@@ -219,7 +220,11 @@ def create_app(
                     raise PermissionError()
                 payload = _object(await _body(request, MAX_TRIGGER_BODY))
                 if path == "/api/fire":
-                    result = await run(runtime.trigger, payload)
+                    # Serialize fire preparations, but allow voice callbacks and ticks
+                    # while the bounded per-location LLM calls are in flight.
+                    async with fire_lock:
+                        prepared = await asyncio.to_thread(runtime.prepare_trigger, payload)
+                        result = await run(runtime.activate_trigger, prepared)
                 else:
                     if set(payload) - {"asset_id", "status", "answers"}:
                         raise ValueError()
@@ -371,6 +376,7 @@ def main(argv=None):
     trigger = commands.add_parser("trigger")
     trigger.add_argument("--url", default="http://127.0.0.1:8521")
     trigger.add_argument("--file", type=Path, required=True)
+    trigger.add_argument("--timeout", type=float, default=600, help="Read timeout in seconds for discovery and per-location assessment")
     binding = commands.add_parser(
         "bind-vonage", help="bind an exact Vonage UUID to an existing SLNG request"
     )
@@ -410,6 +416,8 @@ def main(argv=None):
         if args.command == "trigger":
             import requests
 
+            if not math.isfinite(args.timeout) or args.timeout <= 0:
+                raise ValueError("trigger timeout must be positive and finite")
             response = requests.post(
                 args.url.rstrip("/") + "/api/fire",
                 data=args.file.read_bytes(),
@@ -417,7 +425,7 @@ def main(argv=None):
                     "Authorization": "Bearer " + fire_token,
                     "Content-Type": "application/json",
                 },
-                timeout=(5, 60),
+                timeout=(5, args.timeout),
                 allow_redirects=False,
             )
             if response.status_code != 200:
@@ -451,7 +459,7 @@ def main(argv=None):
         else:
             settings = _settings(args.settings)
         client = None
-        if settings.get("call_mode") == "live" or os.environ.get("SLNG_EVENT_TOKEN"):
+        if settings.get("call_mode") in ("live", "sync_only") or os.environ.get("SLNG_EVENT_TOKEN"):
             from .slng_voice import SlngClient, SlngConfig
 
             client = SlngClient(SlngConfig.from_env())

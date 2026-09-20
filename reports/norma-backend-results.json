@@ -1,0 +1,129 @@
+{
+  "scope": "Changed production files for completed-call result ingestion, not repository-wide certification",
+  "files": [
+    {
+      "file": "fireline/voice_store.py",
+      "sha256": "88cd276e20bc060b88eb4139ab3b3ecf510c24d8d71385078b5789f2227ac947",
+      "check": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/voice_queue.py",
+      "sha256": "081ac7eeb274167a0962152f3ee89c1e278151bb302b3039a3c2db6a0e74c61d",
+      "check": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/incident_runtime.py",
+      "sha256": "8583c241bb0766d1fbcac3fec90d8d220b255b81f21171e7aae3e2e9849cb6b5",
+      "check": {
+        "outcome": "clean",
+        "message": "No issues found in this file for the applicable rules.",
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    },
+    {
+      "file": "fireline/incident_server.py",
+      "sha256": "0f6d5ea55c276331394869724c31eea453dc53d755c7368e7c67549b15c7238a",
+      "check": {
+        "outcome": "issues",
+        "rules": {
+          "py-maint-no-print": {
+            "rule_name": "print() in production code",
+            "severity": "MEDIUM",
+            "impact_area": "maintainability",
+            "description": "Uses print() to output messages instead of the logging system. Logs cannot be filtered or sent to monitoring.",
+            "remediation_action": "Replace print(x) with logger.info(\"%s\", x).",
+            "good_code": "logger.info(\"Using ROOT_PATH: %s\", root_path)",
+            "bad_code": "print(f\"Using ROOT_PATH: {root_path}\")",
+            "estimated_time_to_fix": 3
+          },
+          "fa-scl-hardcoded-workers": {
+            "rule_name": "Hardcoded uvicorn workers",
+            "severity": "MEDIUM",
+            "impact_area": "scalability",
+            "description": "uvicorn.run(..., workers=N) hardcoded — must come from env/config so it can be tuned per environment.",
+            "remediation_action": "Read from env.",
+            "good_code": "uvicorn.run(app, workers=int(os.environ[\"WEB_CONCURRENCY\"]))",
+            "bad_code": "uvicorn.run(app, workers=4)",
+            "estimated_time_to_fix": 5
+          }
+        },
+        "issues": [
+          {
+            "rule_id": "py-maint-no-print",
+            "file": "fireline/incident_server.py",
+            "line": 405,
+            "column": 13,
+            "snippet": "            print(\"Vonage association recorded; no call was placed.\")"
+          },
+          {
+            "rule_id": "py-maint-no-print",
+            "file": "fireline/incident_server.py",
+            "line": 426,
+            "column": 13,
+            "snippet": "            print(json.dumps(response.json(), indent=2))"
+          },
+          {
+            "rule_id": "fa-scl-hardcoded-workers",
+            "file": "fireline/incident_server.py",
+            "line": 483,
+            "column": 9,
+            "snippet": "        uvicorn.run(\n            application, host=args.host, port=args.port, workers=1, access_log=False\n        )"
+          }
+        ],
+        "issues_returned": 3,
+        "total_issues": 3,
+        "capped": false,
+        "coverage": {
+          "reduced": false,
+          "reason": null
+        },
+        "rulesets_evaluated": [
+          "fastapi-norma-ruleset",
+          "python-norma-ruleset",
+          "sqlalchemy-norma-ruleset"
+        ]
+      }
+    }
+  ],
+  "retained_findings": "incident_server.py: two CLI stdout findings and mandatory workers=1. Existing documented audit defenses remain applicable. CLI command output is intentional; multiple server processes would violate the local admission lock.",
+  "final_store_recheck": {
+    "file": "fireline/voice_store.py",
+    "sha256": "1f5de410e5625579916b7ca2aaf87b507cf7e6d92235717160021e18f1fddf14",
+    "check": {
+      "outcome": "error",
+      "reason": "The live check could not be completed; retry shortly."
+    }
+  }
+}
