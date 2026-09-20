@@ -319,9 +319,9 @@ test("GPS preserves WGS84 order and rejects missing or invalid positions", async
   const { gps } = await import(path);
   assert.equal(
     gps({ latitude: 41.953, longitude: 3.022 }),
-    "41.95300, 3.02200",
+    "41.95, 3.02",
   );
-  assert.equal(gps({ latitude: 0, longitude: 0 }), "0.00000, 0.00000");
+  assert.equal(gps({ latitude: 0, longitude: 0 }), "0.00, 0.00");
   for (const point of [
     {},
     { latitude: null, longitude: 3 },
@@ -557,4 +557,18 @@ test('generated historical fixtures do not expose future observations or final c
     for(const asset of incident.assets) for(const source of asset.sources || []) assert.ok(Date.parse(source.observed_at) <= Date.parse(entry.as_of));
     for(const location of incident.plan.locations) {assert.deepEqual(location.reasons, []); assert.equal(location.destination_name, null);}
   }
+});
+
+
+test("displayed decimals use at most two places without changing numeric evidence", async () => {
+  const { count, money, percentage, number, gps } = await import("../src/state/model.mjs");
+  const value = 1234.56789;
+  assert.equal(count(value), "1,234.57");
+  assert.equal(count(12), "12");
+  assert.equal(money(value), "€1,234.57");
+  assert.equal(percentage(0.123456), "12.35%");
+  assert.equal(gps({latitude: 41.953456, longitude: 3.022345}), "41.95, 3.02");
+  assert.equal(number(value), value);
+  assert.equal(count(null), "—");
+  assert.equal(percentage(null), "—");
 });

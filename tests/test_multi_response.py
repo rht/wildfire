@@ -71,6 +71,56 @@ def test_two_trucks_parallel_capacity_no_double_assignment_and_assisted_first():
     assert data == original
 
 
+def test_planner_exports_supplied_review_context_and_actual_ordering_evidence():
+    data = scene()
+    data['actions'][0]['action'] = 'Assist occupants'
+    result = plan(data)
+    crew = result['teams'][0]
+    context = crew.get('planning_context')
+    assert context is not None, 'Crew reorder validation needs authoritative planning evidence'
+    assert context['start']['node_id'] == 'BASE'
+    assert context['transport_capacity'] == 2
+    assert context['start']['available_min'] == 0
+    route = next(r for r in context['routes'] if r['from_node'] == 'BASE' and r['to_node'] == 'A')
+    assert route['travel_min'] == 1
+    assert route['safe'] is True and route['confirmed'] is True
+    assert route['available_until_min'] == 30
+    row = crew['tasks'][0]
+    assert row['duration_min'] == 2 and row['deadline_min'] == 30
+    assert row['required_capabilities'] == [] and row['readiness_required'] is False
+    assert row['ordering_evidence']['assisted_gain'] == 2
+    assert row['ordering_evidence']['people_gain'] == 2
+    assert row['ordering_evidence']['candidate_count'] == 6
+    assert row['ordering_evidence']['selection_rank'] == 1
+    assert row.get('action') == 'Assist occupants'
+
+
+def test_expired_side_effect_does_not_change_exported_action_feasibility_deadline():
+    from fireline.dashboard_approvals import plans_for
+    from fireline.dashboard_plan_review import preview_order
+    data = scene()
+    data['teams'] = data['teams'][:1]
+    data['assets'][1]['deadline_min'] = 1
+    data['actions'] = [action('help-A', 'A', effects=[
+        dict(asset_id=site, coverage=1, confirmed=True, source='supplied evidence')
+        for site in ('A', 'B')])]
+    result = plan(data)
+    crew = result['teams'][0]
+    row = crew['tasks'][0]
+    assert row['finish_min'] == 3
+    assert result['coverage']['A'] == 1
+    assert result['coverage']['B'] == 0
+    assert row['deadline_min'] == 30
+    state = dict(scenario_id='synthetic', snapshot_id='s1', revision=1,
+                 assets=data['assets'], teams=[], plan=dict(response=result, locations=[]))
+    identity = dict(source='connected', incident_id='synthetic', snapshot_id='s1', revision=1)
+    base = plans_for(state, **identity)[0]
+    preview = preview_order(state, **identity, team_id=crew['team_id'],
+                            plan_version=base['plan_version'], action_ids=['help-A'])
+    assert preview['can_confirm'] is True
+    assert preview['blockers'] == []
+
+
 def test_shared_prerequisite_finishes_before_work_on_both_teams():
     data = scene()
     data['actions'] = [action('access', 'C', effects=[], capabilities=['access']),
@@ -180,6 +230,15 @@ def test_route_graph_reuses_cut_times_and_only_exports_supplied_geometry():
     graph.g['MID']['A']['cut_min'] = 2
     assert not tasks(plan(data, graph=graph))
     assert graph.g['MID']['A']['closed'] is False
+
+
+def test_review_route_matrix_only_contains_assigned_destinations():
+    data = scene()
+    result = plan(data)
+    for crew in result['teams']:
+        allowed = {'BASE', *[t['to_node'] for t in crew['tasks']]}
+        assert all(route['from_node'] in allowed and route['to_node'] in allowed
+                   for route in crew['planning_context']['routes'])
 
 
 @pytest.mark.parametrize('mutation', ['duplicate', 'cycle', 'nan', 'bool_capacity', 'unknown_target'])

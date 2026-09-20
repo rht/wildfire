@@ -123,6 +123,18 @@ def test_fire_authentication_duplicate_trigger_and_dashboard_stream(tmp_path):
             )
 
 
+def test_connected_incident_dashboard_has_separate_persistent_approval_store(tmp_path):
+    r = runtime(tmp_path)
+    with TestClient(app(r)) as client:
+        state = client.post('/api/fire', json=demo_trigger(NOW), headers=AUTH).json()
+        response = client.get('/api/crew-approvals', params={
+            'source': 'connected', 'incident_id': state.get('incident_id') or state['scenario_id'],
+            'snapshot_id': state['snapshot_id'], 'revision': str(state['revision'])})
+        assert response.status_code == 200
+        assert response.json()['events'] == []
+        assert (tmp_path / 'dashboard-approvals.sqlite3').is_file()
+
+
 def test_interview_receiver_authenticates_and_refreshes_public_state(tmp_path):
     r = runtime(tmp_path)
     r.trigger(demo_trigger(NOW))

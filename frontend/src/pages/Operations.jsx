@@ -24,7 +24,7 @@ import {
   Metric,
 } from "../components/Common";
 import CrewPlans from "../components/CrewPlans";
-import IncidentMap from "../components/IncidentMap";
+import CrewItinerary from "../components/CrewItinerary";
 import {
   gps,
   callActor,
@@ -379,7 +379,7 @@ export function ResponsePlan({ incident }) {
     <>
       <PageHeading
         title="Firefighter plan"
-        description="Team-by-team steps, destinations and dependencies, in the order supplied by coordination."
+        description="Starting points and ordered visits, with supplied priority evidence and analyst review."
       />
       <Alert severity="warning">
         <strong>Fire analyst confirmation required.</strong> Review and confirm
@@ -394,7 +394,7 @@ export function ResponsePlan({ incident }) {
         </MainCard>
       ) : (
         <>
-          <div className="plan-layout">
+          <div className="crew-plan-layout">
             <div className="plan-teams">
               {teams.map((team) => (
                 <MainCard
@@ -407,65 +407,18 @@ export function ResponsePlan({ incident }) {
                   }
                   key={team.team_id}
                 >
-                  {(team.tasks || []).length ? (
-                    (team.tasks || []).map((step, index) => {
-                      const asset = incident.assets.find(
-                        (a) => a.asset_id === step.asset_id,
-                      );
-                      return (
-                        <div
-                          className="plan-step"
-                          key={step.action_id || index}
-                        >
-                          <div className="step-number">{index + 1}</div>
-                          <div className="step-body">
-                            <div className="step-title">
-                              <strong>
-                                {asset?.name ||
-                                  step.asset_id ||
-                                  "Destination not supplied"}
-                              </strong>
-                              <Status value={step.status || "proposed"} />
-                            </div>
-                            <Coordinates location={asset} />
-                            <Typography color="text.secondary">
-                              {humanize(step.action || step.action_id)}
-                            </Typography>
-                            <div className="timing-strip">
-                              <span>
-                                Depart <b>{count(step.depart_min)} min</b>
-                              </span>
-                              <span>
-                                Start <b>{count(step.start_min)} min</b>
-                              </span>
-                              <span>
-                                Finish <b>{count(step.finish_min)} min</b>
-                              </span>
-                            </div>
-                            {step.prerequisites?.length > 0 && (
-                              <div className="dependency">
-                                <strong>Prerequisites</strong>
-                                {step.prerequisites.map((p) => (
-                                  <div key={p}>{humanize(p)}</div>
-                                ))}
-                              </div>
-                            )}
-                            <div className="small-muted">
-                              Route: {step.route_source || "Not supplied"}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <Empty title="No steps assigned" />
-                  )}
+                  <CrewItinerary
+                    incident={incident}
+                    team={team}
+                    name={
+                      incident.teams.find(
+                        (item) => item.team_id === team.team_id,
+                      )?.name || team.team_id
+                    }
+                  />
                 </MainCard>
               ))}
             </div>
-            <MainCard title="Proposed routes" content={false}>
-              <IncidentMap incidents={[incident]} showRoutes />
-            </MainCard>
           </div>
           <MainCard title="Blockers & uncovered locations">
             {Object.entries(response.unserved || {}).map(([id, reason]) => (

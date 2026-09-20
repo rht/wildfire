@@ -158,11 +158,14 @@ def _response_proposal(response, snapshot, elapsed, *, now):
             or response.get('dispatch') is not False):
         raise ValueError('response proposal association, time or dispatch mismatch')
     from .incident_planning import validate_current_location
+    from .dashboard_public import _clean
     assets = {a['asset_id'] for a in snapshot['assets']}
     task_keys = ('action_id', 'asset_id', 'team_id', 'scenario_id', 'snapshot_id',
                  'action_version', 'status', 'from_node', 'to_node', 'depart_min',
                  'travel_min', 'start_min', 'finish_min', 'actual_finish_min',
-                 'prerequisites', 'transport_people', 'route_source', 'path_lonlat', 'path_nodes')
+                 'prerequisites', 'transport_people', 'route_source', 'path_lonlat', 'path_nodes',
+                 'duration_min', 'deadline_min', 'required_capabilities', 'readiness_required',
+                 'readiness', 'ordering_evidence', 'action', 'route_status')
     teams, action_ids, team_ids = [], set(), set()
     for team in response['teams']:
         if team['team_id'] in team_ids:
@@ -192,6 +195,8 @@ def _response_proposal(response, snapshot, elapsed, *, now):
         teams.append(dict(team_id=team['team_id'], tasks=tasks, locked=team['locked'],
                           remaining_transport_capacity=team['remaining_transport_capacity'],
                           current_location=validate_current_location(team.get('current_location'), now=now)))
+        if 'planning_context' in team:
+            teams[-1]['planning_context'] = _clean(team['planning_context'])
     public = {k: response[k] for k in ('schema_version', 'scenario_id', 'snapshot_id',
                                      'now_min', 'optimal', 'dispatch', 'method')}
     public.update(teams=teams, coverage={k: v for k, v in response['coverage'].items() if k in assets},
