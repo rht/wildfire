@@ -69,6 +69,13 @@ def test_projection_preserves_snapshot_valuation_and_criticality_fields():
         'criticality_tier': 'high',
         'criticality_factors': ['sole_local_service', 'high_occupancy'],
         'criticality_basis': 'analyst-confirmed override',
+        'custom_value_eur_low': 8000000,
+        'custom_value_eur_mid': 12000000,
+        'custom_value_eur_high': 20000000,
+        'custom_value_method': 'component_replacement',
+        'custom_value_components': [{'label': 'computing installation', 'amount_eur': 9000000},
+                                    {'label': 'building shell', 'amount_eur': 3000000}],
+        'custom_value_basis': 'custom-valuation-proto; analyst override: ca.wikipedia.org',
         'valuation_private_note': 'do not publish',
     })
 
@@ -93,6 +100,17 @@ def test_projection_preserves_snapshot_valuation_and_criticality_fields():
         'criticality_tier': 'high',
         'criticality_factors': ['sole_local_service', 'high_occupancy'],
         'criticality_basis': 'analyst-confirmed override',
+        # The per-asset bespoke valuation crosses whole or not at all: method, band, the priced
+        # components (label and amount alike) and the basis that says it is an analyst-confirmed
+        # assumption. A band without its method, or a method without its basis, would read as a
+        # valuation the browser could not caveat.
+        'custom_value_eur_low': 8000000,
+        'custom_value_eur_mid': 12000000,
+        'custom_value_eur_high': 20000000,
+        'custom_value_method': 'component_replacement',
+        'custom_value_components': [{'label': 'computing installation', 'amount_eur': 9000000},
+                                    {'label': 'building shell', 'amount_eur': 3000000}],
+        'custom_value_basis': 'custom-valuation-proto; analyst override: ca.wikipedia.org',
     }
 
 

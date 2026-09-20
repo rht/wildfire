@@ -51,8 +51,9 @@ DATA_STATUSES = ("current", "stale", "unavailable")
 GEOMETRY_KINDS = ("perimeter", "hotspot_centre", "simulated")   # simulated: model burned area, not observed
 REVIEW_REASONS = ("location_unknown", "occupancy_unknown", "occupancy_seasonal", "class_ambiguous",
                   "value_unknown", "exposure_unknown", "forecast_unavailable", "evacuation_unknown",
-                  "criticality_unassessed", "llm_assessment_failed", "llm_assessment_unavailable",
-                  "llm_assessment_needs_review", "llm_evacuation_context_missing")
+                  "criticality_unassessed", "valuation_unassessed", "llm_assessment_failed",
+                  "llm_assessment_unavailable", "llm_assessment_needs_review",
+                  "llm_evacuation_context_missing")
 EVACUATION_UNKNOWN = "evacuation_unknown"
 POINT_FALLBACK_NOTE = "point fallback: facility footprint missing"
 HOTSPOT_NOTE = "fire geometry is a hotspot centre, not a surveyed perimeter"
@@ -69,13 +70,21 @@ ASSET_KEYS = ("asset_id", "name", "asset_type", "latitude", "longitude", "geomet
               "arrival_p50_at", "forecast_horizon_at", "forecast_source", "fire_arrival_at",
               "fire_arrival_basis", "evacuation_min", "evacuation_source", "needs_review",
               "review_reasons", "sources", "municipality", "criticality_tier", "criticality_factors",
-              "criticality_basis")
+              "criticality_basis", "custom_value_eur_low", "custom_value_eur_mid", "custom_value_eur_high",
+              "custom_value_method", "custom_value_components", "custom_value_basis")
 TIMING_KEYS = ("fire_arrival_at", "fire_arrival_basis", "evacuation_min", "evacuation_source")   # v1.1
 # Per-asset criticality (config.CRITICALITY_POLICY). Optional like TIMING_KEYS: a snapshot written
 # before the layer existed stays valid without them. The producer never sets a tier - it is proposed
 # by the agent and written by an analyst-confirmed override (fireline/priority.py).
 CRITICALITY_KEYS = ("criticality_tier", "criticality_factors", "criticality_basis")
 CRITICALITY_UNASSESSED = "criticality_unassessed"
+# Per-asset custom valuation (config.CUSTOM_VALUATION_POLICY). Optional like CRITICALITY_KEYS, and
+# written the same way: the producer never asserts a figure, it arrives only through an
+# analyst-confirmed override (fireline/priority.py). `custom_value_eur_mid`, when set, replaces the
+# class replacement cost in `derive_value_at_risk` - and nothing else, because no sort key reads it.
+CUSTOM_VALUATION_KEYS = ("custom_value_eur_low", "custom_value_eur_mid", "custom_value_eur_high",
+                         "custom_value_method", "custom_value_components", "custom_value_basis")
+VALUATION_UNASSESSED = "valuation_unassessed"
 # Optional flagged extension (FEATURES["value_at_risk"]): all eight present together or all absent.
 VALUE_AT_RISK_KEYS = ("replacement_value_eur", "replacement_value_basis", "expected_loss_eur_low",
                       "expected_loss_eur_mid", "expected_loss_eur_high", "people_exposed",
@@ -85,7 +94,7 @@ _COMPUTED_FIELDS = {"value_score", "value_basis", "distance_to_fire_m", "interse
                     "burn_probability", "arrival_p10_at", "arrival_p50_at", "forecast_horizon_at",
                     "forecast_source", "fire_arrival_at", "fire_arrival_basis", "evacuation_min",
                     "evacuation_source", "criticality_tier", "criticality_factors",
-                    "criticality_basis", *VALUE_AT_RISK_KEYS}
+                    "criticality_basis", *CUSTOM_VALUATION_KEYS, *VALUE_AT_RISK_KEYS}
 
 
 # ------------------------------------------------------------------------------------------ time
@@ -349,6 +358,8 @@ def asset_record(row: dict, cfg=config) -> dict:
         reasons.append(EVACUATION_UNKNOWN)
     if _criticality_wanted(p["asset_type"], cfg):
         reasons.append(CRITICALITY_UNASSESSED)
+    if _valuation_wanted(p["asset_type"], cfg):
+        reasons.append(VALUATION_UNASSESSED)
     return {
         "asset_id": p["asset_id"],
         "name": p["name"],
@@ -382,6 +393,14 @@ def asset_record(row: dict, cfg=config) -> dict:
         "criticality_tier": None,
         "criticality_factors": None,
         "criticality_basis": None,
+        # Producer default, as above. A bespoke euro figure only ever arrives through an
+        # analyst-confirmed override of an agent proposal, so all six stay null here.
+        "custom_value_eur_low": None,
+        "custom_value_eur_mid": None,
+        "custom_value_eur_high": None,
+        "custom_value_method": None,
+        "custom_value_components": None,
+        "custom_value_basis": None,
     }
 
 
@@ -420,6 +439,71 @@ def _criticality_errors(tag: str, a: dict, cfg=config) -> list[str]:
     return out
 
 
+def _custom_valuation_errors(tag: str, a: dict, cfg=config) -> list[str]:
+    """Internal consistency of the six custom-valuation keys, independent of who wrote them.
+
+    Either all six are absent (a snapshot written before the layer existed), or they are present and
+    consistent: the method names a policy method; `not_valued` carries no amounts; any other method
+    carries a full, ordered band with a basis and well-formed priced components. Whether the figure is
+    *right* is the analyst's call, not a validation - the guards that gate a proposal live in
+    `priority.custom_valuation_value`.
+    """
+    policy = cfg.CUSTOM_VALUATION_POLICY
+    present = [k for k in CUSTOM_VALUATION_KEYS if k in a]
+    if not present:
+        return []
+    if len(present) != len(CUSTOM_VALUATION_KEYS):
+        missing = [k for k in CUSTOM_VALUATION_KEYS if k not in a]
+        return [f"{tag}: custom-valuation keys must be all present or all absent (missing {missing})"]
+
+    method, basis = a["custom_value_method"], a["custom_value_basis"]
+    amounts = {level: a[f"custom_value_eur_{level}"] for level in ("low", "mid", "high")}
+    components = a["custom_value_components"]
+    out = []
+    if method is None:
+        for k in ("custom_value_basis", "custom_value_components"):
+            if a[k] is not None:
+                out.append(f"{tag}: {k} must be null without custom_value_method")
+        for level, v in amounts.items():
+            if v is not None:
+                out.append(f"{tag}: custom_value_eur_{level} must be null without custom_value_method")
+        return out
+    if method not in policy["methods"]:
+        return [f"{tag}: custom_value_method {method!r} not in {tuple(policy['methods'])}"]
+    if not isinstance(basis, str) or not basis:
+        out.append(f"{tag}: custom_value_method requires a non-empty custom_value_basis")
+    if components is not None:
+        if not isinstance(components, list):
+            out.append(f"{tag}: custom_value_components must be a list or null")
+        else:
+            for i, c in enumerate(components):
+                if not isinstance(c, dict) or not str(c.get("label") or "").strip():
+                    out.append(f"{tag}: custom_value_components[{i}] needs a non-empty label")
+                    continue
+                amount = c.get("amount_eur")
+                if (amount is None or isinstance(amount, bool) or not isinstance(amount, (int, float))
+                        or not math.isfinite(amount) or amount < 0):
+                    out.append(f"{tag}: custom_value_components[{i}].amount_eur must be a nonnegative "
+                               "finite number")
+    if method == "not_valued":
+        for level, v in amounts.items():
+            if v is not None:
+                out.append(f"{tag}: custom_value_eur_{level} must be null for method 'not_valued'")
+        if components:
+            out.append(f"{tag}: custom_value_components must be empty or null for method 'not_valued'")
+        return out
+    for level, v in amounts.items():
+        if v is None:
+            out.append(f"{tag}: custom_value_eur_{level} is required for method {method!r}")
+        elif (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0):
+            out.append(f"{tag}: custom_value_eur_{level} must be a nonnegative finite number")
+    if all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in amounts.values()):
+        if not amounts["low"] <= amounts["mid"] <= amounts["high"]:
+            out.append(f"{tag}: custom_value_eur_low <= _mid <= _high required, got "
+                       f"{amounts['low']:g} / {amounts['mid']:g} / {amounts['high']:g}")
+    return out
+
+
 def _criticality_wanted(asset_type: str, cfg=config) -> bool:
     """True when this class should enter the review queue as `criticality_unassessed`.
 
@@ -428,6 +512,19 @@ def _criticality_wanted(asset_type: str, cfg=config) -> bool:
     if not cfg.FEATURES.get("asset_criticality"):
         return False
     return asset_type in tuple(cfg.CRITICALITY_POLICY["assess_classes"])
+
+
+def _valuation_wanted(asset_type: str, cfg=config) -> bool:
+    """True when this class should enter the review queue as `valuation_unassessed`.
+
+    Gated on FEATURES["custom_valuation"], so a snapshot built with the flag off is unchanged. The
+    classes are exactly those `VALUE_AT_RISK_POLICY` has no row for: asking for a bespoke figure is
+    worth a model call only where the class table gives none, and a class it does price keeps the
+    class answer (config.CUSTOM_VALUATION_POLICY["assess_classes"]).
+    """
+    if not cfg.FEATURES.get("custom_valuation"):
+        return False
+    return asset_type in tuple(cfg.CUSTOM_VALUATION_POLICY["assess_classes"])
 
 
 # ------------------------------------------------------------------------------------- evacuation
@@ -530,7 +627,10 @@ def derive_value_at_risk(rec: dict, now_at=None, cfg=config) -> None:
     class that is not valued is reported by the scenario header's excluded count, not by the review queue.
     """
     policy = cfg.VALUE_AT_RISK_POLICY
-    band = policy["by_type"].get(rec.get("asset_type"))
+    custom = custom_valuation_band(rec, cfg)
+    # A confirmed bespoke figure replaces the class replacement cost, and brings its own damage band
+    # because the classes it applies to have no row in VALUE_AT_RISK_POLICY at all.
+    band = dict(cfg.CUSTOM_VALUATION_POLICY["damage_ratio"]) if custom else policy["by_type"].get(rec.get("asset_type"))
     located = rec.get("latitude") is not None and rec.get("longitude") is not None
     covered = located and bool(str(rec.get("forecast_source") or "").strip())
     occupancy = rec.get("estimated_occupancy")
@@ -538,18 +638,29 @@ def derive_value_at_risk(rec: dict, now_at=None, cfg=config) -> None:
     burn_probability = _num(rec.get("burn_probability"))
     evacuation_min = rec.get("evacuation_min")
     evacuation_min = None if isinstance(evacuation_min, bool) else _num(evacuation_min)
-    value = None if band is None else _num(band.get("replacement_value_eur"))
+    if custom:
+        value = custom["mid"]
+    else:
+        value = None if band is None else _num(band.get("replacement_value_eur"))
 
     values = {k: None for k in VALUE_AT_RISK_KEYS}
     if value is not None:
         values["replacement_value_eur"] = int(value) if float(value).is_integer() else value
-        values["replacement_value_basis"] = (f"assumed per-class replacement cost for {rec.get('asset_type')}, "
-                                             f"policy {policy['version']} ({policy['value_basis']})")
+        values["replacement_value_basis"] = (
+            (f"per-asset custom valuation, method {custom['method']}, policy "
+             f"{cfg.CUSTOM_VALUATION_POLICY['version']} (analyst-confirmed; not a market valuation)")
+            if custom else
+            (f"assumed per-class replacement cost for {rec.get('asset_type')}, "
+             f"policy {policy['version']} ({policy['value_basis']})"))
     if occupancy is not None and burn_probability is not None:
         values["people_exposed"] = round(float(occupancy) * burn_probability, 1)
     if value is not None and burn_probability is not None:
         for level in ("low", "mid", "high"):
-            values[f"expected_loss_eur_{level}"] = round(burn_probability * float(band[f"d_{level}"]) * value)
+            # A class figure is one number, so only the damage band moves. A bespoke figure is itself a
+            # band, so the low end of the loss takes the low end of BOTH and the high end takes both:
+            # the result states the valuation uncertainty as well as the damage uncertainty.
+            amount = custom[level] if custom else value
+            values[f"expected_loss_eur_{level}"] = round(burn_probability * float(band[f"d_{level}"]) * amount)
     at_risk = {"people_at_risk_p50": None, "people_at_risk_p10": None}
     if occupancy is not None and evacuation_min is not None and covered and now_at is not None:
         now = _utc(now_at)
@@ -568,13 +679,55 @@ def derive_value_at_risk(rec: dict, now_at=None, cfg=config) -> None:
                if not (set(s.get("fields") or []) & set(VALUE_AT_RISK_KEYS))]
     fields = [k for k in VALUE_AT_RISK_KEYS if values[k] is not None]
     if band is not None and fields:
-        sources.append(_source_entry(fields, "config.VALUE_AT_RISK_POLICY",
-                                     notes=_value_at_risk_note(rec.get("asset_type"), band, value, policy, cfg)))
+        sources.append(_source_entry(fields,
+                                     "config.CUSTOM_VALUATION_POLICY" if custom else "config.VALUE_AT_RISK_POLICY",
+                                     notes=_value_at_risk_note(rec.get("asset_type"), band, value, policy, cfg,
+                                                               custom)))
     rec["sources"] = sources
 
 
-def _value_at_risk_note(asset_type, band, value, policy, cfg) -> str:
+def custom_valuation_band(rec: dict, cfg=config) -> dict | None:
+    """The confirmed bespoke valuation of one asset as `{low, mid, high, method}`, or None.
+
+    None when the asset carries no custom valuation, when the analyst confirmed `not_valued` (the agent
+    looked and found nothing that supports a bespoke figure), or when the band is incomplete. The
+    guards that produced the payload live in `priority.custom_valuation_value`; this only reads back
+    what an analyst confirmed, so it stays permissive and returns None rather than raising.
+    """
+    method = rec.get("custom_value_method")
+    if not method or method == "not_valued":
+        return None
+    levels = {}
+    for level in ("low", "mid", "high"):
+        amount = rec.get(f"custom_value_eur_{level}")
+        if amount is None or isinstance(amount, bool):
+            return None
+        amount = _num(amount)
+        if amount is None:
+            return None
+        levels[level] = float(amount)
+    if not levels["low"] <= levels["mid"] <= levels["high"]:
+        return None
+    return {**levels, "method": method}
+
+
+def _value_at_risk_note(asset_type, band, value, policy, cfg, custom=None) -> str:
     money = "not valued" if value is None else f"replacement_value_eur {value:.0f}"
+    if custom:
+        cpol = cfg.CUSTOM_VALUATION_POLICY
+        return (f"policy {cpol['version']} for THIS building, not for class {asset_type}: a per-asset "
+                f"valuation an analyst confirmed from evidence the agent quoted, by method "
+                f"{custom['method']}; {money} is the mid of a band "
+                f"{custom['low']:.0f} - {custom['high']:.0f}; the class table prices no "
+                f"{asset_type} at all, so the damage ratio is the policy default "
+                f"{band['d_low']:g} / {band['d_mid']:g} / {band['d_high']:g} (low / mid / high); "
+                "expected_loss_eur_low / _mid / _high = burn_probability x damage ratio x the matching "
+                "end of the valuation band, so the range states the valuation uncertainty and the damage "
+                "uncertainty together; it is an assumed figure from quoted references, never a market "
+                "valuation, an insurer's figure or a measured number; total economic loss (insured and "
+                "uninsured); euros never enter the ranking, the sort or a filter, and this figure orders "
+                "the strategic exposure view only; "
+                "people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity)")
     return (f"policy {policy['version']} for class {asset_type}: {money}, damage ratio "
             f"{band['d_low']:g} / {band['d_mid']:g} / {band['d_high']:g} (low / mid / high); "
             "people_exposed = estimated_occupancy x burn_probability (a headcount, never capacity); "
@@ -739,8 +892,11 @@ def validate_snapshot(snap) -> list[str]:
         if not isinstance(a, dict):
             errs.append(f"{tag} is not a dict")
             continue
+        # CRITICALITY_KEYS and CUSTOM_VALUATION_KEYS are optional groups: a snapshot written before
+        # either layer existed stays valid without them (their own error helpers accept all-absent).
+        optional = CRITICALITY_KEYS + CUSTOM_VALUATION_KEYS
         missing = [k for k in ASSET_KEYS
-                   if k not in a and k not in CRITICALITY_KEYS and not (legacy and k in TIMING_KEYS)]
+                   if k not in a and k not in optional and not (legacy and k in TIMING_KEYS)]
         if missing:
             errs.append(f"{tag} missing keys {missing}")
             continue
@@ -798,6 +954,7 @@ def validate_snapshot(snap) -> list[str]:
         elif a["evacuation_source"] is not None:
             errs.append(f"{tag}: evacuation_source must be null without evacuation_min")
         errs.extend(_criticality_errors(tag, a))
+        errs.extend(_custom_valuation_errors(tag, a))
         # value-at-risk layer (optional, FEATURES["value_at_risk"]): all eight keys or none, never a zero
         # standing in for a null, and euros only where both a burn probability and a class value exist.
         present = [k for k in VALUE_AT_RISK_KEYS if k in a]
@@ -852,6 +1009,8 @@ def validate_snapshot(snap) -> list[str]:
                 errs.append(f"{tag}: null value_score requires value_unknown")
             if a.get("criticality_tier") is not None and CRITICALITY_UNASSESSED in reasons:
                 errs.append(f"{tag}: criticality_unassessed must be absent once a tier is set")
+            if a.get("custom_value_method") is not None and VALUATION_UNASSESSED in reasons:
+                errs.append(f"{tag}: valuation_unassessed must be absent once a valuation is confirmed")
             if not legacy:
                 if (arr is None) != (FORECAST_UNAVAILABLE in reasons):
                     errs.append(f"{tag}: forecast_unavailable must be present iff fire_arrival_at is null")

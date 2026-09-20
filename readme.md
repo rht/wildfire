@@ -248,12 +248,16 @@ been designated for that purpose. The readiness module provides the existing sta
 Use a brief, explicit AI introduction and a clearly labelled simulated scenario in the first demo.
 Relay only the incident brief supplied by the analyst. Ask one question at a time:
 
-1. Confirm the intended location and whether the respondent can answer for everyone there.
-2. Ask whether everyone can leave without emergency assistance; capture mobility or other help
-   needs without inferring ability from age, property value or facility class.
-3. Ask whether suitable transport is available for everyone and what preparation remains.
-4. Ask whether they want to speak with a person. Honour that request immediately rather than
-   requiring a low-confidence score first.
+1. Confirm a trusted display name/address; never speak internal asset IDs. If no name is supplied,
+   ask what building/address the person is at. Ask "Is anyone else with you?"
+2. Ask "Does anyone there need help leaving the building?" Mobility difficulties immediately
+   lead to concrete assistance and transport questions; do not repeat already answered questions.
+   Unknown information about others never prevents collecting the caller's own needs.
+3. Ask about unanswered transport/preparation needs, without inferring ability from a wheelchair,
+   age, property value or facility class. Household coverage needs explicit sufficient evidence.
+4. For uncertainty or unresolved needs, offer exactly "Would you like an emergency responder to
+   call you to further assist you?" An offer is not acceptance or a scheduled call. Honor no and
+   preserve unresolved needs for human review. Direct human requests and stop requests take priority.
 5. Read back the critical answers and obtain acknowledgement. If an approved instruction exists,
    confirm its receipt separately; do not equate acknowledgement with departure or arrival.
 
@@ -264,6 +268,7 @@ CallRequest = {
     "request_id": str, "asset_id": str, "snapshot_id": str,
     "contact_number": str,                 # E.164; local/private storage only
     "language": str, "incident_brief": str,
+    "location_display_name": str | None,  # trusted name/address, optional, private
     "human_callback_number": str | None,
     "input_mode": "synthetic" | "recorded" | "live",
 }
@@ -553,6 +558,8 @@ Use a sorted asset table for ranking. A graph is deferred until route connectivi
 | Value | Analyst-configured operational importance by facility class: a prototype policy, not monetary valuation or an established emergency-service rule. Euros appear only in the optional value-at-risk layer (section 5.2), from a separate assumed per-class replacement-cost policy, and never enter the ranking. |
 | Criticality | Per-asset, for the classes a class average cannot describe (`CRITICALITY_POLICY["assess_classes"]`): a tier and its named factors, proposed by the investigation agent from quoted evidence and confirmed by the analyst. A separate strategic view; it never enters contact urgency. Behind `FEATURES["asset_criticality"]`, on since 2026-09-20. |
 | Notability evidence | Committed Wikipedia/Wikidata extract (`fixtures/notability.json`) for the criticality question only: title, url, intro summary, instance-of, operator, inception, with fetch times. Read offline; most facilities have no record, which is the answer for an ordinary school. |
+| Custom valuation | Per-asset euros, for the four classes the per-class euro table prices no building of (`CUSTOM_VALUATION_POLICY["assess_classes"]`): one bespoke band with the method and priced components behind it, proposed by the investigation agent from quoted cost references and confirmed by the analyst. It replaces the class replacement value for that asset and orders the strategic view only; it never enters contact urgency. Behind `FEATURES["custom_valuation"]`. Not a market valuation. |
+| Cost references | Committed quotable cost lines (`fixtures/valuation_references.json`) for the valuation question only: published tables (ATC 2025 modules, the fees/VAT/contents multiplier) and labelled project assumptions, each marked `published` or `assumed` with the `[assumed]` marker inside the quotable sentence. Read offline; an empty result means the corpus prices nothing here, which is itself the answer (`not_valued`). |
 | Investigation evidence | Small cache of registry records or facility pages with URLs, snippets and dates. Label manual enrichment; avoid several ingestion pipelines. |
 | Teams | Manually entered or fixture roster with team IDs, capabilities, availability and source labels. |
 | Spread forecast | Provided per-location fire arrival estimates, with source and estimate semantics. Without a usable forecast, show an unranked review queue; do not substitute distance for arrival time. |
@@ -588,7 +595,7 @@ Ignore duplicate snapshot IDs and lower/equal sequences within a scenario. Prese
 
 ### 5.2 Per-location fields
 
-All keys are present, except the optional value-at-risk layer below, which is present in full or not at all. Unknown measurements are `null`, not zero. Times are ISO 8601 UTC; distances are metres; normalised scores and probabilities are in [0, 1]; monetary values are euros. GeoJSON coordinates use longitude, latitude order.
+All keys are present, except three optional groups below, each present in full or not at all: the value-at-risk layer, the three criticality keys and the six custom-valuation keys. Unknown measurements are `null`, not zero. Times are ISO 8601 UTC; distances are metres; normalised scores and probabilities are in [0, 1]; monetary values are euros. GeoJSON coordinates use longitude, latitude order.
 
 | Fields | Type | Meaning |
 |---|---|---|
@@ -608,9 +615,11 @@ All keys are present, except the optional value-at-risk layer below, which is pr
 | `evacuation_min`, `evacuation_source` | Nonnegative number or null; string or null | Total estimated evacuation duration in minutes, including mobilisation, preparation/loading and onward movement, with its basis. |
 | `people_exposed` | Nonnegative number or null | Optional value-at-risk layer: `estimated_occupancy` x `burn_probability`. |
 | `people_at_risk_p50`, `people_at_risk_p10` | Nonnegative integers or null | The whole `estimated_occupancy` when the remaining evacuation window at that arrival quantile is exhausted, else 0. |
-| `replacement_value_eur`, `replacement_value_basis` | Nonnegative number or null; string or null | Assumed per-class replacement cost and the policy that gave it; null together, and null for a class the policy does not value. Not a per-asset valuation. |
-| `expected_loss_eur_low`, `expected_loss_eur_mid`, `expected_loss_eur_high` | Nonnegative numbers or null | `burn_probability` x the class damage ratio x `replacement_value_eur`, at the low, mid and high ratio. |
-| `needs_review`, `review_reasons` | Boolean; array of strings | Such as `location_unknown`, `occupancy_unknown`, `occupancy_seasonal`, `class_ambiguous`, `value_unknown`, `exposure_unknown`, `criticality_unassessed`. |
+| `custom_value_eur_low`, `custom_value_eur_mid`, `custom_value_eur_high` | Nonnegative numbers or null | Per-asset bespoke valuation band for a building the per-class table cannot price, confirmed by an analyst from evidence the agent quoted (`config.CUSTOM_VALUATION_POLICY`). A band, never a point: `high` is at least 1.5x `low`. The producer never asserts one, and all six keys are null together. Not a market valuation. |
+| `custom_value_method`, `custom_value_components`, `custom_value_basis` | String or null; array of `{label, amount_eur}` or null; string or null | The closed-enum method the evidence supports (`component_replacement`, `service_continuity`, `irreplaceable_holdings`, `parent_institution_scaled`, or `not_valued` with no amounts), the priced parts it added up, and the policy version, method and confirming override. Optional keys, like the criticality keys. |
+| `replacement_value_eur`, `replacement_value_basis` | Nonnegative number or null; string or null | Assumed per-class replacement cost and the policy that gave it; null together, and null for a class the policy does not value. Not a per-asset valuation — except on an asset with a confirmed `custom_value_eur_mid`, which replaces it and says so in the basis. |
+| `expected_loss_eur_low`, `expected_loss_eur_mid`, `expected_loss_eur_high` | Nonnegative numbers or null | `burn_probability` x the class damage ratio x `replacement_value_eur`, at the low, mid and high ratio. With a confirmed custom valuation, each end takes the matching end of the valuation band as well, so the range states both uncertainties. |
+| `needs_review`, `review_reasons` | Boolean; array of strings | Such as `location_unknown`, `occupancy_unknown`, `occupancy_seasonal`, `class_ambiguous`, `value_unknown`, `exposure_unknown`, `criticality_unassessed`, `valuation_unassessed`. |
 | `sources` | Array of objects | Field-level provenance: `fields`, `source`, `observed_at`, `available_at`, `fetched_at`, `notes`. Unknown source times remain null. |
 
 **Value at risk** (`people_exposed` through `expected_loss_eur_high` above) is an optional layer behind `config.FEATURES["value_at_risk"]`, off by default. All eight keys are present together or absent together; `schema_version` stays `1.1` and a snapshot without them is valid, so a producer with the flag off emits exactly what it emitted before. The layer is computed after the forecast, never from distance:
@@ -625,7 +634,9 @@ slack_pXX              = arrival_pXX_at - evacuation_min - buffer - as_of
 
 `slack_pXX` is the remaining evacuation window of section 6 evaluated at that arrival quantile rather than at the selected arrival. The threshold is `<= 0`, the boundary of `window_exhausted`, because `people_at_risk` re-labels that status weighted by headcount; it counts the whole headcount of such an asset and does not model partial clearance. Occupancy means `estimated_occupancy`; `capacity` is never used as a headcount here. Every field is `null`, never zero, when an input is null: no headcount, no `burn_probability`, no `evacuation_min`, no forecast covering the asset, no location, or a class the policy does not value. A `burn_probability` of `0.0` is a statement rather than a gap and yields zeros, and an asset a forecast covers but does not reach inside its horizon is not at risk (`0`), not unknown.
 
-Replacement values and damage ratios are assumed per-class placeholders from `config.VALUE_AT_RISK_POLICY` (`value_basis = "assumed"`), standing in for a per-asset figure; the band shown is the damage-ratio band only, so the value uncertainty is at least as large. The euros are total economic loss, insured and uninsured, not an insurer's figure. **Euros never enter the ranking, the sort or any filter**: they are a display column and a scenario header total, and there is no euro figure for lives anywhere in the UI. `value_score` is unrelated and unchanged: it stays a class-based operational-importance score and is not derived from this table. The fatality chain, a value of a statistical life, VaR and CVaR, a Catastro footprint fetch and a land ledger are deliberately not built; `docs/VALUE_AT_RISK.md` keeps them as the upgrade path.
+Replacement values and damage ratios are assumed per-class placeholders from `config.VALUE_AT_RISK_POLICY` (`value_basis = "assumed"`), standing in for a per-asset figure; unless a per-asset valuation replaced it (below), the band shown is the damage-ratio band only, so the value uncertainty is at least as large. The euros are total economic loss, insured and uninsured, not an insurer's figure. **Euros never enter the contact queue's ranking, its sort or its filters**: they are a display column and a scenario header total, and there is no euro figure for lives anywhere in the UI. The one place a euro figure orders anything is the strategic exposure view, where a confirmed per-asset valuation breaks ties within a criticality tier (below and section 6); it is read alongside the contact queue, never instead of it. `value_score` is unrelated and unchanged: it stays a class-based operational-importance score and is not derived from this table.
+
+**Per-asset custom valuation** (`custom_value_eur_low` through `custom_value_basis` above) is the escape hatch for the classes that table cannot price, behind `config.FEATURES["custom_valuation"]`. `VALUE_AT_RISK_POLICY` has no row for `research_facility`, `university`, `aerodrome` or `fire_station`, because within those classes one building is not like another: a national computing centre and a university annexe are both `research_facility`, and a euros-per-square-metre table prices them the same. An asset of one of those classes enters the review queue as `valuation_unassessed`; the investigation agent proposes ONE bespoke figure for ONE building from references it quotes verbatim (`fixtures/valuation_references.json`, each line marked `published` or `assumed`), naming a method from `config.CUSTOM_VALUATION_POLICY` and the priced components behind it. Like `criticality_tier`, the producer never asserts one: it reaches an asset only through analyst confirmation, and `not_valued` — the agent looked and the evidence supports no figure — is the ordinary answer. A confirmed figure replaces the class `replacement_value_eur` with its mid, and the expected-loss band then compounds the valuation band with the damage band (`low x d_low`, `mid x d_mid`, `high x d_high`) instead of the damage band alone, so the range no longer hides the value uncertainty. It never reaches the contact queue: it orders the strategic exposure view after the criticality tier and nothing else. Every figure is as good as the reference quoted for it, and none of them is a market valuation, an insurer's figure or a measured number. The fatality chain, a value of a statistical life, VaR and CVaR, a Catastro footprint fetch and a land ledger are deliberately not built; `docs/VALUE_AT_RISK.md` keeps them as the upgrade path.
 
 For historical replay, evidence must have been available by `as_of`; missing availability information cannot establish that. Document any forecast-to-asset aggregation method. Missing forecasts do not block ingestion or manual tasks, but they do block automatic contact ranking.
 
@@ -641,7 +652,7 @@ remaining_window = latest_start - current_time
 
 Rank by **smallest remaining window first**, then earlier predicted arrival, nearer geographic distance, and stable asset ID. A farther asset may be more urgent because the fire is spreading toward it or its evacuation takes longer. Geographic distance does not replace a forecast or receive an arbitrary weight.
 
-The evacuation estimate includes mobilisation, preparation/loading and onward movement to the receiving location. Assistance needs, transport availability and occupancy inform this duration rather than acting as separate ranking weights. Property value does not override contact urgency. Neither does per-asset criticality: `criticality_tier` is absent from the sort key and from every filter, and the strategic view it drives is read alongside the contact queue, never instead of it. Estimates must have a source; the static prototype uses explicitly synthetic forecast and duration inputs.
+The evacuation estimate includes mobilisation, preparation/loading and onward movement to the receiving location. Assistance needs, transport availability and occupancy inform this duration rather than acting as separate ranking weights. Property value does not override contact urgency. Neither does per-asset criticality, nor a per-asset euro valuation: `criticality_tier` and `custom_value_eur_mid` are absent from the sort key and from every filter of the contact queue, and the strategic exposure view they order — tier first, then the confirmed figure, then the remaining window — is read alongside the contact queue, never instead of it. Estimates must have a source; the static prototype uses explicitly synthetic forecast and duration inputs.
 
 A zero or negative window stays at the top with `window_exhausted`: immediate analyst review is needed, not an automatic evacuation instruction. Missing forecast, evacuation duration or provenance produces an unranked review item. No probability, arrival time or duration is fabricated from distance or headcount. A missing distance does not prevent ranking when the forecast and evacuation estimate are known.
 
@@ -677,9 +688,11 @@ Implement one bounded loop for unknown occupancy or ambiguous class:
 3. Propose a sourced field update or produce a concrete question for the analyst.
 4. On analyst confirmation, persist the override, recalculate the remaining evacuation window and update the existing task.
 
-Five tools suffice: `get_asset`, `lookup_facility`, `lookup_notability`, `propose_update`, and `escalate`. Keep evidence and tool calls visible, cap investigation steps, and leave unsupported questions unresolved. All field updates require analyst confirmation in this MVP. The agent does not directly assign teams or change scoring policy; calculation stays in code.
+Six tools suffice: `get_asset`, `lookup_facility`, `lookup_notability`, `lookup_valuation_reference`, `propose_update`, and `escalate`. Keep evidence and tool calls visible, cap investigation steps, and leave unsupported questions unresolved. All field updates require analyst confirmation in this MVP. The agent does not directly assign teams or change scoring policy; calculation stays in code.
 
 `lookup_notability` answers the criticality question and only that one: whether this particular building is worth more than the class average - a research institute, the fire brigade's own station - reading the committed `fixtures/notability.json` extract, never the network. The model proposes a tier from `CRITICALITY_POLICY` plus the closed-enum factors that justify it; the tier is refused unless it carries the minimum number of factors, so the top tier cannot rest on prose. Calculation still stays in code: the policy owns what a tier means, and the tier reaches an asset only through the same analyst confirmation every other field uses. Criticality never reorders the contact queue (section 6).
+
+`lookup_valuation_reference` answers the valuation question and only that one, for the four classes the per-class euro table prices no building of (section 5.2). It serves the committed `fixtures/valuation_references.json`: cost lines an agent can quote verbatim, each carrying a `basis` of `published` (a cited external table) or `assumed` (this project's own placeholder, with the `[assumed]` marker inside the quotable sentence so the caveat travels with the quote). The model proposes a method from `CUSTOM_VALUATION_POLICY` and the priced components behind it, and a band rather than a point; the guards refuse a top-of-the-range claim that rests on one round number, components that do not add up to the figure they are said to make, and an amount above the policy ceiling. `not_valued` is an answer, and a good one: it records that the corpus was searched. As with criticality, the figure reaches an asset only through analyst confirmation, and it never reorders the contact queue.
 
 No general chat, live web research, alert drafting or wind what-if tools are needed. An LLM failure leaves the question answerable manually. Demonstrate one actual investigation call; label any prerecorded fallback output.
 
@@ -1625,7 +1638,8 @@ Implementation plan (authorized by @mirrdj):
    smoke test as unperformed. No hosted configuration or live calls are changed.
 
 The accepted per-call variable names are `request_id`, `asset_id`, `snapshot_id`,
-`incident_brief`, `scenario_notice`, `language`, `road_warning_brief`. The
+`incident_brief`, `scenario_notice`, `language`, `road_warning_brief`, plus optional
+`location_display_name` when a trusted name/address is available. The
 call-briefings status export agrees to this existing interface; content generation
 remains in its module. SLNG limits argument values to 1,024 characters, keys to
 64 characters, 32 keys and 8,192 aggregate value characters. Oversized road
@@ -1643,8 +1657,10 @@ returns the provider response containing `call_id`. It now checks the GET agent
 response's `template_variables` object before POST: every sent key must be
 advertised, each metadata record must have boolean `required`, and every required
 variable must be supplied. Missing metadata fails closed. `call_arguments(request)`
-returns the same seven string fields and rejects provider-limit violations before
-HTTP. `agent_configuration(...)` now includes the request and snapshot template
+returns the original seven string fields plus `location_display_name` only when supplied,
+and rejects provider-limit violations before HTTP. Updated agent packages advertise the new
+variable as optional with an empty default; old requests remain valid. A legacy deployed agent
+without that binding rejects a named request at preflight and must be updated before dialing. `agent_configuration(...)` now includes the request and snapshot template
 bindings even without a result-tool attachment. Completed-call fetching and the
 legacy explicit association path are unchanged. Queue workers still require one
 shared account database and identical configured rate/concurrency limits.
@@ -1768,7 +1784,7 @@ and never become live requests. JSON files have these separate private shapes:
 |---|---|
 | contacts | Array of `{asset_id, contact_number}` records, indexed only by stable `asset_id`; zero or multiple matches block that asset. |
 | approvals | Array of `{asset_id, snapshot_id, contact_number}` records. Exactly one match for this asset and snapshot must equal the complete E.164 contact number. An approval for another snapshot does not carry forward. |
-| request_data (`--requests`) | Object keyed by `asset_id`, each value containing trusted `language` and `incident_brief`, optionally `human_callback_number` and `road_warnings` in the existing `CallRequest` shape. Other fields are rejected. |
+| request_data (`--requests`) | Object keyed by `asset_id`, each value containing trusted `language` and `incident_brief`, optionally `human_callback_number`, `road_warnings` and `location_display_name` in the `CallRequest` shape. Missing display names are populated from trusted asset name/address, never the asset ID. Other fields are rejected. |
 
 Obtain contact records and exact target approvals explicitly; this command does not
 discover contacts. Keep these files and the queue database private and ignored.
@@ -2166,13 +2182,14 @@ Current asset warnings supersede recommendation warnings with the same road ID;
 additional recommendation restrictions are retained conservatively. Known route IDs,
 road names and named warnings appearing in instructions are checked for conflicts.
 
-SLNG template arguments stay exactly those from `slng_voice.call_arguments`:
+SLNG template arguments come from `slng_voice.call_arguments`:
 `request_id`, `asset_id`, `snapshot_id`, `incident_brief`, `scenario_notice`,
-`language`, `road_warning_brief`. Version and fresh acknowledgement requirements
+`language`, `road_warning_brief`, and optional `location_display_name`. Version and fresh acknowledgement requirements
 travel inside `incident_brief`; named road restrictions travel in `road_warning_brief`.
 The existing interview prompt asks self-evacuation ability, suitable transport,
 preparation, a human request and evidenced message/instruction acknowledgement.
-No new template variables or deployment mutations are required by this library.
+Named requests require the optional `location_display_name` binding in the deployed agent.
+Existing requests without a display name still use the original seven arguments.
 Provider deployment and verification of the dynamic template remain separate work.
 
 Implementation plan (executed inline in the existing task worktree):
@@ -3590,6 +3607,36 @@ reviewed the latest-main conflict resolution. No dispatch was performed. Physica
 iPad/Safari testing remains outside the Chrome-emulation checks. PR: #32.
 
 
+The incident Firefighter plan opens full-screen with a fixed back/review header.
+One map on the left shows every crew's supplied route and starting point, with
+crew colours matched to clearly separated visit tables on the right. Each table
+starts with its crew's starting point and shows its saved approved visit order.
+Map selections reveal the matching crew row; co-located points remain individually
+selectable. Review buttons open each crew's existing reorder/confirmation view;
+closing it returns to the shared plan. Blockers remain incident-wide.
+
+The screen and map fit the viewport at desktop and tablet portrait/landscape sizes;
+only the table pane scrolls vertically or horizontally for its full evidence.
+Verified with 73 Node tests, lint/format/build, the crew-order browser regression,
+desktop/tablet screenshot inspection and independent code review. Browser coverage
+includes shared routes, crew-scoped selection, fixed headers, contained scrolling,
+nested review/back navigation, reordering and saved approval persistence. Physical
+iPad/Safari testing remains outside the Chrome-emulation checks.
+
+The dashboard includes a light/dark theme toggle in the workspace header and in
+full-screen plan/review headers. Light remains the default; the selected appearance
+is saved in this browser and survives reloads. If browser storage is unavailable,
+the toggle still works for the current session. Panels, tables, form controls and
+map labels follow the theme while geographic imagery and operational marker colours
+retain their meaning. Switching themes preserves the current map view and unsaved
+crew order; it does not create an approval or change coordination state.
+
+Theme verification: 73 Node tests and all ten browser regression scripts passed,
+along with lint, formatting and the production build. Browser checks cover both
+saved modes, keyboard toggling, storage failure, readable text contrast, preserved
+map/draft state and tablet containment. Desktop and tablet screenshots and an
+independent code review found no blockers. These are Chrome checks; physical
+Safari/iPad testing remains outstanding.
 The incident Firefighter plan page uses a Crew selector and renders one crew's map
 and visit table at a time. The selected crew's saved approved order is shown, and
 Review & confirm opens its full-screen review. Selection is scoped to the incident;

@@ -15,7 +15,7 @@ from .contact_priority import ContactPolicy, missing_timing, window_arithmetic, 
 from .grid import lonlat_to_xy
 from .priority_models import Location, number
 from .snapshot import validate_snapshot
-from .voice_models import CallRequest, identifier, phone, utc
+from .voice_models import CallRequest, identifier, phone, utc, location_display_name
 
 
 def snapshot_request_id(snapshot_id, asset_id):
@@ -182,15 +182,23 @@ def _location(asset, row):
         forecast_source=asset['forecast_source'], evacuation_source=asset['evacuation_source'])
 
 
-def _request(asset, snapshot_id, target, data, briefing_adapter, input_mode):
+def _request(asset, snapshot_id, target, data, briefing_adapter, input_mode, *, preserve_unknown_display=False):
+    explicit_display = isinstance(data, dict) and 'location_display_name' in data
     if briefing_adapter is not None:
         # Callback owns briefing content only, never association or authorization.
         if getattr(briefing_adapter, 'snapshot_id', snapshot_id) != snapshot_id:
             raise ValueError('briefing snapshot mismatch')
         data = briefing_adapter(copy.deepcopy(asset), copy.deepcopy(data))
-    allowed = {'language', 'incident_brief', 'human_callback_number', 'road_warnings'}
+    allowed = {'language', 'incident_brief', 'human_callback_number', 'road_warnings', 'location_display_name'}
     if not isinstance(data, dict) or set(data) - allowed:
         raise ValueError('invalid request data')
+    data = copy.deepcopy(data)
+    if preserve_unknown_display and not explicit_display:
+        data['location_display_name'] = None
+    if 'location_display_name' not in data:
+        display_name = location_display_name(asset)
+        if display_name is not None:
+            data['location_display_name'] = display_name
     return CallRequest(request_id=snapshot_request_id(snapshot_id, asset['asset_id']),
         asset_id=asset['asset_id'], snapshot_id=snapshot_id, contact_number=target,
         input_mode=input_mode, **copy.deepcopy(data))
@@ -269,11 +277,14 @@ def enqueue_snapshot_contacts(queue, snapshot, contacts, approvals, request_data
                     continue
             if not reasons:
                 try:
-                    request = _request(asset, snapshot['snapshot_id'], target, data, briefing_adapter, snapshot['input_mode'])
+                    request = _request(asset, snapshot['snapshot_id'], target, data, briefing_adapter, snapshot['input_mode'],
+                        preserve_unknown_display=bool(existing) and stored['request'].get('location_display_name') is None)
                 except (ValueError, TypeError, KeyError):
                     reasons.append('invalid_request_data')
             if existing and not reasons:
-                if stored['request'] != asdict(request):
+                previous_request = dict(stored['request'])
+                previous_request.setdefault('location_display_name', None)
+                if previous_request != asdict(request):
                     reasons.append('immutable_request_conflict')
                 expected_priority = (row['latest_start_min'], row['components']['fire_arrival_min'],
                                      row['components']['distance_m'])

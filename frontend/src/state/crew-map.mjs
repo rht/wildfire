@@ -88,3 +88,65 @@ export function crewMapData(team = {}, assets = []) {
     }),
   };
 }
+
+// JSON tuples preserve identifier boundaries even when names contain separators.
+export const crewMapStopId = (teamId, stopId) =>
+  JSON.stringify([teamId, stopId]);
+
+export function crewMapsData(teams = [], assets = []) {
+  const palette = ["#4da3ff", "#ff944d", "#c497ff", "#4ed3b3", "#f0d35b"];
+  const crews = teams.map((team, index) => {
+    const data = crewMapData(team, assets);
+    const metadata = {
+      crewIndex: index,
+      crewId: team.team_id,
+      crewName: team.name || team.team_id || "Unspecified crew",
+      color: palette[index % palette.length],
+    };
+    const point = (item, pointKind) => ({
+      ...item,
+      ...metadata,
+      pointKind,
+      stopId: item.id,
+      id: crewMapStopId(team.team_id, item.id),
+    });
+    return {
+      ...metadata,
+      start: data.start ? point(data.start, "start") : null,
+      current: data.current
+        ? point(
+            {
+              ...data.current,
+              id: "__current__",
+              name: "Reported crew location",
+              kind: "reported",
+            },
+            "current",
+          )
+        : null,
+      stops: data.stops.map((stop) => point(stop, "stop")),
+    };
+  });
+  const starts = crews.flatMap((crew) => (crew.start ? [crew.start] : []));
+  const currentLocations = crews.flatMap((crew) =>
+    crew.current ? [crew.current] : [],
+  );
+  const stops = crews.flatMap((crew) => crew.stops);
+  const separateCurrent = crews.flatMap((crew) =>
+    crew.current && crew.start?.kind === "planned" ? [crew.current] : [],
+  );
+  const groups = new Map();
+  for (const point of [...starts, ...stops, ...separateCurrent]) {
+    if (!point.position) continue;
+    const key = point.position.join(",");
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(point);
+  }
+  return {
+    crews,
+    starts,
+    currentLocations,
+    stops,
+    pointGroups: [...groups.values()],
+  };
+}

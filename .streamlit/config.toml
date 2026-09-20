@@ -11,3 +11,8 @@ font = "sans serif"
 
 [client]
 toolbarMode = "minimal"
+
+[server]
+# Publishes fireline/static/ at <app base url>app/static/, which is how the map card reaches its
+# MapLibre satellite basemap style (fireline/static/esri-world-imagery-style.json).
+enableStaticServing = true

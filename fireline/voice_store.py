@@ -125,6 +125,7 @@ class VoiceStore:
             existing = self.conn.execute('SELECT request FROM voice_calls WHERE request_id=?', (request.request_id,)).fetchone()
             if existing:
                 previous = json.loads(existing[0])
+                previous.setdefault('location_display_name', None)
                 previous.setdefault('road_warnings', [])  # Older requests predate this optional field.
                 if encoded(previous) != payload:
                     raise ValueError('request association is immutable')

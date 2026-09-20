@@ -11,7 +11,8 @@ import re
 
 from .contact_priority import ContactPolicy
 from .evacuation_readiness import coordinate_evacuation
-from .snapshot import ASSET_KEYS, SOURCE_KEYS, VALUE_AT_RISK_KEYS, validate_snapshot
+from .snapshot import (ASSET_KEYS, CUSTOM_VALUATION_KEYS, SOURCE_KEYS, VALUE_AT_RISK_KEYS,
+                       validate_snapshot)
 from .voice_models import ANSWER_FIELDS, utc
 from .voice_store import VoiceStore, digest, encoded
 
@@ -50,9 +51,14 @@ def _public(value):
 
 
 def _public_assets(assets):
+    # ASSET_KEYS already carries the six CUSTOM_VALUATION_KEYS (snapshot.py), so an analyst-confirmed
+    # bespoke valuation reaches the browser with its method, band, priced components and basis - and
+    # `dashboard_public._FIELDS` has to allow the same six, or the group is dropped one hop later.
     public = []
     for asset in assets:
-        row = {k: asset[k] for k in ASSET_KEYS + VALUE_AT_RISK_KEYS + ('llm_assessment', 'risk_score', 'risk_label') if k in asset}
+        keys = (ASSET_KEYS + CUSTOM_VALUATION_KEYS + VALUE_AT_RISK_KEYS
+                + ('llm_assessment', 'risk_score', 'risk_label'))
+        row = {k: asset[k] for k in keys if k in asset}
         row['sources'] = [{k: source.get(k) for k in SOURCE_KEYS}
                           for source in asset['sources']]
         public.append(row)

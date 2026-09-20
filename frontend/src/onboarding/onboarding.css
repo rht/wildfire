@@ -1,3 +1,5 @@
+/* Colours come from the shared theme tokens in styles.css so the form follows
+   the light and dark appearance like every other page. */
 .onboarding > * + * {
   margin-top: 20px;
 }
@@ -18,16 +20,17 @@
   margin-bottom: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: #595959;
+  color: var(--ui-text-secondary);
 }
 .onboarding-field input,
 .onboarding-field textarea {
   width: 100%;
+  min-height: 44px;
   padding: 9px 12px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--ui-border);
   border-radius: 4px;
-  background: #fff;
-  color: inherit;
+  background: var(--ui-paper);
+  color: var(--ui-text-primary);
 }
 .onboarding-field textarea {
   resize: vertical;
@@ -38,22 +41,24 @@
 .onboarding-field small {
   display: block;
   margin-top: 6px;
-  color: #8c8c8c;
+  color: var(--ui-text-muted);
   font-size: 12px;
 }
 .onboarding-count {
   width: 76px;
+  min-height: 44px;
   padding: 6px 8px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--ui-border);
   border-radius: 4px;
+  background: var(--ui-paper);
+  color: var(--ui-text-primary);
 }
-.onboarding-problems ul,
-.onboarding-actions + ul {
+.onboarding-problems ul {
   margin: 6px 0 0;
   padding-left: 18px;
 }
 .onboarding-problems code {
-  background: #0000000d;
+  background: var(--ui-surface-muted);
   padding: 1px 4px;
   border-radius: 3px;
 }
@@ -63,17 +68,19 @@
   gap: 12px;
   align-items: center;
 }
-
+.onboarding-actions-spacer {
+  flex: 1 1 auto;
+}
 .onboarding-progress {
   padding: 16px 20px 8px;
-  border: 1px solid #e6ebf1;
+  border: 1px solid var(--ui-divider);
   border-radius: 4px;
-  background: #fff;
+  background: var(--ui-paper);
 }
 .onboarding-progress .MuiLinearProgress-root {
   height: 6px;
   border-radius: 3px;
-  background: #f0f0f0;
+  background: var(--ui-surface-muted);
 }
 .onboarding-steps {
   display: grid;
@@ -82,7 +89,6 @@
   margin: 14px 0 0;
   padding: 0;
   list-style: none;
-  counter-reset: none;
 }
 .onboarding-step {
   display: flex;
@@ -98,11 +104,11 @@
   color: inherit;
 }
 .onboarding-step:hover {
-  background: #fafafa;
+  background: var(--ui-hover);
 }
 .onboarding-step[aria-current="step"] {
-  border-color: #91caff;
-  background: #f0f7ff;
+  border-color: var(--ui-accent);
+  background: var(--ui-selected);
 }
 .onboarding-step strong {
   display: block;
@@ -112,7 +118,7 @@
 .onboarding-step small {
   display: block;
   margin-top: 2px;
-  color: #8c8c8c;
+  color: var(--ui-text-muted);
   font-size: 11px;
   line-height: 1.4;
 }
@@ -124,28 +130,25 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 1px solid #d9d9d9;
-  background: #fff;
-  color: #595959;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-paper);
+  color: var(--ui-text-secondary);
   font-size: 12px;
   font-weight: 600;
 }
 .onboarding-step.complete .onboarding-step-mark {
-  border-color: #389e0d;
-  background: #389e0d;
-  color: #fff;
+  border-color: var(--ui-success);
+  background: var(--ui-success-bg);
+  color: var(--ui-success);
 }
 .onboarding-step.invalid .onboarding-step-mark {
-  border-color: #cf1322;
-  background: #fff1f0;
-  color: #cf1322;
+  border-color: var(--ui-error);
+  background: var(--ui-error-bg);
+  color: var(--ui-error);
 }
 .onboarding-step[aria-current="step"] .onboarding-step-mark {
-  border-color: #1677ff;
-  color: #1677ff;
-}
-.onboarding-step[aria-current="step"].complete .onboarding-step-mark {
-  color: #fff;
+  border-color: var(--ui-accent);
+  color: var(--ui-accent);
 }
 .onboarding-blocking {
   margin-bottom: 20px;
@@ -158,11 +161,8 @@
   padding: 0;
   border: 0;
   background: none;
-  color: #1677ff;
+  color: var(--ui-accent);
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
-}
-.onboarding-actions-spacer {
-  flex: 1 1 auto;
 }

@@ -137,6 +137,8 @@ def call_arguments(request):
             'snapshot_id': request.snapshot_id, 'incident_brief': request.incident_brief,
             'scenario_notice': 'SIMULATION' if request.input_mode != 'live' else 'Analyst-authorized contact',
             'language': request.language, 'road_warning_brief': road_warning_brief(request.road_warnings)}
+    if request.location_display_name is not None:
+        arguments['location_display_name'] = request.location_display_name
     # Provider limits apply to the rendered road text as well as the incident brief.
     # Never truncate restrictions or drop identity bindings to fit the payload.
     if (len(arguments) > 32 or any(len(k) > 64 or not isinstance(v, str) or len(v) > 1024
@@ -169,7 +171,9 @@ def agent_configuration(request, *, name, region, models, tool_refs=None, outbou
     config = dict(name=name, system_prompt=prompt, greeting='I am an AI readiness assistant. {{scenario_notice}}. May I confirm your location?',
                   language=request.language, region=region, models=dict(models),
                   tool_mode='shared', tool_refs=list(tool_refs or []), mcp_refs=[],
-                  template_defaults={'scenario_notice': 'SIMULATION', 'road_warning_brief': road_warning_brief([])})
+                  template_defaults={'scenario_notice': 'SIMULATION', 'road_warning_brief': road_warning_brief([]),
+                                     'location_display_name': ''},
+                  template_variable_options={'location_display_name': {'required': False}})
     if outbound_connection_id:
         config['sip_outbound_trunk_id'] = uuid(outbound_connection_id)
     return config

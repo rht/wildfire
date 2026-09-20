@@ -20,6 +20,7 @@ import { ApprovalProvider } from "./state/approvals";
 import { useDashboard } from "./state/useDashboard";
 import { useTimeline } from "./state/useTimeline";
 import TimelineControls from "./components/TimelineControls";
+import ThemeToggle from "./components/ThemeToggle";
 import { Overview, Incidents } from "./pages/Overview";
 import Buildings from "./pages/Buildings";
 import ActivityLog from "./pages/ActivityLog";
@@ -242,6 +243,7 @@ export default function App() {
               </div>
             </div>
             <div className="topbar-right">
+              <ThemeToggle />
               <span
                 className={`connection ${status.connection === "connected" ? "ok" : ""}`}
               >
