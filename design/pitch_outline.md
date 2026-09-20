@@ -40,7 +40,16 @@ One line: *"The fire wasn't the only failure. Trust and coordination were too."*
 
 ## Slide 3 — Why this, why now
 
-- Spain just had a record-breaking wildfire year (challenge.md's own framing).
+Not just "a record-breaking wildfire year" (challenge.md's framing) — the actual numbers:
+
+| | 2025 (full season) | 2026 (year to date) |
+|---|---|---|
+| **Catalonia** | 8,616 ha burned, 2,168 fires (+62.6% fires vs. 2024) | ~3,400 ha, mostly the July Bisbal d'Empordà fire — the same event `PLAN.md`'s Les Gavarres scenario is modeled on |
+| **Spain (national)** | — | ~194,000 ha by 5 Aug — 6× the area burned by the same date in 2025 |
+| **EU** | 1,079,538 ha — worst season ever documented, nearly double the 2006–2024 average | 668,035 ha (as of 16 Sept) — below 2025's record pace, but above the 20-year average of 346,567 ha for this point in the season |
+
+Suggested visual: a big-number stat card in the mockup's own KPI style (see "Response Priority Summary" in `design/ui-mockup.html`), not a generic chart — keeps the deck and the product feeling like one system.
+
 - Satellite, camera, and weather data are abundant — Deepfire alone fuses seven satellite
   sources. The bottleneck isn't data, it's **turning that data into a decision an analyst
   can act on in the next five minutes.**
@@ -48,6 +57,11 @@ One line: *"The fire wasn't the only failure. Trust and coordination were too."*
   shows you *where* fires are; ES-Alert *pushes* alerts; AlertCops takes citizen reports.
   **Nothing ranks who needs attention first, tracks whether anyone's already on it, and
   tells you what's still unknown.**
+
+Sources: [Catalan News — wildfires surge 62% in 2025](https://www.catalannews.com/society-science/item/wildfires-surge-62-in-catalonia-in-2025),
+[2026 Spain wildfires — Wikipedia](https://en.wikipedia.org/wiki/2026_Spain_wildfires),
+[JRC — 2025 EU's most destructive wildfire season on record](https://joint-research-centre.ec.europa.eu/jrc-news-and-updates/2025-was-eus-most-destructive-wildfire-season-record-2026-03-31_en),
+[JRC — current wildfire situation in Europe](https://joint-research-centre.ec.europa.eu/scientific-activities/natural-and-man-made-hazards/forest-fires/current-wildfire-situation-europe_en).
 
 ## Slide 4 — Solution, one line + one diagram
 
