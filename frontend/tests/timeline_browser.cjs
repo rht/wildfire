@@ -16,7 +16,7 @@ const assert=require('node:assert/strict');
   let stream;
   await page.routeWebSocket('**/api/updates*',ws=>{stream=ws;});
   const base=process.env.DASHBOARD_BASE_URL||'http://127.0.0.1:18522';
-  await page.goto(base+'/#/overview');
+  await page.goto(base+'/?demo=0#/overview');
   await expect(page.getByLabel('Snapshot time')).toHaveAttribute('max','0');
   await expect.poll(()=>!!stream).toBe(true);
   await expect(page.getByLabel('Time travel')).toContainText('Sep 19');

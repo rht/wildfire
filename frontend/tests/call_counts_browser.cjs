@@ -24,7 +24,7 @@ const assert = require('node:assert/strict');
     let stream;
     await page.routeWebSocket('**/api/updates*', socket => {stream = socket;});
     const base = process.env.DASHBOARD_BASE_URL || 'http://127.0.0.1:18522';
-    await page.goto(`${base}/#/incidents/${state.incident_id || state.scenario_id}/calls`);
+    await page.goto(`${base}/?demo=0#/incidents/${state.incident_id || state.scenario_id}/calls`);
     await expect.poll(() => !!stream).toBe(true);
     const card = label => page.getByRole('button', {name: new RegExp(`^${label}`)});
     await expect(card('Voice assistant to call')).toContainText('0');

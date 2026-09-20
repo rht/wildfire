@@ -25,7 +25,14 @@ const fs = require("node:fs");
       if (!["GET", "HEAD"].includes(r.method())) writes.push(r.method());
     });
     await page.mouse.move(0, 0);
-    await page.goto(base + "/?demo=1#/overview");
+    await page.goto(base + "/#/overview");
+    assert.equal(await page.getByLabel("Data source").inputValue(), "demo");
+    assert.equal(
+      await page
+        .getByText("Design demo · Illustrative incidents", { exact: false })
+        .count(),
+      0,
+    );
     await page
       .getByRole("heading", { name: "Operations overview", exact: true })
       .waitFor();
@@ -241,7 +248,7 @@ const fs = require("node:fs");
       .waitFor();
     await page.screenshot({ path: "artifacts/mobile.png", fullPage: true });
     await page.setViewportSize({ width: 1512, height: 1050 });
-    await page.goto(base + "/#/overview");
+    await page.goto(base + "/?demo=0#/overview");
     await page.getByText("Connected", { exact: true }).waitFor();
     await expect(page.getByTestId("metric-active")).toContainText("1");
     assert.match(

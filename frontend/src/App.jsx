@@ -120,7 +120,7 @@ function LegacyIncidentRoute() {
 }
 export default function App() {
   const [demo, setDemo] = useState(
-      () => new URLSearchParams(window.location.search).get("demo") === "1",
+      () => new URLSearchParams(window.location.search).get("demo") !== "0",
     ),
     [mobileOpen, setMobileOpen] = useState(false);
   const { incidents: latestIncidents, status } = useDashboard(demo),
@@ -131,8 +131,7 @@ export default function App() {
     const next = value === "demo";
     setDemo(next);
     const url = new URL(window.location.href);
-    if (next) url.searchParams.set("demo", "1");
-    else url.searchParams.delete("demo");
+    url.searchParams.set("demo", next ? "1" : "0");
     window.history.replaceState(null, "", url);
     navigate("/overview");
   };
@@ -235,12 +234,7 @@ export default function App() {
           </header>
           <main key={demo ? "demo" : "connected"}>
             <TimelineControls timeline={timeline} />
-            {demo ? (
-              <Alert severity="info" className="mode-banner">
-                Design demo · Illustrative incidents, calls, deployments and
-                people. Confirmations here apply only to this demo.
-              </Alert>
-            ) : incidents[0]?.input_mode === "offline_demo" ? (
+            {!demo && incidents[0]?.input_mode === "offline_demo" ? (
               <Alert severity="info" className="mode-banner">
                 Offline backend demo · Supplied illustrative state. No real
                 calls or deployments.

@@ -42,7 +42,7 @@ const assert = require('node:assert/strict');
   await page.routeWebSocket('**/api/updates*',()=>{});
   await page.setViewportSize({width:1512,height:1100});
   for(const route of ['/buildings','/incidents/distance-test/buildings']) {
-   await page.goto(base+'/#'+route);
+   await page.goto(base+'/?demo=0#'+route);
    await expect(page.getByRole('columnheader',{name:'Distance to fire',exact:true})).toBeVisible();
   await expect(page.getByRole('columnheader',{name:'Assessed at',exact:true})).toHaveCount(0);
    await expect(page.locator('tbody tr').filter({hasText:'Near building'})).toContainText('425 m');

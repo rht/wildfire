@@ -66,7 +66,7 @@ const assert = require("node:assert/strict");
     await page.routeWebSocket("**/api/updates*", (ws) => {
       stream = ws;
     });
-    await page.goto(base + "/#/incidents/test/calls");
+    await page.goto(base + "/?demo=0#/incidents/test/calls");
     await expect.poll(() => !!stream).toBe(true);
     await page
       .getByRole("button", {
@@ -104,7 +104,7 @@ const assert = require("node:assert/strict");
     state.events = [];
     stream.send(JSON.stringify(state));
     await expect(page.getByRole("dialog")).toHaveCount(0);
-    await page.goto(base + "/#/log");
+    await page.goto(base + "/?demo=0#/log");
     await expect(page.locator("tbody tr")).toHaveCount(2);
     await expect(page.locator("tbody tr").first()).toContainText(
       "Late report, received second",
@@ -141,7 +141,7 @@ const assert = require("node:assert/strict");
         },
       }),
     );
-    await page.goto(base + "/#/incidents/test/plan");
+    await page.goto(base + "/?demo=0#/incidents/test/plan");
     await page
       .getByRole("button", {
         name: "Review plan for Unspecified crew",
@@ -200,7 +200,7 @@ const assert = require("node:assert/strict");
     await expect(page.getByRole("dialog")).toContainText("Current crew location not supplied.");
     await expect(page.getByRole("dialog")).toContainText("Path not supplied for stops: 2.");
     await page.getByRole("dialog").getByRole("button", { name: "Close details" }).click();
-    await page.goto(base + "/#/incidents/test/evacuation");
+    await page.goto(base + "/?demo=0#/incidents/test/evacuation");
     await expect(page.getByRole("heading", { name: "Identified groups", exact: true })).toBeVisible();
     assert.deepEqual(errors, []);
     assert.deepEqual(writes, []);

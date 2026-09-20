@@ -3108,8 +3108,9 @@ npm --prefix frontend run dev
 ```
 
 The new preview is <http://127.0.0.1:18522/?demo=1#/overview>. `?demo=1` explicitly
-selects the three-fire **Design demo**. Remove it or use **Connected backend** in
-the source selector to inspect the current read-only API. The original HTML demo
+selects the three-fire **Design demo**, which is also the default when no source
+is specified. Use `?demo=0` or **Connected backend** in the source selector to
+inspect the current API; that explicit choice survives a reload. The original HTML demo
 on 18521 and Streamlit on 18511 remain running in their original worktrees. Port
 8511 and discovery PR18 were not touched. No live calls, dispatch or operational
 writes were performed.
@@ -3838,3 +3839,16 @@ These are synthetic scenario checks; they do not establish a live fire feed,
 LLM assessment accuracy, telephone delivery, or real responder dispatch.
 
 Reference: [Cloudflare Quick Tunnels](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/).
+
+
+Deployment presentation update: the dashboard opens in Design demo by default.
+The illustrative-data banner is removed, while the source selector still shows
+which dataset is active. Selecting Connected backend writes `?demo=0` so that
+choice persists across reloads. This changes presentation, not call dispatch or
+the scenario data.
+
+Presentation verification: all 80 frontend tests and eight browser regression
+scripts passed after the default-source change. Lint and build passed. A fresh
+Chrome login through the public Cloudflare URL verified the three-incident
+default, absent banner, source switching, and connected-mode persistence after
+reload.

@@ -75,7 +75,7 @@ const root = path.resolve(__dirname, "../..");
     });
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto(base + "/#/incidents/end-to-end-demo/plan");
+    await page.goto(base + "/?demo=0#/incidents/end-to-end-demo/plan");
     await expect(page.getByRole("dialog")).toContainText("Firefighter plan");
     await expect(
       page.getByText(/Urgent intervention reviews: [1-9]/),
@@ -135,7 +135,7 @@ const root = path.resolve(__dirname, "../..");
     await expect(
       page.getByText("Urgent intervention review", { exact: true }),
     ).toBeVisible();
-    await page.goto(base + "/#/incidents/end-to-end-demo/calls");
+    await page.goto(base + "/?demo=0#/incidents/end-to-end-demo/calls");
     await expect(
       page
         .getByRole("row")

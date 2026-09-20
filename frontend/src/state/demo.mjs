@@ -1,5 +1,5 @@
 import { toIncident } from "./model.mjs";
-// Entire dataset is illustrative. Loaded only when the analyst explicitly selects Design demo.
+// Entire dataset is illustrative. Design demo is the default; ?demo=0 selects the backend.
 const specs = [
   {
     id: "gavarres",
