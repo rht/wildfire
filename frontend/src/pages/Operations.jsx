@@ -373,8 +373,16 @@ export function Calls({ incident }) {
   );
 }
 export function ResponsePlan({ incident }) {
+  const [selection, setSelection] = useState(null);
   const teams = responseTeams(incident),
     response = incident.plan.response;
+  const selectedTeam =
+    (selection?.incidentId === incident.id &&
+      teams.find((team) => team.team_id === selection.teamId)) ||
+    teams[0];
+  const crewName = (team) =>
+    incident.teams.find((item) => item.team_id === team.team_id)?.name ||
+    team.team_id;
   return (
     <>
       <PageHeading
@@ -394,32 +402,42 @@ export function ResponsePlan({ incident }) {
         </MainCard>
       ) : (
         <>
-          <div className="crew-plan-layout">
-            <div className="plan-teams">
-              {teams.map((team) => (
+          {selectedTeam ? (
+            <div className="crew-plan-layout">
+              <div className="filters">
+                <FilterSelect
+                  label="Crew"
+                  value={selectedTeam.team_id}
+                  onChange={(teamId) =>
+                    setSelection({ incidentId: incident.id, teamId })
+                  }
+                  options={teams.map((team) => [team.team_id, crewName(team)])}
+                />
+              </div>
+              <div className="plan-teams">
                 <MainCard
-                  title={
-                    incident.teams.find((t) => t.team_id === team.team_id)
-                      ?.name || team.team_id
-                  }
+                  key={`${incident.id}:${selectedTeam.team_id}`}
+                  title={crewName(selectedTeam)}
                   action={
-                    <CrewPlans incidents={[incident]} teamId={team.team_id} />
+                    <CrewPlans
+                      incidents={[incident]}
+                      teamId={selectedTeam.team_id}
+                    />
                   }
-                  key={team.team_id}
                 >
                   <CrewItinerary
                     incident={incident}
-                    team={team}
-                    name={
-                      incident.teams.find(
-                        (item) => item.team_id === team.team_id,
-                      )?.name || team.team_id
-                    }
+                    team={selectedTeam}
+                    name={crewName(selectedTeam)}
                   />
                 </MainCard>
-              ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <MainCard>
+              <Empty title="No crew plans supplied" />
+            </MainCard>
+          )}
           <MainCard title="Blockers & uncovered locations">
             {Object.entries(response.unserved || {}).map(([id, reason]) => (
               <div className="blocked-item" key={id}>

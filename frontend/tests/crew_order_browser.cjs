@@ -118,6 +118,20 @@ const root = path.resolve(__dirname, "../..");
       return page.getByRole("dialog");
     };
 
+    await page.goto(base + "/?demo=1#/incidents/gavarres/plan");
+    await expect(page.locator("main .crew-route-map")).toHaveCount(1);
+    const crewSelector = page.getByRole("combobox", { name: "Crew", exact: true });
+    await expect(crewSelector).toHaveValue("gavarres-unit-0");
+    await expect(page.getByLabel("Plan map for Crew 1A", { exact: true })).toBeVisible();
+    await crewSelector.selectOption(engine.team_id);
+    await expect(page.locator("main .crew-route-map")).toHaveCount(1);
+    await expect(page.getByLabel("Plan map for Engine 12", { exact: true })).toBeVisible();
+    await expect(page.locator("main .crew-stop-table")).toContainText("Can Puig");
+    await expect(page.locator("main .crew-stop-table")).not.toContainText("Vall Repòs");
+    await page.goto(base + "/?demo=1#/incidents/cap-creus/plan");
+    await expect(crewSelector).toHaveValue("cap-creus-unit-0");
+    await expect(page.locator("main .crew-route-map")).toHaveCount(1);
+    assert.deepEqual(writes, [], "crew selection does not save or dispatch");
     await page.goto(base + "/?demo=1#/overview");
     let dialog = await review("Engine 12");
     const desktopDialog = await dialog.boundingBox();
@@ -313,6 +327,7 @@ const root = path.resolve(__dirname, "../..");
     assert.deepEqual(await orderIn(dialog), ["__start__", ...reversed]);
     await dialog.getByRole("button", { name: "Close details" }).click();
     await page.goto(base + "/?demo=1#/incidents/gavarres/plan");
+    await page.getByRole("combobox", { name: "Crew", exact: true }).selectOption(engine.team_id);
     const engineCard = page.locator(".plan-teams > .MuiCard-root").filter({
       has: page.getByRole("heading", { name: "Engine 12", exact: true }),
     });
@@ -363,6 +378,8 @@ const root = path.resolve(__dirname, "../..");
     });
     mobile.on("pageerror", (error) => errors.push(error.message));
     await mobile.goto(base + "/?demo=1#/incidents/gavarres/plan");
+    await mobile.getByRole("combobox", { name: "Crew", exact: true }).selectOption(engine.team_id);
+    await expect(mobile.locator("main .crew-route-map")).toHaveCount(1);
     await expect(
       mobile.getByRole("heading", { name: "Firefighter plan", exact: true }),
     ).toBeVisible();

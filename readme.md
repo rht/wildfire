@@ -3588,3 +3588,13 @@ review verified fixes for completed-history departure position, exported deadlin
 semantics, floating-point comparison tolerance and stale-preview recovery, and
 reviewed the latest-main conflict resolution. No dispatch was performed. Physical
 iPad/Safari testing remains outside the Chrome-emulation checks. PR: #32.
+
+
+The incident Firefighter plan page uses a Crew selector and renders one crew's map
+and visit table at a time. The selected crew's saved approved order is shown, and
+Review & confirm opens its full-screen review. Selection is scoped to the incident;
+if a selected crew disappears, the view falls back to an available crew. Blockers
+and uncovered locations remain incident-wide. Verified with 69 Node tests,
+lint/format/build, the crew-order browser regression (single map, crew/incident
+switching, saved approval, reorder and mobile checks), screenshot inspection and
+independent code review.
