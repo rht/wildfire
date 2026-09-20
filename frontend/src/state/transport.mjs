@@ -11,6 +11,8 @@ export class DashboardClient {
     this.stopped = false;
     this.generation = 0;
     this.retryDelay = 1000;
+    // First connection only: replay revisions the device lacks (historyCursor).
+    this.replay = null;
   }
   status() {
     const age = this.state
@@ -36,10 +38,34 @@ export class DashboardClient {
     ) {
       throw new Error("invalid state");
     }
-    if (!reset && this.state && state.revision <= this.state.revision) return;
+    if (!reset && this.state && state.revision <= this.state.revision) {
+      if (!this.replay || state.revision <= this.replay.after) return;
+      if (state.revision < this.replay.until) {
+        this.onState(state); // replayed history: latest state and status unchanged
+        return;
+      }
+      this.replay = null;
+      this.onState(this.state); // replay caught up: show the latest state again
+      return;
+    }
+    this.replay = null;
     this.state = state;
     this.onState(state);
     this.status();
+  }
+  async firstCursor(state) {
+    if (!this.historyCursor) return state.revision;
+    const cursor = this.historyCursor;
+    this.historyCursor = null;
+    let after = state.revision;
+    try {
+      const saved = await cursor(state);
+      if (Number.isInteger(saved) && saved >= 0) after = Math.min(after, saved);
+    } catch {
+      /* unknown device history: no replay */
+    }
+    if (after < state.revision) this.replay = { after, until: state.revision };
+    return after;
   }
   async start() {
     this.stopped = false;
@@ -50,8 +76,10 @@ export class DashboardClient {
       const state = await this.fetchState();
       if (this.stopped || generation !== this.generation) return;
       this.accept(state, true);
+      const after = await this.firstCursor(state);
+      if (this.stopped || generation !== this.generation) return;
       this.socket = new this.WebSocket(
-        `${this.socketUrl}?after_revision=${state.revision}`,
+        `${this.socketUrl}?after_revision=${after}`,
       );
       const socket = this.socket;
       const active = () =>

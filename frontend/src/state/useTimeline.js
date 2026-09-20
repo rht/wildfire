@@ -76,7 +76,7 @@ export function useTimeline(incidents, demo) {
     simulated: demo,
     historyLabel: demo
       ? "Generated demo history · illustrative simulated spread"
-      : "History saved on this device",
+      : "History replayed from the backend and saved on this device",
     incidents: historical ? selected.incidents : incidents,
     select: (index) =>
       setSelection(

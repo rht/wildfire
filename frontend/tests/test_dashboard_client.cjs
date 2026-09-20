@@ -6,7 +6,7 @@ function state(revision=1) {
     as_of:'2026-09-20T10:00:00Z',input_mode:'live',assets:[],contacts:{ranked:[],review:[]},
     calls:[],plan:{locations:[],remaining_capacity:{},response:null},teams:[],tasks:[],events:[],errors:[]};
 }
-function harness(Client=DashboardClient) {
+function harness(Client=DashboardClient,options={}) {
   let latest=state(), now=Date.parse(latest.as_of);
   const sockets=[], timers=[], states=[], statuses=[];
   class Socket {
@@ -16,7 +16,7 @@ function harness(Client=DashboardClient) {
   }
   const client=new Client({fetchState:async()=>latest, WebSocket:Socket,
     socketUrl:'ws://localhost/api/updates',onState:s=>states.push(s),onStatus:s=>statuses.push(s),
-    now:()=>now,setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{}});
+    now:()=>now,setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{},...options});
   return {client,sockets,timers,states,statuses,setLatest:s=>latest=s,setNow:v=>now=v};
 }
 test('REST cursor catches race, ordered stream ignores duplicate and older states',async()=>{
@@ -46,6 +46,16 @@ test('bad JSON retains last good state and schedules recovery',async()=>{
   const h=harness();await h.client.start();h.sockets[0].onmessage({data:'bad'});
   assert.equal(h.states.length,1);assert.equal(h.statuses.at(-1).connection,'unavailable');
   assert.equal(h.sockets[0].closed,true);h.client.stop();
+});
+test('history cursor replays missing revisions once, then reconnects after the latest',async()=>{
+  const h=harness(DashboardClient,{historyCursor:()=>0});h.setLatest(state(3));await h.client.start();
+  assert.match(h.sockets[0].url,/after_revision=0$/);
+  for(const r of [1,2,3]) h.sockets[0].message(state(r)); // replay, oldest first, ends at latest
+  assert.deepEqual(h.states.map(s=>s.revision),[3,1,2,3]);
+  assert.equal(h.client.state.revision,3);assert.equal(h.statuses.at(-1).stale,false);
+  h.sockets[0].message(state(2));assert.equal(h.states.length,4); // replay over: older ignored
+  h.sockets[0].onclose();h.setLatest(state(4));await h.timers.at(-1)();
+  assert.match(h.sockets.at(-1).url,/after_revision=4$/);h.client.stop();
 });
 module.exports={state};
 test('fresh refresh does not hide old or unavailable snapshot evidence',async()=>{

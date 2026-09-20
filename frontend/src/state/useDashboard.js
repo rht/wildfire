@@ -24,6 +24,8 @@ export function useDashboard(demo) {
       },
       WebSocket: globalThis.WebSocket,
       socketUrl: `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/api/updates`,
+      // First connection replays all backend history so the timeline is complete.
+      historyCursor: () => 0,
       onState: (state) => {
         const id = state.incident_id || state.scenario_id;
         for (const [index, event] of (state.events || []).entries()) {

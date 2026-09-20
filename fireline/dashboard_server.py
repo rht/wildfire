@@ -26,15 +26,24 @@ _BUILD_REQUIRED = ("Dashboard frontend is not built.\nRun:\n"
 
 
 def _revision_states(store, cursor):
-    """Accept full envelopes or coordination-update-1 records with a full refresh."""
-    updates = store.updates(max(0, cursor))
+    """Replay every committed state newer than the cursor.
+
+    Stores exposing states(after_revision) (CoordinationDatabase) provide full past
+    payloads directly. Otherwise accept full envelopes or coordination-update-1
+    records with a full refresh from updates(); compact records only resolve to
+    the current state.
+    """
     current = store.state()
     if current is None:
         raise ValueError('state unavailable')
-    if any(item.get('schema_version') == 'coordination-update-1' and
-           not isinstance(item.get('refresh'), dict) for item in updates):
-        return [current] if current['revision'] != cursor else []
-    states = [item.get('refresh', item) for item in updates]
+    if hasattr(store, 'states'):
+        states = store.states(max(0, cursor))
+    else:
+        updates = store.updates(max(0, cursor))
+        if any(item.get('schema_version') == 'coordination-update-1' and
+               not isinstance(item.get('refresh'), dict) for item in updates):
+            return [current] if current['revision'] != cursor else []
+        states = [item.get('refresh', item) for item in updates]
     states = sorted((s for s in states if s['revision'] > cursor), key=lambda s: s['revision'])
     if cursor > current['revision'] or (not states and current['revision'] > cursor):
         states = [current]
@@ -64,6 +73,12 @@ class CoordinationDatabase:
     def updates(self, after_revision=0):
         return [json.loads(row[0]) for row in self._read(
             'SELECT event FROM coordination_revisions WHERE revision>? ORDER BY revision',
+            (after_revision,))]
+
+    def states(self, after_revision=0):
+        """Full committed state payloads newer than after_revision, oldest first."""
+        return [json.loads(row[0]) for row in self._read(
+            'SELECT payload FROM coordination_revisions WHERE revision>? ORDER BY revision',
             (after_revision,))]
 
 

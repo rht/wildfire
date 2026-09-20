@@ -285,6 +285,27 @@ def test_read_only_database_adapter_never_creates_missing_database(tmp_path):
         assert client.get('/api/state').json()['revision'] == 1
 
 
+def test_database_adapter_replays_full_past_states_from_payload_column(tmp_path):
+    import json
+    import sqlite3
+    from fireline.dashboard_server import CoordinationDatabase, _revision_states
+    database = tmp_path / 'history.sqlite'
+    with sqlite3.connect(database) as conn:
+        conn.execute('CREATE TABLE coordination_revisions (revision INTEGER, payload TEXT, event TEXT)')
+        for n in (1, 2, 3):
+            conn.execute('INSERT INTO coordination_revisions VALUES (?, ?, ?)', (n, json.dumps(envelope(n)),
+                json.dumps({'schema_version': 'coordination-update-1', 'revision': n, 'refresh': 'full_state'})))
+    reader = CoordinationDatabase(database)
+    assert reader.states(0) == [envelope(1), envelope(2), envelope(3)]
+    assert [s['revision'] for s in _revision_states(reader, 0)] == [1, 2, 3]
+    assert [s['revision'] for s in _revision_states(reader, 2)] == [3]
+    assert _revision_states(reader, 3) == []
+    assert [s['revision'] for s in _revision_states(reader, 9)] == [3]
+    with TestClient(create_app(reader)) as client:
+        with client.websocket_connect('/api/updates?after_revision=0') as ws:
+            assert [ws.receive_json()['revision'] for _ in range(3)] == [1, 2, 3]
+
+
 def test_public_projection_redacts_formatted_phones_but_preserves_stable_numeric_ids():
     state = envelope()
     state['assets'][0].update(asset_id='123456789', name='First')
