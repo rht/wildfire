@@ -1,0 +1,12 @@
+{
+ "input_mode": "recorded",
+ "call_mode": "disabled",
+ "search_radius_m": 10000,
+ "catalog_file": "catalog.json",
+ "llm_assessment": {
+  "mode": "disabled"
+ },
+ "language": "en",
+ "contacts": [],
+ "approvals": []
+}

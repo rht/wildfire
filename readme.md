@@ -3114,6 +3114,30 @@ on 18521 and Streamlit on 18511 remain running in their original worktrees. Port
 8511 and discovery PR18 were not touched. No live calls, dispatch or operational
 writes were performed.
 
+**Real Gavarres perimeter in the React dashboard (2026-09-20).** The `--demo`
+store above has no fire geometry. To show the real recorded Deepfire perimeter,
+run the incident runtime in recorded mode on 18522 instead. The fixtures in
+`fixtures/incidents/gavarres_real/` are committed; `python scripts/make_gavarres_trigger.py`
+regenerates them. Recorded provider data only: nothing is fetched live, `call_mode`
+stays `disabled`, and no telephony runs.
+
+```bash
+export FIRE_TRIGGER_TOKEN=$(openssl rand -hex 24) VOICE_RESULT_TOKEN=$(openssl rand -hex 24)
+python -m fireline.incident_server serve --settings fixtures/incidents/gavarres_real/settings.json \
+  --data-dir data/gavarres-real --port 18522 &
+for n in 0001 0002 0003; do python -m fireline.incident_server trigger \
+  --url http://127.0.0.1:18522 --file fixtures/incidents/gavarres_real/trigger-$n.json; done
+```
+
+Each trigger advances the fire; reusing `data/gavarres-real` (gitignored) resumes,
+a fresh directory restarts. The incident server serves the built `frontend/dist`
+at <http://127.0.0.1:18522/> and `/api/state` + `/api/updates`, so open it directly
+(or `npm --prefix frontend run dev`, which proxies to 18522) and pick **Connected
+backend**. Expect the real satellite perimeter with `fire_geometry_kind: perimeter`,
+`input_mode: recorded`, the real Gavarres facilities and an empty call history.
+Streamlit reads the same perimeters from `fixtures/snapshots/gavarres_real_*.json`;
+this path reads the runtime's coordination state produced from the triggers.
+
 Verification: `npm --prefix frontend test` **30 passed**; frontend lint, formatting
 and production build passed. Chrome tests cover desktop/mobile navigation, fire
 scoping, filters, valuation details, call follow-up reasons, log order, real
