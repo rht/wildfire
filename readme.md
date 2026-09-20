@@ -3608,7 +3608,17 @@ while session data is in use. Everything it produces lives in `frontend/src/onbo
 (`config.mjs` parsing and validation, `generate.mjs` data generation, `session.js`
 session storage, `Onboarding.jsx` the form, `onboarding.css` its styles).
 
-The form takes five inputs:
+The form is a five-step wizard — one section per step, Back and Next, and a single
+progress bar with the step list above it. Next validates the step it is on: if
+something is missing it names it in place and stays put rather than advancing, while
+parse problems (a pair outside Catalonia, an unreadable number) are always listed line
+by line with the offending text. Completed steps are marked, any step can be revisited
+from the progress list without losing what was entered, and the final Review step shows
+the counts and a map of what will be generated before anything is built. Validation that
+spans steps — station coordinates are required only when a crew type starts there — is
+reported on the step that can fix it.
+
+The wizard collects five inputs:
 
 - **Fire department name** — recorded as the source of every crew record.
 - **Fire GPS pairs, one per line** — the number of accepted pairs is the number of
@@ -3653,14 +3663,16 @@ the call queue, and the number on file to the call detail dialog, so the supplie
 list is visible where the agent would work it; both read "Not supplied" for backend data
 that carries no number.
 
-Verification: 62 Node tests passed (11 new onboarding tests covering coordinate and
+Verification: 80 Node tests passed (11 new onboarding tests covering coordinate and
 number parsing, required-input reporting, configuration round-trips, one incident per
 pair, determinism, number distribution, crew counts per type and placement inside the
 station radius or the envelope, and the generated state driving `callRows`, `metrics`,
 `evacuationTotals` and `responseTeams`). Lint, Prettier and the production build passed.
-Nine Chrome regression scripts passed, including a new `onboarding_browser.cjs` that
-checks the page is absent from the navigation, fills the form, builds the dashboard,
-verifies incident, crew and call-queue counts, and confirms the session survives a reload
-and that clearing it returns the dashboard to its configured source. Screenshots of the
+Ten Chrome regression scripts passed, including a new `onboarding_browser.cjs` that
+checks the page is absent from the navigation, walks all five steps with the progress bar
+advancing, confirms an unsatisfiable step reports its error and refuses to advance, that
+Back and Next preserve entered values, builds the dashboard, verifies incident, crew and
+call-queue counts, and confirms the session survives a reload and that clearing it returns
+the dashboard to its configured source. Screenshots of the
 form, overview, resources and call queue were inspected. Backend source files are
 unchanged.

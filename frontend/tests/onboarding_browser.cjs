@@ -72,15 +72,53 @@ const root = path.resolve(__dirname, "..");
       const field = page.getByText(label, { exact: true }).locator("..");
       await field.locator("input, textarea").first().fill(value);
     };
+    const progress = page.getByRole("progressbar");
+    const stepCard = page.locator("main .MuiCard-root h2").first();
+    const next = page.getByRole("button", { name: "Next", exact: true });
+    const back = page.getByRole("button", { name: "Back", exact: true });
+
+    // One section per step, with a single progress bar that advances.
+    await expect(stepCard).toHaveText("1. Jurisdiction");
+    await expect(progress).toHaveAttribute("aria-valuenow", "20");
+    await expect(back).toBeDisabled();
     await fill("Fire department name", "Bombers de Test");
     await fill("Fire station GPS (latitude, longitude)", "41.9600, 3.0380");
+    await next.click();
+
+    await expect(stepCard).toHaveText("2. Fires");
+    await expect(progress).toHaveAttribute("aria-valuenow", "40");
+    // A step that cannot be satisfied reports it and refuses to advance.
+    await fill("GPS pairs, one per line", "48.8566, 2.3522");
+    await next.click();
+    await expect(stepCard).toHaveText("2. Fires");
+    await expect(page.getByRole("alert").first()).toContainText(
+      "Supply at least one GPS pair",
+    );
+    await expect(
+      page.getByText("Outside Catalonia (approximate bounding box)"),
+    ).toBeVisible();
     await fill("GPS pairs, one per line", "41.9400, 3.0400\n41.8600, 2.9100");
+    await expect(page.getByText("La Bisbal d'Empordà")).toBeVisible();
+    await next.click();
+
+    await expect(stepCard).toHaveText("3. Call list");
     await fill(
       "Phone numbers, one per line",
       ["+34600000001", "+34600000002", "+34600000003", "+34600000004"].join(
         "\n",
       ),
     );
+    // Back and forward keep what was entered.
+    await back.click();
+    await expect(stepCard).toHaveText("2. Fires");
+    await next.click();
+    await expect(stepCard).toHaveText("3. Call list");
+    await expect(
+      page.getByText("4 numbers accepted", { exact: false }),
+    ).toBeVisible();
+    await next.click();
+
+    await expect(stepCard).toHaveText("4. Crews");
     await page.getByLabel("Ground crew count").fill("3");
     await page.getByLabel("Fire engine count").fill("0");
     await page.getByLabel("Evacuation bus count").fill("0");
@@ -88,8 +126,11 @@ const root = path.resolve(__dirname, "..");
     await page
       .getByLabel("Helicopter starting location")
       .selectOption("territory");
-    await expect(page.getByText("Ready to build")).toBeVisible();
-    await expect(page.getByText("La Bisbal d'Empordà").first()).toBeVisible();
+    await next.click();
+
+    await expect(stepCard).toHaveText("5. Review");
+    await expect(progress).toHaveAttribute("aria-valuenow", "100");
+    await expect(page.getByText("generated locations")).toBeVisible();
 
     await page.getByRole("button", { name: "Build dashboard" }).click();
     await page
@@ -123,6 +164,9 @@ const root = path.resolve(__dirname, "..");
     await page.reload();
     await expect(page.getByText("Session demo", { exact: true })).toBeVisible();
     await page.goto(base + "/#/onboarding");
+    await expect(page.locator("main .MuiCard-root h2").first()).toHaveText(
+      "1. Jurisdiction",
+    );
     await page.getByRole("button", { name: "Clear session data" }).click();
     await expect(
       page.getByRole("button", { name: "Clear session data" }),

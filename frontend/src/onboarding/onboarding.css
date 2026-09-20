@@ -85,3 +85,106 @@
   gap: 12px;
   align-items: center;
 }
+
+.onboarding-progress {
+  padding: 16px 20px 8px;
+  border: 1px solid #e6ebf1;
+  border-radius: 4px;
+  background: #fff;
+}
+.onboarding-progress .MuiLinearProgress-root {
+  height: 6px;
+  border-radius: 3px;
+  background: #f0f0f0;
+}
+.onboarding-steps {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+.onboarding-step {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+.onboarding-step:hover {
+  background: #fafafa;
+}
+.onboarding-step[aria-current="step"] {
+  border-color: #91caff;
+  background: #f0f7ff;
+}
+.onboarding-step strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.onboarding-step small {
+  display: block;
+  margin-top: 2px;
+  color: #8c8c8c;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.onboarding-step-mark {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  color: #595959;
+  font-size: 12px;
+  font-weight: 600;
+}
+.onboarding-step.complete .onboarding-step-mark {
+  border-color: #389e0d;
+  background: #389e0d;
+  color: #fff;
+}
+.onboarding-step.invalid .onboarding-step-mark {
+  border-color: #cf1322;
+  background: #fff1f0;
+  color: #cf1322;
+}
+.onboarding-step[aria-current="step"] .onboarding-step-mark {
+  border-color: #1677ff;
+  color: #1677ff;
+}
+.onboarding-step[aria-current="step"].complete .onboarding-step-mark {
+  color: #fff;
+}
+.onboarding-blocking {
+  margin-bottom: 20px;
+}
+.onboarding-blocking ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+.onboarding-jump {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #1677ff;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.onboarding-actions-spacer {
+  flex: 1 1 auto;
+}

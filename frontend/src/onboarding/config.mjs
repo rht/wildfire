@@ -233,20 +233,29 @@ export function buildConfig(draft, { createdAt } = {}) {
     return { type: type.id, count, placement };
   }).filter((crew) => crew.count > 0);
   const department = String(draft.department ?? "").trim();
+  // Each problem names the step that can fix it, so the form reports it in place.
   const problems = [];
+  const problem = (step, message) => problems.push({ step, message });
   if (!department)
-    problems.push("Give the jurisdiction's fire department a name.");
+    problem("jurisdiction", "Give the jurisdiction's fire department a name.");
+  if (String(draft.station ?? "").trim() && !station)
+    problem(
+      "jurisdiction",
+      `The fire station pair is unreadable or outside ${CATALONIA.label}.`,
+    );
   if (!fires.points.length)
-    problems.push(`Supply at least one GPS pair inside ${CATALONIA.label}.`);
+    problem("fires", `Supply at least one GPS pair inside ${CATALONIA.label}.`);
   if (!phones.numbers.length)
-    problems.push(
+    problem(
+      "calls",
       "Supply at least one phone number for the voice agent to call.",
     );
   if (!crews.length)
-    problems.push("Set a crew count above zero for at least one type.");
+    problem("crews", "Set a crew count above zero for at least one type.");
   if (!station && crews.some((crew) => crew.placement === "station"))
-    problems.push(
-      "Supply the fire station GPS pair, or place every crew type across the territory.",
+    problem(
+      "crews",
+      "Supply the fire station pair on the jurisdiction step, or place every crew type across the territory.",
     );
   const config = {
     schema_version: "onboarding-demo-1",
@@ -262,6 +271,9 @@ export function buildConfig(draft, { createdAt } = {}) {
   };
   return { config, problems, fires, phones, station };
 }
+
+export const problemsFor = (problems, step) =>
+  problems.filter((entry) => entry.step === step).map((entry) => entry.message);
 
 export function summarise(config) {
   const crews = config.crews.reduce((total, crew) => total + crew.count, 0);
