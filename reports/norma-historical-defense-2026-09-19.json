@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "purpose": "historical defense demonstration for human review, not a current unresolved defect or submitted exception",
+  "historical": true,
+  "branch": "codex/qualityclouds-audit",
+  "source_commit": "92ae882545ae6b45fb6e2356e1f8aa17da599312",
+  "original_audited_commit": "5141a8b2d23f872e13c6c5831da9979b30815baf",
+  "file": "fireline/response_priority.py",
+  "sha256": "2f65124e7303db5ed72ff10ee7b473c11b4a9ec914c502280bd29c491261bc20",
+  "call_started_at": "2026-09-19T18:55:15.148Z",
+  "result": {
+    "outcome": "issues",
+    "rules": {
+      "py-arch-global-keyword": {
+        "rule_name": "global keyword used inside a function",
+        "severity": "LOW",
+        "impact_area": "architecture",
+        "description": "Uses the \"global\" keyword to mutate module-level state from inside a function. This creates hidden dependencies between code that is supposed to be independent, breaks encapsulation, and makes testing in isolation very difficult.",
+        "remediation_action": "Refactor: pass state explicitly via parameters (dependency injection) or wrap state inside a class.",
+        "good_code": "class Cache:\n    def __init__(self):\n        self._data = {}\n\n    def set(self, k, v):\n        self._data[k] = v",
+        "bad_code": "_cache = {}\n\ndef set_value(k, v):\n    global _cache\n    _cache[k] = v",
+        "estimated_time_to_fix": 30
+      }
+    },
+    "issues": [
+      {
+        "rule_id": "py-arch-global-keyword",
+        "file": "fireline/response_priority.py",
+        "line": 212,
+        "column": 9,
+        "snippet": "        nonlocal best, visited"
+      }
+    ],
+    "issues_returned": 1,
+    "total_issues": 1,
+    "capped": false,
+    "coverage": {
+      "reduced": false,
+      "reason": null
+    },
+    "rulesets_evaluated": [
+      "fastapi-norma-ruleset",
+      "python-norma-ruleset",
+      "sqlalchemy-norma-ruleset"
+    ]
+  },
+  "verification": {
+    "historical_planner_suite": {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_static_priorities.py",
+      "passed": 35,
+      "failed": 0,
+      "source": "git archive of exact source_commit extracted into ignored data/norma-defense/historical; frozen source worktree not used as a test working directory",
+      "includes": "12 simple and 30 constrained random four-action scenarios compared to independent permutation oracles, deadlines, ties, capabilities, prerequisites and malformed input"
+    },
+    "isolation_probe": {
+      "historical_module_sha256": "2f65124e7303db5ed72ff10ee7b473c11b4a9ec914c502280bd29c491261bc20",
+      "states_evaluated": [
+        1,
+        2,
+        5,
+        65
+      ],
+      "sequential_interleaved_calls_passed": 80,
+      "nested_invocation_checks_passed": 1,
+      "independent_threaded_calls_passed": 80,
+      "inputs_unchanged": true,
+      "module_best_or_visited_present": false,
+      "scope": "separate calls only; no claim about parallel traversal within one call or caller mutation of inputs"
+    },
+    "isolation_probe_source": "import copy\nimport hashlib\nimport json\nimport pathlib\nimport sys\nfrom concurrent.futures import ThreadPoolExecutor\n\nhistorical = pathlib.Path(__file__).parent / 'historical'\nsys.path.insert(0, str(historical))\nfrom tests.test_static_priorities import act, loc, scene\nfrom fireline import response_priority as rp\n\nsource = pathlib.Path(rp.__file__).read_bytes()\nassert hashlib.sha256(source).hexdigest() == '2f65124e7303db5ed72ff10ee7b473c11b4a9ec914c502280bd29c491261bc20'\nassert b'nonlocal best, visited' in source\nscenarios = [scene([], [])]\nfor count in (1, 2, 4):\n    locations = [loc(str(i), value=10 + i, people=i) for i in range(count)]\n    actions = [act(str(i), str(i)) for i in range(count)]\n    scenarios.append(scene(locations, actions, horizon=20))\noriginal_inputs = copy.deepcopy(scenarios)\nexpected = [rp.plan_response(s) for s in scenarios]\nassert [r['states_evaluated'] for r in expected] == [1, 2, 5, 65]\nfor _ in range(20):\n    for index in (3, 0, 2, 1):\n        assert rp.plan_response(scenarios[index]) == expected[index]\n\noriginal_extend = rp.Planner.extend\nnested_results = []\nentered = False\ndef reentrant_extend(self, state, action):\n    global entered\n    if not entered:\n        entered = True\n        nested_results.append(rp.plan_response(scenarios[1]))\n    return original_extend(self, state, action)\nrp.Planner.extend = reentrant_extend\ntry:\n    assert rp.plan_response(scenarios[3]) == expected[3]\n    assert nested_results == [expected[1]]\nfinally:\n    rp.Planner.extend = original_extend\n\nwith ThreadPoolExecutor(max_workers=4) as pool:\n    order = [i % 4 for i in range(80)]\n    results = list(pool.map(rp.plan_response, [scenarios[i] for i in order]))\nassert results == [expected[i] for i in order]\nassert scenarios == original_inputs\nassert 'best' not in vars(rp) and 'visited' not in vars(rp)\nprint(json.dumps({'historical_module_sha256': hashlib.sha256(source).hexdigest(), 'states_evaluated': [r['states_evaluated'] for r in expected], 'sequential_interleaved_calls_passed': 80, 'nested_invocation_checks_passed': 1, 'independent_threaded_calls_passed': 80, 'inputs_unchanged': True, 'module_best_or_visited_present': False, 'scope': 'separate calls only; no claim about parallel traversal within one call or caller mutation of inputs'}, indent=2))\n"
+  },
+  "candidate_comparison": [
+    {
+      "candidate": "nonlocal best, visited",
+      "selected": true,
+      "reason": "Syntactic finding is real; rule's module-global coupling rationale does not describe private per-invocation synchronous DFS cells."
+    },
+    {
+      "candidate": "tasks.py:189 literal migration identifiers",
+      "selected": false,
+      "reason": "Locally enumerated trusted identifiers support a defensible historical data-flow argument, but fixed DDL is simple and already merged; this does not justify reverting it."
+    },
+    {
+      "candidate": "tasks.py:201 _next_id(table, prefix)",
+      "selected": false,
+      "reason": "Current historical callers pass fixed literals, but helper accepts arbitrary strings without enforcing a whitelist. Defense depends on ongoing call-graph discipline and is weaker than the closure candidate."
+    }
+  ],
+  "review_status": "Historical demonstration approved at 1c991f8. Current strict capacity selection is implemented and recorded in norma-selected-capacity-defense-2026-09-19.json; formal registration remains unavailable/not submitted.",
+  "independent_review": {
+    "result": "approved, no blockers",
+    "verified": [
+      "exact historical hash at both source revisions",
+      "original finding line and raw scan evidence",
+      "35 historical planner tests rerun",
+      "isolation probe rerun and embedded script matched",
+      "tradeoffs and invalidation conditions",
+      "SQL candidate comparison",
+      "no source mutation or production reversion"
+    ]
+  },
+  "selection_status": "secondary historical appendix; current selected defense is strict capacity at 923d49476ecca0276b5d3b88b5ce9bc065479fd0",
+  "primary_candidate_evidence": "reports/norma-selected-capacity-defense-2026-09-19.json",
+  "state_at_historical_review": {
+    "main_merge": "587f5bd53eb41bd04d693e49a60940b6a62530f1",
+    "remediation_pr": "https://github.com/rht/wildfire/pull/3",
+    "feature_evidence_pr": "https://github.com/rht/wildfire/pull/10",
+    "historical_source_changed": false,
+    "formal_exception_submitted": false,
+    "slng": "deferred; untouched",
+    "as_of_note": "Historical state when this appendix was written at 1c991f8; see current selected evidence for retained finding.",
+    "branch_findings_at_that_time": "All six eligible branches have zero reported findings in final checked files; JavaScript coverage is reduced.",
+    "production_reversion_at_that_time": false
+  }
+}
