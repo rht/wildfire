@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 import os
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from fireline import env, agent, config, fire_input, priority, snapshot, tasks
@@ -26,6 +26,9 @@ SNAPSHOT_DIRS = (ROOT / "fixtures" / "snapshots", ROOT / "data" / "snapshots")
 ROSTER_PATH = ROOT / "fixtures" / "teams.json"
 DEFAULT_DB = ROOT / "data" / "fireline.sqlite"
 FAKE_LABEL_NO_KEY = "fake (no NEBIUS_API_KEY or ANTHROPIC_API_KEY)"
+# Provenance of the approve-all preview. `priority._apply_one` writes "analyst override: <source>"
+# into the asset's `sources`, so the source string has to say on its own that nothing was confirmed.
+PREVIEW_SOURCE = "approve-all preview (agent proposal, not analyst-confirmed)"
 
 
 def discover_snapshots(dirs=SNAPSHOT_DIRS) -> tuple[dict[str, list[dict]], list[str]]:
@@ -67,6 +70,12 @@ def value_at_risk_totals(assets) -> dict:
     and they differ (an `occupancy_unknown` asset is out of the people totals but not the euros; a class
     the policy does not value is the reverse). The rule is `scripts/make_snapshots.py value_totals`.
 
+    `custom_valued` counts the located assets carrying an analyst-confirmed bespoke valuation
+    (`snapshot.custom_valuation_band`, so a confirmed `not_valued` is not one). Such an asset is out of
+    `excluded_eur`, because its bespoke mid replaced the class replacement cost it never had and
+    `snapshot.derive_value_at_risk` re-derived the euro fields from it; the count says how much of the
+    euro total rests on a per-asset assumption rather than on the class table.
+
     `layer` is False when the snapshot carries none of the eight keys, so a header can say the layer is
     off instead of reporting zeros. `covered` / `reached` separate a forecast that reaches nothing from a
     missing forecast: a located asset with a `forecast_source` is covered, and one with a positive
@@ -89,8 +98,21 @@ def value_at_risk_totals(assets) -> dict:
         "horizon_at": max(horizons) if horizons else None,
         "enrichment": any(ENRICHMENT_LABEL in (a.get("forecast_source") or "") for a in covered),
         "policy_version": config.VALUE_AT_RISK_POLICY["version"],
+        "custom_valued": sum(1 for a in located if snapshot.custom_valuation_band(a) is not None),
+        "custom_valuation_policy_version": config.CUSTOM_VALUATION_POLICY["version"],
     })
     return out
+
+
+def _valuation_key(asset) -> tuple | None:
+    """A confirmed bespoke valuation as a comparable tuple, or None when the asset carries no band.
+
+    `snapshot.custom_valuation_band` already returns None for a confirmed `not_valued`, so this is the
+    identity of "this asset carries a bespoke euro figure, and it is this one" - enough to tell a
+    preview that would set a band from one that would only re-state the band already confirmed.
+    """
+    band = snapshot.custom_valuation_band(asset or {})
+    return None if band is None else (band["method"], band["low"], band["mid"], band["high"])
 
 
 def db_path_from_env() -> Path:
@@ -122,6 +144,11 @@ class Session:
         self.last_update: dict | None = None
         self.last_suggested: list[dict] = []
         self.investigations: dict[str, dict] = {}     # asset_id -> last investigate record
+        # Approve-all preview (readme 6, CONTRACTS 4/6): an in-memory "what if every agent
+        # recommendation were confirmed" ranking. Nothing here is ever written to the store.
+        self.approve_all: bool = False
+        self.preview_report: dict | None = None
+        self._preview_cache: dict[str, list[dict]] = {}   # snapshot_id -> pending proposals of one sweep
 
     def ensure_open(self) -> "Session":
         """Reopen the store when called from another thread: sqlite3 connections are thread-bound and
@@ -205,6 +232,9 @@ class Session:
         self.scenario_id = scenario_id
         self.workbench = None          # proposals and questions belong to the previous scenario
         self.investigations = {}
+        self.approve_all = False       # the preview is a comparison of one snapshot, not a session mode
+        self.preview_report = None
+        self._preview_cache = {}
         self.index = -1
         return self.go_to(self._resume_index())
 
@@ -273,8 +303,15 @@ class Session:
     def rescore(self) -> dict:
         """Re-rank the current snapshot by remaining evacuation window with the store's confirmed
         overrides; keeps the workbench's pending proposals and open questions while replacing its
-        asset records."""
-        self.scored = priority.rank_snapshot(self.snapshot, overrides=self.store.overrides())
+        asset records.
+
+        With `approve_all` on the ranking shown is the preview one (`_preview_rank`): the confirmed
+        overrides plus every pending agent proposal, applied in memory only."""
+        if self.approve_all and self.snapshot is not None:
+            self.scored = self._preview_rank()
+        else:
+            self.preview_report = None
+            self.scored = priority.rank_snapshot(self.snapshot, overrides=self.store.overrides())
         if self.workbench is None:
             self.workbench = agent.Workbench.from_scored(self.scored, tasks=self.store, snapshot=self.snapshot)
         else:
@@ -293,6 +330,158 @@ class Session:
     def assets_in_order(self) -> list[dict]:
         return list(self.scored["all"]) if self.scored else []
 
+    # -- approve-all preview -----------------------------------------------------------------
+
+    def set_approve_all(self, on: bool) -> dict | None:
+        """Turn the approve-all preview on or off, rescore, and return `self.preview_report`.
+
+        On: the offline agent sweep runs over the flagged assets of the current snapshot (cached per
+        `snapshot_id`), every pending proposal becomes an in-memory override on top of the store's
+        confirmed ones, and the snapshot is re-ranked with them. Off: the ordinary ranking comes
+        back and `preview_report` is None. The store is never written to either way, which is the
+        point: this answers "what would the queue look like if I approved everything the agent
+        proposes" without approving anything."""
+        self.approve_all = bool(on)
+        if self.snapshot is None:
+            self.preview_report = None
+            return self.preview_report
+        self.rescore()
+        return self.preview_report
+
+    def _fake_llm_label(self) -> str:
+        """Label for the offline back-end, shared with `investigate` so both say the same thing."""
+        return FAKE_LABEL_NO_KEY if not llm_available() else "fake (live disabled)"
+
+    def _preview_proposals(self, baseline: dict) -> list[dict]:
+        """Pending proposals of one offline sweep over `baseline`, cached per snapshot_id.
+
+        `agent.investigate_all` over the 93 flagged assets of a real snapshot takes ~15 s, so a
+        Streamlit toggle cannot afford to re-run it on every rerun: the sweep result is cached and
+        only a different snapshot (or a new scenario) re-runs it. The sweep workbench is a throwaway
+        with **no task store attached**, so nothing it does can be persisted, and its proposals and
+        questions never reach `self.workbench`; it is built from copies so an investigation cannot
+        touch the baseline records the comparison is made against."""
+        key = self.snapshot["snapshot_id"]
+        cached = self._preview_cache.get(key)
+        if cached is None:
+            wb = agent.Workbench.from_scored([dict(a) for a in baseline["all"]], snapshot=self.snapshot)
+            agent.investigate_all(wb, llm=None)          # llm=None -> offline FakeLLM
+            cached = [dict(p) for p in wb.proposals if p["status"] == "pending"]
+            self._preview_cache[key] = cached
+        return cached
+
+    def _preview_confirmed_at(self, asset: dict | None) -> str:
+        """`confirmed_at` for a preview override: the session clock, never earlier than the asset's
+        own provider observations.
+
+        `priority._apply_one` raises `override_conflict` when a provider source for the same field
+        was observed after the confirmation, which is a real disagreement for an analyst decision
+        and meaningless for a preview - the preview would otherwise invent review flags that no
+        confirmation would have produced. The comparison uses `priority._parse_time`, the parser the
+        conflict check itself uses, so the two cannot disagree about a timestamp."""
+        now = self.clock()
+        latest = now
+        for entry in (asset or {}).get("sources") or []:
+            observed = priority._parse_time(entry.get("observed_at"))
+            if observed is not None and observed > latest:
+                latest = observed + timedelta(seconds=1)
+        return latest.isoformat()
+
+    def _preview_override(self, proposal: dict, asset: dict | None) -> dict:
+        """One pending proposal as an override dict for `priority.apply_overrides` (CONTRACTS 4)."""
+        return {
+            "override_id": f"preview-{proposal['proposal_id']}",
+            "asset_id": proposal["asset_id"],
+            "field": proposal["field"],
+            "value": proposal["value"],
+            "previous": proposal.get("previous"),
+            "source": f"{PREVIEW_SOURCE}; evidence: {proposal.get('source')}",
+            "snippet": proposal.get("quoted_snippet"),
+            "confidence": proposal.get("confidence"),
+            "url": proposal.get("url"),
+            "observed_at": proposal.get("observed_at"),
+            "confirmed_at": self._preview_confirmed_at(asset),
+        }
+
+    def _preview_rank(self) -> dict:
+        """Rank the snapshot with every pending agent proposal approved, in memory only.
+
+        The store's confirmed overrides always apply: the preview is additive, and a proposal for a
+        field the analyst has already confirmed is dropped rather than allowed to shadow it."""
+        confirmed = self.store.overrides()
+        baseline = priority.rank_snapshot(self.snapshot, overrides=confirmed)
+        by_id = {a["asset_id"]: a for a in baseline["all"]}
+        proposals = self._preview_proposals(baseline)
+        already = {(o["asset_id"], o["field"]) for o in confirmed}
+        used = [p for p in proposals if (p["asset_id"], p["field"]) not in already]
+        overrides = confirmed + [self._preview_override(p, by_id.get(p["asset_id"])) for p in used]
+        scored = priority.rank_snapshot(self.snapshot, overrides=overrides)
+        self.preview_report = self._preview_summary(baseline, scored, used)
+        self._annotate_preview(baseline, scored)
+        return scored
+
+    def _annotate_preview(self, baseline: dict, scored: dict) -> None:
+        """Per-asset movement against the baseline, on the preview records only.
+
+        `preview_rank_delta` is `baseline_rank - new_rank`, so a positive number means the asset
+        moved **up** the contact queue; it is None when the asset was unranked before or is unranked
+        now (entering or leaving the queue is not a distance)."""
+        before = {a["asset_id"]: a.get("priority_rank") for a in baseline["all"]}
+        for a in scored["all"]:
+            base_rank = before.get(a["asset_id"])
+            new_rank = a.get("priority_rank")
+            a["preview_baseline_rank"] = base_rank
+            a["preview_rank_delta"] = (base_rank - new_rank
+                                       if base_rank is not None and new_rank is not None else None)
+
+    def _preview_summary(self, baseline: dict, scored: dict, used: list[dict]) -> dict:
+        """The `preview_report` of CONTRACTS 7: what the sweep found and what approving it all moves."""
+        before = {a["asset_id"]: a for a in baseline["all"]}
+        after = {a["asset_id"]: a for a in scored["all"]}
+        by_field: dict[str, int] = {}
+        for p in used:
+            by_field[p["field"]] = by_field.get(p["field"], 0) + 1
+        ranked_ids_before = {a["asset_id"] for a in baseline["ranked"]}
+        ranked_ids_after = {a["asset_id"] for a in scored["ranked"]}
+        rows_moved = sum(1 for aid, a in after.items()
+                         if a.get("priority_rank") is not None
+                         and before.get(aid, {}).get("priority_rank") is not None
+                         and a["priority_rank"] != before[aid]["priority_rank"])
+        flags_cleared = 0
+        for aid, a in after.items():
+            was = set(before.get(aid, {}).get("review_reasons") or [])
+            flags_cleared += len(was - set(a.get("review_reasons") or []))
+        default_tier = config.CRITICALITY_POLICY["default_tier"]
+        tiers_set = sum(1 for aid, a in after.items()
+                        if a.get("criticality_tier") not in (None, default_tier)
+                        and a.get("criticality_tier") != before.get(aid, {}).get("criticality_tier"))
+        # The valuation sibling of `tiers_set`. `custom_valuation_band` is None for the confirmed
+        # `not_valued` answer, which is the valuation analogue of the default tier: the agent looked and
+        # found nothing, so the asset gains a cleared review flag and no euro figure. Counted here are
+        # only the proposals that would put a bespoke band on an asset that did not have that band.
+        valuations_set = sum(1 for aid, a in after.items()
+                             if _valuation_key(a) is not None
+                             and _valuation_key(a) != _valuation_key(before.get(aid, {})))
+        # `investigated` is the sweep's own asset list (agent.flagged_asset_ids over the baseline),
+        # recomputed rather than cached: it is the same list investigate_all walked.
+        investigated = len(agent.flagged_asset_ids(
+            agent.Workbench.from_scored([dict(a) for a in baseline["all"]], snapshot=self.snapshot)))
+        return {
+            "on": True,
+            "llm_label": self._fake_llm_label(),
+            "investigated": investigated,
+            "proposals": len(used),
+            "by_field": by_field,
+            "ranked_before": len(baseline["ranked"]),
+            "ranked_after": len(scored["ranked"]),
+            "rows_moved": rows_moved,
+            "entered_ranked": sorted(ranked_ids_after - ranked_ids_before),
+            "left_ranked": sorted(ranked_ids_before - ranked_ids_after),
+            "flags_cleared": flags_cleared,
+            "tiers_set": tiers_set,
+            "valuations_set": valuations_set,
+        }
+
     # -- agent ------------------------------------------------------------------------------
 
     def investigate(self, asset_id: str, live: bool) -> tuple[dict, str]:
@@ -305,7 +494,7 @@ class Session:
         if backend is not None:
             llm, label = backend, f"live ({backend.model})"
         else:
-            llm, label = None, (FAKE_LABEL_NO_KEY if not llm_available() else "fake (live disabled)")
+            llm, label = None, self._fake_llm_label()
         record = agent.investigate(self.workbench, asset_id, llm=llm)
         record["llm_label"] = label
         self.investigations[asset_id] = record
@@ -408,6 +597,8 @@ class Session:
             "strategic": len(self.scored.get("strategic") or []) if self.scored else 0,
             "criticality_unassessed": sum(1 for a in self.scored["all"]
                                           if "criticality_unassessed" in a["review_reasons"]) if self.scored else 0,
+            "valuation_unassessed": sum(1 for a in self.scored["all"]
+                                        if snapshot.VALUATION_UNASSESSED in a["review_reasons"]) if self.scored else 0,
             "open_tasks": len(self.open_tasks()),
             "pending_proposals": len(self.pending_proposals()),
             "open_questions": len(self.open_questions()),

@@ -332,6 +332,35 @@ def test_snapshot_public_metadata_does_not_expose_credentials_or_numbers(tmp_pat
     store.close()
 
 
+def test_confirmed_bespoke_valuation_crosses_the_public_boundary_whole(tmp_path):
+    """An analyst-confirmed per-asset valuation reaches the browser with all six of its keys.
+
+    The band alone would be a euro figure the browser cannot caveat: the method says how it was
+    arrived at, the components show the arithmetic and the basis says it is an analyst-confirmed
+    assumption rather than a market valuation. `_public_assets` projects them and
+    `dashboard_public._FIELDS` has to allow the same six, or the group is dropped one hop later.
+    """
+    from fireline.dashboard_public import public_state
+
+    args = supplied()
+    args[0]['assets'][0].update(
+        custom_value_eur_low=8000000, custom_value_eur_mid=12000000, custom_value_eur_high=20000000,
+        custom_value_method='component_replacement',
+        custom_value_components=[{'label': 'computing installation', 'amount_eur': 9000000},
+                                 {'label': 'building shell', 'amount_eur': 3000000}],
+        custom_value_basis='custom-valuation-proto; analyst override: ca.wikipedia.org')
+    store = coordinator(tmp_path / 'live.sqlite')
+    state = store.refresh(*args)
+    asset = next(a for a in state['assets'] if a['asset_id'] == args[0]['assets'][0]['asset_id'])
+    expected = {k: args[0]['assets'][0][k] for k in (
+        'custom_value_eur_low', 'custom_value_eur_mid', 'custom_value_eur_high',
+        'custom_value_method', 'custom_value_components', 'custom_value_basis')}
+    assert {k: asset[k] for k in expected} == expected
+    public = next(a for a in public_state(state)['assets'] if a['asset_id'] == asset['asset_id'])
+    assert {k: public[k] for k in expected} == expected
+    store.close()
+
+
 @pytest.mark.parametrize('cursor', [True, -1, 1.5, '1'])
 def test_event_cursor_requires_nonnegative_builtin_integer(tmp_path, cursor):
     store = coordinator(tmp_path / 'live.sqlite')

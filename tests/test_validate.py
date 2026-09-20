@@ -104,3 +104,14 @@ def test_markdown_has_not_verified_section():
     assert validate.VALIDATION_DATE in md
     assert "## Not verified" in md
     assert "Stale data | pass" in md and "Agent (live model) | not verified" in md
+
+
+def test_valuation_check_keeps_euros_out_of_the_contact_queue():
+    r = _run(validate.check_valuation)
+    assert r["outcome"] == validate.PASS, "\n".join(r["details"])
+    m = r["measured"]
+    assert m["contact_order_unchanged"] is True
+    assert m["expected_loss"] != m["damage_band_only"]        # the valuation band compounds with the damage band
+    assert set(m["assess_classes"]) == set(validate.config.CUSTOM_VALUATION_POLICY["assess_classes"])
+    assert any("byte-identical to the unvalued order" in d for d in r["details"])
+    assert any("refused" in d and "ceiling" in d for d in r["details"])
