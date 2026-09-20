@@ -57,10 +57,35 @@
     padding: 10px 18px; background: linear-gradient(180deg, #333a3f, #282e32); color: #fff;
     flex-shrink: 0; z-index: 20;
   }
-  #topbar .brand { display: inline-flex; align-items: center; font-weight: 700; font-size: 18px; letter-spacing: 0.2px; }
-  #topbar .brand small { font-weight: 400; opacity: 0.7; font-size: 12px; margin-left: 6px; }
+  #topbar .brand { display: inline-flex; align-items: center; font-weight: 800; font-size: 20px; letter-spacing: 0.1px; }
   #topbar .brand .word-1 { color: #f5f3ef; }
-  #topbar .brand .word-2 { color: #b9bfc2; font-weight: 600; }
+  #topbar .brand .word-2 {
+    background: linear-gradient(90deg, #d4472f, #e8973a);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tagline-badge {
+    display: inline-flex; align-items: center; gap: 7px; margin-left: 14px;
+    background: linear-gradient(90deg, #c73a2f, #e0812f); color: #fff;
+    padding: 5px 13px 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.02em; white-space: nowrap;
+  }
+  .tagline-badge .pulse-icon { flex-shrink: 0; }
+
+  /* ---------- keyword / workflow strip ---------- */
+  #keywordBar {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    padding: 10px 18px; background: linear-gradient(90deg, #fdf1ec, #fef8f0);
+    border-bottom: 1px solid var(--line); flex-shrink: 0;
+  }
+  #keywordBar .kw { font-size: 17px; font-weight: 800; letter-spacing: 0.01em; }
+  #keywordBar .kw-sep { flex-shrink: 0; opacity: 0.85; }
+  #keywordBar .kw.prioritise { color: #6b241a; }
+  #keywordBar .kw.assess { color: #a1331f; }
+  #keywordBar .kw.confirm { color: #c94f22; }
+  #keywordBar .kw.route { color: #e0812f; }
+  #keywordBar .kw-sep.prioritise { color: #a1331f; }
+  #keywordBar .kw-sep.assess { color: #c94f22; }
+  #keywordBar .kw-sep.confirm { color: #e0812f; }
   .badge {
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
     padding: 3px 9px; border-radius: 999px; font-weight: 600;
@@ -280,8 +305,13 @@
 <div id="app">
   <div id="topbar">
     <div class="brand">
-      <span class="word-1">Respons</span><span class="word-2">'Ara</span>
-      <small>Which infrastructure, people and assets are in danger — and which hospital, which school, needs a call first.</small>
+      <span class="word-1">Respons</span><span class="word-2">Ara</span>
+      <span class="tagline-badge">
+        <svg class="pulse-icon" width="20" height="12" viewBox="0 0 20 12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M1 6H5L6.5 2L9 10L11 4L12.5 6H19" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Nobody left behind
+      </span>
     </div>
     <span class="badge mode" id="modeBadge">Waiting for backend</span>
     <span class="badge current" id="statusBadge">connecting</span>
@@ -290,6 +320,22 @@
       <div>state <b id="computedAt">—</b></div>
     </div>
     <button id="nextUpdateBtn">Reconnect</button>
+  </div>
+
+  <div id="keywordBar">
+    <span class="kw prioritise">Prioritise</span>
+    <svg class="kw-sep prioritise" width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="1" y="6" width="2" height="6" fill="currentColor"/><rect x="6" y="3" width="2" height="9" fill="currentColor"/><rect x="11" y="7" width="2" height="5" fill="currentColor"/>
+    </svg>
+    <span class="kw assess">Assess</span>
+    <svg class="kw-sep assess" width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="1" y="6" width="2" height="6" fill="currentColor"/><rect x="6" y="3" width="2" height="9" fill="currentColor"/><rect x="11" y="7" width="2" height="5" fill="currentColor"/>
+    </svg>
+    <span class="kw confirm">Confirm</span>
+    <svg class="kw-sep confirm" width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="1" y="6" width="2" height="6" fill="currentColor"/><rect x="6" y="3" width="2" height="9" fill="currentColor"/><rect x="11" y="7" width="2" height="5" fill="currentColor"/>
+    </svg>
+    <span class="kw route">Route</span>
   </div>
 
   <div id="main">
