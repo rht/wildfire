@@ -3733,3 +3733,12 @@ updates and restart recovery. `frontend/tests/planner_pipeline_browser.cjs` also
 runs the actual incident server and built React UI without intercepting their
 REST/WebSocket connection. These exercises make no real telephone calls and do
 not establish real-world forecast, valuation or provider performance.
+
+Verification after rebasing onto the shared-map UI (PR #34): 1,281 Python tests
+passed, one skipped, with the existing Starlette/AnyIO deprecation warning;
+80 JavaScript tests passed; frontend lint, formatting and production build passed.
+The 11 browser scenarios include an actual incident-server/React/WebSocket run
+with three assessed locations, unanswered-call escalation, assistance transport
+to reception, visible urgent review and persisted backend state. The two-active
+queue refill was separately exercised with both completed and unanswered endings
+using a mock provider. Real outbound calls remain disabled in the private exercise.

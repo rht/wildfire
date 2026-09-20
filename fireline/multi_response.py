@@ -756,7 +756,7 @@ class _Planner:
             candidates = self.candidates()
             if not candidates:
                 break
-            priority, rows = self.choose(candidates)
+            _priority, rows = self.choose(candidates)
             gain = self.gain(self.actions[rows[0]['action_id']], rows[0]['finish_min'], rows[0])
             for row in rows:
                 row['ordering_evidence'] = dict(method=method,

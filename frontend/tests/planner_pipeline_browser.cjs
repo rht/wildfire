@@ -76,8 +76,9 @@ const root = path.resolve(__dirname, "../..");
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(base + "/#/incidents/end-to-end-demo/plan");
+    await expect(page.getByRole("dialog")).toContainText("Firefighter plan");
     await expect(
-      page.getByRole("heading", { name: "Firefighter plan", exact: true }),
+      page.getByText(/Urgent intervention reviews: [1-9]/),
     ).toBeVisible();
     state = await post("/api/simulate", { asset_id: "A", status: "no_answer" });
     assert.ok(
@@ -112,9 +113,6 @@ const root = path.resolve(__dirname, "../..");
         ),
       },
     });
-    await page
-      .getByRole("combobox", { name: "Crew", exact: true })
-      .selectOption("crew-2");
     await expect(
       page.getByText("Planned arrivals · this crew:", { exact: true }),
     ).toBeVisible();
@@ -133,6 +131,10 @@ const root = path.resolve(__dirname, "../..");
       path: path.join(directory, "connected-plan.png"),
       fullPage: true,
     });
+    await page.getByRole("button", { name: "Blockers", exact: true }).click();
+    await expect(
+      page.getByText("Urgent intervention review", { exact: true }),
+    ).toBeVisible();
     await page.goto(base + "/#/incidents/end-to-end-demo/calls");
     await expect(
       page
