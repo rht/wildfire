@@ -1,0 +1,7 @@
+targets:
+  slng:
+    provider: slng
+    # Unmute 0.5.5 rejects eu-central, which this account's SIP trunk requires.
+    # Follow readme.md's "Dynamic package deployment" steps using the NEW agent ID.
+    # Never apply the old mock's hardcoded region/trunk command to this deployment.
+    deployment_region: eu-north
