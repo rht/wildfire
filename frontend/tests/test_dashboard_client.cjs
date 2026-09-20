@@ -6,7 +6,7 @@ function state(revision=1) {
     as_of:'2026-09-20T10:00:00Z',input_mode:'live',assets:[],contacts:{ranked:[],review:[]},
     calls:[],plan:{locations:[],remaining_capacity:{},response:null},teams:[],tasks:[],events:[],errors:[]};
 }
-function harness() {
+function harness(Client=DashboardClient) {
   let latest=state(), now=Date.parse(latest.as_of);
   const sockets=[], timers=[], states=[], statuses=[];
   class Socket {
@@ -14,7 +14,7 @@ function harness() {
     close() {this.closed=true;}
     message(data) {this.onmessage({data:JSON.stringify(data)});}
   }
-  const client=new DashboardClient({fetchState:async()=>latest, WebSocket:Socket,
+  const client=new Client({fetchState:async()=>latest, WebSocket:Socket,
     socketUrl:'ws://localhost/api/updates',onState:s=>states.push(s),onStatus:s=>statuses.push(s),
     now:()=>now,setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{}});
   return {client,sockets,timers,states,statuses,setLatest:s=>latest=s,setNow:v=>now=v};
@@ -53,4 +53,19 @@ test('fresh refresh does not hide old or unavailable snapshot evidence',async()=
   await h.client.start();assert.equal(h.statuses.at(-1).stale,true);
   h.client.stop();s.snapshot_as_of=s.as_of;s.data_status='unavailable';h.setLatest(s);
   await h.client.start();assert.equal(h.statuses.at(-1).stale,true);h.client.stop();
+});
+
+test('REST fetch rejection is handled by the caller and recovers through retry',async()=>{
+  const {DashboardClient:LegacyClient}=require('../legacy/dashboard-client.js');
+  for(const Client of [DashboardClient,LegacyClient]) {
+    const h=harness(Client);
+    h.client.fetchState=async()=>{throw new Error('network unavailable');};
+    await assert.doesNotReject(()=>h.client.start());
+    assert.equal(h.statuses.at(-1).connection,'unavailable');
+    assert.equal(h.states.length,0);assert.equal(h.sockets.length,0);
+    h.client.fetchState=async()=>state();
+    await h.timers.at(-1)();
+    assert.equal(h.states[0].revision,1);assert.equal(h.sockets.length,1);
+    h.client.stop();
+  }
 });

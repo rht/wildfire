@@ -10,8 +10,8 @@ from dataclasses import dataclass
 class Location:
     asset_id: str
     name: str
-    x_m: float
-    y_m: float
+    x_m: float | None
+    y_m: float | None
     distance_m: float | None
     people: int | None
     assisted: int | None
@@ -96,7 +96,7 @@ def validate_locations(locations):
         if not isinstance(a.name, str) or not a.name.strip():
             raise ValueError(f"{a.asset_id}: name is required")
         for field in ("x_m", "y_m"):
-            number(getattr(a, field), field, minimum=None)
+            number(getattr(a, field), field, minimum=None, nullable=True)
         for field in (
             "distance_m",
             "value",

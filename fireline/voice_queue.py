@@ -59,11 +59,13 @@ class VoiceCallQueue:
         self.config = config or CallQueueConfig.from_env()
         store.conn.executescript(SCHEMA)
 
-    def enqueue(self, locations, requests, *, approved_targets, policy=None):
-        """Persist explicitly approved live requests. Enqueuing never calls a provider.
+    def enqueue(self, locations, requests, *, approved_targets, policy=None, allow_synthetic=False):
+        """Persist explicitly approved requests. Enqueuing never calls a provider.
 
         One request per asset/snapshot. Replays preserve started/cancelled state.
         Missing timing remains in review; absent contact records are reported.
+        Live-only by default. allow_synthetic=True enables offline tests in a
+        separate database; those requests can never pass outbound dispatch.
         """
         locations = tuple(locations)
         ranked = rank_contacts(locations, policy)
@@ -75,7 +77,8 @@ class VoiceCallQueue:
                 or set(by_asset) - {loc.asset_id for loc in locations}):
             raise ValueError('requests must uniquely match locations in one snapshot')
         for req in requests:
-            if req.input_mode != 'live' or approved_targets.get(req.request_id) != req.contact_number:
+            if (req.input_mode != 'live' and not (allow_synthetic is True and req.input_mode == 'synthetic')
+                    or approved_targets.get(req.request_id) != req.contact_number):
                 raise ValueError('each outbound request needs its approved live target')
         report = dict(queued=[], review=[], missing_contact=[], existing={})
         with self.store._transaction():
@@ -171,6 +174,8 @@ class VoiceCallQueue:
         if candidate is None:
             return None
         request_id = candidate['request_id']
+        if self.store.get(request_id)['request']['input_mode'] != 'live':
+            raise ValueError('synthetic queue entries cannot dispatch to a provider')
         try:
             result = self.store.start(client, request_id, mode='outbound',
                 approved_target=candidate['approved_target'], admission=self._admit)

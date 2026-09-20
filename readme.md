@@ -2646,6 +2646,297 @@ The same historical branch report retains two secondary candidates that were alr
 
 To verify the selected branch, check out the exact SHA above and run `python -m pytest -q` with the project's development/report dependencies. Submit the complete `fireline/evacuation_readiness.py` to MCP Livecheck under that exact filename; expect the one retained finding, not zero findings. The final source and test hashes are in the current evidence JSON. No feature PR is merged by this decision. The frozen audit and deferred SLNG worktree, sessions and untracked lockfile remain untouched.
 
+## Offline connected scenario — no-answer escalation
+
+Owner: @mirrdj. This integration exercises existing modules with three fictional
+locations and an explicitly synthetic clock, contacts, approvals and routes. It
+never loads provider credentials or calls a phone. The highest-priority household
+has a `no_answer` outcome; ability, transport and acknowledgement remain unknown,
+and a persistent human-callback task appears in the analyst dashboard.
+
+The runner connects the existing snapshot producer, exact contact approvals,
+priority queue, approved call briefing adapter, call-result store, allocation
+ledger, multi-crew proposal planner and coordination database. The dashboard reads
+that database through REST and WebSockets. This is an integration test with mock
+inputs, not a completed live deployment or an audio/telephony test.
+
+| Location | Synthetic outcome | Result |
+| --- | --- | --- |
+| A — Demo Cedar Care Home | No answer | Human callback stays open; ability, transport and acknowledgement unknown. Assisted action remains in readiness review. |
+| B — Demo Willow House | Confirms ability and transport | Four places reserved at Demo Reception Hall; Town Road guidance and Forest Road warning in the call brief. Departure/arrival still unconfirmed. |
+| C — Demo Pine House | Reports needing assistance | Assistance task and proposed crew action; no claim that transport or evacuation has happened. |
+
+Contact priority is A, B, C using forecast arrival minus evacuation time minus the
+configured 30-minute buffer. The crew planner uses supplied directed road legs and
+geometry, action durations, deadlines and team capabilities. Values come from the
+snapshot's `value_score`, not inferred euro losses. All road safety, intervention
+effects, approvals and the 240-minute call-readiness validity are **fictional
+fixture assumptions**, anchored to a single saved epoch. None is provider evidence.
+
+Run from a checkout with the project's base and `dashboard` dependencies installed:
+
+```bash
+# First publish the queued state (use a new directory for a fresh scenario).
+python -m fireline.offline_integration --directory data/offline-connected --phase queued
+
+# Leave this running in another terminal. Choose an unused local port.
+python -m fireline.dashboard_server --database data/offline-connected/coordination.sqlite --port 18531
+
+# With the dashboard open, publish the synthetic outcomes over its WebSocket.
+python -m fireline.offline_integration --directory data/offline-connected --phase outcomes
+```
+
+Open `http://127.0.0.1:18531/`. The unanswered call appears under **Pending human
+callbacks**; it does not increment **human requested** or **assistance requested**.
+Selecting a location shows independent call facts, allocation records and tasks.
+Crew routes are proposals, never dispatch confirmations. Repeating either command
+preserves completed outcomes; restarting after an interrupted result resumes it.
+The scenario clock stays at its scripted time and its source will eventually show
+as stale against wall time. A fresh directory starts a fresh run.
+
+`allow_synthetic=True` is an explicit enqueue-only test option. Live-only remains
+the default; recorded snapshots remain blocked, and synthetic requests are rejected
+before outbound provider configuration or dispatch. Keep this scenario in its own
+directory/database. The runner never loads credentials or makes a real phone call.
+Allocation and coordination SQLite files are separate because their existing table
+names overlap. The coordination attachment checks exact scenario, snapshot,
+incident, epoch, observation time and buffer before publishing the ledger projection.
+
+Validation includes no-answer escalation, unknown facts, capacity, supplied crew
+paths, road warnings, restart/replay after partial results, actual REST/WebSocket
+updates and private-data filtering. UI tests cover callback visibility and nested
+allocation destinations. A Chrome check exercises the queued-to-outcomes transition,
+selection, database view and reconnect without any browser write requests.
+Verified on this branch: **954 Python tests passed, 1 skipped; 18 Node tests
+passed; JavaScript lint and the new Python files' Ruff checks passed.** The full
+Python run retains one dependency deprecation warning.
+
+Remaining live integration: feed actual incoming snapshots and trusted operational
+inputs into a long-running coordinator/queue worker, connect authenticated provider
+outcomes to refreshes, and verify the Vonage/SLNG unanswered-call lifecycle end to
+end. Public hosting additionally needs configurable hosts/ports, dashboard access
+control and persistent storage. The mock runner does not replace those services.
+
+## End-to-end fire response service — implementation plan
+
+Owner: @mirrdj. This extends the connected offline branch into a configurable
+single-incident service. Approved scope: one fire trigger → geographic facility
+lookup → existing snapshot risk/value assessment → contact priority and crew
+priority → persistent plans/results → REST/WebSocket dashboard. A new fire update
+or authenticated call result recomputes the plan. Real calls remain opt-in, with
+exact private asset/snapshot/phone approvals; the current test is no-answer.
+
+Architecture: one Python/Starlette process with a paced background tick, the
+existing SQLite coordination and allocation stores on persistent local storage,
+and existing SLNG dispatch/result polling. A trigger is authenticated and binds
+scenario, incident, input mode, sequence and UTC epoch. Duplicate triggers are
+idempotent; a directory cannot mix incidents or input modes. Discovery and risk
+assessment remain a replaceable producer upstream of both existing algorithms.
+The separate discovery PR is not merged. Phone numbers never come from inference
+or public facility discovery; only the private contact configuration supplies them.
+
+Implementation steps and interfaces:
+
+- [x] **Fire assessment adapter** — `fireline/fire_assessment.py` exports
+  `assess_fire(fire, *, scenario_id, sequence, as_of, input_mode, search_radius_m,
+  facility_rows=None, forecast=None, spread=None, fetcher=None)` returning
+  `{'snapshot': ..., 'discovery': ...}`. Reuse `feeds.equipaments`,
+  `registers_to_assets`, `build_snapshot` and forecast conversion. Supplied catalogs
+  and fetched facilities take the same geographic filtering path. Buffer searches
+  are explicit coverage, never implied fire-arrival predictions. Test geographic
+  filtering, real provider adapter calls, missing timing, unknown occupancy, value
+  provenance, invalid geometry/radius and input-mode separation in
+  `tests/test_fire_assessment.py`.
+- [x] **Provider lifecycle adapter** — `fireline/call_events.py` verifies Vonage
+  signed callbacks against configured application/account and exact persisted call
+  bindings; maps `unanswered` to `no_answer`. SLNG call-end notifications wake
+  authenticated GET-call synchronization rather than trusting event-supplied answers.
+  Preserve unanswered outcomes across later generic completed notifications. Test
+  signatures, replay, incorrect binding, time limits, busy/failed/no-answer and
+  outcome separation in `tests/test_call_events.py`. Document whether the configured
+  SIP connection actually exposes Vonage Voice API events.
+- [x] **Persistent orchestration** — `fireline/incident_runtime.py` stores the active
+  trigger, snapshot, private operational inputs and enqueue report; builds both
+  algorithms' inputs from snapshot IDs/timing/occupancy/value. Reuse allocation
+  ledger and approved call-briefing adapter. Crew action durations, capabilities,
+  route geometry and destination approvals are explicit operational evidence;
+  missing inputs stay reviewable. Queue ticks poll results and publish recomputation.
+  Tests in `tests/test_incident_runtime.py` cover fire-to-plan, no-answer escalation,
+  contact approvals, stale updates, restart, duplicate triggers and provider errors.
+- [x] **One runnable service** — `fireline/incident_server.py` combines authenticated
+  `POST /api/fire`, `POST /voice/results`, provider event endpoints, read-only
+  dashboard REST/WebSocket and a background tick. Persistent SQLite paths, public
+  hosts/port and secrets are configuration; one process owns the queue. Dashboard
+  access uses a separate session login when exposed publicly. CLI supports serve,
+  trigger and an explicit synthetic no-answer exercise; default never dispatches.
+  Tests in `tests/test_incident_server.py` exercise actual HTTP/WebSocket and worker
+  transitions, including authentication, duplicate events and reconnect.
+- [x] **Delivery** — provide replayable trigger/catalog/operations examples, local
+  run and free-tunnel instructions, regression results, a running local service,
+  and a pushed task branch. Verify live read-only facility lookup if reachable and
+  clearly distinguish recorded inputs, actual provider reads and synthetic call
+  outcomes. No outbound test call is placed while @mirrdj cannot answer.
+
+Global constraints: preserve the 30-minute safety buffer; do not invent people,
+phone numbers, road safety, crew availability or arrival times; do not use an LLM
+as authority for those facts. Keep existing exact approval, review, allocation and
+Norma-defense boundaries. Snapshot value estimates retain their policy provenance.
+No external message, crew dispatch or production emergency instruction is implied
+by publishing a proposal. Use repository-local worktrees and push the task branch.
+
+### Running the integrated service
+
+The service is implemented on `codex/end-to-end`. It reuses the existing assessment,
+contact-priority, multi-crew planning, allocation and voice queue modules. It does
+not merge the separate discovery branch. The HTTP integration tests run a fire
+trigger through assessment, calls, no-answer escalation and WebSocket publication.
+
+From this worktree, with project dependencies installed, build the React dashboard
+first (`npm --prefix frontend ci` and `npm --prefix frontend run build`), then:
+
+```sh
+mkdir -p data/incident-demo
+python - <<'PY'
+from pathlib import Path
+import secrets
+path = Path('data/incident-demo/local.env')
+if not path.exists():
+    path.write_text('export FIRE_TRIGGER_TOKEN=' + secrets.token_hex(24) + '\n'
+                   'export VOICE_RESULT_TOKEN=' + secrets.token_hex(24) + '\n')
+    path.chmod(0o600)
+PY
+source data/incident-demo/local.env
+python -m fireline.incident_server demo --data-dir data/incident-demo --port 18541
+```
+
+Open `http://127.0.0.1:18541/`. This explicit synthetic exercise discovers three
+nearby catalog locations, rejects the outside-radius location, assesses them,
+queues approved fictional contacts and records unanswered outcomes sequentially.
+No telephony provider is called. Each no-answer keeps household ability unknown
+and creates a human callback. Reusing the directory resumes the same incident.
+Use a new directory for a fresh exercise or another incident.
+
+The two algorithms remain separate:
+
+1. **Contact order:** earliest remaining evacuation window first, using forecast
+   arrival minus estimated evacuation duration minus the preserved 30-minute buffer.
+   Missing or stale timing stays in review. The queue admits calls subject to both
+   concurrency and start-rate limits; these limits are ceilings, not throughput guarantees.
+2. **Crew proposal:** capability- and route-constrained sequencing, accounting for
+   travel, action duration, deadlines, transport seats, reported readiness and
+   commitments. It prioritizes assisted people, then people, then asset value.
+   A short protective action may precede assistance only if the resulting schedule
+   remains feasible. Unknown action times or road safety do not become invented
+   routes or automatic dispatch instructions.
+
+`plan.response.teams[].current_location` is either null or
+`{latitude, longitude, observed_at, source}` from explicit operational reports.
+It is never inferred from `start_node_id`. Each team's `tasks` is ordered and
+contains route geometry in **longitude, latitude** order, plus travel/start/finish
+minutes relative to the incident epoch. The UI can label stops **1 → 2 → 3** and
+show the last reported crew position with its observation timestamp; routes are
+plans, not tracking of actual movement. Old reports retain their timestamps.
+
+`peopleClusters` supplies the UI's identified groups. Counts use assessed occupancy,
+which can be unknown; they are not individually verified headcounts. `unknown`
+means evacuation ability/progress remains unconfirmed. `needs_assistance` comes
+from the current evidenced assessment. `self_evacuating` requires reported departure;
+`arrived` requires recorded arrival for the whole allocated group. Merely answering
+a call, acknowledging instructions, or reserving reception capacity is not arrival.
+
+### Real inputs, callbacks and hosting
+
+For a configured incident, use `serve --settings PRIVATE_SETTINGS.json --data-dir DIR`.
+Settings contain `input_mode` (`live`, `recorded`, or `synthetic`), `call_mode`
+(`disabled` by default, `live`, or synthetic-only `simulate_no_answer`),
+`search_radius_m` (positive, at most 50,000), optional `catalog_file`,
+`operations`, private `contacts`, exact snapshot/asset/phone `approvals`, and
+`call_limits: {"max_concurrent_calls": 5, "max_call_starts_per_second": 1}`.
+Catalog paths are relative to the settings file. Only `live` inputs can enable
+live dispatch. All workers for a provider account must share the existing queue
+budget; run this service with **one process**, persistent disk and one incident
+per directory. A two-second worker tick may further constrain call start rate.
+
+Omit `catalog_file` to query Gencat registered facilities around the fire geometry.
+This is not a complete private-house inventory. Unclassified facilities remain
+unknown-class review records rather than acquiring invented values or occupancy.
+A search radius is coverage chosen by the operator; the service does not calculate
+confinement capability or infer fire-arrival times from that radius. A supplied
+forecast or a supported, provenance-labelled Deepfire spread response provides
+arrival timing. No forecast means review, rather than proximity masquerading as a
+prediction. Assessment uses existing policy-based value estimates and preserves
+low/mid/high loss estimates; no new LLM is used to invent operational facts.
+
+Authenticated endpoints:
+
+| Endpoint | Purpose | Authentication |
+| --- | --- | --- |
+| `POST /api/fire` | Assess a new fire/update and recompute both plans | `FIRE_TRIGGER_TOKEN` bearer |
+| `POST /voice/results` | Record structured interview results and replan | `VOICE_RESULT_TOKEN` bearer |
+| `POST /voice/events/slng` | Wake authoritative authenticated SLNG call polling | Separate `SLNG_EVENT_TOKEN` bearer |
+| `POST /voice/events/vonage` | Process signed lifecycle events, including unanswered | Verified Vonage JWT and exact UUID binding |
+| `POST /api/simulate` | Explicit synthetic outcome exercise only | `FIRE_TRIGGER_TOKEN` bearer |
+| `GET /api/state`, WebSocket `/api/updates` | Public projection and revision updates | Dashboard session when publicly exposed |
+| `GET /health` | Generic worker health | No incident data |
+
+Fire JSON contains `trigger_id`, `scenario_id`, explicit `input_mode` if supplied,
+`as_of` for recorded/synthetic runs, and `fire` with incident ID, WGS84 geometry,
+geometry kind, observation timestamp and source. Add `forecast` or `spread` and
+optionally snapshot-bound `operations`. `demo_trigger()` in
+`fireline/incident_runtime.py` supplies a complete synthetic example; the catalog
+and operational evidence are in `fixtures/end_to_end/`. Submit a saved trigger with:
+
+```sh
+python -m fireline.incident_server trigger --url http://127.0.0.1:18541 --file fire.json
+```
+
+Duplicate trigger IDs must carry identical content. A new trigger receives a new
+snapshot sequence. Its exact phone approvals and operational evidence must refer
+to that snapshot. Previous unstarted calls are cancelled; active calls and durable
+reservations remain visible. Missing/new hazard evidence withholds old evacuation
+instructions without forgetting reception capacity. Full projections are validated
+against disposable database copies before the trigger and assessment checkpoint
+is accepted. Idempotent refresh repairs interrupted projections after restart.
+Do not run another writer against the runtime's databases.
+
+Live telephony additionally requires `SLNG_API_KEY`, `SLNG_AGENT_ID` and
+`SLNG_OUTBOUND_CONNECTION_ID`. SLNG call polling remains available when callbacks
+are not configured. Its call-end webhook is only a wake-up: event payloads cannot
+assert trusted answers. Configure the provider to reach the authenticated HTTPS
+endpoint separately; this change does not alter provider accounts or public routing.
+
+Vonage Voice API events are **not guaranteed by an SLNG SIP trunk alone**. The
+actual provider path must expose a Voice API event URL. Configure
+`VONAGE_SIGNATURE_SECRET`, `VONAGE_API_KEY`, and optionally
+`VONAGE_APPLICATION_ID`, then bind the real UUID to the already-bound local request:
+
+```sh
+python -m fireline.incident_server bind-vonage --data-dir DIR \
+  --settings PRIVATE_SETTINGS.json --request-id REQUEST_ID --call-id VONAGE_UUID
+```
+
+Signed `unanswered` becomes `no_answer`; later generic `completed` does not erase
+it. Binding never matches by phone number. This endpoint and polling behavior are
+tested with mocked transports; no real unanswered call or provider webhook delivery
+has been claimed as validated.
+
+For public access, use HTTPS and add the exact hostname with `--allowed-host`.
+Set a separate `DASHBOARD_TOKEN`; visitors sign in over HTTPS at `/login`, which also protects
+WebSocket access. Trigger/result/dashboard tokens must be distinct and at least
+32 characters. Default binding is localhost; `--host 0.0.0.0` additionally requires
+dashboard authentication. A tunnel can forward HTTPS to the local service, but
+the computer and process must stay running and SQLite must remain on persistent
+disk. No public tunnel or paid deployment is created by these instructions.
+
+Integration verification after syncing the React dashboard from main: **1,115 Python
+tests passed, one skipped**, plus **34 frontend tests**. Frontend lint, formatting
+and the production build also passed. Chrome verified the running REST/WebSocket dashboard with three synthetic
+no-answer outcomes and three human callbacks, without page errors. One existing
+Starlette/AnyIO deprecation warning remains. The Gencat feed check returned 81
+bounding-box records; 34 were within the 5 km metric radius and remained visible
+as unknown-class facilities with unknown forecast timing. This is a catalog
+connectivity check around a test coordinate, not an active-fire validation.
+
 ## React incident dashboard — codex/ui-session (2026-09-20)
 
 **Approved design:** @mirrdj requested replacing the plain HTML dashboard with
@@ -2812,6 +3103,44 @@ Activity log order uses a compact column sized to its heading and sequence numbe
 The incident GPS card prefers a supplied incident point. When only a usable
 perimeter exists it shows the centre of its bounds, explicitly labelled “Perimeter
 centre”; missing coordinates are never filled from demonstration data.
+
+### Norma review and deliberate retained decisions
+
+The initial scan is bound to `e8b8c8e` versus `d7cf32e`; the committed report records
+initial findings and the subsequent remediation scans separately. Missing UTF-8,
+an unnamed SQLite timeout, unnecessary copies and nonessential exact-type checks
+were corrected. Dashboard login requires HTTPS and sets a Secure session cookie.
+The original `centre.remaining_places` plain-integer defense is unchanged.
+
+A further retained decision is **`workers=1`** in `incident_server.py`. This is a
+correctness constraint: `asyncio.Lock` and the lifespan's background task are local
+to one process. Starting additional Uvicorn workers would create independent
+coordinators and admission loops. Raising throughput requires a different worker
+architecture; it is not a configuration knob in this implementation. The test
+`test_fire_requests_wait_for_running_tick_before_mutating_incident` verifies
+serialization, and the demo CLI test verifies the single-worker launch setting.
+
+The **new selected defense is the coordination CLI `print(encoded(state))`**.
+CLI `print` findings are retained because these commands intentionally return JSON
+on stdout; replacing their protocol response with a logger would break consumers.
+The coordination CLI regression parses stdout and verifies repeatable state. The
+legacy dashboard's async fetch callback intentionally lets rejection reach
+`DashboardClient.start`, whose catch sets unavailable state and schedules retry.
+A regression now exercises rejected REST fetches and successful recovery in both
+legacy and React clients. Empty local catches would hide failures from that owner.
+
+`calls[].queue_state` additionally exposes pending/review/started/cancelled state
+when a queue exists, otherwise null. A cancelled immutable request may still have
+a historical call status of queued; the queue state prevents showing it as a
+pending AI call. No-answer is an attempted call that requires follow-up, not proof
+of a completed interview or permission for an automatic retry.
+
+Final Norma evidence: [scan and remediation report](reports/norma-end-to-end-2026-09-20.json),
+code commit `2a23599`. Across 25 supported files, 22 checks had unreduced coverage
+and three JavaScript checks had reduced coverage. Ten original findings were
+removed; six findings remain as documented decisions, with zero observed
+actionable findings left. This is not an all-clean or exhaustive-bug-free claim.
+Defense is documented, not formally registered with Norma.
 
 The Buildings & risk subtitle omits the assessment-date filter explanation.
 

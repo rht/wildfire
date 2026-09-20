@@ -19,7 +19,7 @@
     for(const [label,text] of rows) box.append(el('div',label,'k'),el('div',value(text),'v'));
     return box;
   }
-  let current,selectedId=null,dbOpen=false,map,markers,routes,fire;
+  let current,selectedId=null,dbOpen=false,map,markers,routes,fire,mapScenario=null;
   function initMap() {
     if(!root.L) {$('map').textContent='Map unavailable. Locations and evidence remain available in the list.';return;}
     map=L.map('map').setView([41.951,3.038],13);
@@ -51,9 +51,13 @@
   function renderMap() {
     if(!map) return;
     markers.clearLayers();routes.clearLayers();fire.clearLayers();
+    const mapPoints=current.assets.filter(a=>Number.isFinite(a.latitude)&&Number.isFinite(a.longitude))
+      .map(a=>[a.latitude,a.longitude]);
     if(current.fire_geometry) {
       L.geoJSON(current.fire_geometry,{color:'#fff',weight:6,opacity:0.85,fill:false}).addTo(fire);
-      L.geoJSON(current.fire_geometry,{color:'#ff5a3c',weight:3,fillOpacity:0.22}).addTo(fire);
+      const perimeter=L.geoJSON(current.fire_geometry,{color:'#ff5a3c',weight:3,fillOpacity:0.22}).addTo(fire);
+      const bounds=perimeter.getBounds?.();
+      if(bounds?.isValid()) mapPoints.push([bounds.getSouth(),bounds.getWest()],[bounds.getNorth(),bounds.getEast()]);
     }
     for(const a of current.assets) {
       if(!Number.isFinite(a.latitude)||!Number.isFinite(a.longitude)) continue;
@@ -70,7 +74,11 @@
     for(const route of suppliedRoutes()) {
       if(Array.isArray(route.path) && route.path.length>1 && route.path.every(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite))) {
         L.polyline(route.path,{color:'#244a75',dashArray:route.status==='confirmed'?null:'6 6'}).addTo(routes);
+        mapPoints.push(...route.path);
       } else if(route.geometry) L.geoJSON(route.geometry,{color:'#244a75'}).addTo(routes);
+    }
+    if(mapScenario!==current.scenario_id && mapPoints.length) {
+      map.fitBounds(mapPoints,{padding:[40,40],maxZoom:15});mapScenario=current.scenario_id;
     }
   }
   function rowFor(c,index,review=false) {
@@ -112,6 +120,11 @@
     panel.append(el('div','Backend plan & tasks','panelHead'));
     const planned=(current.plan?.locations||[]).filter(x=>x.asset_id===a.asset_id);
     for(const location of planned) panel.append(kv([['Allocation state',location.state],['Plan mode',location.mode],['Evacuation status',location.evacuation_status??location.status],['Destination',location.destination_name||location.destination_id||location.centre_id],['Plan reasons',(location.reasons||[]).join(', ')],['Instruction allowed',flag(location.instruction_allowed)],['Safety review',location.safety],['Transport confirmed',flag(location.assistance?.transport_confirmed)],['Reception confirmed',flag(location.assistance?.reception_confirmed)]]));
+    for(const allocation of planned.flatMap(location=>location.allocations||[])) panel.append(kv([
+      ['Allocation',allocation.allocation_id],['Allocation state',allocation.state],
+      ['Destination',allocation.destination_id||allocation.centre_id],['Instruction allowed',flag(allocation.instruction_allowed)],
+      ['Safety review',allocation.safety],['Transport confirmed',flag(allocation.assistance?.transport_confirmed)],
+      ['Reception confirmed',flag(allocation.assistance?.reception_confirmed)]]));
     for(const route of suppliedRoutes().filter(x=>x.asset_id===a.asset_id)) panel.append(kv([
       ['Supplied route',route.route_id],['Route status',route.status],['Route provenance',route.source]]));
     for(const task of (current.tasks||[]).filter(t=>t.asset_id===a.asset_id)) panel.append(kv([
@@ -120,6 +133,14 @@
   }
   function renderEscalation() {
     const calls=current.calls||[];
+    $('escCallbackList').replaceChildren();
+    for(const task of (current.tasks||[]).filter(t=>t.kind==='human_callback' && t.status!=='done')) {
+      const a=current.assets.find(a=>a.asset_id===task.asset_id),row=el('div',undefined,'escRow');
+      const outcomes=calls.filter(c=>c.asset_id===task.asset_id).map(c=>c.status).join(', ');
+      row.append(el('span',undefined,'escDot open'),
+        el('span',`${a?.name||task.asset_id} · ${outcomes||'outcome unknown'} · ${value(task.status)}`,'name'));
+      row.dataset.assetId=task.asset_id;row.addEventListener('click',rowSelection);$('escCallbackList').append(row);
+    }
     $('escConfirmed').textContent=calls.filter(c=>(c.message_acknowledged??c.acknowledged)===true).length;
     $('escOpen').textContent=calls.filter(c=>c.wants_human===true).length;
     $('escMobility').textContent=calls.filter(c=>(c.reported_needs_assistance??c.needs_assistance)===true).length;

@@ -4,7 +4,7 @@ One store/connection per worker; no UI or provider I/O. Revisions and suggested
 work publish in the same SQLite transaction. Public state is a persisted view,
 not a claim that a call connected a human or that anyone evacuated.
 """
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import json
 import re
@@ -145,7 +145,7 @@ def _asset_views(state):
     return views
 
 
-def _response_proposal(response, snapshot, elapsed):
+def _response_proposal(response, snapshot, elapsed, *, now):
     """Attach the verified multi-crew export without applying its proposed work.
 
     The producer owns feasibility and commitments. This boundary checks association
@@ -157,6 +157,7 @@ def _response_proposal(response, snapshot, elapsed):
             or isinstance(response.get('now_min'), bool) or response.get('now_min') != elapsed
             or response.get('dispatch') is not False):
         raise ValueError('response proposal association, time or dispatch mismatch')
+    from .incident_planning import validate_current_location
     assets = {a['asset_id'] for a in snapshot['assets']}
     task_keys = ('action_id', 'asset_id', 'team_id', 'scenario_id', 'snapshot_id',
                  'action_version', 'status', 'from_node', 'to_node', 'depart_min',
@@ -189,7 +190,8 @@ def _response_proposal(response, snapshot, elapsed):
                     ('asset_id', 'coverage', 'confirmed', 'source') if k in effect})
             tasks.append(public)
         teams.append(dict(team_id=team['team_id'], tasks=tasks, locked=team['locked'],
-                          remaining_transport_capacity=team['remaining_transport_capacity']))
+                          remaining_transport_capacity=team['remaining_transport_capacity'],
+                          current_location=validate_current_location(team.get('current_location'), now=now)))
     public = {k: response[k] for k in ('schema_version', 'scenario_id', 'snapshot_id',
                                      'now_min', 'optimal', 'dispatch', 'method')}
     public.update(teams=teams, coverage={k: v for k, v in response['coverage'].items() if k in assets},
@@ -200,6 +202,50 @@ def _response_proposal(response, snapshot, elapsed):
                            ('action_id', 'asset_id', 'team_id', 'reason', 'reasons') if k in row}
                           for row in response[section]]
     return public
+
+
+@dataclass(frozen=True)
+class _AllocationView:
+    """One consistent ledger read shared by validation and readiness projection."""
+    observed_at: str
+    data: tuple
+
+    def view(self, *, as_of):
+        if as_of != self.observed_at:
+            raise ValueError('allocation projection time mismatch')
+        return self.data
+
+
+def _allocated_plan(store, snapshot, scenario, assessments, epoch, now, road_warnings):
+    from .evacuation_plan_adapter import coordinate_approved_evacuation
+    data = store.view(as_of=now.isoformat())
+    context = data[1][0]
+    if (context.scenario_id != snapshot['scenario_id']
+            or context.incident_id != snapshot['incident_id']
+            or context.snapshot_id != snapshot['snapshot_id']
+            or utc(context.epoch) != epoch or utc(context.as_of) != now
+            or context.buffer_min != scenario.buffer_min):
+        raise ValueError('allocation context does not match coordination')
+    return coordinate_approved_evacuation(scenario, assessments,
+        _AllocationView(now.isoformat(), data), as_of=now.isoformat(), road_warnings=road_warnings)
+
+
+def _people_groups(snapshot, plan):
+    groups = []
+    for asset in snapshot['assets']:
+        aid = asset['asset_id']
+        location = next((r for r in plan['locations'] if r['asset_id'] == aid), {})
+        needs_help = location.get('reported_needs_assistance') is True
+        status = 'needs_assistance' if needs_help else 'unknown'
+        if location.get('evacuation_status') == 'arrival_confirmed':
+            status = 'arrived'
+        elif location.get('evacuation_status') == 'departure_confirmed' and location.get('mode') == 'self_evacuate':
+            status = 'self_evacuating'
+        groups.append(dict(id='group-'+aid, asset_id=aid, name=asset['name'], people=asset['estimated_occupancy'],
+            status=status, latitude=asset['latitude'],longitude=asset['longitude'],
+            destination_id=location.get('destination_id'),source='assessment occupancy and recorded evacuation progress',
+            occupancy_basis=asset['occupancy_basis']))
+    return groups
 
 
 class CoordinationStore:
@@ -226,7 +272,7 @@ class CoordinationStore:
         return json.loads(row[0]) if row else None
 
     def updates(self, after_revision=0):
-        if type(after_revision) is not int or after_revision < 0:
+        if not isinstance(after_revision, int) or isinstance(after_revision, bool) or after_revision < 0:
             raise ValueError('after_revision must be a nonnegative integer')
         return [json.loads(r[0]) for r in self.conn.execute(
             'SELECT event FROM coordination_revisions WHERE revision>? ORDER BY revision',
@@ -273,6 +319,9 @@ class CoordinationStore:
         accepted = self._accepted_snapshots(snapshot)
         asset_ids = {a['asset_id'] for a in snapshot['assets']}
         assessments, summaries, records, errors = {}, [], [], []
+        queue_states = {}
+        if self.conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='voice_queue'").fetchone():
+            queue_states = dict(self.conn.execute('SELECT request_id, state FROM voice_queue'))
         for row in self.conn.execute('SELECT request_id FROM voice_calls ORDER BY request_id').fetchall():
             record = self.voice.get(row[0])
             req = record['request']
@@ -288,16 +337,23 @@ class CoordinationStore:
                 if 'human_requested' in record['followup_reasons']:
                     assessment = replace(assessment, wants_human=True, confidence=None)
                 assessments.setdefault(req['asset_id'], []).append(assessment)
-            summaries.append(_call_summary(record, assessment))
+            summary = _call_summary(record, assessment)
+            queue_state = queue_states.get(req['request_id'])
+            # Bound/imported and synthetic calls have already left queue admission.
+            if queue_state is not None and record['dispatch_state'] != 'not_started':
+                queue_state = 'started'
+            summary['queue_state'] = queue_state
+            summaries.append(summary)
             records.append(record)
         return _merge_assessments(assessments), summaries, records, errors
 
-    def refresh(self, snapshot, scenario, centres, routes, *, road_warnings=(), response_plan=None):
+    def refresh(self, snapshot, scenario, centres, routes, *, road_warnings=(), response_plan=None, allocation_store=None, system_events=(), system_errors=()):
         """Recompute at the exact elapsed scenario time and atomically publish changes.
 
         Snapshot records are authoritative for timing, distance and occupancy.
-        Call evidence keeps its exact UTC observation time. Capacity is proposed,
-        never durably reserved here. Existing analyst task ownership/status survive.
+        Call evidence keeps its exact UTC observation time. Capacity is proposed
+        unless allocation_store supplies an already-reserved ledger. This method
+        never reserves places. Existing analyst task ownership/status survive.
         """
         now = utc(self.clock().isoformat())
         if now < self.epoch:
@@ -307,6 +363,7 @@ class CoordinationStore:
             self._accept_snapshot(snapshot, scenario, now, previous)
             current = _snapshot_scenario(snapshot, scenario, self.epoch)
             assessments, calls, records, errors = self._calls(snapshot)
+            errors.extend(system_errors)
             pending_assistance = {t['asset_id'] for t in self.tasks.tasks()
                                   if t['reason'] == 'voice:arrange_assistance' and t['status'] != 'done'}
             pending_assistance.update(a.asset_id for a in assessments
@@ -314,9 +371,12 @@ class CoordinationStore:
             assessments = [replace(a, confidence=None) if a.asset_id in pending_assistance else a
                            for a in assessments]
             elapsed = (now - self.epoch).total_seconds() / 60
-            plan = coordinate_evacuation(current, assessments, centres, routes,
-                contact_policy=ContactPolicy(now_min=elapsed, buffer_min=scenario.buffer_min),
-                road_warnings=road_warnings)
+            plan = (_allocated_plan(allocation_store, snapshot, current, assessments,
+                                    self.epoch, now, road_warnings)
+                    if allocation_store is not None else
+                    coordinate_evacuation(current, assessments, centres, routes,
+                        contact_policy=ContactPolicy(now_min=elapsed, buffer_min=scenario.buffer_min),
+                        road_warnings=road_warnings))
             for row in plan['locations']:
                 row['assistance_review_required'] = row['asset_id'] in pending_assistance
                 if row['assistance_review_required']:
@@ -324,7 +384,7 @@ class CoordinationStore:
                     if 'arrange_assistance' not in row['tasks']:
                         row['tasks'].append('arrange_assistance')
             if response_plan is not None:
-                plan['response'] = _response_proposal(response_plan, snapshot, elapsed)
+                plan['response'] = _response_proposal(response_plan, snapshot, elapsed, now=now)
                 plan['response_replanning_required'] = False
             self.voice.record_plan(plan, snapshot_id=snapshot['snapshot_id'])
             accepted = self._accepted_snapshots(snapshot)
@@ -338,14 +398,17 @@ class CoordinationStore:
                                                   if c['asset_id'] == row['asset_id']]
                 row['call_id'] = None  # provider IDs remain in the private store
             plan['input_mode'] = snapshot['input_mode']
-            plan['capacity_status'] = 'proposal_only'
+            plan['capacity_status'] = 'reserved_ledger' if allocation_store is not None else 'proposal_only'
             candidate = _public(dict(schema_version='coordination-state-1',
                 scenario_id=snapshot['scenario_id'], snapshot_id=snapshot['snapshot_id'],
                 input_mode=snapshot['input_mode'], epoch=self.epoch.isoformat(), elapsed_min=elapsed,
                 assets=_public_assets(snapshot['assets']), contacts=plan['contacts'], calls=calls, plan=plan,
                 teams=self.tasks.teams(), tasks=[_task_summary(t) for t in tasks], errors=errors,
                 snapshot_as_of=snapshot['as_of'], data_status=snapshot['data_status'],
-                dispatch=False, live_validation=False))
+                fire_geometry=snapshot.get('fire_geometry'), fire_geometry_kind=snapshot.get('fire_geometry_kind'),
+                fire_observed_at=snapshot.get('fire_observed_at'), fire_source=snapshot.get('fire_source'),
+                dispatch=False, live_validation=False,
+                peopleClusters=_people_groups(snapshot, plan), system_events=list(system_events)))
             # Private text affects the revision digest but never the public payload.
             fingerprint = digest([candidate, records, tasks])
             last = self.conn.execute(
@@ -362,7 +425,7 @@ class CoordinationStore:
                 revision=revision, scenario_id=snapshot['scenario_id'], snapshot_id=snapshot['snapshot_id'],
                 as_of=now.isoformat(), kind='coordination_refreshed', changed_asset_ids=changed,
                 refresh='full_state', input_mode=snapshot['input_mode'])
-            candidate.update(revision=revision, as_of=now.isoformat(), events=[event])
+            candidate.update(revision=revision, as_of=now.isoformat(), events=[event, *system_events])
             self.conn.execute('INSERT INTO coordination_revisions VALUES (?, ?, ?, ?)',
                               (revision, fingerprint, encoded(candidate), encoded(event)))
             return candidate
@@ -399,6 +462,7 @@ def main(argv=None):
                     if args.response_plan else None)
         state = store.refresh(snapshot, scenario, centres, routes,
                               road_warnings=readiness.get('road_warnings', ()), response_plan=response)
+        # Machine-readable CLI response; diagnostics belong on stderr.
         print(encoded(state))
     except (ValueError, TypeError, KeyError, OSError):
         parser.exit(2, 'Coordination tick rejected: check input contracts, database and UTC times.\n')

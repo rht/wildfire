@@ -182,7 +182,7 @@ def _location(asset, row):
         forecast_source=asset['forecast_source'], evacuation_source=asset['evacuation_source'])
 
 
-def _request(asset, snapshot_id, target, data, briefing_adapter):
+def _request(asset, snapshot_id, target, data, briefing_adapter, input_mode):
     if briefing_adapter is not None:
         # Callback owns briefing content only, never association or authorization.
         if getattr(briefing_adapter, 'snapshot_id', snapshot_id) != snapshot_id:
@@ -193,12 +193,12 @@ def _request(asset, snapshot_id, target, data, briefing_adapter):
         raise ValueError('invalid request data')
     return CallRequest(request_id=snapshot_request_id(snapshot_id, asset['asset_id']),
         asset_id=asset['asset_id'], snapshot_id=snapshot_id, contact_number=target,
-        input_mode='live', **copy.deepcopy(data))
+        input_mode=input_mode, **copy.deepcopy(data))
 
 
 def enqueue_snapshot_contacts(queue, snapshot, contacts, approvals, request_data, *,
                               epoch, now_at, max_age_min=None, buffer_min=None,
-                              briefing_adapter=None):
+                              briefing_adapter=None, allow_synthetic=False):
     """Enqueue exact approved targets, returning public ranking and blocked reasons.
 
     Contacts: [{asset_id, contact_number}]; approvals additionally require snapshot_id.
@@ -206,6 +206,8 @@ def enqueue_snapshot_contacts(queue, snapshot, contacts, approvals, request_data
     All timestamps are UTC ISO strings. Optional briefing_adapter(asset, data) returns
     request-data fields only. This function never dispatches or imports a provider.
     A blocked replay cancels only its own unstarted queue entry; started calls stay held.
+    allow_synthetic=True permits a synthetic snapshot in an isolated offline store;
+    recorded snapshots remain blocked and synthetic entries cannot dispatch.
     """
     max_age_min = config.FRESHNESS['stale_after_s'] / 60 if max_age_min is None else max_age_min
     buffer_min = config.CONTACT_POLICY['buffer_min'] if buffer_min is None else buffer_min
@@ -240,7 +242,7 @@ def enqueue_snapshot_contacts(queue, snapshot, contacts, approvals, request_data
             asset = assets[asset_id]
             rid = snapshot_request_id(snapshot['snapshot_id'], asset_id)
             reasons = _timing_blocks(asset, row, now, as_of, max_age_min)
-            if snapshot['input_mode'] != 'live':
+            if snapshot['input_mode'] != 'live' and not (allow_synthetic is True and snapshot['input_mode'] == 'synthetic'):
                 reasons.append('snapshot_not_live')
             target, contact_reasons = _contact(asset_id, snapshot['snapshot_id'], contacts, approvals)
             reasons.extend(contact_reasons)
@@ -267,7 +269,7 @@ def enqueue_snapshot_contacts(queue, snapshot, contacts, approvals, request_data
                     continue
             if not reasons:
                 try:
-                    request = _request(asset, snapshot['snapshot_id'], target, data, briefing_adapter)
+                    request = _request(asset, snapshot['snapshot_id'], target, data, briefing_adapter, snapshot['input_mode'])
                 except (ValueError, TypeError, KeyError):
                     reasons.append('invalid_request_data')
             if existing and not reasons:
@@ -286,5 +288,5 @@ def enqueue_snapshot_contacts(queue, snapshot, contacts, approvals, request_data
                 locations.append(loc)
                 requests.append(request)
                 targets[rid] = target
-        report['enqueue'] = queue.enqueue(locations, requests, approved_targets=targets, policy=policy)
+        report['enqueue'] = queue.enqueue(locations, requests, approved_targets=targets, policy=policy, allow_synthetic=allow_synthetic)
     return report

@@ -1,0 +1,40 @@
+[
+  {
+    "asset_id": "A",
+    "name": "Demo Cedar Care Home \u2014 no answer",
+    "asset_class": "care_home",
+    "lon": 3.01,
+    "lat": 41.91,
+    "occupancy": 6,
+    "occupancy_source": "headcount",
+    "register": "synthetic end-to-end catalog"
+  },
+  {
+    "asset_id": "B",
+    "name": "Demo Willow House",
+    "asset_class": "masia",
+    "lon": 3.025,
+    "lat": 41.9,
+    "occupancy": 4,
+    "occupancy_source": "headcount",
+    "register": "synthetic end-to-end catalog"
+  },
+  {
+    "asset_id": "C",
+    "name": "Demo Pine House \u2014 assistance needed",
+    "asset_class": "masia",
+    "lon": 3.04,
+    "lat": 41.89,
+    "occupancy": 2,
+    "occupancy_source": "headcount",
+    "register": "synthetic end-to-end catalog"
+  },
+  {
+    "asset_id": "outside",
+    "name": "Outside search area",
+    "asset_class": "school",
+    "lon": 3.3,
+    "lat": 42.3,
+    "occupancy": null
+  }
+]
