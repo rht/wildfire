@@ -2615,7 +2615,12 @@ At `923d49476ecca0276b5d3b88b5ce9bc065479fd0`, `codex/evacuation-readiness` inte
 
 [Current evidence](reports/norma-selected-capacity-defense-2026-09-19.json) records the exact SHA, file hash, line, rule, rationale, tests and both final scans. The decision trades integer-subclass interoperability for a strict primitive input boundary; revisit it if the supported input contract expands. [PR #11](https://github.com/rht/wildfire/pull/11) holds the selected defense. Formal exception registration is unavailable: the exposed MCP has no defense endpoint and repository context is unresolved. The fixed/verified applied-actions endpoint was not used. Feature PRs remain unmerged; the original audit and deferred SLNG worktree are unchanged.
 
-## Norma decision: current selected capacity design and retained finding
+## Norma decision: selected capacity design and retained finding
+
+Evidence date: 2026-09-19. The strict primitive-capacity contract remains selected
+and is preserved in main. Exact revisions, line numbers, file hashes, test totals,
+scan results and authorization status below describe the original defense record;
+they do not claim a new scan after the 2026-09-20 integration.
 
 @mirrdj selected the strict capacity check to keep and defend. That decision is now implemented on `codex/evacuation-readiness` at **`923d49476ecca0276b5d3b88b5ce9bc065479fd0`**, published in [PR #8](https://github.com/rht/wildfire/pull/8). This is a current selected design with an intentionally open Norma finding, not merely a historical candidate. The prior zero-finding readiness result applies only to `d75d4b769940e0ca6b0a01949f5c7bf84daec44e`. Every other remediation remains in place. The feature PR is not authorized for automatic merge.
 
