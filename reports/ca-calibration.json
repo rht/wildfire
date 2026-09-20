@@ -1,0 +1,962 @@
+{
+  "produced_on": "2026-09-19",
+  "git_commit": "c36d1ec5e657e693e733e6dea4f5b6ce9bd146d8",
+  "script": "scripts/calibrate_ca.py",
+  "incident": "5769dcea",
+  "data": {
+    "perimeters": "fixtures/fire/deepfire/real/20260919T131342Z_satellite-perimeters.json",
+    "wind": "fixtures/wind/41.90_3.05.json (Open-Meteo ecmwf_ifs025 previous runs, hourly)",
+    "grid": {
+      "shape": [
+        278,
+        291
+      ],
+      "cell_m": 100.0,
+      "name": "Grid.gavarres()"
+    }
+  },
+  "objective": "J = mean over fitted pairs of (log((pred_new_ha + E)/(obs_new_ha + E)))**2 + 0.25 * mean over fitted pairs of (1 - iou), with E = 10.0 ha",
+  "split": {
+    "fitted": [
+      "11:47Z->12:06Z",
+      "12:06Z->12:53Z",
+      "13:25Z->13:46Z",
+      "13:46Z->14:40Z"
+    ],
+    "holdout": [
+      "12:53Z->13:25Z",
+      "14:40Z->04:14Z"
+    ],
+    "holdout_reason": {
+      "12:53Z->13:25Z": "largest single growth step",
+      "14:40Z->04:14Z": "overnight, the fire had stopped"
+    }
+  },
+  "search_space": {
+    "p0": [
+      0.01,
+      0.01749,
+      0.03058,
+      0.05347,
+      0.09351,
+      0.16351,
+      0.28593,
+      0.5
+    ],
+    "wind_c1": [
+      0.0,
+      0.2,
+      0.4,
+      0.6,
+      0.8,
+      1.0
+    ],
+    "wind_c2": [
+      0.0,
+      0.15,
+      0.3,
+      0.45,
+      0.6
+    ],
+    "minutes_per_step": [
+      4
+    ],
+    "slope_a": "fixed at config.CA (no DEM in the repo)",
+    "coarse_configs": 240,
+    "sweep_n_runs": 8,
+    "final_n_runs": 20,
+    "seed": 0,
+    "refinement": "local grid around the best 5 coarse configs",
+    "finalists_rescored": 24,
+    "selection_seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "before": {
+    "cfg": {
+      "p0": 0.5,
+      "minutes_per_step": 4,
+      "wind_c1": 0.045,
+      "wind_c2": 0.3,
+      "slope_a": 0.078
+    },
+    "j_fitted": 1.6979166304032476,
+    "calm_wind_12h_ha": 129321.0,
+    "pairs": [
+      {
+        "label": "11:47Z->12:06Z",
+        "minutes": 19.0,
+        "seed_area_ha": 1263.0,
+        "observed_area_ha": 1770.0,
+        "observed_new_ha": 511.0,
+        "predicted_area_ha": 1581.0,
+        "predicted_new_ha": 318.0,
+        "p10_area_ha": 1825.0,
+        "p90_area_ha": 1323.0,
+        "area_ratio": 0.8932203389830509,
+        "growth_ratio": 0.6223091976516634,
+        "growth_frac_of_observed": 0.17966101694915254,
+        "iou": 0.7590551181102362,
+        "p10_recall": 0.49706457925636005
+      },
+      {
+        "label": "12:06Z->12:53Z",
+        "minutes": 47.0,
+        "seed_area_ha": 1770.0,
+        "observed_area_ha": 2731.0,
+        "observed_new_ha": 962.0,
+        "predicted_area_ha": 2622.0,
+        "predicted_new_ha": 852.0,
+        "p10_area_ha": 3233.0,
+        "p90_area_ha": 1898.0,
+        "area_ratio": 0.9600878798974735,
+        "growth_ratio": 0.8856548856548857,
+        "growth_frac_of_observed": 0.31197363603075795,
+        "iou": 0.8041793056959892,
+        "p10_recall": 0.739085239085239
+      },
+      {
+        "label": "12:53Z->13:25Z",
+        "minutes": 32.0,
+        "seed_area_ha": 2731.0,
+        "observed_area_ha": 3547.0,
+        "observed_new_ha": 816.0,
+        "predicted_area_ha": 3653.0,
+        "predicted_new_ha": 922.0,
+        "p10_area_ha": 4218.0,
+        "p90_area_ha": 2891.0,
+        "area_ratio": 1.0298844093600226,
+        "growth_ratio": 1.1299019607843137,
+        "growth_frac_of_observed": 0.25993797575415845,
+        "iou": 0.7341040462427746,
+        "p10_recall": 0.5955882352941176
+      },
+      {
+        "label": "13:25Z->13:46Z",
+        "minutes": 21.0,
+        "seed_area_ha": 3547.0,
+        "observed_area_ha": 3662.0,
+        "observed_new_ha": 157.0,
+        "predicted_area_ha": 4248.0,
+        "predicted_new_ha": 701.0,
+        "p10_area_ha": 4686.0,
+        "p90_area_ha": 3722.0,
+        "area_ratio": 1.1600218459858,
+        "growth_ratio": 4.464968152866242,
+        "growth_frac_of_observed": 0.19142545057345714,
+        "iou": 0.8489948574100047,
+        "p10_recall": 0.9808917197452229
+      },
+      {
+        "label": "13:46Z->14:40Z",
+        "minutes": 54.0,
+        "seed_area_ha": 3662.0,
+        "observed_area_ha": 3926.0,
+        "observed_new_ha": 265.0,
+        "predicted_area_ha": 5804.0,
+        "predicted_new_ha": 2142.0,
+        "p10_area_ha": 6821.0,
+        "p90_area_ha": 4503.0,
+        "area_ratio": 1.478349465104432,
+        "growth_ratio": 8.083018867924528,
+        "growth_frac_of_observed": 0.5455934793683138,
+        "iou": 0.6612600307324569,
+        "p10_recall": 0.9622641509433962
+      },
+      {
+        "label": "14:40Z->04:14Z",
+        "minutes": 814.0,
+        "seed_area_ha": 3926.0,
+        "observed_area_ha": 3882.0,
+        "observed_new_ha": 67.0,
+        "predicted_area_ha": 40397.0,
+        "predicted_new_ha": 36471.0,
+        "p10_area_ha": 61455.0,
+        "p90_area_ha": 17229.0,
+        "area_ratio": 10.40623390005152,
+        "growth_ratio": 544.3432835820895,
+        "growth_frac_of_observed": 9.394899536321484,
+        "iou": 0.09609624477065129,
+        "p10_recall": 1.0
+      }
+    ]
+  },
+  "chosen": {
+    "cfg": {
+      "p0": 0.006,
+      "minutes_per_step": 4,
+      "wind_c1": 0.7,
+      "wind_c2": 0.3,
+      "slope_a": 0.078
+    },
+    "j_fitted_mean_over_seeds": 0.1632060407472098,
+    "j_fitted_by_seed": {
+      "0": 0.15021106451457886,
+      "1": 0.24228684705359266,
+      "2": 0.09712021067345789
+    },
+    "selection": "lowest mean J over seeds [0, 1, 2] at n_runs 20 among the best 24 sweep candidates",
+    "calm_wind_12h_ha": 316.0,
+    "pairs_seed": 0,
+    "pairs": [
+      {
+        "label": "11:47Z->12:06Z",
+        "minutes": 19.0,
+        "seed_area_ha": 1263.0,
+        "observed_area_ha": 1770.0,
+        "observed_new_ha": 511.0,
+        "predicted_area_ha": 1636.0,
+        "predicted_new_ha": 373.0,
+        "p10_area_ha": 1907.0,
+        "p90_area_ha": 1281.0,
+        "area_ratio": 0.9242937853107345,
+        "growth_ratio": 0.7299412915851272,
+        "growth_frac_of_observed": 0.21073446327683615,
+        "iou": 0.7574819401444789,
+        "p10_recall": 0.5166340508806262
+      },
+      {
+        "label": "12:06Z->12:53Z",
+        "minutes": 47.0,
+        "seed_area_ha": 1770.0,
+        "observed_area_ha": 2731.0,
+        "observed_new_ha": 962.0,
+        "predicted_area_ha": 3310.0,
+        "predicted_new_ha": 1540.0,
+        "p10_area_ha": 3942.0,
+        "p90_area_ha": 1789.0,
+        "area_ratio": 1.2120102526547052,
+        "growth_ratio": 1.6008316008316008,
+        "growth_frac_of_observed": 0.5638960087879897,
+        "iou": 0.6978639685216413,
+        "p10_recall": 0.7848232848232848
+      },
+      {
+        "label": "12:53Z->13:25Z",
+        "minutes": 32.0,
+        "seed_area_ha": 2731.0,
+        "observed_area_ha": 3547.0,
+        "observed_new_ha": 816.0,
+        "predicted_area_ha": 3135.0,
+        "predicted_new_ha": 404.0,
+        "p10_area_ha": 4031.0,
+        "p90_area_ha": 2762.0,
+        "area_ratio": 0.8838455032421765,
+        "growth_ratio": 0.4950980392156863,
+        "growth_frac_of_observed": 0.11389906963631238,
+        "iou": 0.7695974576271186,
+        "p10_recall": 0.5490196078431373
+      },
+      {
+        "label": "13:25Z->13:46Z",
+        "minutes": 21.0,
+        "seed_area_ha": 3547.0,
+        "observed_area_ha": 3662.0,
+        "observed_new_ha": 157.0,
+        "predicted_area_ha": 3757.0,
+        "predicted_new_ha": 210.0,
+        "p10_area_ha": 4600.0,
+        "p90_area_ha": 3547.0,
+        "area_ratio": 1.0259421081376296,
+        "growth_ratio": 1.3375796178343948,
+        "growth_frac_of_observed": 0.05734571272528673,
+        "iou": 0.9240145228215768,
+        "p10_recall": 0.9490445859872612
+      },
+      {
+        "label": "13:46Z->14:40Z",
+        "minutes": 54.0,
+        "seed_area_ha": 3662.0,
+        "observed_area_ha": 3926.0,
+        "observed_new_ha": 265.0,
+        "predicted_area_ha": 3878.0,
+        "predicted_new_ha": 216.0,
+        "p10_area_ha": 4613.0,
+        "p90_area_ha": 3662.0,
+        "area_ratio": 0.9877738155883852,
+        "growth_ratio": 0.8150943396226416,
+        "growth_frac_of_observed": 0.05501782985226694,
+        "iou": 0.92501233349778,
+        "p10_recall": 0.7735849056603774
+      },
+      {
+        "label": "14:40Z->04:14Z",
+        "minutes": 814.0,
+        "seed_area_ha": 3926.0,
+        "observed_area_ha": 3882.0,
+        "observed_new_ha": 67.0,
+        "predicted_area_ha": 3926.0,
+        "predicted_new_ha": 0.0,
+        "p10_area_ha": 4165.0,
+        "p90_area_ha": 3926.0,
+        "area_ratio": 1.011334363730036,
+        "growth_ratio": 0.0,
+        "growth_frac_of_observed": 0.0,
+        "iou": 0.9554219884798397,
+        "p10_recall": 0.07462686567164178
+      }
+    ]
+  },
+  "finalists": [
+    {
+      "cfg": {
+        "p0": 0.006,
+        "minutes_per_step": 4,
+        "wind_c1": 0.7,
+        "wind_c2": 0.3,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.20409286111540723,
+      "j": 0.1632060407472098,
+      "j_by_seed": {
+        "0": 0.15021106451457886,
+        "1": 0.24228684705359266,
+        "2": 0.09712021067345789
+      },
+      "j_worst_seed": 0.24228684705359266
+    },
+    {
+      "cfg": {
+        "p0": 0.0125,
+        "minutes_per_step": 4,
+        "wind_c1": 0.6,
+        "wind_c2": 0.45,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.25828244151013263,
+      "j": 0.1771600284385708,
+      "j_by_seed": {
+        "0": 0.15714745270280617,
+        "1": 0.1280477875067077,
+        "2": 0.24628484510619847
+      },
+      "j_worst_seed": 0.24628484510619847
+    },
+    {
+      "cfg": {
+        "p0": 0.0167,
+        "minutes_per_step": 4,
+        "wind_c1": 0.55,
+        "wind_c2": 0.35,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.10744638135913556,
+      "j": 0.20758849714406832,
+      "j_by_seed": {
+        "0": 0.28318605845161077,
+        "1": 0.2002484542546955,
+        "2": 0.1393309787258986
+      },
+      "j_worst_seed": 0.28318605845161077
+    },
+    {
+      "cfg": {
+        "p0": 0.008,
+        "minutes_per_step": 4,
+        "wind_c1": 0.7,
+        "wind_c2": 0.55,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.18458354805870614,
+      "j": 0.23032494737906073,
+      "j_by_seed": {
+        "0": 0.2656659322225826,
+        "1": 0.17460703613675715,
+        "2": 0.2507018737778425
+      },
+      "j_worst_seed": 0.2656659322225826
+    },
+    {
+      "cfg": {
+        "p0": 0.0167,
+        "minutes_per_step": 4,
+        "wind_c1": 0.55,
+        "wind_c2": 0.4,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.1924076116395751,
+      "j": 0.24080819420976793,
+      "j_by_seed": {
+        "0": 0.20124575642282325,
+        "1": 0.2141192233303195,
+        "2": 0.307059602876161
+      },
+      "j_worst_seed": 0.307059602876161
+    },
+    {
+      "cfg": {
+        "p0": 0.066837,
+        "minutes_per_step": 4,
+        "wind_c1": 0.35,
+        "wind_c2": 0.55,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.26159504838064185,
+      "j": 0.24381557910984106,
+      "j_by_seed": {
+        "0": 0.2572187063472683,
+        "1": 0.24699241127570207,
+        "2": 0.22723561970655282
+      },
+      "j_worst_seed": 0.2572187063472683
+    },
+    {
+      "cfg": {
+        "p0": 0.042776,
+        "minutes_per_step": 4,
+        "wind_c1": 0.4,
+        "wind_c2": 0.35,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.26442121434631694,
+      "j": 0.25499511946596104,
+      "j_by_seed": {
+        "0": 0.17654171867474952,
+        "1": 0.23998576028083868,
+        "2": 0.348457879442295
+      },
+      "j_worst_seed": 0.348457879442295
+    },
+    {
+      "cfg": {
+        "p0": 0.089295,
+        "minutes_per_step": 4,
+        "wind_c1": 0.3,
+        "wind_c2": 0.45,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.2755552775269441,
+      "j": 0.27944240999293396,
+      "j_by_seed": {
+        "0": 0.23554978215291444,
+        "1": 0.3016868620242539,
+        "2": 0.30109058580163356
+      },
+      "j_worst_seed": 0.3016868620242539
+    },
+    {
+      "cfg": {
+        "p0": 0.006,
+        "minutes_per_step": 4,
+        "wind_c1": 0.65,
+        "wind_c2": 0.2,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.25482682300807125,
+      "j": 0.3111494343105523,
+      "j_by_seed": {
+        "0": 0.3515267898072985,
+        "1": 0.3422509682805759,
+        "2": 0.23967054484378258
+      },
+      "j_worst_seed": 0.3515267898072985
+    },
+    {
+      "cfg": {
+        "p0": 0.0125,
+        "minutes_per_step": 4,
+        "wind_c1": 0.6,
+        "wind_c2": 0.3,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.23373430976843781,
+      "j": 0.3130862577966227,
+      "j_by_seed": {
+        "0": 0.2799241057340813,
+        "1": 0.27111144470215975,
+        "2": 0.38822322295362705
+      },
+      "j_worst_seed": 0.38822322295362705
+    },
+    {
+      "cfg": {
+        "p0": 0.0167,
+        "minutes_per_step": 4,
+        "wind_c1": 0.55,
+        "wind_c2": 0.3,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.2625430581926078,
+      "j": 0.31534025601541676,
+      "j_by_seed": {
+        "0": 0.2580642307101124,
+        "1": 0.4955200085423142,
+        "2": 0.19243652879382356
+      },
+      "j_worst_seed": 0.4955200085423142
+    },
+    {
+      "cfg": {
+        "p0": 0.008,
+        "minutes_per_step": 4,
+        "wind_c1": 0.65,
+        "wind_c2": 0.3,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.10034745646981122,
+      "j": 0.32971442359827696,
+      "j_by_seed": {
+        "0": 0.22844007697931576,
+        "1": 0.3488002591534527,
+        "2": 0.41190293466206246
+      },
+      "j_worst_seed": 0.41190293466206246
+    },
+    {
+      "cfg": {
+        "p0": 0.032082,
+        "minutes_per_step": 4,
+        "wind_c1": 0.45,
+        "wind_c2": 0.45,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.12068932964996451,
+      "j": 0.3318853597202594,
+      "j_by_seed": {
+        "0": 0.2878374328737502,
+        "1": 0.3384731760565703,
+        "2": 0.36934547023045766
+      },
+      "j_worst_seed": 0.36934547023045766
+    },
+    {
+      "cfg": {
+        "p0": 0.024464,
+        "minutes_per_step": 4,
+        "wind_c1": 0.5,
+        "wind_c2": 0.25,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.2943592015177885,
+      "j": 0.37931676139342224,
+      "j_by_seed": {
+        "0": 0.46718749821625,
+        "1": 0.24207661798208757,
+        "2": 0.42868616798192916
+      },
+      "j_worst_seed": 0.46718749821625
+    },
+    {
+      "cfg": {
+        "p0": 0.042776,
+        "minutes_per_step": 4,
+        "wind_c1": 0.4,
+        "wind_c2": 0.45,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.15283577470711213,
+      "j": 0.4133306671917693,
+      "j_by_seed": {
+        "0": 0.2851186504491493,
+        "1": 0.3262058069309092,
+        "2": 0.6286675441952494
+      },
+      "j_worst_seed": 0.6286675441952494
+    },
+    {
+      "cfg": {
+        "p0": 0.01,
+        "minutes_per_step": 4,
+        "wind_c1": 0.6,
+        "wind_c2": 0.3,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.18930269483490964,
+      "j": 0.43791349367886684,
+      "j_by_seed": {
+        "0": 0.3359177673299206,
+        "1": 0.3050548974496854,
+        "2": 0.6727678162569943
+      },
+      "j_worst_seed": 0.6727678162569943
+    },
+    {
+      "cfg": {
+        "p0": 0.008,
+        "minutes_per_step": 4,
+        "wind_c1": 0.6,
+        "wind_c2": 0.2,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.06985713037890787,
+      "j": 0.5102100492747169,
+      "j_by_seed": {
+        "0": 0.3052769642634097,
+        "1": 0.5334536904833447,
+        "2": 0.6918994930773965
+      },
+      "j_worst_seed": 0.6918994930773965
+    },
+    {
+      "cfg": {
+        "p0": 0.042776,
+        "minutes_per_step": 4,
+        "wind_c1": 0.4,
+        "wind_c2": 0.55,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.2871681117201778,
+      "j": 0.5210488244859236,
+      "j_by_seed": {
+        "0": 0.5152897236396928,
+        "1": 0.6124352466126526,
+        "2": 0.43542150320542555
+      },
+      "j_worst_seed": 0.6124352466126526
+    },
+    {
+      "cfg": {
+        "p0": 0.032082,
+        "minutes_per_step": 4,
+        "wind_c1": 0.45,
+        "wind_c2": 0.55,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.2189800601136546,
+      "j": 0.6074856772635711,
+      "j_by_seed": {
+        "0": 0.43037620748686,
+        "1": 0.6620171525682141,
+        "2": 0.730063671735639
+      },
+      "j_worst_seed": 0.730063671735639
+    },
+    {
+      "cfg": {
+        "p0": 0.066837,
+        "minutes_per_step": 4,
+        "wind_c1": 0.3,
+        "wind_c2": 0.35,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.1884045637613368,
+      "j": 0.6510512984393984,
+      "j_by_seed": {
+        "0": 0.3350127101079039,
+        "1": 0.9562089249633227,
+        "2": 0.6619322602469684
+      },
+      "j_worst_seed": 0.9562089249633227
+    },
+    {
+      "cfg": {
+        "p0": 0.006,
+        "minutes_per_step": 4,
+        "wind_c1": 0.7,
+        "wind_c2": 0.45,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.26354911598748176,
+      "j": 0.66245146179224,
+      "j_by_seed": {
+        "0": 0.4210180194091589,
+        "1": 0.7018742431507251,
+        "2": 0.8644621228168362
+      },
+      "j_worst_seed": 0.8644621228168362
+    },
+    {
+      "cfg": {
+        "p0": 0.0125,
+        "minutes_per_step": 4,
+        "wind_c1": 0.6,
+        "wind_c2": 0.55,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.2697941528928074,
+      "j": 0.6682856507561795,
+      "j_by_seed": {
+        "0": 0.2772107616185407,
+        "1": 1.14418014498533,
+        "2": 0.5834660456646678
+      },
+      "j_worst_seed": 1.14418014498533
+    },
+    {
+      "cfg": {
+        "p0": 0.0125,
+        "minutes_per_step": 4,
+        "wind_c1": 0.5,
+        "wind_c2": 0.2,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.21798792904850578,
+      "j": 0.7597012842926171,
+      "j_by_seed": {
+        "0": 0.5391035653956174,
+        "1": 0.8646886313348586,
+        "2": 0.8753116561473752
+      },
+      "j_worst_seed": 0.8753116561473752
+    },
+    {
+      "cfg": {
+        "p0": 0.032082,
+        "minutes_per_step": 4,
+        "wind_c1": 0.4,
+        "wind_c2": 0.35,
+        "slope_a": 0.078
+      },
+      "j_sweep": 0.21426942606164215,
+      "j": 0.8940268953940432,
+      "j_by_seed": {
+        "0": 0.7152562620492493,
+        "1": 1.0425794221530218,
+        "2": 0.9242450019798588
+      },
+      "j_worst_seed": 1.0425794221530218
+    }
+  ],
+  "seed_stability": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "n_runs": 20,
+    "j_fitted_by_seed": {
+      "0": 0.15021106451457886,
+      "1": 0.24228684705359266,
+      "2": 0.09712021067345789
+    },
+    "per_pair": [
+      {
+        "pair": "11:47Z->12:06Z",
+        "holdout": false,
+        "area_ratio": [
+          0.9242937853107345,
+          0.884180790960452,
+          0.9112994350282486
+        ],
+        "area_ratio_range": 0.04011299435028248,
+        "predicted_new_ha": [
+          373.0,
+          302.0,
+          350.0
+        ],
+        "predicted_new_ha_range": 71.0,
+        "iou": [
+          0.7574819401444789,
+          0.7571127502634352,
+          0.7564901349948079
+        ],
+        "iou_range": 0.00099180514967101
+      },
+      {
+        "pair": "12:06Z->12:53Z",
+        "holdout": false,
+        "area_ratio": [
+          1.2120102526547052,
+          1.1435371658733064,
+          0.9871841816184548
+        ],
+        "area_ratio_range": 0.2248260710362504,
+        "predicted_new_ha": [
+          1540.0,
+          1353.0,
+          926.0
+        ],
+        "predicted_new_ha_range": 614.0,
+        "iou": [
+          0.6978639685216413,
+          0.7137002341920374,
+          0.7851973684210526
+        ],
+        "iou_range": 0.08733339989941125
+      },
+      {
+        "pair": "12:53Z->13:25Z",
+        "holdout": true,
+        "area_ratio": [
+          0.8838455032421765,
+          0.8999154214829433,
+          0.8762334367070764
+        ],
+        "area_ratio_range": 0.023681984775866916,
+        "predicted_new_ha": [
+          404.0,
+          461.0,
+          377.0
+        ],
+        "predicted_new_ha_range": 84.0,
+        "iou": [
+          0.7695974576271186,
+          0.7595300261096606,
+          0.7610478962688542
+        ],
+        "iou_range": 0.010067431517458036
+      },
+      {
+        "pair": "13:25Z->13:46Z",
+        "holdout": false,
+        "area_ratio": [
+          1.0259421081376296,
+          1.0406881485527035,
+          1.0054614964500272
+        ],
+        "area_ratio_range": 0.03522665210267628,
+        "predicted_new_ha": [
+          210.0,
+          264.0,
+          135.0
+        ],
+        "predicted_new_ha_range": 129.0,
+        "iou": [
+          0.9240145228215768,
+          0.9141905737704918,
+          0.933649289099526
+        ],
+        "iou_range": 0.019458715329034204
+      },
+      {
+        "pair": "13:46Z->14:40Z",
+        "holdout": false,
+        "area_ratio": [
+          0.9877738155883852,
+          0.9763117677024962,
+          0.9829342842587876
+        ],
+        "area_ratio_range": 0.011462047885889004,
+        "predicted_new_ha": [
+          216.0,
+          171.0,
+          197.0
+        ],
+        "predicted_new_ha_range": 45.0,
+        "iou": [
+          0.92501233349778,
+          0.9277018633540373,
+          0.9255503339104625
+        ],
+        "iou_range": 0.0026895298562572556
+      },
+      {
+        "pair": "14:40Z->04:14Z",
+        "holdout": true,
+        "area_ratio": [
+          1.011334363730036,
+          1.011334363730036,
+          1.011334363730036
+        ],
+        "area_ratio_range": 0.0,
+        "predicted_new_ha": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "predicted_new_ha_range": 0.0,
+        "iou": [
+          0.9554219884798397,
+          0.9554219884798397,
+          0.9554219884798397
+        ],
+        "iou_range": 0.0
+      }
+    ]
+  },
+  "facility_preview": {
+    "assets": "fixtures/real_area/assets_gavarres.json",
+    "horizon_min": 720,
+    "n_runs": 20,
+    "seed": 0,
+    "basis": "facility cell has a finite arrival_p10",
+    "before_counts_recorded_in_handoff": [
+      18,
+      65,
+      94
+    ],
+    "n_located_assets": 99,
+    "assets_inside_recorded_perimeters": {
+      "11:47Z": 0,
+      "12:06Z": 0,
+      "12:53Z": 0,
+      "13:25Z": 0,
+      "13:46Z": 0,
+      "14:40Z": 0,
+      "04:14Z": 0
+    },
+    "ground_truth_note": "no located facility lies inside any recorded perimeter, so the recorded outcome of this incident is 0 reached facilities; the 18/65/94 of the uncalibrated model are all false positives",
+    "after": [
+      {
+        "snapshot": "gavarres_real_0001",
+        "as_of": "2026-07-03T13:20:01Z",
+        "perimeter_observed_at": "2026-07-03T11:47Z",
+        "wind_first_sample": {
+          "dir_from_deg": 15.0,
+          "speed_mps": 5.8
+        },
+        "n_located_assets": 99,
+        "reached_series": 0,
+        "burned_ha_series": 2514.0,
+        "reached_constant": 15,
+        "burned_ha_constant": 19040.0,
+        "assets_in_seed_perimeter": 0
+      },
+      {
+        "snapshot": "gavarres_real_0002",
+        "as_of": "2026-07-03T15:32:24Z",
+        "perimeter_observed_at": "2026-07-03T13:25Z",
+        "wind_first_sample": {
+          "dir_from_deg": 65.0,
+          "speed_mps": 2.64
+        },
+        "n_located_assets": 99,
+        "reached_series": 0,
+        "burned_ha_series": 3679.0,
+        "reached_constant": 0,
+        "burned_ha_constant": 3679.0,
+        "assets_in_seed_perimeter": 0
+      },
+      {
+        "snapshot": "gavarres_real_0003",
+        "as_of": "2026-07-04T06:31:53Z",
+        "perimeter_observed_at": "2026-07-04T04:14Z",
+        "wind_first_sample": {
+          "dir_from_deg": 305.0,
+          "speed_mps": 1.58
+        },
+        "n_located_assets": 99,
+        "reached_series": 0,
+        "burned_ha_series": 3929.0,
+        "reached_constant": 0,
+        "burned_ha_constant": 3929.0,
+        "assets_in_seed_perimeter": 0
+      }
+    ]
+  },
+  "acceptance": {
+    "criterion_1_area_ratio_0.5_to_2.0": {
+      "pass": true,
+      "failing_pairs": [],
+      "per_pair": {
+        "11:47Z->12:06Z": 0.9242937853107345,
+        "12:06Z->12:53Z": 1.2120102526547052,
+        "12:53Z->13:25Z": 0.8838455032421765,
+        "13:25Z->13:46Z": 1.0259421081376296,
+        "13:46Z->14:40Z": 0.9877738155883852,
+        "14:40Z->04:14Z": 1.011334363730036
+      }
+    },
+    "criterion_2_overnight_growth_under_20pct": {
+      "pass": true,
+      "growth_frac_of_observed": 0.0,
+      "pair": "14:40Z->04:14Z"
+    },
+    "criterion_3_calm_wind_ha": {
+      "before_ha": 129321.0,
+      "after_ha": 316.0,
+      "handoff_target": "tens of hectares, not thousands",
+      "pass": true
+    }
+  },
+  "limits": [
+    "one incident, seven perimeters, one wind point: calibration, not validation",
+    "perimeter timestamps are satellite watermarks with unknown latency inside the hour",
+    "wind is an ECMWF model product, not an observation",
+    "suppression is unrecorded and absorbed into the parameters",
+    "no fuel or land-cover layer: the built-up coast is indistinguishable from forest",
+    "no DEM: slope_a is unexercised and was not fitted"
+  ]
+}
