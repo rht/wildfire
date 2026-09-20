@@ -1,0 +1,13 @@
+# Dark operations-dashboard shell (fireline/ui_theme.py carries the rest of the look).
+# Set here rather than only in CSS so the page never renders a light frame first.
+
+[theme]
+base = "dark"
+backgroundColor = "#15100D"
+secondaryBackgroundColor = "#1C1613"
+textColor = "#EFE9E2"
+primaryColor = "#C33A2C"
+font = "sans serif"
+
+[client]
+toolbarMode = "minimal"
