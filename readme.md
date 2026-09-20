@@ -217,24 +217,26 @@ make fetch        # pull real Gencat registers and Open-Meteo wind into data/ (n
 make precompute   # v0 engine demo (spread CA, routing, decisions); the same uncalibrated CA enriches gavarres_real_0001..0003 (labelled, see below)
 ```
 
-The standalone design mockup has a focused DOM regression test. Install its pinned test-only
-dependency under the ignored `data/` directory, then run the test:
+The coordination dashboard retains Michella's visual design and reads backend state through
+REST/WebSocket. Install the pinned development dependencies and run its checks:
 
 ```sh
-npm install --prefix data/ui-dom-test jsdom@27.0.0
-NODE_PATH=data/ui-dom-test/node_modules node --test tests/test_ui_mockup.cjs
+npm ci
+npm test
+npm run lint
 ```
 
-The test verifies that snapshot-controlled IDs, names, types, review reasons and provenance render
-as literal text across the ranking, review queue, selected-location detail, map tooltips and change
-log. It also covers queue selection, task creation, team assignment, snapshot advance with task
-preservation and the change-log toggle. The jsdom installation is test-only and does not add a
-production JavaScript framework.
+The tests verify that snapshot-controlled IDs, names, types, review reasons and provenance render
+as literal text across ranking, review selection, location detail, map tooltips and the change log.
+They cover supplied route/fire geometry, independent call outcomes, reconnects and revision order.
+Dispatch controls remain disabled; the screen cannot create tasks, assign teams or assert an
+evacuation. The jsdom installation is test-only and adds no production JavaScript framework.
 
-Norma Livecheck returned zero findings for the mockup HTML under full coverage. The extracted
+The earlier static mockup's Norma Livecheck returned zero findings for HTML under full coverage. Its extracted
 inline JavaScript and the identical JavaScript form of the CommonJS regression test also returned
 zero findings, but with reduced coverage because one Semgrep rule failed to load. Those JavaScript
-results therefore do not establish an unqualified clean scan.
+results therefore do not establish an unqualified clean scan or cover the newer modular dashboard.
+The live-dashboard section records its separate scan scope and limitations.
 
 `CONTRACTS.md` (v1.1) holds the module APIs that implement section 5 and the coordination side.
 `fireline/` has `snapshot.py` (producer), `fire_input.py` (Deepfire poll or recorded responses, stale
@@ -2204,3 +2206,144 @@ it is not called by this projection. Integrate that ledger separately before tre
 proposed centre capacity as a durable reservation. All writers to that ledger must
 share its database; every automated call worker must share the voice queue database
 and identical configured limits.
+
+## Live dashboard integration — codex/live-dashboard
+
+For @mirrdj: Michella's terminal frame, map, cards, selection, evidence, database
+view and change log now consume backend state. The dashboard is read-only: loading,
+reconnecting or clicking a location never enqueues a call, assigns a task or
+confirms movement. Call approval/dispatch remain in the existing shared queue flow.
+Her `claude/workflow-setup` branch was merged into this task branch only.
+
+Public interface:
+
+- `fireline.dashboard_server.create_app(store, poll_interval=0.5)` accepts a
+  synchronous `state()` / `updates(after_revision)` store. `state()` returns a
+  `coordination-state-1` envelope or `None` before initialization. Updates may be
+  ordered full envelopes, wrapped full envelopes, or `coordination-update-1`
+  notifications with `refresh="full_state"` (the actual coordination export).
+- `GET /api/state` returns the public current envelope; unavailable/uninitialized
+  state returns HTTP 503 with `{"error":"state_unavailable"}`. Responses use
+  `Cache-Control: no-store`. There are no mutation endpoints.
+- `WS /api/updates?after_revision=N` sends complete public envelopes, plus
+  `{"type":"heartbeat","revision":N}` every ten seconds, or
+  `{"type":"error","code":"state_unavailable"}` before closing on failure.
+  Historical full states replay in revision order. Compact notifications resolve
+  to the latest full state and may coalesce intermediate revisions. Reconnect
+  fetches REST first, then subscribes from that revision; duplicate/older frames
+  are ignored. Missing history catches up from a full state. Source age uses
+  `snapshot_as_of` where present; stale/unavailable source and transport failure
+  remain visible while the last good state stays on screen.
+- `CoordinationDatabase(path)` reads the committed `coordination_revisions`
+  table using SQLite `mode=ro`. It never initializes, migrates or refreshes the
+  operational database. Point it at the database written by live-coordination;
+  dashboard polling does not cause coordination ticks or call-worker activity.
+
+The envelope keeps `schema_version, scenario_id, snapshot_id, revision, as_of,
+input_mode, assets, contacts:{ranked,review}, calls, plan:{locations,
+remaining_capacity,response}, teams, tasks, events, errors`. Browser order comes
+from `contacts`, joined by stable `asset_id`; no frontend score or routing exists.
+Null facts remain unknown. Call lifecycle/dispatch, reported assistance, human
+request, message acknowledgement and departure/arrival are separate fields.
+Allocation lifecycle and transport/reception confirmations are shown separately.
+The allowlist removes private call payloads and contact fields, redacts phone-like
+public text, preserves stable IDs, and replaces internal error details with a
+public error code. Adding public fields requires reviewing the projection.
+
+Verified sibling boundaries:
+
+- Actual `CoordinationStore` export at `ce9eb6b4870a85af1906b8635f728d4f1ff46501`
+  generated a local SQLite database; REST and WebSocket matched its public state
+  without modifying it. `fixtures/dashboard/coordination-export.json` records
+  its synthetic envelope for regression tests. The optional integration test
+  uses `fireline.coordination` when installed, or an explicitly supplied export.
+- `multi-response-plan-1` in `plan.response` is rendered with per-team tasks and
+  proposed timings. Only supplied `path_lonlat` geometry draws truck paths
+  (converted to Leaflet latitude/longitude order).
+- Optional `plan.locations[].routes[]` accepts `route_id, status, source` and
+  `path` in latitude/longitude order or GeoJSON `geometry`. Route absence draws
+  no line. Current evacuation exports provide allocation/destination facts but
+  do not provide route geometry; those facts display without inventing paths.
+  Their `state`, `instruction_allowed`, `safety` and assistance confirmations
+  are displayed when coordination includes the allocation overlay.
+
+Local usage (Python 3.12+, Node for UI tests):
+
+```sh
+python -m venv .venv
+.venv/bin/python -m pip install -e '.[dashboard,dashboard-test,dev]'
+.venv/bin/python -m fireline.dashboard_server --demo --port 8521
+# Or use the existing coordinator database, without a call worker:
+.venv/bin/python -m fireline.dashboard_server --database /absolute/path/to/coordination.sqlite --port 8521
+npm ci
+npm test
+npm run lint
+PYTHONPATH=. .venv/bin/python -m pytest
+```
+
+The CLI binds only `127.0.0.1`; open `http://127.0.0.1:8521/`. `--demo` is explicitly
+labelled, static and illustrative, using backend `rank_contacts` and the same
+store/API contract. It cannot call anyone. Port 8511 is untouched. The optional
+`npm run test:browser` expects the local demo on 8521 and an installed Playwright
+Chromium; `DASHBOARD_BROWSER_EXECUTABLE` can select an existing local binary.
+Screenshots are local ignored artifacts under `data/dashboard-verification/`.
+
+Implementation plan and validation:
+
+- [x] Failing API/privacy/revision tests, then server and offline store.
+- [x] Failing UI tests for backend order, unknown facts, reconnect and safe text,
+  then integrate the existing visual shell.
+- [x] Verify actual coordination export, full regression suite, real-browser
+  smoke and scoped review; fix review findings before final push/PR.
+
+No deployment or live calls were performed. Remaining integration is producer
+work: live-coordination must refresh its shared database and include approved
+allocation/multi-crew exports; route geometry must be supplied by the backend.
+Leaflet and the reference satellite basemap still require external network access;
+if Leaflet is unavailable, the location list and evidence remain usable. This is
+a local read-only viewer, without a hosted authentication/deployment layer.
+
+Validation at handoff: `DASHBOARD_COORDINATION_EXPORT=data/dashboard-verification/coordination.py
+PYTHONPATH=. .venv/bin/python -m pytest -q` passed **616 tests, 1 existing skip**
+(using the verified sibling export locally; without it the optional integration
+case skips until `fireline.coordination` is available). **13 Node tests**, ESLint
+and real Chromium REST/WebSocket/navigation/reconnect checks passed; browser
+requests were read-only and had no page errors. One dependency deprecation warning
+comes from Starlette's test client. Scoped review findings were fixed and rechecked.
+Norma scanned dashboard changes only; details are in
+`reports/norma-dashboard-review.json`. Remaining JS flags were reviewed as false
+positives (WebSocket handler, caller-caught fetch rejection); JS coverage was
+reduced, CJS unsupported, and the final package scan returned a tool error.
+
+Final compatibility check also passed against live-coordination PR #22 commit
+`946966190b85f942edf9204f1849b36f2cdd4133`: **15 API/integration tests** and the
+Chromium smoke passed. That export accepts `response_plan` for multi-crew proposals;
+the allocation overlay remains a producer-side integration dependency.
+
+### Sequential merge integration checkpoint (2026-09-20)
+
+The integrated tree includes SLNG bindings (#17), snapshot-to-queue adaptation
+(#19), multi-team proposals (#21), durable evacuation allocations (#24), call
+briefings (#20), coordination persistence (#22), and Michella's latest design
+(#9), followed by this live-dashboard integration (#23). Discovery (#18) remains
+separate under rht's ownership. Rebases retain each module's documentation and
+the selected `type(centre.remaining_places) is not int` capacity guard.
+
+The dashboard preserves the latest emoji-free buttons, fire-perimeter halo,
+escalation styling and fixed map frame, while rendering backend facts through
+the modular client. The old simulated dispatch/assignment actions are disabled.
+Verification on this combined tree: 915 Python tests passed, one skipped;
+15 Node tests and ESLint passed. The browser smoke passed against an isolated
+local demo server using Chrome: REST/WebSocket, selection, database, log and
+reconnect worked, with no mutating requests or page errors. The Python test
+environment reports an existing Starlette/AnyIO deprecation warning.
+
+Run Python checks with `PYTHONPATH=.` so subprocess CLI tests import this
+checkout. The optional browser smoke accepts `DASHBOARD_BASE_URL` and
+`DASHBOARD_BROWSER_EXECUTABLE` to test an isolated server/browser installation.
+
+Module merges do not configure a running workflow. The application still needs
+to supply the call-briefing callback to snapshot enqueueing, connect the
+allocation ledger to coordination, provide current fleet/route inputs and
+refresh the shared coordination database. Dynamic provider deployment and
+authorized end-to-end phone testing remain separate from these offline checks.

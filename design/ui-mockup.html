@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Respons'Ara — UI/UX mockup</title>
+<title>Respons'Ara — Coordination dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
@@ -125,6 +125,7 @@
     background: var(--paper); border-left: 1px solid var(--line); overflow-y: auto;
   }
   .card {
+    flex-shrink: 0;
     background: var(--panel); border-radius: 10px; margin: 10px 12px 0;
     box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 0 0 1px var(--line); overflow: hidden;
   }
@@ -267,6 +268,10 @@
   #changeLog .cl-entry { padding: 4px 0; border-bottom: 1px dashed var(--line); }
   #changeLog .cl-entry:last-child { border-bottom: none; }
 
+  button:disabled { opacity: 0.65; cursor: default; }
+  #responsePlan { padding: 0 14px 14px; }
+  .qrow .info { flex: 1; }
+  #detailPanel .v { overflow-wrap: anywhere; }
   .leaflet-tooltip.fire-tip { font-size: 11px; }
 </style>
 </head>
@@ -278,38 +283,39 @@
       <span class="word-1">Respons</span><span class="word-2">'Ara</span>
       <small>Which infrastructure, people and assets are in danger — and which hospital, which school, needs a call first.</small>
     </div>
-    <span class="badge mode" id="modeBadge">Mode: synthetic</span>
-    <span class="badge current" id="statusBadge">current</span>
+    <span class="badge mode" id="modeBadge">Waiting for backend</span>
+    <span class="badge current" id="statusBadge">connecting</span>
     <div class="timestamps">
       <div>as_of <b id="asOf">—</b></div>
-      <div>computed_at <b id="computedAt">—</b></div>
+      <div>state <b id="computedAt">—</b></div>
     </div>
-    <button id="nextUpdateBtn">Next update →</button>
+    <button id="nextUpdateBtn">Reconnect</button>
   </div>
 
   <div id="main">
     <div id="mapCol">
-      <div class="mapCardHead">Response map — live exposure radius</div>
+      <div class="mapCardHead">Response map — supplied backend state</div>
       <button id="changeLogBtn">Change log (<span id="logCount">0</span>)</button>
       <div id="changeLog"></div>
       <div id="mapFrame">
         <div id="map"></div>
       </div>
       <div class="mapButtonBar">
-        <button id="notifyFireDeptBtn" class="primary">Notify fire dept</button>
-        <button id="notifyRadioBtn">Radio</button>
-        <button id="notifyPhoneBtn">Phone</button>
-        <button id="toggle3dBtn">3D · hotspots</button>
+        <button id="notifyFireDeptBtn" disabled title="Read-only; use approved dispatch workflow">Dispatch: read-only</button>
+        <button id="notifyRadioBtn" disabled>Radio: read-only</button>
+        <button id="notifyPhoneBtn" disabled title="Use the explicitly approved shared call queue">Approved queue required</button>
+        <button id="toggle3dBtn">Tilt map</button>
         <button id="openDbBtn">Institutions database →</button>
       </div>
     </div>
 
     <div id="sideCol">
+      <div class="card"><div id="systemErrors" role="status" class="panelHead">Waiting for system state</div></div>
       <div class="card">
-        <div class="panelHead" style="border-top:none">Response priority summary</div>
+        <div class="panelHead" style="border-top:none">Backend contact urgency</div>
         <div class="metrics">
-          <div class="metric act-now"><div class="n" id="mAct">0</div><div class="l">act now</div></div>
-          <div class="metric prepare"><div class="n" id="mPrep">0</div><div class="l">prepare</div></div>
+          <div class="metric act-now"><div class="n" id="mAct">0</div><div class="l">window exhausted</div></div>
+          <div class="metric prepare"><div class="n" id="mPrep">0</div><div class="l">window open</div></div>
           <div class="metric review"><div class="n" id="mReview">0</div><div class="l">needs review</div></div>
         </div>
       </div>
@@ -318,19 +324,19 @@
         <div id="escalationPanel">
           <div class="panelHead" style="border-top:none">Escalation &amp; notification status</div>
           <div class="escStats">
-            <div class="escStat confirmed"><div class="n" id="escConfirmed">0</div><div class="l">confirmed</div></div>
-            <div class="escStat open"><div class="n" id="escOpen">0</div><div class="l">no response</div></div>
-            <div class="escStat mobility"><div class="n" id="escMobility">0</div><div class="l">need mobility help</div></div>
+            <div class="escStat confirmed"><div class="n" id="escConfirmed">0</div><div class="l">acknowledged</div></div>
+            <div class="escStat open"><div class="n" id="escOpen">0</div><div class="l">human requested</div></div>
+            <div class="escStat mobility"><div class="n" id="escMobility">0</div><div class="l">assistance requested</div></div>
           </div>
-          <div class="escListLabel">Awaiting confirmation</div>
+          <div class="escListLabel">Human requests</div>
           <div id="escOpenList" class="escList"></div>
-          <div class="escListLabel">Requested mobility assistance</div>
+          <div class="escListLabel">Assistance requests</div>
           <div id="escMobilityList" class="escList"></div>
         </div>
       </div>
 
       <div class="card">
-        <div class="panelHead" style="border-top:none">Ranked locations — analyst priority</div>
+        <div class="panelHead" style="border-top:none">Contact order — backend priority</div>
         <div id="rankedList"></div>
       </div>
 
@@ -339,6 +345,7 @@
         <div id="detailPanel"><p style="color:var(--muted);font-size:13px;padding:0 14px">Select a location from the list, or a pin on the map.</p></div>
       </div>
 
+      <div class="card"><div class="panelHead">Supplied response plan</div><div id="responsePlan"></div></div>
       <div class="card">
         <div id="reviewQueue"></div>
       </div>
@@ -355,7 +362,7 @@
         <thead>
           <tr>
             <th>Institution</th><th>Type</th><th>Proximity</th><th>Capacity</th>
-            <th>Size (occupancy)</th><th>Escalation stage</th><th>ES-CAT</th>
+            <th>Size (occupancy)</th><th>Contact status</th><th>Contact rank</th>
           </tr>
         </thead>
         <tbody id="dbTableBody"></tbody>
@@ -365,666 +372,7 @@
 </div>
 </div>
 
-<script>
-/* ---------------------------------------------------------------------
-   Illustrative sample data only — field names follow readme.md v4
-   section 5 (snapshot contract) so this doubles as a UI target spec.
-   Facility names are placeholders from the documented Gavarres example;
-   swap for the real kickoff-selected area once chosen (readme 15).
---------------------------------------------------------------------- */
-const TEAMS = [
-  { id: "t-bombers-3", name: "Bombers unit 3", capabilities: ["access_check", "contact"], available: true },
-  { id: "t-bombers-7", name: "Bombers unit 7", capabilities: ["access_check", "contact"], available: false },
-  { id: "t-creu-roja-1", name: "Creu Roja team 1", capabilities: ["contact", "resources"], available: true },
-  { id: "t-mossos-2", name: "Mossos patrol 2", capabilities: ["access_check"], available: true },
-  { id: "t-analyst", name: "Coordination desk (analyst)", capabilities: ["contact", "resources", "access_check"], available: true },
-];
-
-const FIRE_PERIM_1 = [[41.951,3.031],[41.957,3.045],[41.949,3.058],[41.937,3.052],[41.935,3.036],[41.943,3.026]];
-const FIRE_PERIM_2 = [[41.951,3.031],[41.962,3.052],[41.951,3.071],[41.933,3.063],[41.928,3.040],[41.940,3.024]];
-
-// Raw deepfire:hotspots detections (a different Deepfire endpoint from the
-// deepfire:satellite-perimeters hull used above) — [lat, lon, frp] with frp in MW,
-// the same field the readme's Deepfire/MTG data sources describe.
-const HOTSPOTS_1 = [
-  [41.9505,3.0350,38], [41.9490,3.0410,52], [41.9470,3.0450,61], [41.9455,3.0480,44],
-  [41.9430,3.0430,33], [41.9445,3.0380,29], [41.9415,3.0400,47],
-];
-const HOTSPOTS_2 = [
-  [41.9505,3.0350,41], [41.9490,3.0410,58], [41.9470,3.0450,70], [41.9455,3.0480,66],
-  [41.9430,3.0430,54], [41.9445,3.0380,39], [41.9415,3.0400,62], [41.9560,3.0480,35],
-  [41.9520,3.0620,45], [41.9440,3.0620,58], [41.9370,3.0550,31],
-];
-
-function asset(id, name, asset_type, lat, lon, capacity, estimated_occupancy, occupancy_basis,
-                value_score, value_basis, distance_to_fire_m, intersects, needs_review, review_reasons, sources) {
-  return { asset_id: id, name, asset_type, latitude: lat, longitude: lon, capacity, estimated_occupancy,
-           occupancy_basis, value_score, value_basis, distance_to_fire_m, intersects_fire: intersects,
-           needs_review, review_reasons, sources };
-}
-
-// Tier 2 voice-agent check-in outcome (readme.md "Voice-agent delivery plan" interview
-// contract): notification_status is the acknowledged/no_answer outcome, mobility_assistance
-// is the separate "wants_human"/assisted-evacuation signal from the same call. Independent
-// dimensions, not a single tri-state field.
-function notify(a, notification_status, mobility_assistance) {
-  a.notification_status = notification_status;
-  a.mobility_assistance = mobility_assistance;
-  return a;
-}
-
-const SNAPSHOT_1 = {
-  schema_version: "1.0", scenario_id: "scn-gavarres-demo", snapshot_id: "snap-001", sequence: 1,
-  as_of: "2026-07-03T10:00:00Z", computed_at: "2026-07-03T10:00:42Z", input_mode: "synthetic",
-  fire_source: "deepfire:satellite-perimeters (recorded)", data_status: "current",
-  assets: [
-    notify(asset("a-poudelglac","Pou del Glaç (casa de colònies)","school",41.9440,3.0410, null, null, null,
-      0.9, "children present, class v1", 480, false, true, ["occupancy_seasonal"],
-      [{ fields: ["estimated_occupancy"], source: "operator page (fixture)", observed_at: "2026-07-02", notes: "July programme listed; headcount not confirmed" }]),
-      "no_response", false),
-    notify(asset("a-vallrepos","Vall Repòs","care_home",41.9505,3.0210, 78, 70, "register capacitat",
-      1.0, "care home, class v1", 950, false, false, [], [
-      { fields: ["capacity"], source: "Registre d'entitats i serveis socials", observed_at: "2026-06-01" }]),
-      "confirmed", true),
-    notify(asset("a-escolabisbal","Escola la Bisbal","school",41.9610,3.0390, 240, 180, "enrolment register",
-      0.7, "school, class v1", 1400, false, false, [], [
-      { fields: ["capacity"], source: "Directori de centres docents", observed_at: "2026-05-15" }]),
-      "confirmed", false),
-    notify(asset("a-canxic","Can Xic (masia)","residential",41.9390,3.0500, null, 4, "estimated, isolated dwelling",
-      0.4, "residential, class v1", 620, false, true, ["exposure_unknown"], [
-      { fields: ["distance_to_fire_m"], source: "OSM building centroid (point fallback)", notes: "footprint unavailable" }]),
-      "no_response", false),
-    notify(asset("a-urbsantpol","Urbanització Sant Pol","residential",41.9700,3.0250, null, 210, "Idescat allocation",
-      0.6, "residential nucleus, class v1", 2600, false, false, [], [
-      { fields: ["estimated_occupancy"], source: "Idescat municipal allocation", observed_at: "2026-01-01" }]),
-      "no_response", false),
-    notify(asset("a-capbisbal","CAP la Bisbal (medical centre)","medical",41.9615,3.0355, null, 15, "typical staffing estimate",
-      0.85, "medical, class v1", 1550, false, false, [], []),
-      "confirmed", true),
-  ],
-};
-
-const SNAPSHOT_2 = {
-  schema_version: "1.0", scenario_id: "scn-gavarres-demo", snapshot_id: "snap-002", sequence: 2,
-  as_of: "2026-07-03T12:00:00Z", computed_at: "2026-07-03T12:00:38Z", input_mode: "synthetic",
-  fire_source: "deepfire:satellite-perimeters (recorded)", data_status: "stale",
-  assets: [
-    // Pou del Glaç: occupancy confirmed via agent proposal accepted -> review cleared;
-    // check-in also now confirmed, and 150 children means mobility/transport assistance
-    notify(asset("a-poudelglac","Pou del Glaç (casa de colònies)","school",41.9440,3.0410, 150, 150, "operator confirmed via investigation",
-      0.9, "children present, class v1", 310, false, false, [], [
-      { fields: ["estimated_occupancy"], source: "operator page (fixture)", observed_at: "2026-07-02" },
-      { fields: ["estimated_occupancy"], source: "agent investigation, confirmed by analyst", observed_at: "2026-07-03T11:40:00Z" }]),
-      "confirmed", true),
-    notify(asset("a-vallrepos","Vall Repòs","care_home",41.9505,3.0210, 78, 70, "register capacitat",
-      1.0, "care home, class v1", 640, false, false, [], [
-      { fields: ["capacity"], source: "Registre d'entitats i serveis socials", observed_at: "2026-06-01" }]),
-      "confirmed", true),
-    // Urbanització Sant Pol: fire moved much closer -> jumps up the ranking, and the
-    // renewed urgency is also when the check-in call finally got through
-    notify(asset("a-urbsantpol","Urbanització Sant Pol","residential",41.9700,3.0250, null, 210, "Idescat allocation",
-      0.6, "residential nucleus, class v1", 480, false, false, [], [
-      { fields: ["estimated_occupancy"], source: "Idescat municipal allocation", observed_at: "2026-01-01" }]),
-      "confirmed", false),
-    notify(asset("a-escolabisbal","Escola la Bisbal","school",41.9610,3.0390, 240, 180, "enrolment register",
-      0.7, "school, class v1", 980, false, false, [], [
-      { fields: ["capacity"], source: "Directori de centres docents", observed_at: "2026-05-15" }]),
-      "confirmed", false),
-    notify(asset("a-canxic","Can Xic (masia)","residential",41.9390,3.0500, null, 4, "estimated, isolated dwelling",
-      0.4, "residential, class v1", 190, true, true, ["exposure_unknown"], [
-      { fields: ["distance_to_fire_m"], source: "OSM building centroid (point fallback)", notes: "footprint unavailable" }]),
-      "no_response", false),
-    notify(asset("a-capbisbal","CAP la Bisbal (medical centre)","medical",41.9615,3.0355, null, 15, "typical staffing estimate",
-      0.85, "medical, class v1", 1120, false, false, [], []),
-      "confirmed", true),
-  ],
-};
-
-// ---- priority scoring (mirrors readme.md section 6: w_prox*prox + w_size*size + w_value*value) ----
-const WEIGHTS = { proximity: 0.5, size: 0.3, value: 0.2 };
-const POLICY_VERSION = "priority-policy-v0 (prototype, frozen at kickoff)";
-
-function scoreAsset(a) {
-  if (a.distance_to_fire_m == null && !a.intersects_fire) return null; // exposure_unknown -> needs review path
-  const proximity = a.intersects_fire ? 1 : Math.max(0, 1 - a.distance_to_fire_m / 3000);
-  const occ = a.estimated_occupancy ?? a.capacity;
-  if (occ == null || a.value_score == null) return null;
-  const size = Math.min(1, occ / 250);
-  const value = a.value_score;
-  const total = WEIGHTS.proximity * proximity + WEIGHTS.size * size + WEIGHTS.value * value;
-  return { total, proximity, size, value };
-}
-
-// ---- state ----
-let current = SNAPSHOT_1;
-let selectedId = null;
-let changeLog = [];
-const taskState = {}; // asset_id -> { action, teamId, status }
-let dbViewOpen = false;
-const esCatNotified = new Set(); // asset_id -> notified via the official channel (simulated)
-
-function fmtTime(iso) {
-  const d = new Date(iso);
-  return d.toISOString().slice(11, 16) + "Z " + d.toISOString().slice(0, 10);
-}
-
-function textElement(tagName, text, className = "") {
-  const element = document.createElement(tagName);
-  if (className) element.className = className;
-  element.textContent = String(text);
-  return element;
-}
-
-function renderEmptyDetail(panel) {
-  const prompt = textElement("p", "Select a location from the list, or a pin on the map.");
-  prompt.style.color = "var(--muted)";
-  prompt.style.fontSize = "13px";
-  prompt.style.padding = "0 14px";
-  panel.replaceChildren(prompt);
-}
-
-function strongLogText(text) {
-  return { strong: String(text) };
-}
-
-function renderChangeLog() {
-  const log = document.getElementById("changeLog");
-  log.replaceChildren();
-  const entries = changeLog.length ? [...changeLog].reverse() : [["No changes yet."]];
-  for (const parts of entries) {
-    const entry = document.createElement("div");
-    entry.className = "cl-entry";
-    for (const part of parts) {
-      if (typeof part === "string") {
-        entry.append(document.createTextNode(part));
-      } else {
-        entry.append(textElement("b", part.strong));
-      }
-    }
-    log.append(entry);
-  }
-}
-
-function handleAssetSelection(event) {
-  selectAsset(event.currentTarget.dataset.assetId);
-}
-
-function handleMarkerSelection(event) {
-  selectAsset(event.target.assetId);
-}
-
-function handleTaskAction(event) {
-  pickAction(event.currentTarget.dataset.assetId, event.currentTarget.dataset.action);
-}
-
-function handleTeamAssignment(event) {
-  assignTeam(event.currentTarget.dataset.assetId, event.currentTarget.value);
-}
-
-function render() {
-  document.getElementById("modeBadge").textContent = "Mode: " + current.input_mode;
-  document.getElementById("asOf").textContent = fmtTime(current.as_of);
-  document.getElementById("computedAt").textContent = fmtTime(current.computed_at);
-  const sb = document.getElementById("statusBadge");
-  sb.textContent = current.data_status;
-  sb.className = "badge " + current.data_status;
-
-  const scored = [], review = [];
-  for (const a of current.assets) {
-    const s = scoreAsset(a);
-    if (a.needs_review || s === null) review.push(a);
-    if (s !== null) scored.push({ a, s });
-  }
-  scored.sort((x, y) => y.s.total - x.s.total || x.a.asset_id.localeCompare(y.a.asset_id));
-
-  document.getElementById("mAct").textContent = scored.filter(x => x.s.total > 0.7).length;
-  document.getElementById("mPrep").textContent = scored.filter(x => x.s.total > 0.4 && x.s.total <= 0.7).length;
-  document.getElementById("mReview").textContent = review.length;
-
-  const list = document.getElementById("rankedList");
-  list.replaceChildren();
-  for (const [i, x] of scored.entries()) {
-    const row = document.createElement("div");
-    row.className = "row" + (x.a.asset_id === selectedId ? " selected" : "");
-    row.dataset.assetId = x.a.asset_id;
-    row.addEventListener("click", handleAssetSelection);
-    const task = taskState[x.a.asset_id];
-
-    const bar = document.createElement("div");
-    bar.className = "bar";
-    const proximityBar = document.createElement("span");
-    proximityBar.className = "b-prox";
-    proximityBar.style.width = `${x.s.proximity * 100}%`;
-    const sizeBar = document.createElement("span");
-    sizeBar.className = "b-size";
-    sizeBar.style.width = `${x.s.size * 100}%`;
-    const valueBar = document.createElement("span");
-    valueBar.className = "b-val";
-    valueBar.style.width = `${x.s.value * 100}%`;
-    bar.append(proximityBar, sizeBar, valueBar);
-
-    const info = document.createElement("div");
-    info.className = "info";
-    const name = textElement("div", x.a.name, "name");
-    if (task) {
-      name.append(document.createTextNode(" "), textElement("span", task.status, "task-flag"));
-    }
-    info.append(name, textElement("div", `${x.a.asset_type} · ${Math.round(x.a.distance_to_fire_m)} m to fire`, "sub"));
-
-    row.append(textElement("div", i + 1, "rank"), bar, info, textElement("div", x.s.total.toFixed(2), "score"));
-    list.appendChild(row);
-  }
-
-  const q = document.getElementById("reviewQueue");
-  q.replaceChildren();
-  if (review.length) {
-    const heading = textElement("div", `Needs-review queue (${review.length})`, "panelHead");
-    heading.style.borderTop = "none";
-    q.append(heading);
-    for (const a of review) {
-      const queueRow = document.createElement("div");
-      queueRow.className = "qrow";
-      queueRow.style.cursor = "pointer";
-      queueRow.dataset.assetId = a.asset_id;
-      queueRow.addEventListener("click", handleAssetSelection);
-      queueRow.append(
-        textElement("span", a.name),
-        textElement("span", (a.review_reasons || ["exposure_unknown"]).join(", "), "qreason"),
-      );
-      q.append(queueRow);
-    }
-  }
-
-  renderMap(scored, review);
-  renderEscalation();
-  const detailPanel = document.getElementById("detailPanel");
-  if (selectedId) renderDetail(selectedId, scored); else renderEmptyDetail(detailPanel);
-  if (dbViewOpen) renderDbTable(scored, review);
-
-  document.getElementById("logCount").textContent = changeLog.length;
-  renderChangeLog();
-}
-
-function renderEscalation() {
-  const confirmed = current.assets.filter(a => a.notification_status === "confirmed");
-  const open = current.assets.filter(a => a.notification_status === "no_response");
-  const mobility = current.assets.filter(a => a.mobility_assistance);
-
-  document.getElementById("escConfirmed").textContent = confirmed.length;
-  document.getElementById("escOpen").textContent = open.length;
-  document.getElementById("escMobility").textContent = mobility.length;
-
-  function fillList(elId, items, dotClass) {
-    const el = document.getElementById(elId);
-    el.replaceChildren();
-    for (const a of items) {
-      const row = document.createElement("div");
-      row.className = "escRow";
-      row.dataset.assetId = a.asset_id;
-      row.addEventListener("click", handleAssetSelection);
-      const dot = document.createElement("span");
-      dot.className = "escDot " + dotClass;
-      row.append(dot, textElement("span", a.name, "name"));
-      el.append(row);
-    }
-  }
-  fillList("escOpenList", open, "open");
-  fillList("escMobilityList", mobility, "mobility");
-}
-
-function tierColor(total) {
-  if (total > 0.7) return "#c73a2f";
-  if (total > 0.4) return "#d98a1f";
-  return "#7a8a7d";
-}
-
-let map, fireLayer, markerLayer, hotspotLayer;
-let show3dHotspots = false;
-function initMap() {
-  map = L.map("map", { zoomControl: true }).setView([41.951, 3.038], 13);
-  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-    attribution: "Esri World Imagery (basemap reference only)",
-    maxZoom: 18,
-  }).addTo(map);
-  fireLayer = L.layerGroup().addTo(map);
-  hotspotLayer = L.layerGroup().addTo(map);
-  markerLayer = L.layerGroup().addTo(map);
-  // the map now sits in an inset card rather than filling its column edge-to-edge;
-  // give the layout a tick to settle before Leaflet measures its container
-  setTimeout(() => map.invalidateSize(), 50);
-}
-
-function toggle3dHotspots() {
-  show3dHotspots = !show3dHotspots;
-  document.getElementById("map").classList.toggle("tilt3d", show3dHotspots);
-  document.getElementById("toggle3dBtn").classList.toggle("on", show3dHotspots);
-  setTimeout(() => map.invalidateSize(), 360);
-  render();
-}
-
-function renderMap(scored, review) {
-  fireLayer.clearLayers();
-  hotspotLayer.clearLayers();
-  markerLayer.clearLayers();
-  const perim = current.sequence === 1 ? FIRE_PERIM_1 : FIRE_PERIM_2;
-  // white halo behind the perimeter line so the exposure radius reads as the primary
-  // signal against the satellite basemap, with everything else as surrounding context
-  L.polygon(perim, { color: "#ffffff", weight: 6, opacity: 0.85, fill: false }).addTo(fireLayer);
-  L.polygon(perim, { color: "#ff5a3c", weight: 3, fillColor: "#ff5a3c", fillOpacity: 0.22 })
-    .bindTooltip("Fire perimeter (recorded satellite hull), as_of " + fmtTime(current.as_of), { className: "fire-tip" })
-    .addTo(fireLayer);
-
-  if (show3dHotspots) {
-    const hotspots = current.sequence === 1 ? HOTSPOTS_1 : HOTSPOTS_2;
-    for (const [lat, lon, frp] of hotspots) {
-      L.circleMarker([lat, lon], {
-        radius: 4 + frp / 12, color: "#fff", weight: 1, fillColor: "#ff8a3c", fillOpacity: 0.9,
-      }).bindTooltip(`deepfire:hotspots · ${frp} MW`, { className: "fire-tip" }).addTo(hotspotLayer);
-    }
-  }
-
-  const all = [...scored.map(x => ({ a: x.a, total: x.s.total })), ...review.map(a => ({ a, total: null }))];
-  for (const { a, total } of all) {
-    const color = total === null ? "#a8471f" : tierColor(total);
-    const marker = L.circleMarker([a.latitude, a.longitude], {
-      radius: total === null ? 8 : 6 + total * 6, color: "#fff", weight: 1.5, fillColor: color, fillOpacity: 0.95,
-    }).addTo(markerLayer);
-    const tooltip = document.createElement("span");
-    tooltip.append(
-      textElement("b", a.name),
-      document.createElement("br"),
-      document.createTextNode(total === null ? "needs review" : "priority " + total.toFixed(2)),
-    );
-    marker.assetId = a.asset_id;
-    marker.bindTooltip(tooltip, { className: "fire-tip" });
-    marker.on("click", handleMarkerSelection);
-  }
-}
-
-function selectAsset(id) {
-  selectedId = id;
-  render();
-}
-
-function renderDetail(id, scored) {
-  const a = current.assets.find(x => x.asset_id === id);
-  const panel = document.getElementById("detailPanel");
-  const s = scoreAsset(a);
-  const task = taskState[id];
-  panel.replaceChildren();
-
-  panel.append(textElement("h3", a.name));
-  const kind = textElement("div", `${a.asset_type} · asset_id `, "kind");
-  kind.append(textElement("code", a.asset_id));
-  panel.append(kind);
-
-  if (s) {
-    const scoreBreak = document.createElement("div");
-    scoreBreak.className = "scoreBreak";
-    const components = [
-      ["proximity", s.proximity, "#c73a2f"],
-      ["size", s.size, "#d98a1f"],
-      ["value", s.value, "#1f5c4d"],
-    ];
-    for (const [label, value, color] of components) {
-      const scoreRow = document.createElement("div");
-      scoreRow.className = "sb-row";
-      const bar = document.createElement("div");
-      bar.className = "sb-bar";
-      const fill = document.createElement("span");
-      fill.style.width = `${value * 100}%`;
-      fill.style.background = color;
-      bar.append(fill);
-      scoreRow.append(
-        textElement("span", label, "sb-label"),
-        bar,
-        textElement("span", value.toFixed(2), "sb-val"),
-      );
-      scoreBreak.append(scoreRow);
-    }
-    const total = textElement("div", `total ${s.total.toFixed(2)} · weights prox ${WEIGHTS.proximity} / size ${WEIGHTS.size} / value ${WEIGHTS.value} · ${POLICY_VERSION}`);
-    total.style.fontSize = "11px";
-    total.style.color = "var(--muted)";
-    total.style.marginTop = "2px";
-    scoreBreak.append(total);
-    panel.append(scoreBreak);
-  }
-
-  if (a.needs_review || s === null) {
-    const reviewBox = document.createElement("div");
-    reviewBox.className = "reviewBox";
-    reviewBox.append(
-      textElement("b", "Needs review:"),
-      document.createTextNode(` ${(a.review_reasons || ["exposure_unknown"]).join(", ")}. This asset is in the investigation queue, not asserted as highest physical risk.`),
-    );
-    panel.append(reviewBox);
-  }
-
-  const values = document.createElement("div");
-  values.className = "kv";
-  const valueRows = [
-    ["capacity", a.capacity ?? "null (unknown)", a.capacity == null],
-    ["estimated occupancy", a.estimated_occupancy ?? "null (unknown)", a.estimated_occupancy == null],
-    ["occupancy basis", a.occupancy_basis ?? "—", false],
-    ["distance to fire", `${a.distance_to_fire_m != null ? Math.round(a.distance_to_fire_m) + " m" : "unknown"}${a.intersects_fire ? " (intersects)" : ""}`, false],
-    ["value basis", a.value_basis ?? "—", false],
-  ];
-  for (const [label, value, isNull] of valueRows) {
-    values.append(
-      textElement("div", label, "k"),
-      textElement("div", value, "v" + (isNull ? " null" : "")),
-    );
-  }
-  panel.append(values);
-
-  const evidenceHeading = textElement("div", "Evidence & provenance", "panelHead");
-  evidenceHeading.style.paddingLeft = "0";
-  panel.append(evidenceHeading);
-  if (a.sources?.length) {
-    for (const source of a.sources) {
-      const sourceItem = document.createElement("div");
-      sourceItem.className = "sourceItem";
-      sourceItem.append(
-        textElement("b", source.fields.join(", ")),
-        document.createTextNode(` — ${source.source}${source.observed_at ? " (" + source.observed_at + ")" : ""}`),
-      );
-      if (source.notes) {
-        sourceItem.append(document.createElement("br"), document.createTextNode(source.notes));
-      }
-      panel.append(sourceItem);
-    }
-  } else {
-    panel.append(textElement("div", "No recorded sources yet.", "sourceItem"));
-  }
-
-  const taskHeading = textElement("div", "Follow-up task", "panelHead");
-  taskHeading.style.paddingLeft = "0";
-  panel.append(taskHeading);
-  const taskActions = document.createElement("div");
-  taskActions.className = "taskActions";
-  const actions = ["confirm occupancy", "contact facility", "check access", "request resources"];
-  for (const action of actions) {
-    const button = textElement("button", action);
-    if (task?.action === action) button.className = "active";
-    button.dataset.assetId = id;
-    button.dataset.action = action;
-    button.addEventListener("click", handleTaskAction);
-    taskActions.append(button);
-  }
-  panel.append(taskActions);
-
-  if (task) {
-    const assignRow = document.createElement("div");
-    assignRow.className = "assignRow";
-    const teamSelect = document.createElement("select");
-    const prompt = textElement("option", "— assign team —");
-    prompt.value = "";
-    teamSelect.append(prompt);
-    for (const team of TEAMS) {
-      const option = textElement("option", team.name + (!team.available ? " (unavailable)" : ""));
-      option.value = team.id;
-      option.selected = task.teamId === team.id;
-      option.disabled = !team.available;
-      teamSelect.append(option);
-    }
-    teamSelect.dataset.assetId = id;
-    teamSelect.addEventListener("change", handleTeamAssignment);
-    assignRow.append(teamSelect, textElement("span", task.status, "task-flag"));
-    panel.append(assignRow);
-    if (task.blocked) {
-      const unavailable = textElement("div", "Selected team unavailable — reassign or leave blocked.", "teamUnavailable");
-      unavailable.style.fontSize = "11.5px";
-      unavailable.style.marginTop = "4px";
-      panel.append(unavailable);
-    }
-  }
-}
-
-function pickAction(id, action) {
-  const existing = taskState[id];
-  taskState[id] = { action, teamId: existing ? existing.teamId : null, status: "open", blocked: false };
-  changeLog.push([
-    `${fmtTime(current.as_of)} — task `,
-    strongLogText(action),
-    ` opened for ${assetName(id)}`,
-  ]);
-  render();
-}
-
-function assignTeam(id, teamId) {
-  const team = TEAMS.find(t => t.id === teamId);
-  const t = taskState[id];
-  if (!team) { t.teamId = null; t.status = "open"; t.blocked = false; render(); return; }
-  if (!team.available) {
-    t.blocked = true; t.status = "blocked"; t.teamId = teamId;
-    changeLog.push([
-      `${fmtTime(current.as_of)} — assignment to `,
-      strongLogText(team.name),
-      ` for ${assetName(id)} rejected: team unavailable`,
-    ]);
-  } else {
-    t.teamId = teamId; t.status = "assigned"; t.blocked = false;
-    changeLog.push([
-      `${fmtTime(current.as_of)} — ${assetName(id)} `,
-      strongLogText(t.action),
-      " assigned to ",
-      strongLogText(team.name),
-    ]);
-  }
-  render();
-}
-
-function assetName(id) { return current.assets.find(a => a.asset_id === id)?.name || id; }
-
-// ---- global official-channel notify actions (simulated, logged — see design/tier2_brief.md:
-// "we do not build or simulate the actual ES-Alert broadcast", same principle applies here) ----
-function notifyChannel(channel, label) {
-  const btn = document.getElementById(channel);
-  if (btn.classList.contains("notified")) return;
-  btn.classList.add("notified");
-  btn.textContent = label + " ✓ sent";
-  changeLog.push([
-    `${fmtTime(current.as_of)} — `,
-    strongLogText(label),
-    " logged for this incident (simulated — no live dispatch integration).",
-  ]);
-  renderChangeLog();
-  document.getElementById("logCount").textContent = changeLog.length;
-}
-
-function notifyEsCat(assetId) {
-  const btn = document.querySelector(`.dbTable button[data-escat="${assetId}"]`);
-  if (esCatNotified.has(assetId)) return;
-  esCatNotified.add(assetId);
-  if (btn) { btn.textContent = "Notified ✓"; btn.classList.add("notified"); btn.disabled = true; }
-  changeLog.push([
-    `${fmtTime(current.as_of)} — `,
-    strongLogText("ES-CAT"),
-    ` (official Catalan channel) notified for ${assetName(assetId)} — simulated, not a live ES-Alert integration.`,
-  ]);
-  renderChangeLog();
-  document.getElementById("logCount").textContent = changeLog.length;
-}
-
-function stageFor(a, scoredMap) {
-  const s = scoredMap.get(a.asset_id);
-  if (a.needs_review || !s) return { label: "needs review", cls: "review" };
-  if (s.total > 0.7) return { label: "act now", cls: "act-now" };
-  if (s.total > 0.4) return { label: "prepare", cls: "prepare" };
-  return { label: "monitor", cls: "monitor" };
-}
-
-function renderDbTable(scored, review) {
-  const scoredMap = new Map(scored.map(x => [x.a.asset_id, x.s]));
-  const body = document.getElementById("dbTableBody");
-  body.replaceChildren();
-  for (const a of current.assets) {
-    const stage = stageFor(a, scoredMap);
-    const row = document.createElement("tr");
-    row.append(
-      textElement("td", a.name),
-      textElement("td", a.asset_type),
-      textElement("td", a.distance_to_fire_m != null ? Math.round(a.distance_to_fire_m) + " m" : "unknown"),
-      textElement("td", a.capacity ?? "—"),
-      textElement("td", a.estimated_occupancy ?? "unknown"),
-    );
-    const stageCell = document.createElement("td");
-    stageCell.append(textElement("span", stage.label, "stagePill " + stage.cls));
-    row.append(stageCell);
-    const escatCell = document.createElement("td");
-    const notified = esCatNotified.has(a.asset_id);
-    const btn = textElement("button", notified ? "Notified ✓" : "Notify ES-CAT");
-    btn.dataset.escat = a.asset_id;
-    if (notified) { btn.className = "notified"; btn.disabled = true; }
-    else btn.addEventListener("click", () => notifyEsCat(a.asset_id));
-    escatCell.append(btn);
-    row.append(escatCell);
-    body.append(row);
-  }
-}
-
-function showDbView() {
-  dbViewOpen = true;
-  document.getElementById("dbView").classList.add("open");
-  document.getElementById("main").style.display = "none";
-  render();
-}
-
-function hideDbView() {
-  dbViewOpen = false;
-  document.getElementById("dbView").classList.remove("open");
-  document.getElementById("main").style.display = "flex";
-  setTimeout(() => map.invalidateSize(), 50);
-}
-
-function nextUpdate() {
-  if (current.sequence >= 2) return;
-  current = SNAPSHOT_2;
-  changeLog.push([
-    `${fmtTime(current.as_of)} — `,
-    strongLogText(`snapshot ${current.snapshot_id}`),
-    ` received (sequence ${current.sequence}). Urbanització Sant Pol moved up the ranking as the fire front advanced; Vall Repòs task assignment preserved.`,
-  ]);
-  document.getElementById("nextUpdateBtn").disabled = true;
-  document.getElementById("nextUpdateBtn").textContent = "No further updates (demo)";
-  render();
-}
-
-function toggleLog() { document.getElementById("changeLog").classList.toggle("open"); }
-
-document.getElementById("nextUpdateBtn").addEventListener("click", nextUpdate);
-document.getElementById("changeLogBtn").addEventListener("click", toggleLog);
-document.getElementById("notifyFireDeptBtn").addEventListener("click",
-  () => notifyChannel("notifyFireDeptBtn", "Fire department notified"));
-document.getElementById("notifyRadioBtn").addEventListener("click",
-  () => notifyChannel("notifyRadioBtn", "Radio notification"));
-document.getElementById("notifyPhoneBtn").addEventListener("click",
-  () => notifyChannel("notifyPhoneBtn", "Phone notification"));
-document.getElementById("toggle3dBtn").addEventListener("click", toggle3dHotspots);
-document.getElementById("openDbBtn").addEventListener("click", showDbView);
-document.getElementById("backToMapBtn").addEventListener("click", hideDbView);
-initMap();
-render();
-</script>
+<script src="/dashboard-client.js"></script>
+<script src="/dashboard-view.js"></script>
 </body>
 </html>

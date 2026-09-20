@@ -1,0 +1,561 @@
+{
+  "scope": "Dashboard-authored files only; no core readiness predicate scanned or modified.",
+  "scans": [
+    {
+      "file": "fireline/dashboard_server.py",
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    },
+    {
+      "file": "fireline/dashboard_public.py",
+      "outcome": "issues",
+      "rules": {
+        "py-arch-type-eq": {
+          "rule_name": "type(x) == X",
+          "severity": "HIGH",
+          "impact_area": "architecture",
+          "description": "Checks an object's type too strictly; rejects valid subtypes that should also be accepted.",
+          "remediation_action": "Use isinstance.",
+          "good_code": "if isinstance(x, int): ...",
+          "bad_code": "if type(x) == int: ...",
+          "estimated_time_to_fix": 2
+        }
+      },
+      "issues": [
+        {
+          "rule_id": "py-arch-type-eq",
+          "file": "fireline/dashboard_public.py",
+          "line": 58,
+          "column": 16,
+          "snippet": "            or type(state.get('revision')) is not int or state['revision'] < 0):"
+        }
+      ],
+      "issues_returned": 1,
+      "total_issues": 1,
+      "capped": false,
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    },
+    {
+      "file": "fireline/dashboard_demo.py",
+      "outcome": "issues",
+      "rules": {
+        "py-mng-open-no-encoding": {
+          "rule_name": "open() without explicit encoding",
+          "severity": "LOW",
+          "impact_area": "manageability",
+          "description": "Opens a text file without specifying the encoding. The actual encoding depends on the operating system, which can corrupt or break text when the same code runs on a different machine.",
+          "remediation_action": "Always pass encoding=\"utf-8\".",
+          "good_code": "with open(\"data.txt\", encoding=\"utf-8\") as f:\n    text = f.read()",
+          "bad_code": "with open(\"data.txt\") as f:\n    text = f.read()",
+          "estimated_time_to_fix": 2
+        }
+      },
+      "issues": [
+        {
+          "rule_id": "py-mng-open-no-encoding",
+          "file": "fireline/dashboard_demo.py",
+          "line": 13,
+          "column": 29,
+          "snippet": "        assets = json.loads((Path(__file__).resolve().parents[1] /\n                             'fixtures/dashboard/assets.json').read_text())"
+        }
+      ],
+      "issues_returned": 1,
+      "total_issues": 1,
+      "capped": false,
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    },
+    {
+      "file": "design/dashboard-client.js",
+      "outcome": "issues",
+      "rules": {
+        "js-postmessage-no-origin": {
+          "rule_name": "postMessage Listener Without Origin Validation",
+          "severity": "HIGH",
+          "impact_area": "security",
+          "description": "Detects window.addEventListener(\"message\", ...) handlers. AI-scaffolded apps that embed OAuth popups, payment widgets, or third-party iframes use postMessage but frequently omit event.origin validation, allowing any window to send arbitrary messages to the handler.",
+          "remediation_action": "Always validate event.origin at the top of postMessage handlers. Maintain an allowlist of trusted origins and return immediately if the message is from an unknown source.",
+          "good_code": "const TRUSTED_ORIGINS = ['https://auth.myapp.com', 'https://payment.provider.com']\n\nwindow.addEventListener('message', (event) => {\n  // Validate origin before processing\n  if (!TRUSTED_ORIGINS.includes(event.origin)) return\n\n  if (event.data.type === 'AUTH_SUCCESS') {\n    setUser(event.data.user)\n    navigate('/dashboard')\n  }\n})",
+          "bad_code": "// Any window can send messages to this handler\nwindow.addEventListener('message', (event) => {\n  // No origin check!\n  if (event.data.type === 'AUTH_SUCCESS') {\n    setUser(event.data.user)  // attacker can fake this\n    navigate('/dashboard')\n  }\n})",
+          "estimated_time_to_fix": 20
+        }
+      },
+      "issues": [
+        {
+          "rule_id": "js-postmessage-no-origin",
+          "file": "design/dashboard-client.js",
+          "line": 49,
+          "column": 9,
+          "snippet": "        socket.onmessage=event=>{\n          if(!active()) return;\n          try {\n            const message=JSON.parse(event.data);\n            if(message.type==='error') {this.recover('unavailable');return;}\n            if(message.type!=='heartbeat') this.accept(message);\n            this.connection='connected';this.status();alive();\n          } catch {this.recover('unavailable');}\n        };"
+        }
+      ],
+      "issues_returned": 1,
+      "total_issues": 1,
+      "capped": false,
+      "coverage": {
+        "reduced": true,
+        "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+      },
+      "rulesets_evaluated": [
+        "javascript-norma-ruleset",
+        "nodejs-norma-ruleset",
+        "react-norma-ruleset",
+        "supabase-norma-ruleset",
+        "typescript-norma-ruleset",
+        "vite-norma-ruleset"
+      ]
+    },
+    {
+      "file": "design/dashboard-view.js",
+      "outcome": "issues",
+      "rules": {
+        "js-no-error-handling-async": {
+          "rule_name": "Async Operation Without Error Handling",
+          "severity": "HIGH",
+          "impact_area": "scalability",
+          "description": "Detects async functions or await expressions that are not wrapped in try/catch blocks and do not chain .catch(). AI-generated code frequently omits error handling, causing unhandled promise rejections that crash the app silently.",
+          "remediation_action": "Wrap all await calls in try/catch. In the catch block, show user-friendly error feedback (toast, alert) and log the error for debugging. Consider a global error handler for uncaught promise rejections.",
+          "good_code": "const handleSubmit = async () => {\n  try {\n    const { data, error } = await supabase.from('todos').insert({ title })\n    if (error) throw error\n    setTodos([...todos, data])\n  } catch (err) {\n    toast.error('Failed to add todo')\n    console.error(err)\n  }\n}",
+          "bad_code": "const handleSubmit = async () => {\n  const { data } = await supabase.from('todos').insert({ title })\n  setTodos([...todos, data])\n  // If insert fails, data is null → crash on spread\n}",
+          "estimated_time_to_fix": 10
+        },
+        "js-nested-ternary": {
+          "rule_name": "Nested ternary expression",
+          "severity": "MEDIUM",
+          "impact_area": "maintainability",
+          "description": "Stacking ternaries (a ? b : c ? d : e or a ? (b ? c : d) : e) collapses what is really a multi-branch decision into a one-liner that is hard to read at a glance.",
+          "remediation_action": "Refactor the nested ternary into an if/else chain or a small lookup map.",
+          "good_code": "let status;\nif (!isActive) status = 'INACTIVE';\nelse status = isVerified ? 'ACTIVE_VERIFIED' : 'ACTIVE_UNVERIFIED';",
+          "bad_code": "const status = isActive\n  ? isVerified ? 'ACTIVE_VERIFIED' : 'ACTIVE_UNVERIFIED'\n  : 'INACTIVE';",
+          "estimated_time_to_fix": 10
+        },
+        "js-function-in-loop": {
+          "rule_name": "Function defined inside a loop",
+          "severity": "MEDIUM",
+          "impact_area": "performance",
+          "description": "Defining a function (arrow, expression, or declaration) inside a for/while loop allocates a fresh function object on each iteration. Over large iteration counts this thrashes the GC and inflates heap usage.",
+          "remediation_action": "Move the function definition outside the loop and pass loop-scoped values as arguments.",
+          "good_code": "function handleItemClick(item) { process(item); }\nfor (let i = 0; i < items.length; i++) {\n  button.addEventListener('click', () => handleItemClick(items[i]));\n}",
+          "bad_code": "for (let i = 0; i < items.length; i++) {\n  button.addEventListener('click', () => process(items[i]));\n}",
+          "estimated_time_to_fix": 10
+        },
+        "js-fetch-no-timeout": {
+          "rule_name": "Network Request Without Timeout",
+          "severity": "MEDIUM",
+          "impact_area": "performance",
+          "description": "Detects fetch() calls and Supabase client operations that do not use an AbortController, timeout, or signal parameter. AI-scaffolded-generated network calls have no timeout — if Supabase is slow or unreachable, the request hangs indefinitely and the UI freezes with a loading spinner.",
+          "remediation_action": "Use AbortController with a timeout for all network requests. Create a utility function that wraps fetch/Supabase calls with a configurable timeout (e.g., 10 seconds). Show a timeout error message to the user when the deadline is exceeded.",
+          "good_code": "// With timeout via AbortController\nconst controller = new AbortController()\nconst timeoutId = setTimeout(() => controller.abort(), 10000)\n\ntry {\n  const { data } = await supabase\n    .from('large_table')\n    .select('*')\n    .order('created_at', { ascending: false })\n    .abortSignal(controller.signal)\n} catch (err) {\n  if (err.name === 'AbortError') {\n    toast.error('Request timed out. Please try again.')\n  }\n} finally {\n  clearTimeout(timeoutId)\n}",
+          "bad_code": "// Hangs forever if Supabase is slow\nconst { data } = await supabase\n  .from('large_table')\n  .select('*')\n  .order('created_at', { ascending: false })",
+          "estimated_time_to_fix": 15
+        }
+      },
+      "issues": [
+        {
+          "rule_id": "js-no-error-handling-async",
+          "file": "design/dashboard-view.js",
+          "line": 146,
+          "column": 36,
+          "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok) throw new Error('unavailable');return r.json();},"
+        },
+        {
+          "rule_id": "js-nested-ternary",
+          "file": "design/dashboard-view.js",
+          "line": 6,
+          "column": 17,
+          "snippet": "  const flag=x=>x===true ? 'yes' : x===false ? 'no' : 'unknown';"
+        },
+        {
+          "rule_id": "js-nested-ternary",
+          "file": "design/dashboard-view.js",
+          "line": 39,
+          "column": 19,
+          "snippet": "      const color=c?.status==='window_exhausted'?'#c73a2f':c?.rank?'#d98a1f':'#7a8a7d';"
+        },
+        {
+          "rule_id": "js-function-in-loop",
+          "file": "design/dashboard-view.js",
+          "line": 44,
+          "column": 46,
+          "snippet": "      marker.bindTooltip(tooltip).on('click',event=>select(event.target.assetId)).addTo(markers);"
+        },
+        {
+          "rule_id": "js-function-in-loop",
+          "file": "design/dashboard-view.js",
+          "line": 102,
+          "column": 49,
+          "snippet": "    for(const [id,predicate] of [['escOpenList',c=>c.wants_human===true],['escMobilityList',c=>(c.reported_needs_assistance??c.needs_assistance)===true]]) {"
+        },
+        {
+          "rule_id": "js-function-in-loop",
+          "file": "design/dashboard-view.js",
+          "line": 102,
+          "column": 93,
+          "snippet": "    for(const [id,predicate] of [['escOpenList',c=>c.wants_human===true],['escMobilityList',c=>(c.reported_needs_assistance??c.needs_assistance)===true]]) {"
+        },
+        {
+          "rule_id": "js-function-in-loop",
+          "file": "design/dashboard-view.js",
+          "line": 106,
+          "column": 72,
+          "snippet": "        row.dataset.assetId=call.asset_id;row.addEventListener('click',()=>select(call.asset_id));$(id).append(row);"
+        },
+        {
+          "rule_id": "js-function-in-loop",
+          "file": "design/dashboard-view.js",
+          "line": 115,
+          "column": 36,
+          "snippet": "      row.addEventListener('click',()=>{hideDb();select(a.asset_id);});$('dbTableBody').append(row);"
+        },
+        {
+          "rule_id": "js-nested-ternary",
+          "file": "design/dashboard-view.js",
+          "line": 135,
+          "column": 41,
+          "snippet": "    $('statusBadge').className='badge '+(s.connection==='unavailable'?'unavailable':s.stale||s.connection!=='connected'?'stale':'current');"
+        },
+        {
+          "rule_id": "js-fetch-no-timeout",
+          "file": "design/dashboard-view.js",
+          "line": 146,
+          "column": 42,
+          "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok) throw new Error('unavailable');return r.json();},"
+        }
+      ],
+      "issues_returned": 10,
+      "total_issues": 10,
+      "capped": false,
+      "coverage": {
+        "reduced": true,
+        "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+      },
+      "rulesets_evaluated": [
+        "javascript-norma-ruleset",
+        "nodejs-norma-ruleset",
+        "react-norma-ruleset",
+        "supabase-norma-ruleset",
+        "typescript-norma-ruleset",
+        "vite-norma-ruleset"
+      ]
+    },
+    {
+      "file": "design/ui-mockup.html",
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "vite-norma-ruleset"
+      ]
+    },
+    {
+      "file": "tests/test_dashboard_server.py",
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    },
+    {
+      "file": "tests/test_dashboard_client.cjs",
+      "outcome": "not_checkable",
+      "reason": "No rules available for this file type."
+    },
+    {
+      "file": "tests/test_ui_mockup.cjs",
+      "outcome": "not_checkable",
+      "reason": "No rules available for this file type."
+    },
+    {
+      "file": "package.json",
+      "outcome": "error",
+      "reason": "The live check could not be completed; retry shortly."
+    },
+    {
+      "file": "fireline/dashboard_public.py",
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    },
+    {
+      "file": "fireline/dashboard_demo.py",
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    },
+    {
+      "file": "design/dashboard-client.js",
+      "outcome": "issues",
+      "rules": {
+        "js-postmessage-no-origin": {
+          "rule_name": "postMessage Listener Without Origin Validation",
+          "severity": "HIGH",
+          "impact_area": "security",
+          "description": "Detects window.addEventListener(\"message\", ...) handlers. AI-scaffolded apps that embed OAuth popups, payment widgets, or third-party iframes use postMessage but frequently omit event.origin validation, allowing any window to send arbitrary messages to the handler.",
+          "remediation_action": "Always validate event.origin at the top of postMessage handlers. Maintain an allowlist of trusted origins and return immediately if the message is from an unknown source.",
+          "good_code": "const TRUSTED_ORIGINS = ['https://auth.myapp.com', 'https://payment.provider.com']\n\nwindow.addEventListener('message', (event) => {\n  // Validate origin before processing\n  if (!TRUSTED_ORIGINS.includes(event.origin)) return\n\n  if (event.data.type === 'AUTH_SUCCESS') {\n    setUser(event.data.user)\n    navigate('/dashboard')\n  }\n})",
+          "bad_code": "// Any window can send messages to this handler\nwindow.addEventListener('message', (event) => {\n  // No origin check!\n  if (event.data.type === 'AUTH_SUCCESS') {\n    setUser(event.data.user)  // attacker can fake this\n    navigate('/dashboard')\n  }\n})",
+          "estimated_time_to_fix": 20
+        }
+      },
+      "issues": [
+        {
+          "rule_id": "js-postmessage-no-origin",
+          "file": "design/dashboard-client.js",
+          "line": 49,
+          "column": 9,
+          "snippet": "        socket.onmessage=event=>{\n          if(!active()) return;\n          try {\n            const message=JSON.parse(event.data);\n            if(message.type==='error') {this.recover('unavailable');return;}\n            if(message.type!=='heartbeat') this.accept(message);\n            this.connection='connected';this.status();alive();\n          } catch {this.recover('unavailable');}\n        };"
+        }
+      ],
+      "issues_returned": 1,
+      "total_issues": 1,
+      "capped": false,
+      "coverage": {
+        "reduced": true,
+        "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+      },
+      "rulesets_evaluated": [
+        "javascript-norma-ruleset",
+        "nodejs-norma-ruleset",
+        "react-norma-ruleset",
+        "supabase-norma-ruleset",
+        "typescript-norma-ruleset",
+        "vite-norma-ruleset"
+      ]
+    },
+    {
+      "file": "design/dashboard-view.js",
+      "outcome": "issues",
+      "rules": {
+        "js-no-error-handling-async": {
+          "rule_name": "Async Operation Without Error Handling",
+          "severity": "HIGH",
+          "impact_area": "scalability",
+          "description": "Detects async functions or await expressions that are not wrapped in try/catch blocks and do not chain .catch(). AI-generated code frequently omits error handling, causing unhandled promise rejections that crash the app silently.",
+          "remediation_action": "Wrap all await calls in try/catch. In the catch block, show user-friendly error feedback (toast, alert) and log the error for debugging. Consider a global error handler for uncaught promise rejections.",
+          "good_code": "const handleSubmit = async () => {\n  try {\n    const { data, error } = await supabase.from('todos').insert({ title })\n    if (error) throw error\n    setTodos([...todos, data])\n  } catch (err) {\n    toast.error('Failed to add todo')\n    console.error(err)\n  }\n}",
+          "bad_code": "const handleSubmit = async () => {\n  const { data } = await supabase.from('todos').insert({ title })\n  setTodos([...todos, data])\n  // If insert fails, data is null → crash on spread\n}",
+          "estimated_time_to_fix": 10
+        }
+      },
+      "issues": [
+        {
+          "rule_id": "js-no-error-handling-async",
+          "file": "design/dashboard-view.js",
+          "line": 183,
+          "column": 36,
+          "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok) throw new Error('unavailable');return r.json();},"
+        }
+      ],
+      "issues_returned": 1,
+      "total_issues": 1,
+      "capped": false,
+      "coverage": {
+        "reduced": true,
+        "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+      },
+      "rulesets_evaluated": [
+        "javascript-norma-ruleset",
+        "nodejs-norma-ruleset",
+        "react-norma-ruleset",
+        "supabase-norma-ruleset",
+        "typescript-norma-ruleset",
+        "vite-norma-ruleset"
+      ]
+    },
+    {
+      "file": "design/ui-mockup.html",
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "vite-norma-ruleset"
+      ]
+    },
+    {
+      "file": "tests/test_dashboard_integration.py",
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    },
+    {
+      "file": "package.json",
+      "outcome": "issues",
+      "rules": {
+        "node-no-lint-config": {
+          "rule_name": "No Linter Configuration",
+          "severity": "LOW",
+          "impact_area": "manageability",
+          "description": "Detects package.json files without ESLint, Biome, or oxlint in devDependencies and no \"lint\" script defined. AI-scaffolded apps have no code quality tooling — the AI generates code but never validates it against any linting rules.",
+          "remediation_action": "Install ESLint with typescript-eslint and eslint-plugin-react-hooks (critical for detecting hook rule violations). Alternatively, use Biome for a faster, all-in-one solution. Add a \"lint\" script to package.json and run it in CI.",
+          "good_code": "{\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\",\n    \"lint\": \"eslint src --ext .ts,.tsx\"\n  },\n  \"devDependencies\": {\n    \"vite\": \"^5.0.0\",\n    \"eslint\": \"^8.56.0\",\n    \"@typescript-eslint/eslint-plugin\": \"^7.0.0\",\n    \"@typescript-eslint/parser\": \"^7.0.0\",\n    \"eslint-plugin-react-hooks\": \"^4.6.0\"\n  }\n}",
+          "bad_code": "{\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\"\n  },\n  \"devDependencies\": {\n    \"vite\": \"^5.0.0\"\n  }\n}",
+          "estimated_time_to_fix": 15
+        }
+      },
+      "issues": [
+        {
+          "rule_id": "node-no-lint-config",
+          "file": "package.json",
+          "line": 8,
+          "column": 3,
+          "snippet": "  \"devDependencies\": {\n    \"jsdom\": \"26.1.0\",\n    \"@playwright/test\": \"1.63.0\"\n  }"
+        }
+      ],
+      "issues_returned": 1,
+      "total_issues": 1,
+      "capped": false,
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "nodejs-norma-ruleset"
+      ]
+    },
+    {
+      "file": "fireline/dashboard_public.py",
+      "outcome": "clean",
+      "message": "No issues found in this file for the applicable rules.",
+      "coverage": {
+        "reduced": false,
+        "reason": null
+      },
+      "rulesets_evaluated": [
+        "fastapi-norma-ruleset",
+        "python-norma-ruleset",
+        "sqlalchemy-norma-ruleset"
+      ]
+    },
+    {
+      "file": "design/dashboard-view.js",
+      "outcome": "issues",
+      "rules": {
+        "js-no-error-handling-async": {
+          "rule_name": "Async Operation Without Error Handling",
+          "severity": "HIGH",
+          "impact_area": "scalability",
+          "description": "Detects async functions or await expressions that are not wrapped in try/catch blocks and do not chain .catch(). AI-generated code frequently omits error handling, causing unhandled promise rejections that crash the app silently.",
+          "remediation_action": "Wrap all await calls in try/catch. In the catch block, show user-friendly error feedback (toast, alert) and log the error for debugging. Consider a global error handler for uncaught promise rejections.",
+          "good_code": "const handleSubmit = async () => {\n  try {\n    const { data, error } = await supabase.from('todos').insert({ title })\n    if (error) throw error\n    setTodos([...todos, data])\n  } catch (err) {\n    toast.error('Failed to add todo')\n    console.error(err)\n  }\n}",
+          "bad_code": "const handleSubmit = async () => {\n  const { data } = await supabase.from('todos').insert({ title })\n  setTodos([...todos, data])\n  // If insert fails, data is null → crash on spread\n}",
+          "estimated_time_to_fix": 10
+        }
+      },
+      "issues": [
+        {
+          "rule_id": "js-no-error-handling-async",
+          "file": "design/dashboard-view.js",
+          "line": 191,
+          "column": 36,
+          "snippet": "      fetchState:async()=>{const r=await fetch('/api/state',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok) throw new Error('unavailable');return r.json();},"
+        }
+      ],
+      "issues_returned": 1,
+      "total_issues": 1,
+      "capped": false,
+      "coverage": {
+        "reduced": true,
+        "reason": "1 semgrep rule(s) could not be evaluated (invalid, or not validated before the fault-isolation budget was exhausted); coverage was reduced."
+      },
+      "rulesets_evaluated": [
+        "javascript-norma-ruleset",
+        "nodejs-norma-ruleset",
+        "react-norma-ruleset",
+        "supabase-norma-ruleset",
+        "typescript-norma-ruleset",
+        "vite-norma-ruleset"
+      ]
+    },
+    {
+      "file": "package.json",
+      "outcome": "error",
+      "reason": "The live check could not be completed; retry shortly."
+    },
+    {
+      "file": "eslint.config.cjs",
+      "outcome": "not_checkable",
+      "reason": "No rules available for this file type."
+    }
+  ],
+  "dispositions": [
+    {
+      "rule_id": "js-postmessage-no-origin",
+      "file": "design/dashboard-client.js",
+      "status": "false_positive",
+      "reason": "Handler belongs to a same-origin WebSocket instance, not window.postMessage. Server rejects mismatched Origin and host; no window message listener."
+    },
+    {
+      "rule_id": "js-no-error-handling-async",
+      "file": "design/dashboard-view.js",
+      "status": "false_positive",
+      "reason": "Injected fetchState rejects into DashboardClient.start try/catch, which retains last good state and schedules reconnect. Fetch has explicit 10-second abort timeout."
+    },
+    {
+      "rule_id": "node-no-lint-config",
+      "file": "package.json",
+      "status": "fixed",
+      "reason": "Added pinned ESLint and explicit scoped lint rules; npm run lint passes. Package livecheck retry returned tool error."
+    }
+  ],
+  "validation": "14 API tests, 13 JS tests, 616 full Python tests passed with 1 existing skip; real browser smoke passed. JavaScript scanner reported reduced rule coverage; CJS not checkable."
+}

@@ -1,159 +1,125 @@
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
-const test = require("node:test");
-const { JSDOM } = require("jsdom");
-
-const mockupPath = path.join(__dirname, "..", "design", "ui-mockup.html");
-const html = fs.readFileSync(mockupPath, "utf8");
-
-function loadMockup() {
-  const dom = new JSDOM(html, {
-    runScripts: "outside-only",
-    url: "https://mockup.test/",
-  });
-  const { window } = dom;
-  const markerTooltips = [];
-  const markers = [];
-
-  const layerGroup = {
-    addTo() { return this; },
-    clearLayers() {},
-  };
-  window.L = {
-    map() {
-      return { setView() { return this; } };
-    },
-    tileLayer() {
-      return { addTo() { return this; } };
-    },
-    layerGroup() {
-      return Object.create(layerGroup);
-    },
-    polygon() {
-      return {
-        bindTooltip() { return this; },
-        addTo() { return this; },
-      };
-    },
-    circleMarker() {
-      const handlers = {};
-      const marker = {
-        addTo() { return this; },
-        bindTooltip(content) {
-          markerTooltips.push(content);
-          return this;
-        },
-        on(eventName, handler) {
-          handlers[eventName] = handler;
-          return this;
-        },
-        fire(eventName) {
-          handlers[eventName]?.({ target: this });
-        },
-      };
-      markers.push(marker);
-      return marker;
-    },
-  };
-
-  const appScript = [...window.document.scripts].find(script => !script.src);
-  assert.ok(appScript, "inline application script is present");
-  window.eval(`${appScript.textContent}
-    window.__mockupTest = {
-      updateAsset(index, updates) {
-        Object.assign(current.assets[index], updates);
-        render();
-      }
-    };
-  `);
-
-  return { dom, window, markerTooltips, markers };
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const test = require('node:test');
+const { JSDOM } = require('jsdom');
+const html=fs.readFileSync(path.join(__dirname,'../design/ui-mockup.html'),'utf8');
+function sample() {
+ return {schema_version:'coordination-state-1',scenario_id:'s',snapshot_id:'snap',revision:1,
+ as_of:'2026-09-20T10:00:00Z',input_mode:'offline_demo',
+ assets:[{asset_id:'a',name:'First',latitude:41.9,longitude:3.1,estimated_occupancy:null,sources:[]},
+ {asset_id:'b',name:'Second',latitude:41.9,longitude:3.1,sources:[]}],
+ contacts:{ranked:[{asset_id:'b',rank:1,slack_min:8,status:'window_open'},
+ {asset_id:'a',rank:2,slack_min:-9,status:'window_exhausted'}],review:[]},
+ calls:[{request_id:'r',asset_id:'a',status:'completed',needs_assistance:true,wants_human:false,acknowledged:null,
+ departure_confirmed:null,arrival_confirmed:false}],
+ plan:{locations:[],remaining_capacity:{},response:null},teams:[],tasks:[],events:[],errors:[]};
 }
-
-test("snapshot fields render as text while queue selection and tooltips remain interactive", () => {
-  const { dom, window, markerTooltips, markers } = loadMockup();
-  const { document } = window;
-  const hostile = {
-    id: `asset-'\"><img data-injected src=x>`,
-    name: `<img data-injected src=x>Camp`,
-    type: `<svg data-injected>school</svg>`,
-    reason: `<script data-injected>bad()</script>`,
-    source: `<a data-injected href=//attacker.test>source</a>`,
-    notes: `<iframe data-injected>notes</iframe>`,
-  };
-
-  window.__mockupTest.updateAsset(0, {
-    asset_id: hostile.id,
-    name: hostile.name,
-    asset_type: hostile.type,
-    review_reasons: [hostile.reason],
-    sources: [{
-      fields: ["estimated_<occupancy>"],
-      source: hostile.source,
-      observed_at: "2026-07-02<script>",
-      notes: hostile.notes,
-    }]
-  });
-
-  assert.equal(document.querySelectorAll("[data-injected]").length, 0);
-  assert.match(document.getElementById("reviewQueue").textContent, /<img data-injected src=x>Camp/);
-
-  const queueRow = [...document.querySelectorAll("#reviewQueue .qrow")]
-    .find(row => row.textContent.includes(hostile.name));
-  assert.ok(queueRow, "hostile-name asset remains in the review queue");
-  queueRow.click();
-
-  assert.match(document.getElementById("detailPanel").textContent, /asset-'\"><img data-injected src=x>/);
-  assert.match(document.getElementById("detailPanel").textContent, /<a data-injected href=\/\/attacker.test>source<\/a>/);
-  assert.equal(document.querySelectorAll("[data-injected]").length, 0);
-
-  const assetMarker = markers.find(marker => marker.assetId === hostile.id);
-  assert.ok(assetMarker, "hostile-ID asset retains a map marker");
-  assetMarker.fire("click");
-  assert.match(document.getElementById("detailPanel").textContent, /<img data-injected src=x>Camp/);
-
-  const actionButton = [...document.querySelectorAll(".taskActions button")]
-    .find(button => button.textContent === "confirm occupancy");
-  assert.ok(actionButton, "task action remains available for a hostile asset ID");
-  actionButton.click();
-  assert.match(document.getElementById("changeLog").textContent, /<img data-injected src=x>Camp/);
-  assert.equal(document.querySelectorAll("[data-injected]").length, 0);
-
-  const assetTooltip = markerTooltips.find(content => content.textContent?.includes(hostile.name));
-  assert.ok(assetTooltip instanceof window.HTMLElement, "asset tooltip uses an HTML element");
-  assert.match(assetTooltip.textContent, /<img data-injected src=x>Camp/);
-  assert.equal(assetTooltip.querySelectorAll("[data-injected]").length, 0);
-
-  dom.window.close();
+function load() {
+ const dom=new JSDOM(html,{runScripts:'outside-only',url:'http://localhost:8521/'}),{window}=dom;
+ const markers=[],lines=[],geometryLayers=[];
+ const layer=()=>({addTo(){return this;},clearLayers(){}});
+ window.L={map:()=>({setView(){return this;},invalidateSize(){}}),tileLayer:layer,layerGroup:layer,
+ circleMarker:()=>{const m={...layer(),bindTooltip(t){this.tooltip=t;return this;},on(k,f){this.click=f;return this;}};markers.push(m);return m;},
+ geoJSON:(g,options)=>{lines.push(g);geometryLayers.push({geometry:g,options});return layer();},polyline:(g)=>{lines.push(g);return layer();}};
+ window.eval(fs.readFileSync(path.join(__dirname,'../design/dashboard-view.js'),'utf8'));
+ return {dom,window,document:window.document,markers,lines,geometryLayers,view:window.DashboardView};
+}
+test('supplied fire perimeter retains a white halo without introducing fixture geometry',()=>{
+ const h=load(),s=sample();h.view.render(s);assert.equal(h.geometryLayers.length,0);
+ s.fire_geometry={type:'Polygon',coordinates:[[[3.1,41.9],[3.2,41.9],[3.2,42],[3.1,41.9]]]};
+ h.view.render(s);assert.equal(h.geometryLayers.length,2);
+ for(const layer of h.geometryLayers) assert.equal(layer.geometry,s.fire_geometry);
+ assert.equal(h.geometryLayers[0].options.color,'#fff');
+ assert.equal(h.geometryLayers[0].options.fill,false);
+ assert.ok(h.geometryLayers[0].options.weight>h.geometryLayers[1].options.weight);
+ assert.equal(h.geometryLayers[1].options.color,'#ff5a3c');h.dom.window.close();
 });
-
-test("task assignment, snapshot advance, and change-log controls preserve behavior", () => {
-  const { dom, window } = loadMockup();
-  const { document, Event } = window;
-
-  assert.equal(document.querySelectorAll("#rankedList .row").length, 5);
-  document.querySelector("#rankedList .row").click();
-
-  const contactButton = [...document.querySelectorAll(".taskActions button")]
-    .find(button => button.textContent === "contact facility");
-  assert.ok(contactButton, "contact action is available");
-  contactButton.click();
-
-  const teamSelect = document.querySelector(".assignRow select");
-  assert.ok(teamSelect, "team selector appears after creating a task");
-  teamSelect.value = "t-creu-roja-1";
-  teamSelect.dispatchEvent(new Event("change", { bubbles: true }));
-  assert.match(document.getElementById("detailPanel").textContent, /assigned/);
-  assert.match(document.getElementById("changeLog").textContent, /Creu Roja team 1/);
-
-  document.getElementById("nextUpdateBtn").click();
-  assert.equal(document.getElementById("nextUpdateBtn").disabled, true);
-  assert.equal(document.getElementById("nextUpdateBtn").textContent, "No further updates (demo)");
-  assert.match(document.getElementById("detailPanel").textContent, /assigned/);
-
-  document.getElementById("changeLogBtn").click();
-  assert.equal(document.getElementById("changeLog").classList.contains("open"), true);
-
-  dom.window.close();
+test('hostile IDs, review reasons and event notes stay literal through review selection',()=>{
+ const h=load(),s=sample(),hostile='a"><img data-injected src=x>';
+ s.assets[0].asset_id=hostile;s.assets[0].asset_type='<svg data-injected>';
+ s.contacts.ranked=s.contacts.ranked.filter(c=>c.asset_id!=='a');
+ s.contacts.review=[{asset_id:hostile,review_reasons:['<script data-injected>bad</script>']}];
+ s.calls[0].asset_id=hostile;s.calls[0].wants_human=true;
+ s.events=[{kind:'refresh',as_of:s.as_of,notes:'<img data-injected src=x>'}];
+ h.view.render(s);h.document.querySelector('.qrow').click();
+ assert.ok(h.document.getElementById('detailPanel').textContent.includes(hostile));
+ assert.match(h.document.querySelector('.qrow').textContent,/<script data-injected>/);
+ h.document.getElementById('changeLogBtn').click();
+ assert.match(h.document.getElementById('changeLog').textContent,/<img data-injected/);
+ assert.equal(h.document.querySelectorAll('[data-injected]').length,0);
+ assert.equal(h.document.querySelector('#escOpenList .escRow').dataset.assetId,hostile);
+ h.dom.window.close();
+});
+test('uses backend contact order and stable asset IDs; preserves unknowns and separate call facts',()=>{
+ const h=load();h.view.render(sample());
+ assert.deepEqual([...h.document.querySelectorAll('#rankedList .row')].map(x=>x.dataset.assetId),['b','a']);
+ h.document.querySelector('[data-asset-id="a"]').click();
+ const text=h.document.getElementById('detailPanel').textContent;
+ for(const expected of ['estimated occupancyunknown','Call statuscompleted','Assistance requestedyes',
+ 'Human requestedno','Message acknowledgedunknown','Departure confirmedunknown','Arrival confirmedno']) assert.ok(text.includes(expected),expected);
+ assert.match(h.document.getElementById('modeBadge').textContent,/offline/i);
+ h.dom.window.close();
+});
+test('safe text and marker selection survive updates; no UI control asserts dispatch or assignment',()=>{
+ const h=load(),s=sample();s.assets[0].name='<img data-injected src=x>';
+ s.assets[0].sources=[{fields:['occupancy'],source:'<script data-injected>bad</script>',notes:'provenance'}];
+ h.view.render(s);h.markers.find(x=>x.assetId==='a').click({target:{assetId:'a'}});
+ assert.match(h.document.getElementById('detailPanel').textContent,/<img data-injected/);
+ assert.equal(h.document.querySelectorAll('[data-injected]').length,0);
+ assert.ok(h.markers.find(x=>x.assetId==='a').tooltip instanceof h.window.HTMLElement);
+ s.revision=2;s.calls[0].wants_human=true;h.view.render(s);
+ assert.match(h.document.getElementById('detailPanel').textContent,/Human requestedyes/);
+ for(const id of ['notifyPhoneBtn','notifyRadioBtn','notifyFireDeptBtn']) assert.equal(h.document.getElementById(id).disabled,true);
+ assert.equal(h.document.querySelectorAll('.taskActions button').length,0);
+ h.dom.window.close();
+});
+test('database, change log, tilt, missing coordinates and supplied paths remain usable',()=>{
+ const h=load(),s=sample();s.assets[0].latitude=null;s.assets[0].longitude=null;
+ s.events=[{kind:'refresh',as_of:s.as_of,notes:'new snapshot'}];
+ s.plan.locations=[{asset_id:'b',routes:[{route_id:'route',status:'proposed',source:'analyst',path:[[41.9,3.1],[41.92,3.12]]}]}];
+ h.view.render(s);assert.equal(h.markers.length,1);assert.equal(h.lines.length,1);
+ h.document.getElementById('openDbBtn').click();assert.equal(h.document.querySelectorAll('#dbTableBody tr').length,2);
+ h.document.getElementById('backToMapBtn').click();h.document.getElementById('changeLogBtn').click();
+ assert.equal(h.document.getElementById('changeLog').classList.contains('open'),true);
+ assert.match(h.document.getElementById('changeLog').textContent,/new snapshot/);
+ h.document.getElementById('toggle3dBtn').click();assert.equal(h.document.getElementById('map').classList.contains('tilt3d'),true);
+ h.dom.window.close();
+});
+test('removed selected asset clears detail and absent routes never get invented',()=>{
+ const h=load(),s=sample();h.view.render(s);h.document.querySelector('[data-asset-id="a"]').click();
+ assert.equal(h.lines.length,0);s.assets=s.assets.filter(x=>x.asset_id!=='a');s.contacts.ranked=s.contacts.ranked.slice(0,1);
+ h.view.render(s);assert.match(h.document.getElementById('detailPanel').textContent,/Select a location/);h.dom.window.close();
+});
+test('verified coordination export displays actual plan status and proposed response timings',()=>{
+ const h=load(),s=JSON.parse(fs.readFileSync(path.join(__dirname,'../fixtures/dashboard/coordination-export.json'),'utf8'));
+ h.view.render(s);h.document.querySelector('[data-asset-id="A"]').click();
+ const text=h.document.getElementById('detailPanel').textContent;
+ assert.match(text,/Evacuation statusnot_confirmed/);assert.match(text,/Plan modeundetermined/);
+ assert.match(h.document.getElementById('responsePlan').textContent,/act_C/);
+ assert.match(h.document.getElementById('responsePlan').textContent,/Proposed departure \(min\)0/);
+ h.dom.window.close();
+});
+test('multi-crew paths use supplied lonlat geometry and retain proposed status',()=>{
+ const h=load(),s=sample();s.plan.response={schema_version:'multi-response-plan-1',teams:[
+ {team_id:'truck',tasks:[{action_id:'evac',asset_id:'a',status:'proposed',depart_min:3,finish_min:9,
+ route_source:'verified graph fixture',path_lonlat:[[3.1,41.9],[3.2,41.8]]}]}]};
+ h.view.render(s);assert.deepEqual(Array.from(h.lines[0],p=>Array.from(p)),[[41.9,3.1],[41.8,3.2]]);
+ assert.match(h.document.getElementById('responsePlan').textContent,/proposed/);h.dom.window.close();
+});
+test('allocation lifecycle and assistance confirmations display supplied backend facts',()=>{
+ const h=load(),s=sample();s.plan.locations=[{asset_id:'a',allocation_id:'alloc',state:'departed',
+ destination_id:'shelter',instruction_allowed:false,safety:'review',assistance:{transport_confirmed:true,reception_confirmed:null,pickup_min:4}}];
+ h.view.render(s);h.document.querySelector('[data-asset-id="a"]').click();
+ const text=h.document.getElementById('detailPanel').textContent;
+ assert.match(text,/Allocation statedeparted/);assert.match(text,/Transport confirmedyes/);
+ assert.match(text,/Reception confirmedunknown/);h.dom.window.close();
+});
+test('response panel exposes uncovered and unassigned assets with backend reasons',()=>{
+ const h=load(),s=sample();s.plan.response={coverage:{a:0},unserved:{a:'needs additional resources'},
+ unassigned:[{asset_id:'b',reasons:['no_available_team']}],review:[{asset_id:'a',reason:'unknown_transport'}],
+ blocked_actions:{'act-a':['missing_route']}};
+ h.view.render(s);const text=h.document.getElementById('responsePlan').textContent;
+ for(const reason of ['needs additional resources','no_available_team','unknown_transport','missing_route']) assert.ok(text.includes(reason),reason);
+ h.dom.window.close();
 });
