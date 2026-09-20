@@ -53,16 +53,105 @@ def test_projection_preserves_unknown_order_and_independent_facts_without_privat
     assert state['assets'][0]['phone'] == '+34912345678'
 
 
-def test_rest_is_read_only_and_serves_only_dashboard_files():
+def test_projection_preserves_snapshot_valuation_and_criticality_fields():
+    state = envelope()
+    state['assets'][0].update({
+        'value_score': 0.8,
+        'value_basis': 'operational policy v1',
+        'replacement_value_eur': 750000,
+        'replacement_value_basis': 'assumed school replacement cost',
+        'expected_loss_eur_low': 45000,
+        'expected_loss_eur_mid': 112500,
+        'expected_loss_eur_high': 225000,
+        'people_exposed': 24.5,
+        'people_at_risk_p10': 0,
+        'people_at_risk_p50': 49,
+        'criticality_tier': 'high',
+        'criticality_factors': ['sole_local_service', 'high_occupancy'],
+        'criticality_basis': 'analyst-confirmed override',
+        'valuation_private_note': 'do not publish',
+    })
+
+    projected = public_state(state)['assets'][0]
+
+    assert projected == {
+        'asset_id': 'a',
+        'name': 'Unknown occupancy',
+        'estimated_occupancy': None,
+        'sources': [{'fields': ['estimated_occupancy'], 'source': 'fixture',
+                     'notes': 'Contact [redacted contact]'}],
+        'value_score': 0.8,
+        'value_basis': 'operational policy v1',
+        'replacement_value_eur': 750000,
+        'replacement_value_basis': 'assumed school replacement cost',
+        'expected_loss_eur_low': 45000,
+        'expected_loss_eur_mid': 112500,
+        'expected_loss_eur_high': 225000,
+        'people_exposed': 24.5,
+        'people_at_risk_p10': 0,
+        'people_at_risk_p50': 49,
+        'criticality_tier': 'high',
+        'criticality_factors': ['sole_local_service', 'high_occupancy'],
+        'criticality_basis': 'analyst-confirmed override',
+    }
+
+
+def test_rest_is_read_only_and_serves_only_dashboard_files(tmp_path, monkeypatch):
+    frontend_dist = tmp_path / 'dist'
+    frontend_dist.mkdir()
+    (frontend_dist / 'index.html').write_text('<main>React dashboard</main>', encoding='utf-8')
+    monkeypatch.setattr('fireline.dashboard_server.FRONTEND_DIST', frontend_dist)
     with TestClient(create_app(Store())) as client:
         response = client.get('/api/state')
         assert response.status_code == 200
         assert response.json()['revision'] == 3
         assert response.headers['cache-control'] == 'no-store'
-        assert client.get('/').status_code == 200
+        page = client.get('/')
+        assert page.status_code == 200
+        assert page.text == '<main>React dashboard</main>'
+        assert page.headers['content-type'].startswith('text/html')
         assert client.get('/.env').status_code == 404
         assert client.post('/api/calls').status_code == 404
         assert client.post('/api/state').status_code == 405
+
+
+def test_missing_frontend_build_returns_helpful_plain_text_503(tmp_path, monkeypatch):
+    monkeypatch.setattr('fireline.dashboard_server.FRONTEND_DIST', tmp_path / 'missing-dist')
+
+    with TestClient(create_app(Store())) as client:
+        response = client.get('/')
+
+    assert response.status_code == 503
+    assert response.headers['content-type'].startswith('text/plain')
+    assert 'npm --prefix frontend ci' in response.text
+    assert 'npm --prefix frontend run build' in response.text
+
+
+def test_built_assets_have_content_types_and_cannot_escape_asset_directory(tmp_path, monkeypatch):
+    frontend_dist = tmp_path / 'dist'
+    assets = frontend_dist / 'assets'
+    assets.mkdir(parents=True)
+    (frontend_dist / 'index.html').write_text('private index marker', encoding='utf-8')
+    (frontend_dist / 'outside.js').write_text('private sibling marker', encoding='utf-8')
+    (assets / 'app.js').write_text('window.dashboard = true;', encoding='utf-8')
+    (assets / 'app.css').write_text('body { color: navy; }', encoding='utf-8')
+    monkeypatch.setattr('fireline.dashboard_server.FRONTEND_DIST', frontend_dist)
+
+    with TestClient(create_app(Store())) as client:
+        script = client.get('/assets/app.js')
+        stylesheet = client.get('/assets/app.css')
+        traversal = client.get('/assets/%2e%2e/outside.js')
+        nested_traversal = client.get('/assets/nested/%2e%2e/%2e%2e/index.html')
+
+    assert script.status_code == 200
+    assert script.text == 'window.dashboard = true;'
+    assert script.headers['content-type'].startswith(('text/javascript', 'application/javascript'))
+    assert stylesheet.status_code == 200
+    assert stylesheet.headers['content-type'].startswith('text/css')
+    assert traversal.status_code == 404
+    assert nested_traversal.status_code == 404
+    assert 'private sibling marker' not in traversal.text
+    assert 'private index marker' not in nested_traversal.text
 
 
 def test_websocket_replays_in_order_and_reconnects_from_last_revision():
@@ -137,6 +226,24 @@ def test_coordination_call_projection_preserves_reported_assistance_and_provenan
         'dispatch_state': 'dispatched', 'transfer_verified': False,
         'provenance': {'source': 'stored_call_assessment', 'evidence_time_basis': 'source_observation'}}]
     assert public_state(state)['calls'] == state['calls']
+
+
+def test_public_plan_projection_preserves_assistance_review_without_private_notes():
+    state = envelope()
+    state['plan']['locations'] = [{
+        'asset_id': 'a',
+        'assistance_review_required': True,
+        'reported_needs_assistance': True,
+        'private_assistance_note': 'private household details',
+    }]
+
+    location = public_state(state)['plan']['locations'][0]
+
+    assert location == {
+        'asset_id': 'a',
+        'assistance_review_required': True,
+        'reported_needs_assistance': True,
+    }
 
 
 def test_read_only_database_adapter_never_creates_missing_database(tmp_path):

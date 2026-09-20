@@ -1,0 +1,6 @@
+Mantis Free React Admin Template — CodedThemes, MIT licensed.
+https://github.com/codedthemes/mantis-free-react-admin-template
+Upstream commit: bec0222f77d2298897799c5ba28aaaca797f9c46
+The typography module is retained from upstream. MainCard, theme, statistics cards
+and navigation layout are adapted to the ResponsAra incident dashboard.
+The original MIT license is included alongside this notice.

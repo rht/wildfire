@@ -9,15 +9,18 @@ from urllib.parse import urlsplit
 
 from starlette.applications import Starlette
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.responses import FileResponse, JSONResponse
+from starlette.responses import FileResponse, JSONResponse, PlainTextResponse
 from starlette.routing import Route, WebSocketRoute
 from starlette.websockets import WebSocketDisconnect
 
 from .dashboard_public import public_state
 
-DESIGN = Path(__file__).resolve().parents[1] / 'design'
+FRONTEND_DIST = Path(__file__).resolve().parents[1] / 'frontend' / 'dist'
 HEADERS = {'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff',
            'Referrer-Policy': 'no-referrer'}
+_BUILD_REQUIRED = ("Dashboard frontend is not built.\nRun:\n"
+                   "  npm --prefix frontend ci\n"
+                   "  npm --prefix frontend run build\n")
 
 
 def _revision_states(store, cursor):
@@ -110,16 +113,25 @@ def create_app(store, *, poll_interval=0.5):
             return
 
     async def page(request):
-        return FileResponse(DESIGN / 'ui-mockup.html', headers=HEADERS)
+        index = FRONTEND_DIST / 'index.html'
+        if not index.is_file():
+            return PlainTextResponse(_BUILD_REQUIRED, status_code=503, headers=HEADERS)
+        return FileResponse(index, media_type='text/html', headers=HEADERS)
 
-    async def script(request):
-        name = request.path_params['name']
-        if name not in ('dashboard-client.js', 'dashboard-view.js'):
+    async def asset(request):
+        asset_root = (FRONTEND_DIST / 'assets').resolve()
+        candidate = (asset_root / request.path_params['path']).resolve()
+        try:
+            candidate.relative_to(asset_root)
+        except ValueError:
             return JSONResponse({'error': 'not_found'}, status_code=404)
-        return FileResponse(DESIGN / name, media_type='text/javascript', headers=HEADERS)
+        if not candidate.is_file():
+            return JSONResponse({'error': 'not_found'}, status_code=404)
+        return FileResponse(candidate, headers=HEADERS)
 
     app = Starlette(routes=[Route('/', page), Route('/api/state', state),
-                            WebSocketRoute('/api/updates', updates), Route('/{name}', script)])
+                            WebSocketRoute('/api/updates', updates),
+                            Route('/assets/{path:path}', asset)])
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1', 'localhost', '[::1]', 'testserver'])
     return app
 

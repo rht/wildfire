@@ -2934,3 +2934,168 @@ Starlette/AnyIO deprecation warning remains. The Gencat feed check returned 81
 bounding-box records; 34 were within the 5 km metric radius and remained visible
 as unknown-class facilities with unknown forecast timing. This is a catalog
 connectivity check around a test coordinate, not an active-fire validation.
+
+## React incident dashboard — codex/ui-session (2026-09-20)
+
+**Approved design:** @mirrdj requested replacing the plain HTML dashboard with
+Mantis's React/MUI design: light sidebar, Public Sans typography, compact white
+cards, blue navigation, a map replacing the large chart, and separate pages.
+Streamlit remains a separate Python application. All web frontend code, vendor
+attribution, package/lock files, assets, build configuration and browser/Node tests
+live in `frontend/`. Python serves its production build; existing demo processes
+remain untouched.
+
+The overview has four counters: incidents, deployed resources, structures,
+and people/groups (including individuals). Navigation includes an Incidents table, per-incident
+summary/calls/response plan/evacuation/resources/buildings/log pages, global Buildings & risk,
+Resources and Activity log. Count cards navigate to their relevant lists. Calls
+separate pending contact, completed calls and human follow-up with explicit reasons.
+Response steps retain backend ordering, timing, prerequisites and proposal status.
+Evacuation distinguishes reported ability, assistance needed, departure and arrival.
+Buildings show incident, assessment date, valuation, expected loss band, risk
+indicators, remaining window and sources. Global and incident tables share filters.
+Logs display received order, event time, incident, type, severity and explanation;
+newest first is reversible. Missing ingestion sequence/time is explicitly unknown.
+
+**Data boundaries:** existing `coordination-state-1` remains the live source through
+REST/WebSocket. It is one incident; additional incidents are demonstrated only in
+an explicit, labelled frontend demonstration mode. Live source never fills missing
+fields with demo values. No crew deployment is inferred from availability or a
+proposal. No building occupancy is counted as confirmed evacuation progress.
+No numeric risk score is invented from operational `value_score`. Buildings with
+missing risk/valuation and unknown population remain visible. Current-state data
+is not a historical database; unavailable history is disclosed. Frontend demo
+fixtures are illustrative, never evidence of calls or dispatch.
+
+### Implementation plan
+
+**Goal:** deliver the approved navigable Mantis React UI and preserve the read-only
+coordination boundary. **Stack:** React, MUI, Vite, React Router, Leaflet, existing
+Python/Starlette server. **Spec:** this section, including the approved activity-log
+and frontend-directory additions.
+
+- [x] Task 1 — data adapter and fixtures (`frontend/src/state/`,
+  `frontend/tests/model.test.mjs`). Write failing cases for absent metrics, unique
+  location contact counts, follow-up reasons, incident/date filtering, confirmed
+  evacuation versus ability, and stable event arrival ordering. Run
+  `node --test frontend/tests/model.test.mjs`; implement pure selectors and an
+  isolated demonstration dataset; rerun. Interface: `toIncident(state)`,
+  `callRows(incident)`, `buildingRows(incidents)`, `filterBuildings(rows, filters)`,
+  `orderedEvents(incidents, filters)`, `metrics(incidents)`.
+- [x] Task 2 — React shell and pages (`frontend/src/`, `frontend/package.json`,
+  `frontend/vite.config.mjs`, `frontend/index.html`). Adapt upstream Mantis card and
+  typography with its MIT attribution. Relocate old dashboard and Node tests into
+  `frontend/legacy/` and `frontend/tests/`. Build overview, incident navigation,
+  calls/reasons, resource plan, evacuation, buildings/detail and activity log.
+  Port the proven full-state transport to an ES module. Add browser assertions for navigation,
+  filters and no write requests before implementing their pages. Run
+  `npm --prefix frontend test`, `npm --prefix frontend run lint` and
+  `npm --prefix frontend run build`.
+- [x] Task 3 — backend serving/projection (`fireline/dashboard_server.py`,
+  `fireline/dashboard_public.py`, `tests/test_dashboard_server.py`). Test and expose
+  existing valuation/criticality fields through the allowlist, preserving private
+  field redaction. Serve only `frontend/dist/index.html` and built assets; return
+  clear build instructions when missing. Keep API paths and WebSocket semantics.
+  Run targeted Python tests with `PYTHONPATH=.` and the existing sibling venv.
+- [x] Task 4 — verification and handoff. Start a separate server in this worktree,
+  run Chrome against production build (desktop and mobile), inspect screenshots,
+  verify live/demo separation, filters, detail and log order. Review implementation,
+  fix findings, run relevant Python/Node suites, record actual results here, commit
+  and push `codex/ui-session`. Keep worktree and existing demos available.
+
+
+### Preview, usage and verification
+
+Latest UI refinements requested by @mirrdj: white page background; **Incidents**
+throughout navigation and labels, including smoke events; remove the overview
+subtitle and explanations under its four cards; move the incident table to
+**Incidents** (`#/incidents`). Each incident summary has four cards: GPS coordinates, deployed resources,
+structures and people/groups, plus a zoomed map. The overview
+map opens incident details on **click**, with hover reserved for labels.
+Old `#/active-fires` links redirect. People/groups include individuals.
+
+The overview lists every supplied crew across incidents, one review entry per crew;
+incident summaries scope that list. Entries open ordered steps, destinations, GPS,
+and prerequisites. Analyst confirmation is visibly unavailable pending @mirrdj's
+choice between a demo-only interaction and saved backend approvals. Review never
+asserts dispatch. Call history contains individual attempts with caller, outcome,
+UTC date and search filters. **Voice assistant to call** shows pending locations
+in backend priority order. Call caller identity is shown only when explicit;
+unknown identity stays unavailable. Demo records explicitly distinguish agent and
+human calls. Incident, resource and people tables include search and relevant filters.
+Location tables, details, map tooltips and crew destinations display supplied WGS84
+GPS in latitude, longitude order; missing coordinates stay unavailable. Risk badges
+have equal width across statuses.
+
+All frontend source/configuration/packages/tests and build outputs are under
+`frontend/`. `frontend/legacy/` archives the old UI and its regression fixtures;
+production serves the React build. Mantis source attribution is in
+`frontend/vendor/mantis/` and the build includes `/assets/mantis-license.txt`.
+
+```bash
+# Node >=22.12 (verified here with Node 24)
+npm --prefix frontend ci
+npm --prefix frontend run build
+PYTHONPATH=. ../live-dashboard/.venv/bin/python -m fireline.dashboard_server --demo --port 18522
+# Optional development server, proxying the API above:
+npm --prefix frontend run dev
+```
+
+The new preview is <http://127.0.0.1:18522/?demo=1#/overview>. `?demo=1` explicitly
+selects the three-fire **Design demo**. Remove it or use **Connected backend** in
+the source selector to inspect the current read-only API. The original HTML demo
+on 18521 and Streamlit on 18511 remain running in their original worktrees. Port
+8511 and discovery PR18 were not touched. No live calls, dispatch or operational
+writes were performed.
+
+Verification: `npm --prefix frontend test` **30 passed**; frontend lint, formatting
+and production build passed. Chrome tests cover desktop/mobile navigation, fire
+scoping, filters, valuation details, call follow-up reasons, log order, real
+REST/WebSocket connection, and live/demo separation. A controlled WebSocket test
+also covers live dialog updates/removal, retained review explanations, hostile
+text rendering and delayed event receipt order. Screenshots are ignored local
+artifacts in `frontend/artifacts/`. Full Python suite: **947 passed, 2 skipped**,
+with the existing Starlette/AnyIO deprecation warning. Independent review findings
+about stale call details, retained assistance facts and missing review reasons
+were fixed and re-reviewed clean.
+
+Existing snapshot valuation/criticality fields and the existing
+`assistance_review_required` boolean now survive the public projection; private
+call details remain excluded. Live multi-fire aggregation, confirmed deployments,
+individual/group registries and persistent historical log retrieval still need
+backend inputs. The live log retains supplied events for the browser session,
+labels receipt time as browser receipt, and does not claim complete server history.
+
+Crew urgency refinements: the sidebar keeps the Incidents page link and removes
+individual incident entries. Crew review rows show the smallest supplied unfinished
+task deadline minus planned finish: at/below zero is red, up to 15 minutes amber,
+otherwise neutral. This is a display cue, not a dispatch/ranking policy or a claim
+of route safety. Missing/partial timing is explicit; completed tasks are excluded.
+Current backend task records omit deadlines, so connected urgency remains unknown
+until that data is supplied. Only Design demo fixtures include illustrative deadlines.
+
+The brand subtitle is “Wildfire coordination” beneath ResponsAra. The duplicate
+topbar label and location icon are removed. The main background remains white.
+
+Proposed crew plans now show **Awaiting analyst confirmation**, an explicit
+**Review & confirm** action, and a count of plans needing confirmation. The overview
+and firefighter plan page open the same review panel with a prominent confirmation
+requirement and a dedicated final action. Plans with no proposed steps are not
+labelled as awaiting approval. Saving is still unavailable until the approval
+service is connected; no approval or dispatch is inferred from opening the review.
+
+Status tags now share a fixed width across tables, including activity-log event
+types and severities. Full labels remain available on hover when truncated.
+
+The sidebar footer (read-only note, recommendation text and visible Mantis link)
+is removed. Required vendor attribution remains in the source and distributed
+license asset.
+
+The Resources table includes a Plan column linked by the supplied team identifier
+to the same crew review/confirmation panel. Missing plans are explicitly labelled.
+
+Activity log order uses a compact column sized to its heading and sequence number.
+
+The incident GPS card prefers a supplied incident point. When only a usable
+perimeter exists it shows the centre of its bounds, explicitly labelled “Perimeter
+centre”; missing coordinates are never filled from demonstration data.
