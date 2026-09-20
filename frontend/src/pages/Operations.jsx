@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Button,
   Typography,
@@ -373,71 +373,59 @@ export function Calls({ incident }) {
   );
 }
 export function ResponsePlan({ incident }) {
-  const [selection, setSelection] = useState(null);
+  const navigate = useNavigate();
+  const [showBlockers, setShowBlockers] = useState(false);
   const teams = responseTeams(incident),
     response = incident.plan.response;
-  const selectedTeam =
-    (selection?.incidentId === incident.id &&
-      teams.find((team) => team.team_id === selection.teamId)) ||
-    teams[0];
   const crewName = (team) =>
     incident.teams.find((item) => item.team_id === team.team_id)?.name ||
     team.team_id;
   return (
     <>
-      <PageHeading
+      <DetailDialog
+        open
+        fullScreen
+        backNavigation
         title="Firefighter plan"
-        description="Starting points and ordered visits, with supplied priority evidence and analyst review."
-      />
-      <Alert severity="warning">
-        <strong>Fire analyst confirmation required.</strong> Review and confirm
-        each proposed crew plan. Approval is separate from dispatch.
-      </Alert>
-      {!response ? (
-        <MainCard>
+        className="crew-plan-review-dialog incident-plan-dialog"
+        onClose={() => navigate(`/incidents/${incident.id}/summary`)}
+        headerAction={
+          <div className="incident-plan-actions">
+            {teams.map((team) => (
+              <CrewPlans
+                key={team.team_id}
+                incidents={[incident]}
+                teamId={team.team_id}
+                buttonLabel={`Review ${crewName(team)}`}
+              />
+            ))}
+            {response && (
+              <Button onClick={() => setShowBlockers(true)}>Blockers</Button>
+            )}
+          </div>
+        }
+      >
+        <div className="incident-plan-summary">
+          {incident.name} · Proposed routes and crew visit order. Approval is
+          separate from dispatch.
+        </div>
+        {!response ? (
           <Empty title="No response plan supplied">
             A plan will appear when coordination provides current crews, routes
             and feasible actions.
           </Empty>
-        </MainCard>
-      ) : (
-        <>
-          {selectedTeam ? (
-            <div className="crew-plan-layout">
-              <div className="filters">
-                <FilterSelect
-                  label="Crew"
-                  value={selectedTeam.team_id}
-                  onChange={(teamId) =>
-                    setSelection({ incidentId: incident.id, teamId })
-                  }
-                  options={teams.map((team) => [team.team_id, crewName(team)])}
-                />
-              </div>
-              <div className="plan-teams">
-                <MainCard
-                  key={`${incident.id}:${selectedTeam.team_id}`}
-                  title={crewName(selectedTeam)}
-                  action={
-                    <CrewPlans
-                      incidents={[incident]}
-                      teamId={selectedTeam.team_id}
-                    />
-                  }
-                >
-                  <CrewItinerary
-                    incident={incident}
-                    team={selectedTeam}
-                    name={crewName(selectedTeam)}
-                  />
-                </MainCard>
-              </div>
-            </div>
-          ) : (
-            <MainCard>
-              <Empty title="No crew plans supplied" />
-            </MainCard>
-          )}
+        ) : teams.length ? (
+          <CrewItinerary key={incident.id} incident={incident} teams={teams} />
+        ) : (
+          <Empty title="No crew plans supplied" />
+        )}
+      </DetailDialog>
+      <DetailDialog
+        open={showBlockers && !!response}
+        onClose={() => setShowBlockers(false)}
+        title="Blockers & uncovered locations"
+      >
+        {response && (
           <MainCard title="Blockers & uncovered locations">
             {Object.entries(response.unserved || {}).map(([id, reason]) => (
               <div className="blocked-item" key={id}>
@@ -480,8 +468,8 @@ export function ResponsePlan({ incident }) {
               </Typography>
             ))}
           </MainCard>
-        </>
-      )}
+        )}
+      </DetailDialog>
     </>
   );
 }

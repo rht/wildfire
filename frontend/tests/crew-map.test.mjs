@@ -90,3 +90,57 @@ test('route arrows follow supplied path bends and omit stationary or unknown leg
   assert.deepEqual(crewRouteArrows([]), []);
   assert.deepEqual(crewRouteArrows([[41, 2]]), []);
 });
+
+test('shared-map identities cannot collide across crews or separator-containing IDs', async () => {
+  const { crewMapStopId } = await import('../src/state/crew-map.mjs');
+  assert.equal(typeof crewMapStopId, 'function');
+  assert.notEqual(crewMapStopId('a:b', 'c'), crewMapStopId('a', 'b:c'));
+  assert.notEqual(crewMapStopId('crew-one', 'visit'), crewMapStopId('crew-two', 'visit'));
+  assert.notEqual(crewMapStopId('crew-one', '__start__'), crewMapStopId('crew-two', '__start__'));
+  assert.equal(crewMapStopId('crew-one', 'visit'), '["crew-one","visit"]');
+});
+
+test('shared map retains every supplied crew route, distinct names and per-crew numbering', async () => {
+  const { crewMapsData, crewMapStopId } = await import('../src/state/crew-map.mjs');
+  assert.equal(typeof crewMapsData, 'function');
+  const teams = ['one', 'two'].map((team_id, index) => ({
+    team_id, name: `Crew ${team_id}`,
+    starting_location: { name: 'Station', latitude: 41, longitude: 2 },
+    tasks: [{ action_id: 'visit', asset_id: 'shared', path_lonlat: [[2, 41], [3 + index, 42]] }],
+  }));
+  const data = crewMapsData(teams, [{ asset_id: 'shared', name: 'Shared facility', latitude: 42, longitude: 3 }]);
+  assert.deepEqual(data.stops.map(stop => stop.number), [1, 1]);
+  assert.deepEqual(data.stops.map(stop => stop.id), [crewMapStopId('one', 'visit'), crewMapStopId('two', 'visit')]);
+  assert.deepEqual(data.stops.map(stop => stop.crewName), ['Crew one', 'Crew two']);
+  assert.deepEqual(data.stops.map(stop => stop.path), [[[41, 2], [42, 3]], [[41, 2], [42, 4]]]);
+  assert.notEqual(data.crews[0].color, data.crews[1].color);
+  assert.deepEqual(data.pointGroups.map(group => group.map(point => point.id)), [
+    [crewMapStopId('one', '__start__'), crewMapStopId('two', '__start__')],
+    [crewMapStopId('one', 'visit'), crewMapStopId('two', 'visit')],
+  ]);
+});
+
+test('shared map groups co-located starts and visits without discarding independently selectable rows', async () => {
+  const { crewMapsData, crewMapStopId } = await import('../src/state/crew-map.mjs');
+  assert.equal(typeof crewMapsData, 'function');
+  const data = crewMapsData([{ team_id: 'one', starting_location: { latitude: 41, longitude: 2 },
+    tasks: [{ action_id: 'visit', asset_id: 'base' }] }, { team_id: 'two', current_location: { latitude: 41, longitude: 2 } }],
+    [{ asset_id: 'base', latitude: 41, longitude: 2 }]);
+  assert.equal(data.pointGroups.length, 1);
+  assert.deepEqual(new Set(data.pointGroups[0].map(point => point.id)), new Set([
+    crewMapStopId('one', '__start__'), crewMapStopId('one', 'visit'), crewMapStopId('two', '__start__'),
+  ]));
+  assert.equal(data.starts[1].kind, 'reported');
+});
+
+test('shared map keeps unknown geometry unknown and empty crew lists safe', async () => {
+  const { crewMapsData } = await import('../src/state/crew-map.mjs');
+  assert.equal(typeof crewMapsData, 'function');
+  const data = crewMapsData([{ team_id: 'unknown', tasks: [{ action_id: 'a', path_lonlat: [[2, 41], null, [3, 42]] }] }]);
+  assert.deepEqual(data.starts, []);
+  assert.deepEqual(data.currentLocations, []);
+  assert.deepEqual(data.pointGroups, []);
+  assert.deepEqual(data.stops[0].path, []);
+  assert.equal(data.stops[0].position, null);
+  assert.deepEqual(crewMapsData([]).stops, []);
+});

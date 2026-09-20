@@ -250,7 +250,7 @@ export function CrewStopTable({
 const needsConfirmation = (tasks) =>
   tasks.some((step) => step.status === "proposed");
 
-export default function CrewPlans({ incidents, teamId }) {
+export default function CrewPlans({ incidents, teamId, buttonLabel }) {
   const approvals = useApprovals();
   const [selectedKey, setSelectedKey] = useState(null),
     [reviewedVersion, setReviewedVersion] = useState(null),
@@ -496,11 +496,12 @@ export default function CrewPlans({ incidents, teamId }) {
           onClick={() => open(teamRow)}
           aria-label={`Review plan for ${teamRow?.name || teamId}`}
         >
-          {teamRow?.confirmation.plan?.approval
-            ? "Confirmed · view"
-            : teamRow?.confirmation.plan?.can_confirm
-              ? "Review & confirm"
-              : "Review plan"}
+          {buttonLabel ||
+            (teamRow?.confirmation.plan?.approval
+              ? "Confirmed · view"
+              : teamRow?.confirmation.plan?.can_confirm
+                ? "Review & confirm"
+                : "Review plan")}
         </Button>
       ) : (
         <MainCard

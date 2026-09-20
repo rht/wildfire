@@ -118,20 +118,208 @@ const root = path.resolve(__dirname, "../..");
       return page.getByRole("dialog");
     };
 
+    const assertOverallLayout = async (target, width, height) => {
+      const workspace = target.getByRole("dialog");
+      assert.deepEqual(
+        await workspace.boundingBox(),
+        { x: 0, y: 0, width, height },
+        "incident plan fills the viewport",
+      );
+      const map = await workspace
+        .locator(".incident-crew-plan .crew-route-review")
+        .boundingBox();
+      const tables = await workspace
+        .locator(".incident-crew-plan .plan-teams")
+        .boundingBox();
+      assert.ok(
+        map.x + map.width <= tables.x + 1,
+        `map remains left of both crew tables at ${width}×${height}`,
+      );
+      const measurements = await workspace
+        .locator(
+          ".MuiDialogContent-root, .incident-crew-plan, .plan-teams, .crew-route-review",
+        )
+        .evaluateAll((elements) =>
+          elements.map((element) => ({
+            name: element.className,
+            scrollHeight: element.scrollHeight,
+            mayScroll: element.matches(".plan-teams"),
+            height: element.clientHeight,
+            bottom: element.getBoundingClientRect().bottom,
+          })),
+        );
+      assert.ok(
+        measurements.every(
+          (item) =>
+            (item.mayScroll || item.scrollHeight <= item.height + 1) &&
+            item.bottom <= height + 1,
+        ),
+        `incident plan fits the viewport with scrolling confined to crew tables at ${width}×${height}: ${JSON.stringify(measurements)}`,
+      );
+    };
+
     await page.goto(base + "/?demo=1#/incidents/gavarres/plan");
-    await expect(page.locator("main .crew-route-map")).toHaveCount(1);
-    const crewSelector = page.getByRole("combobox", { name: "Crew", exact: true });
-    await expect(crewSelector).toHaveValue("gavarres-unit-0");
-    await expect(page.getByLabel("Plan map for Crew 1A", { exact: true })).toBeVisible();
-    await crewSelector.selectOption(engine.team_id);
-    await expect(page.locator("main .crew-route-map")).toHaveCount(1);
-    await expect(page.getByLabel("Plan map for Engine 12", { exact: true })).toBeVisible();
-    await expect(page.locator("main .crew-stop-table")).toContainText("Can Puig");
-    await expect(page.locator("main .crew-stop-table")).not.toContainText("Vall Repòs");
+    const overallReview = page.getByRole("dialog");
+    await expect(overallReview).toBeVisible();
+    assert.deepEqual(
+      await overallReview.boundingBox(),
+      { x: 0, y: 0, width: 1512, height: 1050 },
+      "incident plan opens in the full-screen review workspace",
+    );
+    const overallHeader = overallReview
+      .locator(".detail-dialog-header")
+      .first();
+    await expect(
+      overallHeader.getByRole("button", { name: "Close details", exact: true }),
+    ).toBeVisible();
+    await expect(
+      overallHeader.getByRole("button", {
+        name: "Review plan for Crew 1A",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      overallHeader.getByRole("button", {
+        name: "Review plan for Engine 12",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      overallReview.locator(".detail-dialog-title").first(),
+    ).toContainText("Firefighter plan");
+    await assertOverallLayout(page, 1512, 1050);
+
+    await expect(
+      page.locator(".incident-crew-plan .crew-route-map"),
+    ).toHaveCount(1);
+    await expect(
+      page.getByRole("combobox", { name: "Crew", exact: true }),
+    ).toHaveCount(0);
+    const crewTables = page.locator(".plan-teams .crew-table-section");
+    await expect(crewTables).toHaveCount(2);
+    const firstCrewSection = crewTables.filter({
+      has: page.getByRole("heading", { name: "Crew 1A", exact: true }),
+    });
+    const engineSection = crewTables.filter({
+      has: page.getByRole("heading", { name: "Engine 12", exact: true }),
+    });
+    await expect(firstCrewSection).toHaveAttribute(
+      "data-crew-id",
+      "gavarres-unit-0",
+    );
+    await expect(engineSection).toHaveAttribute("data-crew-id", engine.team_id);
+    await expect(firstCrewSection.locator(".crew-stop-table")).toContainText(
+      "Vall Repòs",
+    );
+    await expect(engineSection.locator(".crew-stop-table")).toContainText(
+      "Can Puig",
+    );
+    await expect(engineSection.locator(".crew-stop-table")).not.toContainText(
+      "Vall Repòs",
+    );
+    await expect(firstCrewSection.locator("tbody tr").first()).toHaveAttribute(
+      "data-stop-id",
+      "__start__",
+    );
+    await expect(engineSection.locator("tbody tr").first()).toHaveAttribute(
+      "data-stop-id",
+      "__start__",
+    );
+    const sharedMap = page.getByLabel(`Plan map for ${gavarres.name}`, {
+      exact: true,
+    });
+    await expect(sharedMap).toBeVisible();
+    const enginePin = sharedMap.getByRole("button", {
+      name: /^Engine 12 · 2\. Can Puig/,
+    });
+    await expect(enginePin).toHaveAttribute(
+      "data-stop-id",
+      JSON.stringify([engine.team_id, originalOrder[1]]),
+    );
+    const engineSharedRow = engineSection.locator(
+      `tbody tr[data-stop-id="${originalOrder[1]}"]`,
+    );
+    await page.mouse.move(0, 0);
+    await engineSharedRow.focus();
+    await expect(enginePin).toHaveAttribute("aria-pressed", "true");
+    await expect(firstCrewSection.locator("tbody tr.is-active")).toHaveCount(0);
+    await expect(sharedMap.locator(".leaflet-tooltip")).toContainText(
+      "Engine 12 · 2. Can Puig",
+    );
+    await firstCrewSection.locator("tbody tr").first().focus();
+    await enginePin.hover();
+    await expect(engineSharedRow).toHaveClass(/is-active/);
+    await expect(firstCrewSection.locator("tbody tr.is-active")).toHaveCount(0);
+    const firstStart = sharedMap.getByRole("button", {
+      name: /^Crew 1A · S\./,
+    });
+    const engineStart = sharedMap.getByRole("button", {
+      name: /^Engine 12 · S\./,
+    });
+    await expect(firstStart).toHaveAttribute(
+      "data-stop-id",
+      JSON.stringify(["gavarres-unit-0", "__start__"]),
+    );
+    await expect(engineStart).toHaveAttribute(
+      "data-stop-id",
+      JSON.stringify([engine.team_id, "__start__"]),
+    );
+    assert.equal(
+      await sharedMap
+        .locator(".crew-start-button")
+        .evaluateAll(
+          (buttons) =>
+            new Set(buttons.map((button) => button.closest(".crew-stop-pin")))
+              .size,
+        ),
+      1,
+      "co-located crew starts share a group with individually accessible buttons",
+    );
+    await page.mouse.move(0, 0);
+    await firstStart.focus();
+    await expect(firstCrewSection.locator("tbody tr").first()).toHaveClass(
+      /is-active/,
+    );
+    await expect(engineSection.locator("tbody tr.is-active")).toHaveCount(0);
+    await engineStart.focus();
+    await expect(engineSection.locator("tbody tr").first()).toHaveClass(
+      /is-active/,
+    );
+    await expect(firstCrewSection.locator("tbody tr.is-active")).toHaveCount(0);
+    await expect(sharedMap.locator(".leaflet-tooltip")).toContainText(
+      "Engine 12 · S.",
+    );
+    await page.screenshot({
+      path: path.join(artifactRoot, "crew-shared-plan.png"),
+      fullPage: true,
+      animations: "disabled",
+    });
     await page.goto(base + "/?demo=1#/incidents/cap-creus/plan");
-    await expect(crewSelector).toHaveValue("cap-creus-unit-0");
-    await expect(page.locator("main .crew-route-map")).toHaveCount(1);
-    assert.deepEqual(writes, [], "crew selection does not save or dispatch");
+    await expect(
+      page.getByRole("combobox", { name: "Crew", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.locator(".incident-crew-plan .crew-route-map"),
+    ).toHaveCount(1);
+    await expect(page.locator(".crew-table-section")).toHaveCount(2);
+    assert.deepEqual(
+      await page
+        .locator(".crew-table-section")
+        .evaluateAll((sections) =>
+          sections.map((section) => section.dataset.crewId),
+        ),
+      ["cap-creus-unit-0", "cap-creus-unit-1"],
+    );
+    await expect(
+      page
+        .locator(".incident-crew-plan .crew-stop-table")
+        .filter({ hasText: "Can Puig" }),
+    ).toHaveCount(0);
+    assert.deepEqual(
+      writes,
+      [],
+      "incident route review does not save or dispatch",
+    );
     await page.goto(base + "/?demo=1#/overview");
     let dialog = await review("Engine 12");
     const desktopDialog = await dialog.boundingBox();
@@ -327,8 +515,7 @@ const root = path.resolve(__dirname, "../..");
     assert.deepEqual(await orderIn(dialog), ["__start__", ...reversed]);
     await dialog.getByRole("button", { name: "Close details" }).click();
     await page.goto(base + "/?demo=1#/incidents/gavarres/plan");
-    await page.getByRole("combobox", { name: "Crew", exact: true }).selectOption(engine.team_id);
-    const engineCard = page.locator(".plan-teams > .MuiCard-root").filter({
+    const engineCard = page.locator(".plan-teams .crew-table-section").filter({
       has: page.getByRole("heading", { name: "Engine 12", exact: true }),
     });
     await expect(engineCard).toContainText("Analyst-approved visit order");
@@ -378,10 +565,24 @@ const root = path.resolve(__dirname, "../..");
     });
     mobile.on("pageerror", (error) => errors.push(error.message));
     await mobile.goto(base + "/?demo=1#/incidents/gavarres/plan");
-    await mobile.getByRole("combobox", { name: "Crew", exact: true }).selectOption(engine.team_id);
-    await expect(mobile.locator("main .crew-route-map")).toHaveCount(1);
     await expect(
-      mobile.getByRole("heading", { name: "Firefighter plan", exact: true }),
+      mobile.locator(".incident-crew-plan .crew-route-map"),
+    ).toHaveCount(1);
+    await expect(
+      mobile.getByRole("dialog").locator(".detail-dialog-title").first(),
+    ).toContainText("Firefighter plan");
+    await expect(
+      mobile.locator(".incident-crew-plan .crew-route-map"),
+    ).toHaveCount(1);
+    await expect(mobile.locator(".crew-table-section")).toHaveCount(2);
+    await expect(
+      mobile.getByRole("combobox", { name: "Crew", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      mobile.getByRole("heading", { name: "Crew 1A", exact: true }),
+    ).toBeVisible();
+    await expect(
+      mobile.getByRole("heading", { name: "Engine 12", exact: true }),
     ).toBeVisible();
     assert.ok(
       await mobile.evaluate(
@@ -389,6 +590,12 @@ const root = path.resolve(__dirname, "../..");
       ),
       "page stays inside mobile viewport",
     );
+    await assertOverallLayout(mobile, 768, 1024);
+    await mobile.screenshot({
+      path: path.join(artifactRoot, "crew-shared-plan-mobile.png"),
+      fullPage: true,
+      animations: "disabled",
+    });
     await mobile
       .getByRole("button", { name: "Review plan for Engine 12", exact: true })
       .tap();
@@ -449,6 +656,30 @@ const root = path.resolve(__dirname, "../..");
       fullPage: true,
       animations: "disabled",
     });
+    await mobileDialog
+      .getByRole("button", { name: "Close details", exact: true })
+      .tap();
+    await expect(
+      mobile.getByRole("dialog").locator(".detail-dialog-title").first(),
+    ).toContainText("Firefighter plan");
+    await expect(
+      mobile.locator(".incident-crew-plan .crew-route-map"),
+    ).toHaveCount(1);
+    await mobile
+      .getByRole("dialog")
+      .getByRole("button", { name: "Close details", exact: true })
+      .tap();
+    await expect(mobile.getByRole("dialog")).toHaveCount(0);
+    await expect(mobile).toHaveURL(/#\/incidents\/gavarres\/summary$/);
+    await mobile.setViewportSize({ width: 1024, height: 768 });
+    await mobile.goto(base + "/?demo=1#/incidents/gavarres/plan");
+    await expect(mobile.locator(".crew-table-section")).toHaveCount(2);
+    await assertOverallLayout(mobile, 1024, 768);
+    await mobile.screenshot({
+      path: path.join(artifactRoot, "crew-shared-plan-tablet-landscape.png"),
+      fullPage: true,
+      animations: "disabled",
+    });
     await mobile.close();
 
     const query = new URLSearchParams({
@@ -496,7 +727,7 @@ const root = path.resolve(__dirname, "../..");
       "review never writes dispatch endpoints",
     );
     console.log(
-      "Crew-order browser passed: starting row, map/table link, validated order, infeasible order, saved reload/restart/page order, mobile containment and no dispatch writes.",
+      "Crew-order browser passed: one shared incident map, separate crew tables, namespaced map/start links, starting row, validated order, infeasible order, saved reload/restart/page order, mobile containment and no dispatch writes.",
     );
   } finally {
     if (browser) await browser.close();
