@@ -2949,34 +2949,52 @@ membership, and still exits on completion. Runtime publication remains owned by
 Cancellation update verification passed: 36 Node tests, lint, formatting, production
 build and all four Chrome regression scripts, including saved confirmations.
 
-### Emergency-response visual refresh — approved scope
+### iPad-first response workspace
 
-@mirrdj requested a black dashboard, the reference ResponsAra wordmark and
-**Nobody left behind** badge, a smaller map with more space for crew confirmation,
-the legacy 3D-style map view, and building distance to fire. Use black `#000000`,
-charcoal `#111315`, neutral borders `#303438`, near-white `#f4f4f2`, ember
-`#ff974f` and warning amber `#f3bf62`. Keep the existing Public Sans family, with
-heavier wordmark lettering and the orange Ara treatment from the supplied reference.
+@mirrdj's latest direction supersedes the earlier black theme: the application,
+widgets and dialogs use a white background with dark text, ember accents and
+legible warning/error colours. ResponsAra retains the reference wordmark and
+Nobody left behind badge. iPads use drawer navigation, compact KPI cards and
+44px minimum primary touch controls. Map and crew-plan frames remain **50/50**
+from 768px wide in portrait and landscape; phones stack them. The header stays
+in place, crew lists and tables scroll inside their frames, and review steps
+scroll alongside the crew map. Dates and date filters use the browser's local
+timezone; stored timestamps remain ISO instants. Building tables hide
+**Assessed at**, retain assessment filters/details and show **Distance to fire**
+from supplied `distance_to_fire_m`.
 
-Implementation sequence: apply a shared dark MUI/CSS theme and wordmark/badge;
-allocate the larger overview column to crew plans; share a 2D/3D tilt frame between
-incident and crew maps (CSS perspective, matching the legacy implementation, not
-terrain elevation); display supplied `distance_to_fire_m` in global/scoped building
-tables and detail. Add geometry-control/distance browser regressions, check desktop
-and mobile screenshots, run frontend regression/build checks, then commit and push.
-Confirmation, call, dispatch and data-source behavior remain unchanged.
+The shared 2D/**3D tilt** control uses CSS perspective, matching the legacy map;
+it is not terrain elevation. Incident maps also offer a **Heat map** toggle with
+an in-map **Building risk · 0–100** scale. Colours use only supplied numeric
+`risk_score` values and valid location GPS. Unscored locations are omitted; an
+empty layer says why. The soft halos indicate assessed location risk, not measured
+fire temperature, interpolated fire intensity or a fire-spread prediction.
 
-Latest visual refinements: map and crew-plan regions are **50/50 on desktop** in
-overview and crew review, and stack on mobile. Dates and date filters use the
-browser's local timezone; stored timestamps remain ISO instants. The building table
-hides **Assessed at**, retains assessment filters/details and adds **Distance to fire**
-from supplied `distance_to_fire_m` (metres/kilometres, missing values explicit).
+The fourth overview KPI is **Assistance logs**: unique location records (stable `asset_id`, including across incidents)
+with a reported assistance need or an explicit assistance review. Confirmed need
+means `needsAssistance === true` without a conflicting assistance report/review;
+pending review means explicit `assistance_review_required` or conflicting
+assistance reports, including contradictory needs across incidents. These categories are disjoint and do not assert delivery,
+transport assignment or evacuation completion. The card opens the people/location
+page. Unassessed locations are not silently counted as assistance requests.
+
+Identified people/groups and locations have a numbered priority column sorted by
+supplied remaining evacuation window (`contacts.ranked[].slack_min`, shortest
+first). Resources have a numbered priority column sorted by the minimum known
+unfinished-task `deadline_min - finish_min` margin. Completed tasks are excluded;
+partial timing stays labeled. Missing timing stays visible and unranked. This is
+presentation ordering, not a replacement crew optimizer or a dispatch action.
 
 ### Persisted time travel
 
 Run `npm --prefix frontend run generate:history` to generate the explicitly synthetic
 `frontend/fixtures/design-history.json`. It contains three earlier demo moments;
-the build appends the current demo as the fourth. The generated earlier records
+the build appends the current demo as the fourth. Earlier perimeters expand at
+25%, 50% and 75% of the current polygon’s linear dimensions, followed by the
+unchanged current perimeter. The timeline labels each stage as illustrative
+simulated spread: it is not a predictive fire model or live observation, and
+building risk/distance values are not recomputed. Per-stage simulation provenance
+is persisted with the geometry. The generated earlier records
 have their own contemporaneous provenance and no invented historical call or dispatch
 records. Vite serves this history in development and emits it as a static JSON asset
 for the production dashboard. It is a saved drill fixture, not operational evidence.
@@ -2991,9 +3009,16 @@ shows the latest received state. Historical views disable approval loads/saves a
 exclude current approval-event overlays; they never rewind the operational store.
 If browser storage is unavailable, the timeline explicitly reports that limitation.
 
-Dark-dashboard verification: 39 Node tests passed; lint, formatting and production
-build passed. Six Chrome regression scripts passed, including desktop/mobile
-visual checks, equal map/plan widths, 3D tilt/zoom, hidden assessment-date column,
-local dates, distances, saved-history reloads, historical approval guards, call
-queue handling and persisted confirmations. Independent review rechecked history
-provenance and Vite development serving; no blocking findings remain.
+Verification of the current iPad-first workspace: 47 Node tests passed; lint,
+formatting and production build passed. Eight Chrome regression scripts passed,
+including touch viewports 768×1024, 1024×768, 820×1180 and 1366×1024, white
+surfaces, fixed equal panels, reachable final table rows, heat-scale rendering,
+3D tilt/zoom, priorities, assistance deduplication, visible simulated perimeter
+expansion, persisted-history reloads, historical confirmation guards, local dates,
+call-queue handling and saved approvals. Review findings about cross-incident
+assistance duplication and clipped table cards were fixed and regression-tested.
+Screenshots were inspected. Chrome emulation does not replace a physical iPad /
+Safari check. Backend source files and existing preview processes remain unchanged.
+
+The separate tmux session `wildfire-time-travel` implemented the saved simulation
+stages in this UI worktree and remains available (`tmux attach -t wildfire-time-travel`).

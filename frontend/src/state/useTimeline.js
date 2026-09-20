@@ -73,8 +73,9 @@ export function useTimeline(incidents, demo) {
     index,
     historical,
     storageError,
+    simulated: demo,
     historyLabel: demo
-      ? "Generated demo history"
+      ? "Generated demo history · illustrative simulated spread"
       : "History saved on this device",
     incidents: historical ? selected.incidents : incidents,
     select: (index) =>

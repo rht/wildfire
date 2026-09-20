@@ -1,8 +1,11 @@
 import { Button } from "@mui/material";
 import { stamp } from "../state/model.mjs";
 export default function TimelineControls({ timeline }) {
-  const { entries, index, historical, select, latest } = timeline;
+  const { entries, index, historical, simulated, select, latest } = timeline;
   const selected = entries[index];
+  const momentLabel = selected
+    ? `${simulated ? `Stage ${index + 1} of ${entries.length} · ` : ""}${stamp(selected.at)} · revision ${selected.revision}`
+    : "Waiting for a snapshot";
   return (
     <section
       className={`timeline-controls${historical ? " reviewing" : ""}`}
@@ -11,7 +14,13 @@ export default function TimelineControls({ timeline }) {
       <div className="timeline-heading">
         <strong>Time travel</strong>
         <span>
-          {historical ? "Earlier snapshot · View only" : "Current state"}
+          {simulated
+            ? historical
+              ? "Simulated spread · View only"
+              : "Current demo perimeter"
+            : historical
+              ? "Earlier snapshot · View only"
+              : "Current state"}
         </span>
       </div>
       <div className="timeline-track">
@@ -30,11 +39,7 @@ export default function TimelineControls({ timeline }) {
           value={index}
           disabled={entries.length < 2}
           onChange={(e) => select(Number(e.target.value))}
-          aria-valuetext={
-            selected
-              ? `${stamp(selected.at)} · revision ${selected.revision}`
-              : "No snapshots received"
-          }
+          aria-valuetext={selected ? momentLabel : "No snapshots received"}
         />
         <Button
           size="small"
@@ -50,14 +55,19 @@ export default function TimelineControls({ timeline }) {
         )}
       </div>
       <div className="timeline-caption">
-        {selected
-          ? `${stamp(selected.at)} · revision ${selected.revision}`
-          : "Waiting for a snapshot"}
+        {momentLabel}
         <span>
           {entries.length} {entries.length === 1 ? "moment" : "moments"} ·{" "}
           {timeline.historyLabel}
         </span>
       </div>
+      {simulated && (
+        <div className="timeline-notice">
+          Illustrative simulated spread, not a predictive fire model or live
+          observation. Scrub to compare scaled demo perimeters. Risk values and
+          distances are not recalculated.
+        </div>
+      )}
       {historical && (
         <div className="timeline-notice">
           Reviewing an earlier snapshot. Return to current state to confirm a

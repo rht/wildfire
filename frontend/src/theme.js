@@ -2,15 +2,15 @@ import { createTheme } from "@mui/material/styles";
 import typography from "../vendor/mantis/typography";
 export const theme = createTheme({
   palette: {
-    mode: "dark",
-    primary: { main: "#ff974f", contrastText: "#100b06" },
-    background: { default: "#000000", paper: "#111315" },
-    text: { primary: "#f4f4f2", secondary: "#afb5b9" },
-    divider: "#303438",
-    error: { main: "#ff7770" },
-    warning: { main: "#f3bf62", contrastText: "#100b06" },
-    success: { main: "#8ed69f" },
-    info: { main: "#82bdcf" },
+    mode: "light",
+    primary: { main: "#a84609", contrastText: "#ffffff" },
+    background: { default: "#ffffff", paper: "#ffffff" },
+    text: { primary: "#20262d", secondary: "#4f5b66" },
+    divider: "#dce1e5",
+    error: { main: "#bb2926" },
+    warning: { main: "#855100", contrastText: "#ffffff" },
+    success: { main: "#28733a" },
+    info: { main: "#176b89" },
   },
   typography: typography('"Public Sans", sans-serif'),
   shape: { borderRadius: 5 },
@@ -18,19 +18,22 @@ export const theme = createTheme({
     MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
     MuiButton: {
       defaultProps: { disableElevation: true },
-      styleOverrides: { root: { textTransform: "none" } },
+      styleOverrides: { root: { textTransform: "none", minHeight: 44 } },
+    },
+    MuiIconButton: {
+      styleOverrides: { root: { minWidth: 44, minHeight: 44 } },
     },
     MuiCard: {
       styleOverrides: {
-        root: { boxShadow: "none", border: "1px solid #303438" },
+        root: { boxShadow: "none", border: "1px solid #dce1e5" },
       },
     },
     MuiTableCell: {
       styleOverrides: {
-        head: { background: "#1b1e20", fontWeight: 600, color: "#d1d5d7" },
+        head: { background: "#f5f7f8", fontWeight: 600, color: "#35414b" },
         root: {
-          borderBottom: "1px solid #303438",
-          padding: "14px 16px",
+          borderBottom: "1px solid #dce1e5",
+          padding: "10px 12px",
           fontSize: 13,
         },
       },

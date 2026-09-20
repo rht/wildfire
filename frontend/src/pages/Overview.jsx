@@ -24,9 +24,11 @@ import {
 import CrewPlans from "../components/CrewPlans";
 import IncidentMap from "../components/IncidentMap";
 import { metrics, callRows, stamp, gps, incidentGps } from "../state/model.mjs";
+import { assistanceTotals } from "../state/priority.mjs";
 export function Overview({ incidents, incident }) {
   const scope = incident ? [incident] : incidents,
     totals = metrics(scope),
+    assistance = assistanceTotals(scope),
     coordinates = incident ? incidentGps(incident) : null;
   const prefix = incident
     ? `/incidents/${encodeURIComponent(incident.id)}`
@@ -74,8 +76,14 @@ export function Overview({ incidents, incident }) {
         />
         <Metric
           compact
-          label="People / groups"
-          value={totals.clusters}
+          label="Assistance logs"
+          value={assistance.total}
+          detail={
+            <span className="assistance-breakdown">
+              <span>{assistance.confirmed} confirmed need</span>
+              <span>{assistance.pending} pending review</span>
+            </span>
+          }
           to={incident ? `${prefix}/evacuation` : "/people"}
           icon={UsergroupAddOutlined}
           tone="green"

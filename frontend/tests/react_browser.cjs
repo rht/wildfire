@@ -105,7 +105,8 @@ const fs = require("node:fs");
       .click();
     await expect(page.getByTestId("metric-deployed")).toContainText("3");
     await expect(page.getByTestId("metric-structures")).toContainText("4");
-    await expect(page.getByTestId("metric-people")).toContainText("4");
+    await expect(page.getByTestId("metric-people")).toContainText("Assistance logs");
+    await expect(page.getByTestId("metric-people")).toContainText("1 confirmed need");
     await page.getByTestId("metric-deployed").getByRole("link").click();
     await expect(page.locator("tbody tr")).toHaveCount(3);
     await expect(

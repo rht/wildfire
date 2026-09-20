@@ -113,8 +113,10 @@
             {
               "event_id": "generated-history-1-gavarres",
               "as_of": "2026-09-20T09:45:00Z",
+              "received_at": "2026-09-20T09:45:00Z",
               "kind": "assessment",
-              "notes": "Generated demo assessment. No calls or dispatch occurred."
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
             }
           ],
           "teams": [],
@@ -123,24 +125,24 @@
             "coordinates": [
               [
                 [
-                  3.02,
-                  41.966
+                  3.0438124999999996,
+                  41.961875
                 ],
                 [
-                  3.058,
-                  41.977
+                  3.0533124999999997,
+                  41.964625
                 ],
                 [
-                  3.081,
-                  41.958
+                  3.0590624999999996,
+                  41.959875
                 ],
                 [
-                  3.048,
-                  41.940999999999995
+                  3.0508124999999997,
+                  41.955625
                 ],
                 [
-                  3.02,
-                  41.966
+                  3.0438124999999996,
+                  41.961875
                 ]
               ]
             ]
@@ -165,7 +167,16 @@
             "response": null
           },
           "id": "gavarres",
-          "status": "active"
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T09:45:00Z",
+            "stage": 1,
+            "total_stages": 4,
+            "linear_scale": 0.25,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
         }
       ]
     },
@@ -361,8 +372,10 @@
             {
               "event_id": "generated-history-2-gavarres",
               "as_of": "2026-09-20T10:00:00Z",
+              "received_at": "2026-09-20T10:00:00Z",
               "kind": "assessment",
-              "notes": "Generated demo assessment. No calls or dispatch occurred."
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
             }
           ],
           "teams": [],
@@ -371,24 +384,24 @@
             "coordinates": [
               [
                 [
-                  3.02,
-                  41.966
+                  3.035875,
+                  41.96325
                 ],
                 [
-                  3.058,
-                  41.977
+                  3.054875,
+                  41.96875
                 ],
                 [
-                  3.081,
-                  41.958
+                  3.066375,
+                  41.95925
                 ],
                 [
-                  3.048,
-                  41.940999999999995
+                  3.049875,
+                  41.95075
                 ],
                 [
-                  3.02,
-                  41.966
+                  3.035875,
+                  41.96325
                 ]
               ]
             ]
@@ -427,7 +440,16 @@
             "response": null
           },
           "id": "gavarres",
-          "status": "active"
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:00:00Z",
+            "stage": 2,
+            "total_stages": 4,
+            "linear_scale": 0.5,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
         },
         {
           "schema_version": "coordination-state-1",
@@ -618,8 +640,10 @@
             {
               "event_id": "generated-history-2-cap-creus",
               "as_of": "2026-09-20T10:00:00Z",
+              "received_at": "2026-09-20T10:00:00Z",
               "kind": "assessment",
-              "notes": "Generated demo assessment. No calls or dispatch occurred."
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
             }
           ],
           "teams": [],
@@ -628,24 +652,24 @@
             "coordinates": [
               [
                 [
-                  3.18,
-                  42.346000000000004
+                  3.195875,
+                  42.34325
                 ],
                 [
-                  3.218,
-                  42.357
+                  3.214875,
+                  42.348749999999995
                 ],
                 [
-                  3.241,
-                  42.338
+                  3.226375,
+                  42.33925
                 ],
                 [
-                  3.208,
-                  42.321
+                  3.2098750000000003,
+                  42.330749999999995
                 ],
                 [
-                  3.18,
-                  42.346000000000004
+                  3.195875,
+                  42.34325
                 ]
               ]
             ]
@@ -684,7 +708,16 @@
             "response": null
           },
           "id": "cap-creus",
-          "status": "active"
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:00:00Z",
+            "stage": 2,
+            "total_stages": 4,
+            "linear_scale": 0.5,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
         }
       ]
     },
@@ -880,8 +913,10 @@
             {
               "event_id": "generated-history-3-gavarres",
               "as_of": "2026-09-20T10:15:00Z",
+              "received_at": "2026-09-20T10:15:00Z",
               "kind": "assessment",
-              "notes": "Generated demo assessment. No calls or dispatch occurred."
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
             }
           ],
           "teams": [],
@@ -890,24 +925,24 @@
             "coordinates": [
               [
                 [
-                  3.02,
-                  41.966
+                  3.0279375,
+                  41.964625
                 ],
                 [
-                  3.058,
-                  41.977
+                  3.0564375,
+                  41.972874999999995
                 ],
                 [
-                  3.081,
-                  41.958
+                  3.0736875,
+                  41.958625
                 ],
                 [
-                  3.048,
-                  41.940999999999995
+                  3.0489375,
+                  41.945874999999994
                 ],
                 [
-                  3.02,
-                  41.966
+                  3.0279375,
+                  41.964625
                 ]
               ]
             ]
@@ -946,7 +981,16 @@
             "response": null
           },
           "id": "gavarres",
-          "status": "active"
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:15:00Z",
+            "stage": 3,
+            "total_stages": 4,
+            "linear_scale": 0.75,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
         },
         {
           "schema_version": "coordination-state-1",
@@ -1137,8 +1181,10 @@
             {
               "event_id": "generated-history-3-cap-creus",
               "as_of": "2026-09-20T10:15:00Z",
+              "received_at": "2026-09-20T10:15:00Z",
               "kind": "assessment",
-              "notes": "Generated demo assessment. No calls or dispatch occurred."
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
             }
           ],
           "teams": [],
@@ -1147,24 +1193,24 @@
             "coordinates": [
               [
                 [
-                  3.18,
-                  42.346000000000004
+                  3.1879375000000003,
+                  42.344625
                 ],
                 [
-                  3.218,
-                  42.357
+                  3.2164375,
+                  42.352875
                 ],
                 [
-                  3.241,
-                  42.338
+                  3.2336875000000003,
+                  42.338625
                 ],
                 [
-                  3.208,
-                  42.321
+                  3.2089375,
+                  42.325874999999996
                 ],
                 [
-                  3.18,
-                  42.346000000000004
+                  3.1879375000000003,
+                  42.344625
                 ]
               ]
             ]
@@ -1203,7 +1249,16 @@
             "response": null
           },
           "id": "cap-creus",
-          "status": "active"
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:15:00Z",
+            "stage": 3,
+            "total_stages": 4,
+            "linear_scale": 0.75,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
         },
         {
           "schema_version": "coordination-state-1",
@@ -1394,8 +1449,10 @@
             {
               "event_id": "generated-history-3-montseny",
               "as_of": "2026-09-20T10:15:00Z",
+              "received_at": "2026-09-20T10:15:00Z",
               "kind": "assessment",
-              "notes": "Generated demo assessment. No calls or dispatch occurred."
+              "source": "Generated demo assessment",
+              "notes": "Generated demo assessment with illustrative simulated spread. Not a predictive fire model or live observation. No calls or dispatch occurred."
             }
           ],
           "teams": [],
@@ -1404,24 +1461,24 @@
             "coordinates": [
               [
                 [
-                  2.38,
-                  41.79600000000001
+                  2.3879375,
+                  41.79462500000001
                 ],
                 [
-                  2.4179999999999997,
-                  41.807
+                  2.4164375,
+                  41.802875
                 ],
                 [
-                  2.441,
-                  41.788000000000004
+                  2.4336875,
+                  41.788625
                 ],
                 [
-                  2.408,
-                  41.771
+                  2.4089375,
+                  41.775875
                 ],
                 [
-                  2.38,
-                  41.79600000000001
+                  2.3879375,
+                  41.79462500000001
                 ]
               ]
             ]
@@ -1460,7 +1517,16 @@
             "response": null
           },
           "id": "montseny",
-          "status": "active"
+          "status": "active",
+          "fire_simulation": {
+            "source": "Illustrative simulated spread",
+            "as_of": "2026-09-20T10:15:00Z",
+            "stage": 3,
+            "total_stages": 4,
+            "linear_scale": 0.75,
+            "method": "Deterministic scaling of the design demo perimeter about its vertex centre.",
+            "notes": "Illustrative simulated spread, not a predictive fire model or live observation. Risk values and distances are illustrative and are not recomputed from the scaled perimeter."
+          }
         }
       ]
     }

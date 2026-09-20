@@ -191,6 +191,15 @@ export default function App() {
               >
                 <MenuOutlined />
               </IconButton>
+              <Link
+                className="header-brand"
+                to="/overview"
+                aria-label="ResponsAra overview"
+              >
+                <span className="brand-wordmark">
+                  Respons<span>Ara</span>
+                </span>
+              </Link>
               <div className="mission-badge">
                 <svg viewBox="0 0 56 24" aria-hidden="true">
                   <path d="M1 12h13l4-7 6 15 5-11 4 3h22" />

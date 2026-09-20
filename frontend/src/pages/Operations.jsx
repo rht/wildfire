@@ -38,6 +38,19 @@ import {
   evacuationTotals,
   readinessFacts,
 } from "../state/model.mjs";
+import {
+  locationPriority,
+  resourcePriority,
+  priorityList,
+} from "../state/priority.mjs";
+function PriorityCell({ row }) {
+  return (
+    <TableCell className="priority-cell">
+      {row.priorityRank && <strong className="rank">{row.priorityRank}</strong>}
+      <div className="small-muted">{row.priority.label}</div>
+    </TableCell>
+  );
+}
 const callerLabel = (value) =>
   ({ agent: "Voice assistant", human: "Human", unknown: "Not supplied" })[
     value
@@ -507,15 +520,31 @@ export function Evacuation({ incident, incidents }) {
   const scope = (incident ? [incident] : incidents).filter(
       (i) => !incidentFilter || i.id === incidentFilter,
     ),
-    groups = scope.flatMap((i) =>
-      (i.peopleClusters || []).map((g) => ({
-        ...g,
-        location:
-          gps(g) !== "Not supplied"
-            ? g
-            : i.assets.find((a) => a.asset_id === g.asset_id),
-        incident_name: i.name,
-      })),
+    groups = priorityList(
+      scope.flatMap((i) =>
+        (i.peopleClusters || []).map((g) => ({
+          ...g,
+          priority:
+            g.status === "arrived"
+              ? { order: Infinity, label: "Arrival reported" }
+              : locationPriority(i, g.asset_id),
+          location:
+            gps(g) !== "Not supplied"
+              ? g
+              : i.assets.find((a) => a.asset_id === g.asset_id),
+          incident_name: i.name,
+          incident_id: i.id,
+        })),
+      ),
+    ),
+    locations = priorityList(
+      scope.flatMap((i) =>
+        callRows(i).map((row) => ({
+          ...row,
+          incident: i,
+          priority: locationPriority(i, row.asset_id),
+        })),
+      ),
     ),
     totals = incident
       ? evacuationTotals(incident)
@@ -586,6 +615,7 @@ export function Evacuation({ incident, incidents }) {
               <TableHead>
                 <TableRow>
                   {[
+                    "Priority",
                     "Person / group / location",
                     "Incident",
                     "People",
@@ -607,7 +637,8 @@ export function Evacuation({ incident, incidents }) {
                         .includes(search.toLowerCase()),
                   )
                   .map((g) => (
-                    <TableRow key={g.id}>
+                    <TableRow key={`${g.incident_id}:${g.id}`}>
+                      <PriorityCell row={g} />
                       <TableCell>
                         {g.name}
                         <Coordinates location={g.location} />
@@ -638,6 +669,7 @@ export function Evacuation({ incident, incidents }) {
             <TableHead>
               <TableRow>
                 {[
+                  "Priority",
                   "Location",
                   "Estimated occupancy",
                   "Reported ability",
@@ -653,75 +685,73 @@ export function Evacuation({ incident, incidents }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {scope.flatMap((i) =>
-                callRows(i)
-                  .filter(
-                    (r) =>
-                      !search ||
-                      `${r.name} ${r.asset_id}`
-                        .toLowerCase()
-                        .includes(search.toLowerCase()),
-                  )
-                  .map((r) => {
-                    const p = i.plan.locations?.find(
-                        (l) => l.asset_id === r.asset_id,
-                      ),
-                      readiness = readinessFacts(i, r);
-                    return (
-                      <TableRow key={`${i.id}:${r.asset_id}`}>
-                        <TableCell>
-                          {r.name}
-                          <Coordinates location={r} />
-                        </TableCell>
-                        <TableCell>{count(r.estimated_occupancy)}</TableCell>
-                        <TableCell>{fact(readiness.canSelfEvacuate)}</TableCell>
-                        <TableCell>{fact(readiness.needsAssistance)}</TableCell>
-                        <TableCell>
-                          {fact(readiness.transportAvailable)}
-                        </TableCell>
-                        <TableCell>
-                          {fact(readiness.departureConfirmed)}
-                        </TableCell>
-                        <TableCell>
-                          {fact(readiness.arrivalConfirmed)}
-                        </TableCell>
-                        <TableCell>
-                          {p?.destination_name || "Not supplied"}
-                          {p?.destination_name && (
-                            <Coordinates
-                              location={i.assets.find(
-                                (a) =>
-                                  a.asset_id === p.destination_id ||
-                                  a.asset_id === p.centre_id,
-                              )}
-                            />
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {readiness.assistanceReviewRequired && (
-                            <div className="reason">
-                              Assistance review pending
-                            </div>
-                          )}
-                          {readiness.conflicts.length > 0 && (
-                            <div className="reason">
-                              Conflicting reports:{" "}
-                              {readiness.conflicts.map(humanize).join(", ")}
-                            </div>
-                          )}
-                          <div className="small-muted">
-                            Evidence: {readiness.source || "Not supplied"}
+              {locations
+                .filter(
+                  (r) =>
+                    !search ||
+                    `${r.name} ${r.asset_id}`
+                      .toLowerCase()
+                      .includes(search.toLowerCase()),
+                )
+                .map((r) => {
+                  const i = r.incident;
+                  const p = i.plan.locations?.find(
+                      (l) => l.asset_id === r.asset_id,
+                    ),
+                    readiness = readinessFacts(i, r);
+                  return (
+                    <TableRow key={`${i.id}:${r.asset_id}`}>
+                      <PriorityCell row={r} />
+                      <TableCell>
+                        {r.name}
+                        <Coordinates location={r} />
+                      </TableCell>
+                      <TableCell>{count(r.estimated_occupancy)}</TableCell>
+                      <TableCell>{fact(readiness.canSelfEvacuate)}</TableCell>
+                      <TableCell>{fact(readiness.needsAssistance)}</TableCell>
+                      <TableCell>
+                        {fact(readiness.transportAvailable)}
+                      </TableCell>
+                      <TableCell>
+                        {fact(readiness.departureConfirmed)}
+                      </TableCell>
+                      <TableCell>{fact(readiness.arrivalConfirmed)}</TableCell>
+                      <TableCell>
+                        {p?.destination_name || "Not supplied"}
+                        {p?.destination_name && (
+                          <Coordinates
+                            location={i.assets.find(
+                              (a) =>
+                                a.asset_id === p.destination_id ||
+                                a.asset_id === p.centre_id,
+                            )}
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {readiness.assistanceReviewRequired && (
+                          <div className="reason">
+                            Assistance review pending
                           </div>
-                          {readiness.requestIds.length > 0 && (
-                            <div className="small-muted">
-                              Requests: {readiness.requestIds.join(", ")}
-                            </div>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  }),
-              )}
+                        )}
+                        {readiness.conflicts.length > 0 && (
+                          <div className="reason">
+                            Conflicting reports:{" "}
+                            {readiness.conflicts.map(humanize).join(", ")}
+                          </div>
+                        )}
+                        <div className="small-muted">
+                          Evidence: {readiness.source || "Not supplied"}
+                        </div>
+                        {readiness.requestIds.length > 0 && (
+                          <div className="small-muted">
+                            Requests: {readiness.requestIds.join(", ")}
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </div>
@@ -734,27 +764,32 @@ export function Resources({ incidents }) {
     [type, setType] = useState(""),
     [deployment, setDeployment] = useState(""),
     [incidentFilter, setIncidentFilter] = useState("");
-  const rows = incidents.flatMap((i) =>
-    (
-      i.resources ||
-      i.teams.map((t) => ({
-        ...t,
-        id: t.team_id,
-        name: t.name,
-        type: t.capabilities?.join(", "),
-        status: null,
-        available: t.available,
-        source: t.source,
-      }))
-    ).map((r) => ({
-      ...r,
-      incident: i,
-      incident_name: i.name,
-      incident_id: i.id,
-      plannedTeam: responseTeams(i).find(
-        (team) => team.team_id === (r.team_id || r.id),
-      ),
-    })),
+  const rows = priorityList(
+    incidents.flatMap((i) =>
+      (
+        i.resources ||
+        i.teams.map((t) => ({
+          ...t,
+          id: t.team_id,
+          name: t.name,
+          type: t.capabilities?.join(", "),
+          status: null,
+          available: t.available,
+          source: t.source,
+        }))
+      ).map((r) => ({
+        ...r,
+        incident: i,
+        incident_name: i.name,
+        incident_id: i.id,
+        priority: resourcePriority(
+          responseTeams(i).find((team) => team.team_id === (r.team_id || r.id)),
+        ),
+        plannedTeam: responseTeams(i).find(
+          (team) => team.team_id === (r.team_id || r.id),
+        ),
+      })),
+    ),
   );
   return (
     <>
@@ -818,6 +853,7 @@ export function Resources({ incidents }) {
             <TableHead>
               <TableRow>
                 {[
+                  "Priority",
                   "Resource",
                   "Type / capabilities",
                   "Incident",
@@ -844,6 +880,7 @@ export function Resources({ incidents }) {
                 )
                 .map((r) => (
                   <TableRow key={`${r.incident_id}:${r.id}`}>
+                    <PriorityCell row={r} />
                     <TableCell>
                       <strong>{r.name}</strong>
                       <Coordinates location={r} />
