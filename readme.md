@@ -2660,7 +2660,8 @@ The overview has four counters: incidents, deployed resources, structures,
 and people/groups (including individuals). Navigation includes an Incidents table, per-incident
 summary/calls/response plan/evacuation/resources/buildings/log pages, global Buildings & risk,
 Resources and Activity log. Count cards navigate to their relevant lists. Calls
-separate pending contact, completed calls and human follow-up with explicit reasons.
+separate uncalled/queued contact, attempted calls, completed calls and human follow-up
+with explicit reasons.
 Response steps retain backend ordering, timing, prerequisites and proposal status.
 Evacuation distinguishes reported ability, assistance needed, departure and arrival.
 Buildings show incident, assessment date, valuation, expected loss band, risk
@@ -2727,11 +2728,12 @@ Old `#/active-fires` links redirect. People/groups include individuals.
 
 The overview lists every supplied crew across incidents, one review entry per crew;
 incident summaries scope that list. Entries open ordered steps, destinations, GPS,
-and prerequisites. Analyst confirmation is visibly unavailable pending @mirrdj's
-choice between a demo-only interaction and saved backend approvals. Review never
-asserts dispatch. Call history contains individual attempts with caller, outcome,
-UTC date and search filters. **Voice assistant to call** shows pending locations
-in backend priority order. Call caller identity is shown only when explicit;
+and prerequisites. Explicit confirmation records analyst approval of the current
+plan version in a separate SQLite database; opening a review never asserts approval
+or dispatch. Call history contains individual attempts with caller, outcome,
+UTC date and search filters. **Voice assistant to call** shows locations with no call
+records or a supplied unstarted queued request, in backend priority order. Terminal
+attempts do not imply a retry. Call caller identity is shown only when explicit;
 unknown identity stays unavailable. Demo records explicitly distinguish agent and
 human calls. Incident, resource and people tables include search and relevant filters.
 Location tables, details, map tooltips and crew destinations display supplied WGS84
@@ -2788,12 +2790,12 @@ until that data is supplied. Only Design demo fixtures include illustrative dead
 The brand subtitle is “Wildfire coordination” beneath ResponsAra. The duplicate
 topbar label and location icon are removed. The main background remains white.
 
-Proposed crew plans now show **Awaiting analyst confirmation**, an explicit
+Proposed crew plans now show **Awaiting confirmation**, an explicit
 **Review & confirm** action, and a count of plans needing confirmation. The overview
 and firefighter plan page open the same review panel with a prominent confirmation
 requirement and a dedicated final action. Plans with no proposed steps are not
-labelled as awaiting approval. Saving is still unavailable until the approval
-service is connected; no approval or dispatch is inferred from opening the review.
+labelled as awaiting approval. Saving uses the local approval endpoint; no approval
+or dispatch is inferred from opening the review.
 
 Status tags now share a fixed width across tables, including activity-log event
 types and severities. Full labels remain available on hover when truncated.
@@ -2810,3 +2812,139 @@ Activity log order uses a compact column sized to its heading and sequence numbe
 The incident GPS card prefers a supplied incident point. When only a usable
 perimeter exists it shows the centre of its bounds, explicitly labelled “Perimeter
 centre”; missing coordinates are never filled from demonstration data.
+
+The Buildings & risk subtitle omits the assessment-date filter explanation.
+
+### Saved crew-plan confirmations — approved implementation
+
+@mirrdj requested implementing the disabled confirmation action. The existing
+localhost backend stores analyst approvals in a separate SQLite database;
+coordination data, task status, dispatch and prerequisite facts remain unchanged.
+Each approval records the configured local analyst name, server timestamp, source,
+incident, team and a hash of the reviewed public plan/context. A changed plan needs
+new confirmation. Design-demo and connected approvals have separate namespaces.
+The localhost application has no login system: the configured analyst label is
+local operator attribution, not an authenticated multi-user identity.
+
+Implementation plan:
+- [x] Backend: add `fireline/dashboard_approvals.py`, SQLite approval audit storage
+  and current-plan hashing. Add GET/POST `/api/crew-approvals` in the dashboard
+  server. GET requires source, incident_id, snapshot_id and revision; POST also
+  requires team_id and plan_version. Read current server-owned data and reject
+  stale versions, missing/proposal-free plans, malformed requests and cross-origin
+  writes. Persist idempotently without mutating the coordination database.
+  Tests cover reload/persistence, duplicate confirmation, stale context, source
+  isolation, origin checks and no dispatch side effects.
+- [x] Frontend: emit the Design demo dataset from the existing fixture in the build
+  for server-side verification. Add shared approval state that loads current
+  metadata, confirms explicitly, shows pending/success/error states and refreshes
+  when incident data changes. Integrate overview, firefighter and resource review
+  controls; show analyst/time, and preserve confirmation versus dispatch wording.
+  Refresh approval metadata while the app is open so other views stay consistent.
+- [x] Verify actual persistence and stale-plan rejection through the API and Chrome,
+  run Python/Node tests, lint/build and review. Restart only this session's preview
+  process on 18522 to load the new endpoint, preserving sibling demos. Record the
+  result here, commit and push the task branch.
+
+Approval API returns source/incident/revision/snapshot identifiers, configured
+`analyst`, `plans` containing `team_id`, `plan_version`, `can_confirm` and nullable
+`approval` (`approval_id`, `analyst`, `confirmed_at`, `plan_version`), plus approval
+`events`. Errors are explicit; `plan_changed` uses HTTP 409 and unavailable approval
+storage uses HTTP 503. Both reads and writes remain confined to localhost. The
+production build emits `assets/design-demo.json`; the server permits that source
+only when started with `--demo`.
+
+The server enables persistence with `--approvals-database` (default
+`data/dashboard-approvals.sqlite3`) and records the configured `--analyst` (default
+`@mirrdj`). The operational coordination database stays read-only. The UI polls
+approval metadata every five seconds, refreshes after explicit confirmation, shows
+**Confirmed by @mirrdj** and the saved time, and adds confirmations to the activity
+log. Browser tests use isolated approval databases and leave the preview's saved
+confirmations intact.
+
+Plan identity includes authoritative action versions, task details, reviewed
+locations, snapshot, epoch and input mode. Unrelated envelope-revision changes do
+not invalidate an unchanged plan, but requests must still match the current
+revision. Design-demo snapshots are bound to a SHA-256 digest of the exported
+fixture: an old browser build must reload before confirming rebuilt data. Legacy
+single-crew plans with no crew identifier remain reviewable and explicitly cannot
+be confirmed until a crew is identified. No dispatch or prerequisite confirmation
+is implied by analyst approval.
+
+Verification: 954 Python tests passed, 2 skipped; 30 Node tests passed. Frontend
+lint, formatting and production build passed. Chrome checks covered the dashboard,
+connected state, saved confirmation after server restart, cross-view and cross-tab
+updates, stale-plan rejection, audit logs and source isolation. Code review findings
+were resolved and rechecked. Pending plans display **Awaiting confirmation**.
+
+### Crew review map and evacuation heading
+
+@mirrdj requested **Identified groups** in place of **Location readiness** on the
+Evacuation page. Existing people-count labels and calculations are unchanged.
+The crew review dialog includes a map of that crew's supplied planned paths and
+numbered destinations, using task array order consistently with the step list.
+Paths stay dashed even after analyst confirmation: approval is not movement.
+Missing paths are not bridged with invented lines. Destinations use identified
+asset GPS, or a labelled supplied path endpoint when asset GPS is absent. Repeated
+destinations share a marker listing their stop numbers.
+
+Runtime interface agreed with `codex/end-to-end`: optional
+`plan.response.teams[].current_location = {latitude, longitude, observed_at, source}`
+contains an operations-supplied position, otherwise `null`. The map labels this
+**Reported crew location**, shows GPS, timestamp and source, and never infers a
+live position from `start_node` or a path origin. Invalid or absent coordinates
+remain unknown. Tasks already supply ordered `path_lonlat` (longitude, latitude),
+`asset_id`, `start_min` and `finish_min`; no additional backend fields are required.
+
+Implementation/verification sequence: test order, geometry validation and unknown
+position behavior; add the shared map to the existing confirmation dialog; verify
+reported and missing positions through REST/WebSocket browser fixtures; run Node,
+lint, formatting, build and confirmation browser regressions; commit and push.
+
+Verification completed: 33 Node tests passed; lint, formatting and production build
+passed. Chrome dashboard, connected-state and persisted-confirmation regressions
+passed. Browser coverage includes three numbered stops, operations position metadata,
+position removal over WebSocket, invalid path omission and the renamed heading.
+The invalid-path check also found and fixed a pre-existing incident-map crash on
+null crew-path points by sharing geometry validation. Code review is complete.
+
+### Call lifecycle count correction
+
+Integration at port 18541 supplied three `no_answer` records, but the old UI counted
+all three as waiting because it equated attempted calls with completed calls.
+**Call attempted** now includes started or terminal call records; **Call completed**
+is a separate count of locations with a completed record. **Voice assistant to call**
+includes only locations with no records or a supplied `queued` request whose
+`dispatch_state` is absent or `not_started`, and any non-null `queue_state` is
+`pending`. A queued record already `attempting`,
+`bound` or `outcome_unknown` is an attempt, not another waiting call. Unknown call
+statuses remain unknown. Human follow-up is independent; a supplied queued retry
+may overlap with attempted/completed history. All counts are unique locations.
+Pending rows distinguish **Queued request** from **No call records**. Long request
+IDs wrap and follow-up reasons retain a minimum column width.
+
+The runtime contract now supplies `calls[].queue_state` as `pending`, `review`,
+`started`, `cancelled` or `null`. Non-null membership is authoritative: only
+`pending` can qualify an unstarted queued request for **Voice assistant to call**.
+`review`, `started` and `cancelled` are excluded even if call status remains
+`queued`. Null or absent membership preserves the lifecycle fallback, with queue
+eligibility explicitly unknown. Terminal calls and started dispatch are never
+requeued by stale pending metadata. The history and detail views expose queue
+state separately from call outcome. No backend or runtime files were changed
+under the integration freeze.
+
+Verification: regression tests cover terminal attempts, explicit retries, active
+and uncertain dispatch, unknown outcomes, and completion. Chrome replay of the
+public port-18541 state shows 0 to call, 3 attempted, 0 completed and 3 human
+follow-ups, and checks retry/completion updates without writing to the service.
+Final checks passed: 35 Node tests, frontend lint/format/build, all four Chrome
+regression scripts and the read-only port-18541 state replay. Review found no
+blocking issues. Existing crew-map and persisted-confirmation checks still pass.
+
+Queue cancellation regression: unit coverage includes every queue state, null/absent
+fallback and stale pending metadata on a terminal call. Chrome verifies a queued
+retry leaves the waiting list on cancellation/review/start, returns only with pending
+membership, and still exits on completion. Runtime publication remains owned by
+`codex/end-to-end`; frontend consumes the field directly from REST/WebSocket data.
+Cancellation update verification passed: 36 Node tests, lint, formatting, production
+build and all four Chrome regression scripts, including saved confirmations.

@@ -551,7 +551,7 @@ main {
 }
 .queue-filters {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 20px;
 }
 .queue-filter {
@@ -564,6 +564,14 @@ main {
 .queue-filter strong {
   font-size: 23px;
   font-weight: 600;
+}
+
+.call-request-id {
+  max-width: 180px;
+  overflow-wrap: anywhere;
+}
+.call-followup-reasons {
+  min-width: 180px;
 }
 .rank {
   display: inline-flex;
@@ -983,4 +991,34 @@ main {
   font-size: 18px;
   margin-top: 14px;
   font-variant-numeric: tabular-nums;
+}
+
+.crew-identity .confirmation-saved {
+  color: #389e0d;
+  font-weight: 600;
+}
+
+.crew-route-review {
+  margin-bottom: 24px;
+}
+.crew-route-map {
+  height: 340px;
+  width: 100%;
+  border-radius: 6px;
+}
+.crew-stop-pin,
+.crew-position-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1677ff;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  font-weight: 700;
+  box-shadow: 0 1px 5px #0008;
+}
+.crew-position-pin {
+  background: #237804;
+  border-radius: 5px;
 }
