@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS voice_calls (
  dispatch_state TEXT NOT NULL DEFAULT 'not_started');
 CREATE TABLE IF NOT EXISTS voice_provider_bindings (
  request_id TEXT PRIMARY KEY, agent_id TEXT NOT NULL, association_source TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS voice_result_finalizations (
+ request_id TEXT PRIMARY KEY, finalized_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS voice_events (
  event_id TEXT PRIMARY KEY, request_id TEXT NOT NULL, payload TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS voice_task_links (
@@ -354,6 +356,12 @@ class VoiceStore:
             if raw_status == 'completed':
                 result = normalize_call(CallRequest(**record['request']), body)
                 result_outcome = self.record_result(result)
+                finalized_at = body.get('finalized_at')
+                if finalized_at is not None and result_outcome in ('accepted', 'duplicate'):
+                    self._time(finalized_at)
+                    self.conn.execute(
+                        'INSERT OR REPLACE INTO voice_result_finalizations VALUES (?, ?)',
+                        (request_id, finalized_at))
             return dict(lifecycle=outcome, result=result_outcome, provider_call_id=call_id,
                         human_followup_required=True, dispatch=False, live_validation=False)
 

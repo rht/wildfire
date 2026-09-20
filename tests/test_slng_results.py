@@ -174,6 +174,17 @@ def test_provider_record_timestamp_does_not_claim_speech_observation_time():
     assert 'evidence_time_unknown' in saved['human_followup_reasons']
 
 
+def test_invalid_finalization_rolls_back_answers_and_remains_eligible():
+    s = store()
+    s.register(request())
+    body = dict(payload(), finalized_at='invalid')
+    with pytest.raises(ValueError):
+        s.sync(client(Transport(body)), 'req-B', provider_call_id=CALL)
+    assert s.get('req-B')['provider_call_id'] is None
+    assert s.get('req-B')['result'] is None
+    assert s.conn.execute('SELECT count(*) FROM voice_result_finalizations').fetchone()[0] == 0
+
+
 @pytest.mark.parametrize('report', ['malformed', {'chat_history': []},
     {'chat_history': {'items': {}}}, {'chat_history': {'items': ['malformed']}}])
 def test_malformed_transcript_is_controlled_and_atomic(report):

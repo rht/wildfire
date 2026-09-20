@@ -44,6 +44,7 @@ class IncidentRuntime:
         if self.mode not in ("live", "recorded", "synthetic") or self.call_mode not in (
             "disabled",
             "live",
+            "sync_only",
             "simulate_no_answer",
         ):
             raise ValueError("invalid runtime mode")
@@ -427,19 +428,20 @@ class IncidentRuntime:
         coordinator = self._coordinator(saved)
         try:
             queue = self._queue(coordinator)
-            if self.call_mode == "live":
+            if self.call_mode in ("live", "sync_only"):
                 if self.client is None:
-                    raise ValueError("live call client is not configured")
+                    raise ValueError("call result client is not configured")
                 from .slng_voice import ProviderError
 
                 failures = queue.sync_active(self.client)
                 saved["errors"] = [
                     {"code": "call_sync_failed", "request_id": r} for r in failures
                 ]
-                try:
-                    queue.dispatch_next(self.client)
-                except ProviderError:
-                    saved["errors"].append({"code": "dispatch_reconciliation_required"})
+                if self.call_mode == "live":
+                    try:
+                        queue.dispatch_next(self.client)
+                    except ProviderError:
+                        saved["errors"].append({"code": "dispatch_reconciliation_required"})
                 self._save(saved)
             elif self.call_mode == "simulate_no_answer":
                 pending = queue.status()["pending"]

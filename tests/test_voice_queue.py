@@ -2,6 +2,8 @@
 from dataclasses import replace
 from datetime import timedelta
 import importlib
+import json
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
@@ -274,6 +276,47 @@ def test_failed_status_poll_does_not_release_capacity(tmp_path):
     now[0] += timedelta(seconds=5)
     assert q.sync_active(client(Transport(status=503))) == ['req-A']
     assert q.dispatch_next(provider()) is None
+
+
+def test_completed_lifecycle_still_fetches_late_assistance_until_finalized(tmp_path):
+    q, s, now = setup_queue(tmp_path)
+    enqueue(q)
+    started = q.dispatch_next(provider())
+    complete(s, 'req-A')  # A carrier webhook can precede SLNG answer extraction.
+    body = json.loads(Path('fixtures/voice/slng_completed.json').read_text(encoding='utf-8'))
+    body.update(id=started['provider_call_id'], updated_at=now[0].isoformat(),
+                arguments=dict(request_id='req-A', asset_id='A', snapshot_id='snapshot-demo'))
+    pending = dict(body, memory_variables=[], finalized_at=None)
+    assert q.sync_active(client(Transport(pending))) == []
+    assert s.get('req-A')['result'] is not None
+    assert s.get('req-A')['result']['can_self_evacuate'] is None
+    assert q.status()['active'] == 0  # Waiting for results does not occupy a phone slot.
+    s.close()
+    now[0] += timedelta(seconds=5)
+    reopened = VoiceStore(tmp_path / 'queue.sqlite', epoch=EPOCH, clock=lambda: now[0])
+    q = api().VoiceCallQueue(reopened)
+    body.update(updated_at=now[0].isoformat(), finalized_at=now[0].isoformat())
+    assert q.sync_active(client(Transport(body))) == []
+    assert reopened.get('req-A')['result']['can_self_evacuate'] is False
+    assert 'voice:arrange_assistance' in {t['reason'] for t in reopened.tasks.tasks('A')}
+    # Finalization survives restart and stops redundant provider GETs.
+    reopened.close()
+    reopened = VoiceStore(tmp_path / 'queue.sqlite', epoch=EPOCH, clock=lambda: now[0])
+    q = api().VoiceCallQueue(reopened)
+    unavailable = client(Transport(status=503))
+    assert q.sync_active(unavailable) == []
+    assert unavailable.transport.calls == []
+    reopened.close()
+
+
+def test_completed_call_fetch_failure_remains_retryable(tmp_path):
+    q, s, _ = setup_queue(tmp_path)
+    enqueue(q)
+    q.dispatch_next(provider())
+    complete(s, 'req-A')
+    assert q.sync_active(client(Transport(status=503))) == ['req-A']
+    assert q.sync_active(client(Transport(status=503))) == ['req-A']
+    assert q.status()['active'] == 0
 
 
 def test_three_per_second_pacing_and_clock_rollback(tmp_path):

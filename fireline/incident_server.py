@@ -449,7 +449,7 @@ def main(argv=None):
         else:
             settings = _settings(args.settings)
         client = None
-        if settings.get("call_mode") == "live" or os.environ.get("SLNG_EVENT_TOKEN"):
+        if settings.get("call_mode") in ("live", "sync_only") or os.environ.get("SLNG_EVENT_TOKEN"):
             from .slng_voice import SlngClient, SlngConfig
 
             client = SlngClient(SlngConfig.from_env())
