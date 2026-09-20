@@ -112,7 +112,7 @@ def main(argv=None):
                 p.error('--output and explicit --stt --llm --tts --voice are required')
             req = CallRequest('config-demo', 'B', 'voice-synthetic-snapshot', '+12025550123', args.language,
                               'SIMULATION: analyst-provided brief.')
-            config = agent_configuration(req, name='FireLine readiness interview', region=args.region,
+            config = agent_configuration(req, name='ResponsAra readiness interview', region=args.region,
                 models=dict(stt=args.stt, llm=args.llm, tts=args.tts, tts_voice=args.voice))
             private_json(args.output, config)
             report = dict(status='configuration_written', dispatch=False, live_validation=False)

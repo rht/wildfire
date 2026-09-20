@@ -1,4 +1,4 @@
-# FireLine contracts (v1.1, readme.md v4 MVP)
+# ResponsAra contracts (v1.1, readme.md v4 MVP)
 
 Binding module interfaces for the v4 MVP in `readme.md`. Section 5 of the readme defines the shared
 location-assessment snapshot; this file restates it as code contracts and adds the module APIs on

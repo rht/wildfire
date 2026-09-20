@@ -2,7 +2,7 @@
 
 Track 4, "Values at risk": Norrsken x Deepfire "AI for Wildfire" challenge, Hackbarna 2026.
 
-Working name: **FireLine** (rename freely).
+Working name: **ResponsAra** (rename freely).
 
 Implementation split: **risk assessment** discovers and evaluates affected locations from incoming fire updates; **analyst coordination** turns those assessments into an ordered work queue, recommended actions and proposed team assignments. The shared location contract is in section 6.3.1; ownership is in section 11.
 

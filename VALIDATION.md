@@ -1,4 +1,4 @@
-# FireLine v4 MVP validation (readme.md section 11)
+# ResponsAra v4 MVP validation (readme.md section 11)
 
 Validation date: 2026-09-19. Written by `scripts/validate.py --write`; rerun it to refresh. Every check ran offline on the committed fixtures (no network, no Deepfire credentials, no LLM key). Outcomes and numbers below are what the script measured on that run; nothing here is a claim beyond those measurements. Fixture content is synthetic except the Gencat register extract in `fixtures/real_area/`.
 

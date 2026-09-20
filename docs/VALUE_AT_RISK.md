@@ -159,7 +159,7 @@ computed here is total economic loss, insured plus uninsured, not an insurer's n
 | Post-fire restoration | ≥ 2,500 EUR/ha | COITF |
 | Catalonia forest ecosystem services | ≈ 2,225 M EUR/yr over 2.08 M ha ≈ 1,070 EUR/ha/yr **[est.]** | PGPF 2036 |
 | EU average all-in wildfire loss | ≈ 4,000–6,000 EUR/ha **[est.]** | JRC/EFFIS |
-| Suggested FireLine defaults **[est.]** | forest 5,000–8,000; cropland 1,000–1,500; pasture 400 EUR/ha | |
+| Suggested ResponsAra defaults **[est.]** | forest 5,000–8,000; cropland 1,000–1,500; pasture 400 EUR/ha | |
 
 ### Lives (planning view only)
 

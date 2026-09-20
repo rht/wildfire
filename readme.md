@@ -1,4 +1,4 @@
-# FireLine — Practical Values-at-Risk MVP (v4)
+# ResponsAra — Practical Values-at-Risk MVP (v4)
 
 Track 4, "Values at risk": Norrsken x Deepfire "AI for Wildfire" challenge, Hackbarna 2026.
 
@@ -1226,9 +1226,9 @@ This follows the agreed conversation and Vonage architecture in this session.
 
 The package in `voice-agent/` is a connectivity smoke test. It uses fictional
 incident details and records conversation variables on SLNG. The local `sync`
-command saves completed answers in FireLine's database. The package does not
+command saves completed answers in ResponsAra's database. The package does not
 dispatch assistance or transfer to a real responder. The offline voice demo tests
-FireLine's validation and persistent follow-up. A working greeting alone does
+ResponsAra's validation and persistent follow-up. A working greeting alone does
 not prove recognition, reasoning, answer persistence, or two-way phone audio.
 
 - [x] Install checksum-verified Unmute 0.5.5 and VoiceAI CLI 0.1.19 locally
@@ -1255,7 +1255,7 @@ testing: complete answers, assistance, human requests, interruptions, unknown
 answers, wrong location, assistance-question polarity and corrections. These
 are expected results, not recorded calls. The agent classifies each field as
 `yes`, `no` or `inconclusive`, with exact tester quotes. Those values correspond
-to FireLine's `true`, `false` and `null`. Initial message receipt and final
+to ResponsAra's `true`, `false` and `null`. Initial message receipt and final
 readback acknowledgement are separate. Hosted model execution and memory capture
 were verified with an authorized Vonage phone call; browser speech and the full
 interruption/correction scripts still need manual testing.
@@ -1263,7 +1263,7 @@ interruption/correction scripts still need manual testing.
 Durable hosted answer capture uses `scripts/voice_demo.py --mode sync`, which
 authenticates a read-only SLNG call fetch and saves lifecycle, true/false/null
 answers, evidence and its provenance atomically through `VoiceStore`. `poll`
-remains lifecycle-only. There is no background sync or hosted FireLine submission
+remains lifecycle-only. There is no background sync or hosted ResponsAra submission
 tool. Human requests are recorded; no real human-transfer tool is configured.
 
 Readiness now exposes `reported_can_self_evacuate`,
@@ -1322,7 +1322,7 @@ remain labelled `provider_reported`. Provider record timestamps are not exact
 speech timestamps. No confidence is inferred; live results require review.
 Explicit assistance and human requests survive partial later reports.
 
-Dispatch through the generic FireLine adapter returned HTTP 400 for the fixed
+Dispatch through the generic ResponsAra adapter returned HTTP 400 for the fixed
 mock agent in this session. These two calls used the VoiceAI CLI's argument-free dispatch
 and an explicit local association. The generic `--mode outbound` path needs a
 compatible agent configuration before use with this fixed mock package.
@@ -1356,7 +1356,7 @@ mock agent and recheck its outbound connection after deployment. References:
 ### Voice integration delivery plan
 
 Goal: merge the voice work onto current main and save completed SLNG interviews
-through FireLine's existing durable store. The user authorized implementation,
+through ResponsAra's existing durable store. The user authorized implementation,
 parallel work, review fixes, PR creation and merging after verification.
 
 - [x] Rebase the voice commits onto `origin/main`, preserving upstream Norma
@@ -1365,7 +1365,7 @@ parallel work, review fixes, PR creation and merging after verification.
 - [x] Evaluate branch-owned Python with Norma, fix actionable violations and
   verify the fixes. Repository scan status and per-file checks remain distinct.
 - [x] Add authenticated completed-call import/sync to the existing SLNG adapter
-  and voice CLI, with an explicit FireLine request/call association. Normalize
+  and voice CLI, with an explicit ResponsAra request/call association. Normalize
   memory answers to true/false/null, retain provider evidence and redaction
   limitations, and commit results idempotently through `VoiceStore`.
 - [x] Cover mismatched associations, duplicate delivery, missing/unknown answers,
