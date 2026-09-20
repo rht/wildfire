@@ -24,4 +24,8 @@ def test_recorded_triggers_carry_the_real_perimeter(tmp_path):
         assert state["fire_geometry"]["type"] in ("Polygon", "MultiPolygon")
         assert len(get_coordinates(shape(state["fire_geometry"]))) >= 40
         assert sum(a["latitude"] is not None for a in state["assets"]) >= 20
+    # Fictional crews bound to the current snapshot: visible roster, no stale-operations error.
+    assert len(state["teams"]) >= 3
+    assert "operational_inputs_need_refresh" not in {e["code"] for e in state["errors"]}
+    assert all("fictional" in t["current_location"]["source"] for t in state["plan"]["response"]["teams"])
     assert public_state(runtime.state())["fire_geometry"] == state["fire_geometry"]

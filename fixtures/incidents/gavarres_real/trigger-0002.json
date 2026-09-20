@@ -189,5 +189,407 @@
   "source": "deepfire:satellite-perimeters",
   "raw_ref": "fixtures/fire/deepfire/real/20260919T131342Z_satellite-perimeters.json",
   "notes": "observed_at from observed_watermark"
+ },
+ "operations": {
+  "snapshot_id": "gavarres_real-0002",
+  "horizon_min": 852,
+  "source": "FICTIONAL crews and routes invented for the demo; not a real deployment",
+  "teams": [
+   {
+    "team_id": "bombers-1",
+    "start_node_id": "base-bombers-1",
+    "available": true,
+    "available_from_min": 132,
+    "available_until_min": 852,
+    "transport_capacity": 0,
+    "capabilities": [
+     "protection"
+    ],
+    "note": "fictional protection crew parked at Parc de Bombers de la Vall d'Aro",
+    "current_location": {
+     "latitude": 41.80871,
+     "longitude": 3.031821,
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "source": "fictional crew GPS, not a real deployment"
+    }
+   },
+   {
+    "team_id": "bombers-2",
+    "start_node_id": "base-bombers-2",
+    "available": true,
+    "available_from_min": 132,
+    "available_until_min": 852,
+    "transport_capacity": 0,
+    "capabilities": [
+     "protection"
+    ],
+    "note": "fictional protection crew parked at Parc de Bombers de Cassa de la Selva",
+    "current_location": {
+     "latitude": 41.879694,
+     "longitude": 2.883842,
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "source": "fictional crew GPS, not a real deployment"
+    }
+   },
+   {
+    "team_id": "transport-1",
+    "start_node_id": "base-transport-1",
+    "available": true,
+    "available_from_min": 132,
+    "available_until_min": 852,
+    "transport_capacity": 8,
+    "capabilities": [
+     "assisted_evacuation"
+    ],
+    "note": "fictional assisted-evacuation minibus parked in La Bisbal d'Emporda",
+    "current_location": {
+     "latitude": 41.96,
+     "longitude": 3.04,
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "source": "fictional crew GPS, not a real deployment"
+    }
+   },
+   {
+    "team_id": "police-1",
+    "start_node_id": "base-police-1",
+    "available": true,
+    "available_from_min": 132,
+    "available_until_min": 852,
+    "transport_capacity": 0,
+    "capabilities": [
+     "traffic_control"
+    ],
+    "note": "fictional police unit parked in Palafrugell",
+    "current_location": {
+     "latitude": 41.92,
+     "longitude": 3.16,
+     "observed_at": "2026-07-03T15:32:24.822000+00:00",
+     "source": "fictional crew GPS, not a real deployment"
+    }
+   }
+  ],
+  "road_nodes": {
+   "base-bombers-1": [
+    3.031821,
+    41.80871
+   ],
+   "equipaments:25599403": [
+    3.074588,
+    41.852481
+   ],
+   "schools:17007580": [
+    3.073513,
+    41.86267
+   ],
+   "schools:17009710": [
+    3.033851,
+    41.95146
+   ],
+   "base-bombers-2": [
+    2.883842,
+    41.879694
+   ],
+   "base-transport-1": [
+    3.04,
+    41.96
+   ],
+   "base-police-1": [
+    3.16,
+    41.92
+   ]
+  },
+  "routes": [
+   {
+    "from_node": "base-bombers-1",
+    "to_node": "equipaments:25599403",
+    "minutes": 9,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.031821,
+      41.80871
+     ],
+     [
+      3.074588,
+      41.852481
+     ]
+    ]
+   },
+   {
+    "from_node": "base-bombers-1",
+    "to_node": "schools:17007580",
+    "minutes": 10,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.031821,
+      41.80871
+     ],
+     [
+      3.073513,
+      41.86267
+     ]
+    ]
+   },
+   {
+    "from_node": "base-bombers-1",
+    "to_node": "schools:17009710",
+    "minutes": 24,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.031821,
+      41.80871
+     ],
+     [
+      3.033851,
+      41.95146
+     ]
+    ]
+   },
+   {
+    "from_node": "base-bombers-2",
+    "to_node": "equipaments:25599403",
+    "minutes": 24,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      2.883842,
+      41.879694
+     ],
+     [
+      3.074588,
+      41.852481
+     ]
+    ]
+   },
+   {
+    "from_node": "base-bombers-2",
+    "to_node": "schools:17007580",
+    "minutes": 24,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      2.883842,
+      41.879694
+     ],
+     [
+      3.073513,
+      41.86267
+     ]
+    ]
+   },
+   {
+    "from_node": "base-bombers-2",
+    "to_node": "schools:17009710",
+    "minutes": 22,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      2.883842,
+      41.879694
+     ],
+     [
+      3.033851,
+      41.95146
+     ]
+    ]
+   },
+   {
+    "from_node": "base-transport-1",
+    "to_node": "equipaments:25599403",
+    "minutes": 18,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.04,
+      41.96
+     ],
+     [
+      3.074588,
+      41.852481
+     ]
+    ]
+   },
+   {
+    "from_node": "base-transport-1",
+    "to_node": "schools:17007580",
+    "minutes": 17,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.04,
+      41.96
+     ],
+     [
+      3.073513,
+      41.86267
+     ]
+    ]
+   },
+   {
+    "from_node": "base-transport-1",
+    "to_node": "schools:17009710",
+    "minutes": 2,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.04,
+      41.96
+     ],
+     [
+      3.033851,
+      41.95146
+     ]
+    ]
+   },
+   {
+    "from_node": "base-police-1",
+    "to_node": "equipaments:25599403",
+    "minutes": 15,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.16,
+      41.92
+     ],
+     [
+      3.074588,
+      41.852481
+     ]
+    ]
+   },
+   {
+    "from_node": "base-police-1",
+    "to_node": "schools:17007580",
+    "minutes": 14,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.16,
+      41.92
+     ],
+     [
+      3.073513,
+      41.86267
+     ]
+    ]
+   },
+   {
+    "from_node": "base-police-1",
+    "to_node": "schools:17009710",
+    "minutes": 17,
+    "confirmed": true,
+    "safe": true,
+    "available_until_min": 852,
+    "source": "fictional straight-line route, not an inspected road",
+    "path_lonlat": [
+     [
+      3.16,
+      41.92
+     ],
+     [
+      3.033851,
+      41.95146
+     ]
+    ]
+   }
+  ],
+  "actions": [
+   {
+    "action_id": "protect-equipaments:25599403",
+    "asset_id": "equipaments:25599403",
+    "duration_min": 30,
+    "deadline_min": 852,
+    "requires": [],
+    "capabilities": [
+     "protection"
+    ],
+    "transport_people": 0,
+    "readiness_required": false,
+    "effects": [
+     {
+      "asset_id": "equipaments:25599403",
+      "coverage": 1,
+      "confirmed": true,
+      "source": "fictional protection effect, not predicted lives saved"
+     }
+    ]
+   },
+   {
+    "action_id": "protect-schools:17007580",
+    "asset_id": "schools:17007580",
+    "duration_min": 30,
+    "deadline_min": 852,
+    "requires": [],
+    "capabilities": [
+     "protection"
+    ],
+    "transport_people": 0,
+    "readiness_required": false,
+    "effects": [
+     {
+      "asset_id": "schools:17007580",
+      "coverage": 1,
+      "confirmed": true,
+      "source": "fictional protection effect, not predicted lives saved"
+     }
+    ]
+   },
+   {
+    "action_id": "protect-schools:17009710",
+    "asset_id": "schools:17009710",
+    "duration_min": 30,
+    "deadline_min": 852,
+    "requires": [],
+    "capabilities": [
+     "protection"
+    ],
+    "transport_people": 0,
+    "readiness_required": false,
+    "effects": [
+     {
+      "asset_id": "schools:17009710",
+      "coverage": 1,
+      "confirmed": true,
+      "source": "fictional protection effect, not predicted lives saved"
+     }
+    ]
+   }
+  ],
+  "readiness_validity_min": 60
  }
 }

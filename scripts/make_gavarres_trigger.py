@@ -32,6 +32,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from shapely.geometry import Point, shape  # noqa: E402
+
+from fireline.voice_models import utc  # noqa: E402
 from scripts.make_snapshots import recorded_real_fires  # noqa: E402
 
 FIX = ROOT / "fixtures"
@@ -74,13 +77,88 @@ def build_catalog(files=SNAPSHOT_FILES) -> list[dict]:
     return [rows[k] for k in sorted(rows)]
 
 
-def build_triggers() -> list[dict]:
+# FICTIONAL crews. Bases are real places (two Gencat fire stations from the catalog, two town centres) chosen
+# to sit outside every recorded perimeter; the crews, positions and capabilities are invented for the demo.
+CREW_SOURCE = "fictional crew GPS, not a real deployment"
+CREWS = (
+    ("bombers-1", 41.80871, 3.031821, ["protection"], 0,
+     "fictional protection crew parked at Parc de Bombers de la Vall d'Aro"),
+    ("bombers-2", 41.879694, 2.883842, ["protection"], 0,
+     "fictional protection crew parked at Parc de Bombers de Cassa de la Selva"),
+    ("transport-1", 41.96, 3.04, ["assisted_evacuation"], 8,
+     "fictional assisted-evacuation minibus parked in La Bisbal d'Emporda"),
+    ("police-1", 41.92, 3.16, ["traffic_control"], 0,
+     "fictional police unit parked in Palafrugell"),
+)
+SHIFT_MIN = 720          # each crew is available for 12 h from the trigger
+TARGETS = 3              # located catalog assets nearest the perimeter that get a fictional action
+ROUTE_KMH = 40           # straight-line speed assumed for the fictional routes
+
+
+def _km(lat1, lon1, lat2, lon2) -> float:
+    """Great-circle distance in km (haversine)."""
+    from math import asin, cos, radians, sin, sqrt
+    p1, p2, dl = radians(lat1), radians(lat2), radians(lon2 - lon1)
+    h = sin((p2 - p1) / 2) ** 2 + cos(p1) * cos(p2) * sin(dl / 2) ** 2
+    return 2 * 6371 * asin(sqrt(h))
+
+
+def nearest_assets(fire: dict, catalog: list[dict], count: int = TARGETS) -> list[dict]:
+    """The `count` located catalog rows nearest the perimeter (ties broken by asset_id); none inside it."""
+    geometry = shape(fire["geometry"])
+    ranked = sorted((geometry.distance(Point(r["longitude"], r["latitude"])), r["asset_id"], r)
+                    for r in catalog if r["latitude"] is not None and r["longitude"] is not None
+                    and not geometry.contains(Point(r["longitude"], r["latitude"])))
+    return [r for _, _, r in ranked[:count]]
+
+
+def build_operations(trigger: dict, catalog: list[dict], epoch, sequence: int) -> dict:
+    """FICTIONAL operations bound to this trigger's snapshot: crews, straight-line routes, review-only actions."""
+    as_of = utc(trigger["as_of"])
+    elapsed = round((as_of - epoch).total_seconds() / 60)
+    horizon = elapsed + SHIFT_MIN
+    targets = nearest_assets(trigger["fire"], catalog)
+    teams, nodes, routes = [], {}, []
+    for team_id, lat, lon, capabilities, capacity, note in CREWS:
+        base = f"base-{team_id}"
+        nodes[base] = [lon, lat]
+        teams.append({"team_id": team_id, "start_node_id": base, "available": True,
+                      "available_from_min": elapsed, "available_until_min": horizon,
+                      "transport_capacity": capacity, "capabilities": capabilities, "note": note,
+                      "current_location": {"latitude": lat, "longitude": lon,
+                                           "observed_at": trigger["as_of"], "source": CREW_SOURCE}})
+        for asset in targets:
+            nodes[asset["asset_id"]] = [asset["longitude"], asset["latitude"]]
+            routes.append({"from_node": base, "to_node": asset["asset_id"],
+                           "minutes": max(1, round(_km(lat, lon, asset["latitude"], asset["longitude"])
+                                                   / ROUTE_KMH * 60)),
+                           "confirmed": True, "safe": True, "available_until_min": horizon,
+                           "source": "fictional straight-line route, not an inspected road",
+                           "path_lonlat": [[lon, lat], [asset["longitude"], asset["latitude"]]]})
+    actions = [{"action_id": f"protect-{a['asset_id']}", "asset_id": a["asset_id"], "duration_min": 30,
+                "deadline_min": horizon, "requires": [], "capabilities": ["protection"],
+                "transport_people": 0, "readiness_required": False,
+                "effects": [{"asset_id": a["asset_id"], "coverage": 1, "confirmed": True,
+                             "source": "fictional protection effect, not predicted lives saved"}]}
+               for a in targets]
+    return {"snapshot_id": f"{SCENARIO_ID}-{sequence:04d}", "horizon_min": horizon,
+            "source": "FICTIONAL crews and routes invented for the demo; not a real deployment",
+            "teams": teams, "road_nodes": nodes, "routes": routes, "actions": actions,
+            "readiness_validity_min": 60}
+
+
+def build_triggers(catalog: list[dict] | None = None) -> list[dict]:
     fires = recorded_real_fires()
     if not fires:
         raise SystemExit("fixtures/fire/deepfire/real/ has no satellite-perimeters response")
-    return [{"trigger_id": f"gavarres-real-{n:04d}", "scenario_id": SCENARIO_ID, "input_mode": "recorded",
-             "as_of": as_of.isoformat(), "fire": fire}
-            for n, (fire, as_of) in enumerate(fires, start=1)]
+    catalog = build_catalog() if catalog is None else catalog
+    epoch = fires[0][1]
+    triggers = [{"trigger_id": f"gavarres-real-{n:04d}", "scenario_id": SCENARIO_ID, "input_mode": "recorded",
+                 "as_of": as_of.isoformat(), "fire": fire}
+                for n, (fire, as_of) in enumerate(fires, start=1)]
+    for n, trigger in enumerate(triggers, start=1):
+        trigger["operations"] = build_operations(trigger, catalog, epoch, n)
+    return triggers
 
 
 def write(path: Path, payload) -> None:
@@ -90,9 +168,10 @@ def write(path: Path, payload) -> None:
 def generate(out_dir: Path = OUT_DIR) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     written = [out_dir / "settings.json", out_dir / "catalog.json"]
+    catalog = build_catalog()
     write(written[0], SETTINGS)
-    write(written[1], build_catalog())
-    for trigger in build_triggers():
+    write(written[1], catalog)
+    for trigger in build_triggers(catalog):
         path = out_dir / f"trigger-{trigger['trigger_id'].rsplit('-', 1)[1]}.json"
         write(path, trigger)
         written.append(path)
@@ -106,7 +185,8 @@ def main(argv=None) -> int:
     for path in generate(args.out_dir):
         body = json.loads(path.read_text(encoding="utf-8"))
         detail = (f"{len(body)} rows" if isinstance(body, list) else
-                  f"as_of {body['as_of']} observed {body['fire']['observed_at']}" if "fire" in body else "")
+                  f"as_of {body['as_of']} observed {body['fire']['observed_at']} "
+                  f"{len(body['operations']['teams'])} fictional crews" if "fire" in body else "")
         print(f"{path.relative_to(ROOT) if path.is_relative_to(ROOT) else path}: {detail}")
     return 0
 

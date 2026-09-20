@@ -3134,7 +3134,10 @@ a fresh directory restarts. The incident server serves the built `frontend/dist`
 at <http://127.0.0.1:18522/> and `/api/state` + `/api/updates`, so open it directly
 (or `npm --prefix frontend run dev`, which proxies to 18522) and pick **Connected
 backend**. Expect the real satellite perimeter with `fire_geometry_kind: perimeter`,
-`input_mode: recorded`, the real Gavarres facilities and an empty call history.
+`input_mode: recorded`, the real Gavarres facilities and an empty call history. Each
+trigger also carries four clearly labelled FICTIONAL crews (`operations` block bound to
+its snapshot id) so the Resources / Crews views and crew map markers are populated;
+without a forecast the planner lists their actions for review instead of proposing routes.
 Streamlit reads the same perimeters from `fixtures/snapshots/gavarres_real_*.json`;
 this path reads the runtime's coordination state produced from the triggers.
 

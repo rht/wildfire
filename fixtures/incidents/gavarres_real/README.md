@@ -38,8 +38,17 @@ Run the incident server on it (no telephony, no LLM):
   the trigger's July `as_of`, so `spread` is not attached and every asset stays `forecast_unavailable`.
   Nothing is inferred from distance.
 - No calls, no contacts, no approvals (`call_mode: disabled`, empty `contacts` / `approvals`).
-- No operational evidence (no teams, destinations, roads or reservations); the state reports
-  `operational_inputs_need_refresh` until an operations update bound to the current snapshot arrives.
+- FICTIONAL crews: each trigger carries an `operations` block, bound to that trigger's snapshot id
+  (`gavarres_real-000N`), with four invented crews (`bombers-1`, `bombers-2` protection crews parked at
+  the real Vall d'Aro and Cassà de la Selva fire stations, the `transport-1` assisted-evacuation minibus
+  in La Bisbal d'Empordà, `police-1` in Palafrugell), each with a `current_location` whose `source` says
+  fictional, a 12 h availability window from the trigger, straight-line routes to the three located
+  catalog assets nearest the perimeter and one fictional protection action per target. This is what
+  makes the Resources / Crews views, the crew markers on the map and a non-null `plan.response`
+  appear and clears `operational_inputs_need_refresh`. Nothing here is a real deployment. Because no
+  forecast is attached every asset has an unknown deadline, so the planner puts the actions in
+  `plan.response.review` (`unknown_deadline`) rather than proposing crew tasks or routes; there are still
+  no destinations, reservations or road reports.
 - No LLM assessment (`llm_assessment.mode: disabled`).
 - The register extract (2026-09-19) postdates the fire (July 2026): this is a recorded-input demo, not a
   historical as-of replay.
