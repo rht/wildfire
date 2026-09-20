@@ -32,6 +32,7 @@ import {
   humanize,
   distanceToFire,
 } from "../state/model.mjs";
+import { locationPriority, priorityList } from "../state/priority.mjs";
 const defaults = {
   incident: "",
   from: "",
@@ -44,10 +45,17 @@ export default function Buildings({ incidents, incident }) {
   const [filters, setFilters] = useState(defaults),
     [params, setParams] = useSearchParams();
   const set = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
-  const rows = useMemo(
-    () => buildingRows(incident ? [incident] : incidents),
-    [incident, incidents],
-  );
+  const rows = useMemo(() => {
+    const scope = incident ? [incident] : incidents;
+    return priorityList(
+      scope.flatMap((item) =>
+        buildingRows([item]).map((row) => ({
+          ...row,
+          priority: locationPriority(item, row.asset_id),
+        })),
+      ),
+    );
+  }, [incident, incidents]);
   const filtered = filterBuildings(rows, filters);
   const selected = rows.find(
     (r) =>
@@ -130,6 +138,7 @@ export default function Buildings({ incidents, incident }) {
             <TableHead>
               <TableRow>
                 {[
+                  "Priority",
                   "Building / location",
                   ...(!incident ? ["Incident"] : []),
                   "Risk assessment",
@@ -146,6 +155,12 @@ export default function Buildings({ incidents, incident }) {
             <TableBody>
               {filtered.map((r) => (
                 <TableRow key={r.key} hover>
+                  <TableCell className="priority-cell">
+                    {r.priorityRank && (
+                      <strong className="rank">{r.priorityRank}</strong>
+                    )}
+                    <div className="small-muted">{r.priority.label}</div>
+                  </TableCell>
                   <TableCell>
                     <Button
                       className="table-link"
@@ -217,6 +232,8 @@ export default function Buildings({ incidents, incident }) {
             <Facts
               rows={[
                 ["Incident", selected.incident_name],
+                ["Priority", selected.priorityRank ?? "Not ranked"],
+                ["Priority basis", selected.priority.label],
                 ["GPS (latitude, longitude)", gps(selected)],
                 [
                   "Distance to fire",
