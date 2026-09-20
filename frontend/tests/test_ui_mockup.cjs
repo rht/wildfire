@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
 const { JSDOM } = require('jsdom');
-const html=fs.readFileSync(path.join(__dirname,'../design/ui-mockup.html'),'utf8');
+const html=fs.readFileSync(path.join(__dirname,'../legacy/ui-mockup.html'),'utf8');
 function sample() {
  return {schema_version:'coordination-state-1',scenario_id:'s',snapshot_id:'snap',revision:1,
  as_of:'2026-09-20T10:00:00Z',input_mode:'offline_demo',
@@ -22,7 +22,7 @@ function load() {
  window.L={map:()=>({setView(){return this;},invalidateSize(){}}),tileLayer:layer,layerGroup:layer,
  circleMarker:()=>{const m={...layer(),bindTooltip(t){this.tooltip=t;return this;},on(k,f){this.click=f;return this;}};markers.push(m);return m;},
  geoJSON:(g,options)=>{lines.push(g);geometryLayers.push({geometry:g,options});return layer();},polyline:(g)=>{lines.push(g);return layer();}};
- window.eval(fs.readFileSync(path.join(__dirname,'../design/dashboard-view.js'),'utf8'));
+ window.eval(fs.readFileSync(path.join(__dirname,'../legacy/dashboard-view.js'),'utf8'));
  return {dom,window,document:window.document,markers,lines,geometryLayers,view:window.DashboardView};
 }
 test('supplied fire perimeter retains a white halo without introducing fixture geometry',()=>{
@@ -92,7 +92,7 @@ test('removed selected asset clears detail and absent routes never get invented'
  h.view.render(s);assert.match(h.document.getElementById('detailPanel').textContent,/Select a location/);h.dom.window.close();
 });
 test('verified coordination export displays actual plan status and proposed response timings',()=>{
- const h=load(),s=JSON.parse(fs.readFileSync(path.join(__dirname,'../fixtures/dashboard/coordination-export.json'),'utf8'));
+ const h=load(),s=JSON.parse(fs.readFileSync(path.join(__dirname,'../../fixtures/dashboard/coordination-export.json'),'utf8'));
  h.view.render(s);h.document.querySelector('[data-asset-id="A"]').click();
  const text=h.document.getElementById('detailPanel').textContent;
  assert.match(text,/Evacuation statusnot_confirmed/);assert.match(text,/Plan modeundetermined/);

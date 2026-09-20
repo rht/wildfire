@@ -13,3 +13,6 @@ data/
 
 node_modules/
 test-results/
+frontend/dist/
+frontend/.vite/
+frontend/artifacts/
