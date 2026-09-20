@@ -268,6 +268,7 @@ def test_empty_operations_update_preserves_destinations_and_reserved_places(tmp_
     assert b["destination_id"] == "hall"
     assert all(a["instruction_allowed"] is False for a in b["allocations"])
     assert state["plan"]["remaining_capacity"]["hall"] == 8
+    assert all(c["queue_state"] == "cancelled" for c in state["calls"])
     assert runtime.refresh() == state
 
 

@@ -454,12 +454,17 @@ def test_demo_cli_rebases_synthetic_crew_time_and_preserves_existing_incident(
     future = NOW + timedelta(days=50)
     monkeypatch.setattr(server, "demo_trigger", lambda: demo_trigger(future))
     applications = []
+    server_options = []
+
+    def capture_server(application, **kwargs):
+        applications.append(application)
+        server_options.append(kwargs)
+
     # Replace the blocking socket server; incident setup and SQLite writes are real.
-    monkeypatch.setattr(
-        uvicorn, "run", lambda application, **kwargs: applications.append(application)
-    )
+    monkeypatch.setattr(uvicorn, "run", capture_server)
     args = ["demo", "--data-dir", str(tmp_path / "demo"), "--tick-interval", "0"]
     server.main(args)
+    assert server_options[0]["workers"] == 1
     r = applications[0].state.runtime
     saved = r._load()
     assert saved["epoch"] == future.isoformat()
@@ -474,3 +479,23 @@ def test_demo_cli_rebases_synthetic_crew_time_and_preserves_existing_incident(
     server.main(args)
     assert applications[-1].state.runtime.state() == first
     assert applications[-1].state.runtime._load()["operations"] == saved["operations"]
+
+
+def test_dashboard_login_refuses_plain_http_and_only_sets_secure_cookie(tmp_path):
+    server = app(
+        runtime(tmp_path),
+        dashboard_token=DASHBOARD_TOKEN,
+        allowed_hosts=["incident.example"],
+    )
+    with TestClient(server, base_url="http://incident.example") as c:
+        response = c.post(
+            "/login", data={"token": DASHBOARD_TOKEN}, follow_redirects=False
+        )
+        assert response.status_code == 400
+        assert "set-cookie" not in response.headers
+    with TestClient(server, base_url="https://incident.example") as c:
+        response = c.post(
+            "/login", data={"token": DASHBOARD_TOKEN}, follow_redirects=False
+        )
+        assert response.status_code == 303
+        assert "secure" in response.headers["set-cookie"].lower()

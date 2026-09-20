@@ -140,7 +140,7 @@ def response_from_snapshot(snapshot, scenario, operations, voice, now, epoch):
                     cut_min=route['available_until_min'],confirmed=route['confirmed'],safe=route['safe'],
                     source=route['source'],closed=False,geometry_lonlat=path)
             else:
-                data['routes'].append(deepcopy(route))
+                data['routes'].append(dict(route))
     if data['routes'] and graph.g.number_of_edges():
         raise ValueError('supply either graph routes with geometry or explicit route legs')
     plan = plan_multi_response(data, graph=graph if not data['routes'] else None)

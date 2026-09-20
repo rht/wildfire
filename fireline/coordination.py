@@ -272,7 +272,7 @@ class CoordinationStore:
         return json.loads(row[0]) if row else None
 
     def updates(self, after_revision=0):
-        if type(after_revision) is not int or after_revision < 0:
+        if not isinstance(after_revision, int) or isinstance(after_revision, bool) or after_revision < 0:
             raise ValueError('after_revision must be a nonnegative integer')
         return [json.loads(r[0]) for r in self.conn.execute(
             'SELECT event FROM coordination_revisions WHERE revision>? ORDER BY revision',
@@ -319,6 +319,9 @@ class CoordinationStore:
         accepted = self._accepted_snapshots(snapshot)
         asset_ids = {a['asset_id'] for a in snapshot['assets']}
         assessments, summaries, records, errors = {}, [], [], []
+        queue_states = {}
+        if self.conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='voice_queue'").fetchone():
+            queue_states = dict(self.conn.execute('SELECT request_id, state FROM voice_queue'))
         for row in self.conn.execute('SELECT request_id FROM voice_calls ORDER BY request_id').fetchall():
             record = self.voice.get(row[0])
             req = record['request']
@@ -334,7 +337,9 @@ class CoordinationStore:
                 if 'human_requested' in record['followup_reasons']:
                     assessment = replace(assessment, wants_human=True, confidence=None)
                 assessments.setdefault(req['asset_id'], []).append(assessment)
-            summaries.append(_call_summary(record, assessment))
+            summary = _call_summary(record, assessment)
+            summary['queue_state'] = queue_states.get(req['request_id'])
+            summaries.append(summary)
             records.append(record)
         return _merge_assessments(assessments), summaries, records, errors
 
@@ -453,6 +458,7 @@ def main(argv=None):
                     if args.response_plan else None)
         state = store.refresh(snapshot, scenario, centres, routes,
                               road_warnings=readiness.get('road_warnings', ()), response_plan=response)
+        # Machine-readable CLI response; diagnostics belong on stderr.
         print(encoded(state))
     except (ValueError, TypeError, KeyError, OSError):
         parser.exit(2, 'Coordination tick rejected: check input contracts, database and UTC times.\n')

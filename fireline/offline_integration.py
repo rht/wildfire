@@ -287,8 +287,6 @@ class OfflineScenario:
                 route_guidance=guidance,
                 expected_people=a["estimated_occupancy"],
             )
-            if recommendation:
-                recommendation["road_warnings"] = deepcopy(self.spec["road_warnings"])
             requests[aid] = {"language": "en", "recommendation": recommendation}
 
         # Warnings are briefing inputs, never added to the immutable snapshot.

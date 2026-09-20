@@ -2791,7 +2791,8 @@ contact-priority, multi-crew planning, allocation and voice queue modules. It do
 not merge the separate discovery branch. The HTTP integration tests run a fire
 trigger through assessment, calls, no-answer escalation and WebSocket publication.
 
-From this worktree, with project dependencies installed:
+From this worktree, with project dependencies installed, build the React dashboard
+first (`npm --prefix frontend ci` and `npm --prefix frontend run build`), then:
 
 ```sh
 mkdir -p data/incident-demo
@@ -2920,15 +2921,16 @@ tested with mocked transports; no real unanswered call or provider webhook deliv
 has been claimed as validated.
 
 For public access, use HTTPS and add the exact hostname with `--allowed-host`.
-Set a separate `DASHBOARD_TOKEN`; visitors sign in at `/login`, which also protects
+Set a separate `DASHBOARD_TOKEN`; visitors sign in over HTTPS at `/login`, which also protects
 WebSocket access. Trigger/result/dashboard tokens must be distinct and at least
 32 characters. Default binding is localhost; `--host 0.0.0.0` additionally requires
 dashboard authentication. A tunnel can forward HTTPS to the local service, but
 the computer and process must stay running and SQLite must remain on persistent
 disk. No public tunnel or paid deployment is created by these instructions.
 
-Integration verification: **1,110 Python tests passed, one skipped**, plus **18 Node
-tests**. Chrome verified the running REST/WebSocket dashboard with three synthetic
+Integration verification after syncing the React dashboard from main: **1,115 Python
+tests passed, one skipped**, plus **34 frontend tests**. Frontend lint, formatting
+and the production build also passed. Chrome verified the running REST/WebSocket dashboard with three synthetic
 no-answer outcomes and three human callbacks, without page errors. One existing
 Starlette/AnyIO deprecation warning remains. The Gencat feed check returned 81
 bounding-box records; 34 were within the 5 km metric radius and remained visible
@@ -3099,3 +3101,33 @@ Activity log order uses a compact column sized to its heading and sequence numbe
 The incident GPS card prefers a supplied incident point. When only a usable
 perimeter exists it shows the centre of its bounds, explicitly labelled “Perimeter
 centre”; missing coordinates are never filled from demonstration data.
+
+### Norma review and deliberate retained decisions
+
+The initial scan is bound to `e8b8c8e` versus `d7cf32e`; the committed report records
+initial findings and the subsequent remediation scans separately. Missing UTF-8,
+an unnamed SQLite timeout, unnecessary copies and nonessential exact-type checks
+were corrected. Dashboard login requires HTTPS and sets a Secure session cookie.
+The original `centre.remaining_places` plain-integer defense is unchanged.
+
+The **new selected defense is `workers=1`** in `incident_server.py`. This is a
+correctness constraint: `asyncio.Lock` and the lifespan's background task are local
+to one process. Starting additional Uvicorn workers would create independent
+coordinators and admission loops. Raising throughput requires a different worker
+architecture; it is not a configuration knob in this implementation. The test
+`test_fire_requests_wait_for_running_tick_before_mutating_incident` verifies
+serialization, and the demo CLI test verifies the single-worker launch setting.
+
+CLI `print` findings are retained because these commands intentionally return JSON
+on stdout; replacing their protocol response with a logger would break consumers.
+The coordination CLI regression parses stdout and verifies repeatable state. The
+legacy dashboard's async fetch callback intentionally lets rejection reach
+`DashboardClient.start`, whose catch sets unavailable state and schedules retry.
+A regression now exercises rejected REST fetches and successful recovery in both
+legacy and React clients. Empty local catches would hide failures from that owner.
+
+`calls[].queue_state` additionally exposes pending/review/started/cancelled state
+when a queue exists, otherwise null. A cancelled immutable request may still have
+a historical call status of queued; the queue state prevents showing it as a
+pending AI call. No-answer is an attempted call that requires follow-up, not proof
+of a completed interview or permission for an automatic retry.

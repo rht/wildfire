@@ -155,12 +155,15 @@ def _verify(store, body, authorization, *, signature_secret, api_key, applicatio
         now = store.clock().timestamp()
         issued = claims.get("iat")
         if (
-            type(issued) is not int
+            not isinstance(issued, int)
+            or isinstance(issued, bool)
             or not now - MAX_TOKEN_AGE_SECONDS <= issued <= now + CLOCK_SKEW_SECONDS
         ):
             raise ValueError()
         for name in ("exp", "nbf"):
-            if name in claims and type(claims[name]) is not int:
+            if name in claims and (
+                not isinstance(claims[name], int) or isinstance(claims[name], bool)
+            ):
                 raise ValueError()
         if ("exp" in claims and claims["exp"] <= now) or (
             "nbf" in claims and claims["nbf"] > now + CLOCK_SKEW_SECONDS

@@ -7,7 +7,7 @@ _PHONE = re.compile(r'(?<![\w-])(?:\+?\d(?:[\d ().-]*\d){8,14}|\(\d{2,4}\)[\d .-
 _SECRET = re.compile(r'(?i)(?:bearer\s+\S+|(?:api[_-]?key|token|password)\s*[:=]\s*\S+)')
 
 # Unknown *values* remain null. Unknown fields are withheld until explicitly reviewed.
-_FIELDS = set('''replacement_value_eur replacement_value_basis expected_loss_eur_low
+_FIELDS = set('''queue_state replacement_value_eur replacement_value_basis expected_loss_eur_low
 expected_loss_eur_mid expected_loss_eur_high people_exposed people_at_risk_p50 people_at_risk_p10 current_location peopleClusters system_events review unserved blocked_actions assisted_units people_units value_units
 allocations allocation_revision allocation_tasks destination_candidates
 allocation_id group_id previous_allocation_id incident_id last_at safety
@@ -47,7 +47,7 @@ proposed approved confirmed departure_at arrival_at departure_min arrival_min du
 path routes evacuation_path firetruck_path provenance route_source route_status
 steps actions schedule crews unassigned warnings unserved_people mode served_people
 '''.split())
-_CALL_FIELDS = set('''reported_needs_assistance dispatch_state transfer_verified review_status evidence_fields provenance input_mode
+_CALL_FIELDS = set('''queue_state reported_needs_assistance dispatch_state transfer_verified review_status evidence_fields provenance input_mode
 request_id asset_id snapshot_id status observed_at queued_at updated_at
 source needs_assistance wants_human message_acknowledged acknowledged departure_confirmed
 arrival_confirmed can_self_evacuate transport_available human_followup_required

@@ -14,10 +14,12 @@ import math
 import os
 import secrets
 import time
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
+from starlette.applications import Starlette
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.requests import HTTPConnection
 from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -198,7 +200,7 @@ def create_app(
                 app.state.worker_error = "tick_failed"
 
     @asynccontextmanager
-    async def lifespan(app):
+    async def lifespan(app: Starlette) -> AsyncIterator[None]:
         stop.clear()
         task = asyncio.create_task(worker()) if tick_interval else None
         try:
@@ -293,11 +295,13 @@ def create_app(
     async def login(request):
         if dashboard_token is None:
             return RedirectResponse("/", status_code=303, headers=HEADERS)
-        if request.method == "GET":
-            return HTMLResponse(LOGIN_HTML, headers=HEADERS)
         origin = request.headers.get("origin")
         if origin and urlsplit(origin).netloc != request.headers.get("host"):
             return JSONResponse({"error": "unauthorized"}, 401, headers=HEADERS)
+        if request.url.scheme != "https":
+            return JSONResponse({"error": "https_required"}, 400, headers=HEADERS)
+        if request.method == "GET":
+            return HTMLResponse(LOGIN_HTML, headers=HEADERS)
         try:
             data = await _body(request, 8192)
             token = parse_qs(data.decode(), strict_parsing=True).get("token", [""])[0]
@@ -311,7 +315,7 @@ def create_app(
             _session(dashboard_token),
             max_age=SESSION_SECONDS,
             httponly=True,
-            secure=request.url.scheme == "https",
+            secure=True,
             samesite="strict",
         )
         return response
@@ -475,6 +479,7 @@ def main(argv=None):
         )
         import uvicorn
 
+        # One lifecycle/lock owns this queue; multiple worker processes are unsupported.
         uvicorn.run(
             application, host=args.host, port=args.port, workers=1, access_log=False
         )

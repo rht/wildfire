@@ -29,6 +29,8 @@ from .voice_models import ANSWER_FIELDS, CallResult, identifier, utc
 from .voice_queue import CallQueueConfig, VoiceCallQueue
 from .voice_store import digest, encoded
 
+SQLITE_BUSY_TIMEOUT_SECONDS = 10
+
 
 class IncidentRuntime:
     """Create per operation/thread. The server serializes writes with one worker lock."""
@@ -66,7 +68,7 @@ class IncidentRuntime:
 
     @contextmanager
     def _db(self):
-        db = sqlite3.connect(self.control, timeout=10)
+        db = sqlite3.connect(self.control, timeout=SQLITE_BUSY_TIMEOUT_SECONDS)
         try:
             with db:
                 yield db
@@ -164,7 +166,9 @@ class IncidentRuntime:
                 raise ValueError("fire update time cannot regress")
         sequence = saved["snapshot"]["sequence"] + 1 if saved else 1
         catalog = self.settings.get("catalog_file")
-        rows = json.loads(Path(catalog).read_text()) if catalog else None
+        rows = (
+            json.loads(Path(catalog).read_text(encoding="utf-8")) if catalog else None
+        )
         result = assess_fire(
             fire,
             scenario_id=trigger["scenario_id"],
@@ -395,7 +399,7 @@ class IncidentRuntime:
                 for t in ops.get("teams", [])
             ]
             path = self.directory / "roster.json"
-            path.write_text(encoded(roster))
+            path.write_text(encoded(roster), encoding="utf-8")
             coordinator.tasks.load_roster(path)
             events = self.system()["events"]
             state = coordinator.refresh(
