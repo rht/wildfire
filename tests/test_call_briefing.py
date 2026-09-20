@@ -55,7 +55,7 @@ def test_actual_household_destination_and_directions_reach_existing_template(nam
     assert args['snapshot_id'] == 'snapshot-demo'
     assert args['asset_id'] == 'B'
     assert set(args) == {'request_id', 'asset_id', 'snapshot_id', 'incident_brief',
-                         'scenario_notice', 'language', 'road_warning_brief'}
+                         'scenario_notice', 'language', 'road_warning_brief', 'location_display_name'}
     assert req.input_mode == 'synthetic'
 
 
@@ -96,7 +96,7 @@ def test_absent_plan_preserves_unknowns_and_asks_readiness():
     prompt = interview_prompt(req)
     assert 'everyone can leave without emergency assistance' in prompt
     assert 'suitable transport' in prompt
-    assert 'want a person' in prompt
+    assert 'Would you like an emergency responder to call you to further assist you?' in prompt
     assert 'acknowledgement is not departure or arrival' in prompt
 
 
@@ -361,7 +361,8 @@ def test_snapshot_callback_adapts_plan_content_without_owning_contact_or_request
     row, data = asset(road_warnings=[WARNING]), {'language': 'ca', 'recommendation': approved()}
     before = deepcopy((row, data))
     payload = adapter(row, data)
-    assert set(payload) == {'language', 'incident_brief', 'road_warnings'}
+    assert set(payload) == {'language', 'incident_brief', 'road_warnings', 'location_display_name'}
+    assert payload['location_display_name'] == row['name']
     assert payload['language'] == 'ca'
     assert 'North Hall' in payload['incident_brief']
     assert payload['road_warnings'] == [WARNING]

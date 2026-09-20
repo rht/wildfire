@@ -47,6 +47,7 @@ class CallRequest:
     human_callback_number: str | None = field(default=None, repr=False)
     input_mode: str = 'synthetic'
     road_warnings: list[dict] = field(default_factory=list, repr=False)
+    location_display_name: str | None = field(default=None, repr=False)
 
     def __post_init__(self):
         for key in ('request_id', 'asset_id', 'snapshot_id'):
@@ -60,6 +61,10 @@ class CallRequest:
             raise ValueError('invalid language')
         text(self.incident_brief, 'incident_brief')
         validate_road_warnings(self.road_warnings)
+        if self.location_display_name is not None:
+            text(self.location_display_name, 'location_display_name', 256)
+            if self.location_display_name.strip().casefold() in (self.asset_id.casefold(), f'location {self.asset_id}'.casefold()):
+                raise ValueError('invalid location_display_name')
 
 
 @dataclass(frozen=True)
@@ -137,3 +142,12 @@ def association(request, result, provider_call_id):
     if any(getattr(request, k) != getattr(result, k)
            for k in ('request_id', 'asset_id', 'snapshot_id')) or result.provider_call_id != provider_call_id:
         raise ValueError('call association mismatch')
+
+
+def location_display_name(asset):
+    """Use trusted supplied name/address only; never fall back to an internal ID."""
+    for key in ('name', 'address'):
+        value = asset.get(key)
+        if isinstance(value, str) and value.strip() and value.strip().casefold() not in (asset['asset_id'].casefold(), f"location {asset['asset_id']}".casefold()):
+            return value.strip()
+    return None

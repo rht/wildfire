@@ -14,7 +14,7 @@ def test_drill_configuration_separates_spoken_greeting_and_internal_rules():
         assert '{{' + key + '}}' in doc['system_prompt']
     assert 'mock' not in doc['system_prompt'].lower()
     assert 'Never read' in doc['system_prompt']
-    assert 'Can everyone at location {{asset_id}} leave without emergency assistance?' in doc['system_prompt']
+    assert 'Does anyone there need help leaving the building?' in doc['system_prompt']
 
 
 def test_drill_scope_and_answer_capture_remain_conservative():
@@ -44,7 +44,8 @@ def test_drill_model_route_and_terminal_policy_are_explicit():
     from fireline.sable_voice import sable_drill_configuration
     models = {'stt': 'test', 'llm': 'test', 'tts': 'test', 'tts_voice': 'test'}
     doc = sable_drill_configuration(request(), region='eu-central', models=models)
-    assert doc['models'] == models
+    assert all(doc['models'][key] == value for key, value in models.items())
+    assert doc['models']['llm_kwargs']['extra_body']['stop'] == ['<think>', '</think>']
     assert 'second consecutive off-topic turn' in doc['system_prompt']
     assert 'record wants_human immediately' in doc['system_prompt']
     assert 'overwrite the old answer with inconclusive and clear' in doc['system_prompt']
@@ -53,5 +54,5 @@ def test_drill_model_route_and_terminal_policy_are_explicit():
 
 def test_early_help_does_not_confirm_identity_or_advance_household_answers():
     from fireline.sable_voice import DRILL_PROMPT
-    assert 'If assistance is mentioned at ANY point' in DRILL_PROMPT
-    assert 'without assuming identity, household coverage or transport' in DRILL_PROMPT
+    assert 'PROACTIVE ASSISTANCE' in DRILL_PROMPT
+    assert 'Unknown others or unknown identity must not erase' in DRILL_PROMPT

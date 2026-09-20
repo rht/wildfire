@@ -389,3 +389,27 @@ def test_explicit_synthetic_enqueue_preserves_mode_and_cannot_dispatch(queue):
     with pytest.raises(ValueError, match='synthetic'):
         queue.dispatch_next(NeverCall())
     assert queue.status()['active'] == 0
+
+
+@pytest.mark.parametrize('stored_display', ['missing', None])
+def test_legacy_pending_replay_preserves_absent_display_name(queue, stored_display):
+    from fireline.voice_store import encoded
+    snap = produced_snapshot()
+    enqueue(queue, snap)
+    for row in queue.store.conn.execute('SELECT request_id, request FROM voice_calls').fetchall():
+        old = json.loads(row['request'])
+        if stored_display == 'missing':
+            old.pop('location_display_name')
+        else:
+            old['location_display_name'] = None
+        queue.store.conn.execute('UPDATE voice_calls SET request=? WHERE request_id=?',
+                                 (encoded(old), row['request_id']))
+    queue.store.conn.commit()
+    replay = enqueue(queue, snap)
+    assert not any('immutable_request_conflict' in row['reasons'] for row in replay['blocked'])
+    assert len(queue.status()['pending']) == 2
+    contacts, approvals, data = private_inputs(snap)
+    data['test:near']['location_display_name'] = 'Changed explicit display name'
+    changed = enqueue(queue, snap, request_data=data)
+    assert any(row['asset_id'] == 'test:near' and 'immutable_request_conflict' in row['reasons']
+               for row in changed['blocked'])
