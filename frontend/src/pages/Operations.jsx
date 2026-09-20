@@ -569,7 +569,7 @@ export function Evacuation({ incident, incidents }) {
           note="Requires assisted evacuation"
         />
         <Metric
-          label="People awaiting assessment"
+          label="People awaiting call assessment"
           value={totals.unknown}
           note="Ability or progress not confirmed"
         />
