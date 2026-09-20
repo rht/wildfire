@@ -2848,7 +2848,7 @@ a call, acknowledging instructions, or reserving reception capacity is not arriv
 
 For a configured incident, use `serve --settings PRIVATE_SETTINGS.json --data-dir DIR`.
 Settings contain `input_mode` (`live`, `recorded`, or `synthetic`), `call_mode`
-(`disabled` by default, `live`, or synthetic-only `simulate_no_answer`),
+(`disabled` by default, `live`, `sync_only`, or synthetic-only `simulate_no_answer`),
 `search_radius_m` (positive, at most 50,000), optional `catalog_file`,
 `operations`, private `contacts`, exact snapshot/asset/phone `approvals`, and
 `call_limits: {"max_concurrent_calls": 5, "max_call_starts_per_second": 1}`.
@@ -2856,6 +2856,60 @@ Catalog paths are relative to the settings file. Only `live` inputs can enable
 live dispatch. All workers for a provider account must share the existing queue
 budget; run this service with **one process**, persistent disk and one incident
 per directory. A two-second worker tick may further constrain call start rate.
+
+`sync_only` fetches results for already-bound calls and republishes coordination
+state, without starting calls. Both `live` and `sync_only` load the configured
+SLNG client. Completed calls remain eligible for result fetching until SLNG
+returns `finalized_at` and the corresponding result is persisted successfully.
+This matters when a carrier completion event arrives before answer extraction.
+Final extraction may enrich memory without advancing the provider's update
+timestamp. Such finalized answers replace the interim record while preserving
+earlier adverse reports. Older ignored responses cannot mark newer results final,
+including on duplicate delivery. Finalization survives restart; failed fetches
+remain retryable. Awaiting results
+does not consume a phone concurrency slot. A provider that never finalizes will
+remain eligible for fetching and human review.
+
+The worker stores answers and follow-up tasks in the incident directory's
+`coordination.sqlite`, then refreshes the same state served by `/api/state` and
+`/api/updates`. A completed call reporting inability to self-evacuate or lack of
+transport produces `reported_needs_assistance=true` and an open
+`arrange_assistance` task. Call completion does not confirm evacuation. Missing
+answers in a later call do not clear an earlier assistance request. Finalized
+but incomplete interviews remain review work rather than inferred yes/no answers.
+
+### Phone-result backend connection (2026-09-20)
+
+The two authorized fictional phone tests were imported into a **recorded Willow
+House drill**, keeping their provider call IDs and evidence provenance. This is
+a separate incident association; the original private call database is preserved.
+The drill has no real fire, no known occupancy, and illustrative coordinates.
+Its running backend at `http://127.0.0.1:18551` serves the normal dashboard and
+API from `data/willow-house-backend/coordination.sqlite` in the
+`slng-backend-results` worktree. It runs in `sync_only` mode. The ignored local
+launcher is `data/serve_phone_drill.py`; service tokens and call reports remain
+private and are not committed.
+
+Verified against the running API and the dashboard's actual state-model code:
+two completed calls, inability to self-evacuate, no transport, assistance required,
+and open assistance/human follow-up work. The second call has unknown answers;
+the earlier assistance need remains visible. Neither departure nor arrival is
+confirmed. The recorded drill has no configured crew dispatch.
+
+Implementation checklist:
+- [x] Reproduce the completed-before-answers polling gap.
+- [x] Persist successful provider finalization and retry late results across restart.
+- [x] Add results-only worker mode and verify the backend assistance/task projection.
+- [x] Import the existing tests with explicit drill associations and check the API.
+- [x] Run the full Python suite (**1,144 passed, 2 skipped**) and build the frontend.
+- [x] Complete independent review and fix the same-timestamp finalization edge case.
+
+Norma checked the four changed production files. The initial store, queue and runtime
+checks were clean. The service retained its three previously reviewed findings for CLI
+stdout and mandatory single-worker startup (see the existing audit defenses);
+no new finding was introduced in that pass. The store recheck after the independent
+review fix returned a service error; tests and independent re-review passed.
+Details and source hashes: `reports/norma-backend-results.json`.
 
 Omit `catalog_file` to query Gencat registered facilities around the fire geometry.
 This is not a complete private-house inventory. Unclassified facilities remain

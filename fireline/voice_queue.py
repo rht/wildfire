@@ -197,11 +197,21 @@ class VoiceCallQueue:
                 raise ValueError('request is not pending in this queue')
 
     def sync_active(self, client):
-        """Refresh provider lifecycle and completed answers; a failed GET holds its slot."""
+        """Fetch ongoing calls and completed calls awaiting finalized answer capture.
+
+        Terminal calls no longer occupy a dial slot, but can still be waiting for
+        SLNG memory extraction after a carrier lifecycle callback. Failed fetches
+        stay eligible; persisted finalization stops polling across restarts.
+        """
         from .slng_voice import ProviderError
 
         errors = []
-        for record in self._active():
+        records = self._active()
+        pending = self.store.conn.execute('''SELECT request_id FROM voice_calls
+            WHERE status='completed' AND provider_call_id IS NOT NULL
+            AND request_id NOT IN (SELECT request_id FROM voice_result_finalizations)''').fetchall()
+        records.extend(self.store.get(row[0]) for row in pending)
+        for record in records:
             if record['provider_call_id']:
                 try:
                     self.store.sync(client, record['request_id'])
