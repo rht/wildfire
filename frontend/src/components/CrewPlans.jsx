@@ -15,6 +15,10 @@ import {
 import { crewMapData, crewStopId } from "../state/crew-map.mjs";
 import {
   crewStopFacts,
+  crewMissionFacts,
+  crewSensitivityFacts,
+  crewReorderBlocked,
+  urgentInterventionReviews,
   draftCrewTasks,
   moveCrewStop,
 } from "../state/crew-review.mjs";
@@ -33,6 +37,53 @@ function StopFact({ label, children }) {
   );
 }
 
+export function UrgentInterventionReviews({ incident }) {
+  const reviews = urgentInterventionReviews(incident);
+  if (!reviews.length) return null;
+  const urgent = reviews.some(
+    (review) => review.reason === "urgent_intervention_review",
+  );
+  return (
+    <Alert severity={urgent ? "error" : "warning"} sx={{ my: 2 }}>
+      <strong>
+        {urgent ? "Urgent intervention review" : "Intervention review"}
+      </strong>
+      <div>
+        Human decision required. Review the supplied reasons before confirming a
+        plan.
+      </div>
+      {reviews.map((review, index) => (
+        <div key={review.action_id || review.asset_id || index}>
+          <strong>{review.name}</strong>
+          {review.reasons.some((reason) =>
+            ["deadline", "deadline_exceeded"].includes(reason),
+          ) && (
+            <div>
+              A missed planning deadline does not resolve the need for
+              intervention. Review rescue, access and assistance options.
+            </div>
+          )}
+          <div>
+            {review.reasons.map(humanize).join(" · ") ||
+              "Intervention unresolved"}
+          </div>
+          {review.candidate_attempts.map((attempt, attemptIndex) => (
+            <div key={attemptIndex}>
+              Candidate {attemptIndex + 1}
+              {attempt.team_id
+                ? ` · ${incident.teams?.find((team) => team.team_id === attempt.team_id)?.name || attempt.team_id}`
+                : ""}
+              {" · "}Finish {minutes(attempt.finish_min)} · deadline{" "}
+              {minutes(attempt.deadline_min)}
+              {attempt.reason ? ` · ${humanize(attempt.reason)}` : ""}
+            </div>
+          ))}
+        </div>
+      ))}
+    </Alert>
+  );
+}
+
 export function CrewStopTable({
   incident,
   team,
@@ -47,6 +98,7 @@ export function CrewStopTable({
   const startDetails =
     start || team.starting_location || team.planning_context?.start || {};
   const taskRows = team.tasks || [];
+  const coordinatedReview = crewReorderBlocked(taskRows);
   const rowEvents = (id) => ({
     tabIndex: 0,
     "data-stop-id": id,
@@ -117,7 +169,9 @@ export function CrewStopTable({
           </tr>
           {taskRows.map((task, index) => {
             const id = crewStopId(task, index),
-              facts = crewStopFacts(incident, task, draft ? {} : team);
+              facts = crewStopFacts(incident, task, draft ? {} : team),
+              mission = crewMissionFacts(incident, task),
+              sensitivity = crewSensitivityFacts(task);
             const name =
               facts.asset.name || task.asset_id || "Unknown destination";
             const unavailable = draft && task.status === "proposed";
@@ -131,12 +185,40 @@ export function CrewStopTable({
                   </div>
                   <Coordinates location={facts.asset} />
                   <StopFact label="Action">{facts.action}</StopFact>
+                  {task.mission_status && (
+                    <StopFact label="Mission">{mission.label}</StopFact>
+                  )}
+                  {(task.team_ids?.length > 1 ||
+                    task.required_team_count > 1) && (
+                    <>
+                      <StopFact label="Joint crews">{mission.crews}</StopFact>
+                      <StopFact label="Crews required">
+                        {number(task.required_team_count) === null
+                          ? "Unknown"
+                          : count(task.required_team_count)}
+                      </StopFact>
+                    </>
+                  )}
                   <StopFact label="Status">
                     {task.status ? humanize(task.status) : "Unknown"}
                   </StopFact>
                 </th>
                 <td>
                   <StopFact label="Expected people">{facts.people}</StopFact>
+                  {task.mission_status === "complete_evacuation" && (
+                    <>
+                      <StopFact label="Planned arrivals · this crew">
+                        {mission.plannedPeople}
+                      </StopFact>
+                      <StopFact label="Planned arrivals · whole mission">
+                        {mission.missionPeople}
+                      </StopFact>
+                      <div>
+                        Plan estimates only; actual arrivals require
+                        confirmation.
+                      </div>
+                    </>
+                  )}
                   <StopFact label="Occupancy basis">
                     {facts.occupancyBasis}
                   </StopFact>
@@ -164,6 +246,11 @@ export function CrewStopTable({
                   <StopFact label="Replacement value">
                     {facts.valuation}
                   </StopFact>
+                  {facts.unknownDimensions && (
+                    <StopFact label="Unknown planning inputs">
+                      {facts.unknownDimensions}
+                    </StopFact>
+                  )}
                   <StopFact label="Value basis">
                     {facts.valuationBasis}
                   </StopFact>
@@ -174,6 +261,53 @@ export function CrewStopTable({
                   </StopFact>
                 </td>
                 <td>
+                  {task.mission_status === "complete_evacuation" && (
+                    <>
+                      <StopFact label="Reception destination">
+                        {mission.destination}
+                      </StopFact>
+                      <StopFact label="Planned trips">
+                        {mission.tripCount}
+                      </StopFact>
+                      <StopFact label="Unload per trip">
+                        {minutes(task.evacuation?.unload_min)}
+                      </StopFact>
+                      <StopFact label="Reception places reserved">
+                        {number(task.evacuation?.places_reserved) === null
+                          ? "Unknown"
+                          : count(task.evacuation.places_reserved)}
+                      </StopFact>
+                      <StopFact label="Reception available until">
+                        {minutes(task.evacuation?.available_until_min)}
+                      </StopFact>
+                      <StopFact label="Reception evidence">
+                        {task.evacuation?.source || "Unknown"}
+                      </StopFact>
+                    </>
+                  )}
+                  {mission.legs.map((leg, legIndex) => (
+                    <div key={legIndex}>
+                      <strong>
+                        {legIndex + 1}. {humanize(leg.kind || "leg")}
+                      </strong>
+                      <div>
+                        {leg.from_node || "Unknown"} →{" "}
+                        {leg.to_node || "Unknown"}
+                      </div>
+                      <StopFact label="Depart / arrive / finish">
+                        {timing(leg.depart_min)} / {timing(leg.arrive_min)} /{" "}
+                        {timing(leg.finish_min)}
+                      </StopFact>
+                      {number(leg.people) !== null && (
+                        <StopFact label="People planned">
+                          {count(leg.people)}
+                        </StopFact>
+                      )}
+                      <StopFact label="Leg route">
+                        {leg.route_source || "Unknown"}
+                      </StopFact>
+                    </div>
+                  ))}
                   <StopFact label="Departure">
                     {timing(task.depart_min)}
                   </StopFact>
@@ -192,6 +326,31 @@ export function CrewStopTable({
                   </StopFact>
                 </td>
                 <td>
+                  <Chip
+                    size="small"
+                    variant="outlined"
+                    color={sensitivity.tone}
+                    label={sensitivity.label}
+                  />
+                  {sensitivity.reasons && <div>{sensitivity.reasons}</div>}
+                  {task.sensitivity && (
+                    <>
+                      <StopFact label="Long duration bound">
+                        {minutes(task.sensitivity.duration_high_min)}
+                      </StopFact>
+                      <StopFact label="Early deadline bound">
+                        {minutes(task.sensitivity.deadline_early_min)}
+                      </StopFact>
+                      {(number(task.sensitivity.stress_finish_min) !== null ||
+                        number(task.sensitivity.stress_deadline_min) !==
+                          null) && (
+                        <StopFact label="Stress finish / deadline">
+                          {minutes(task.sensitivity.stress_finish_min)} /{" "}
+                          {minutes(task.sensitivity.stress_deadline_min)}
+                        </StopFact>
+                      )}
+                    </>
+                  )}
                   <StopFact label="Order reason">
                     {unavailable
                       ? "Analyst draft · awaiting validation"
@@ -204,6 +363,14 @@ export function CrewStopTable({
                         "None supplied"
                       : "Unknown"}
                   </StopFact>
+                  {showOrderControls &&
+                    coordinatedReview &&
+                    task.status === "proposed" && (
+                      <div>
+                        Coordinated review required. Replan the complete mission
+                        and all participating crews before changing this order.
+                      </div>
+                    )}
                   {showOrderControls && task.status === "proposed" ? (
                     <div className="crew-stop-order-controls">
                       <Button
@@ -212,6 +379,7 @@ export function CrewStopTable({
                         aria-label={`Move ${name} up`}
                         disabled={
                           !editable ||
+                          coordinatedReview ||
                           taskRows[index - 1]?.status !== "proposed"
                         }
                         onClick={() => onMove(index, -1)}
@@ -224,6 +392,7 @@ export function CrewStopTable({
                         aria-label={`Move ${name} down`}
                         disabled={
                           !editable ||
+                          coordinatedReview ||
                           taskRows[index + 1]?.status !== "proposed"
                         }
                         onClick={() => onMove(index, 1)}
@@ -384,7 +553,8 @@ export default function CrewPlans({ incidents, teamId, buttonLabel }) {
     !selected.confirmation.saving &&
     !changed &&
     !!reviewedVersion &&
-    !validDraft?.validating;
+    !validDraft?.validating &&
+    !crewReorderBlocked(selected?.tasks);
   const move = (index, direction) => {
     if (!editable) return;
     const tasks = moveCrewStop(
@@ -591,6 +761,7 @@ export default function CrewPlans({ incidents, teamId, buttonLabel }) {
         {selected && (
           <>
             <div className="crew-review-summary">
+              <UrgentInterventionReviews incident={selected.incident} />
               {selected.confirmation.plan?.approval && !validDraft && (
                 <Alert severity="success" sx={{ mb: 2 }}>
                   <strong>

@@ -144,3 +144,77 @@ test('shared map keeps unknown geometry unknown and empty crew lists safe', asyn
   assert.equal(data.stops[0].position, null);
   assert.deepEqual(crewMapsData([]).stops, []);
 });
+
+test("complete mission map joins only contiguous supplied legs and retains pickup marker identity", () => {
+  const task = {
+    asset_id: "care",
+    mission_status: "complete_evacuation",
+    path_lonlat: [
+      [1, 40],
+      [2, 41],
+    ],
+    evacuation: { destination_id: "shelter" },
+    mission_legs: [
+      {
+        kind: "approach",
+        path_lonlat: [
+          [1, 40],
+          [2, 41],
+        ],
+      },
+      {
+        kind: "delivery",
+        path_lonlat: [
+          [2, 41],
+          [3, 42],
+        ],
+      },
+      {
+        kind: "return",
+        path_lonlat: [
+          [3, 42],
+          [2, 41],
+        ],
+      },
+      {
+        kind: "delivery",
+        path_lonlat: [
+          [2, 41],
+          [3, 42],
+        ],
+      },
+    ],
+  };
+  const stop = crewMapData({ tasks: [task] }, [
+    { asset_id: "care", name: "Care home", latitude: 41, longitude: 2 },
+  ]).stops[0];
+  assert.deepEqual(stop.path, [
+    [40, 1],
+    [41, 2],
+    [42, 3],
+    [41, 2],
+    [42, 3],
+  ]);
+  assert.equal(stop.name, "Care home");
+  assert.deepEqual(stop.position, [41, 2]);
+  const missingPickup = crewMapData({ tasks: [task] }).stops[0];
+  assert.deepEqual(missingPickup.position, [42, 3]);
+  assert.match(missingPickup.name, /shelter/);
+  assert.match(missingPickup.positionSource, /reception/);
+  for (const badLeg of [
+    { kind: "return" },
+    {
+      kind: "return",
+      path_lonlat: [
+        [9, 40],
+        [2, 41],
+      ],
+    },
+  ]) {
+    const broken = {
+      ...task,
+      mission_legs: [task.mission_legs[0], badLeg, task.mission_legs[3]],
+    };
+    assert.deepEqual(crewMapData({ tasks: [broken] }).stops[0].path, []);
+  }
+});

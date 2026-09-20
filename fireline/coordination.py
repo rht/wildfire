@@ -4,13 +4,18 @@ One store/connection per worker; no UI or provider I/O. Revisions and suggested
 work publish in the same SQLite transaction. Public state is a persisted view,
 not a claim that a call connected a human or that anyone evacuated.
 """
-from dataclasses import dataclass, replace
-from datetime import datetime, timezone
 import json
 import re
+from dataclasses import dataclass, replace
+from datetime import datetime, timezone
 
 from .contact_priority import ContactPolicy
 from .evacuation_readiness import coordinate_evacuation
+from .response_contract import (
+    RESPONSE_REVIEW_DETAILS,
+    RESPONSE_TASK_DETAILS,
+    joint_action_ids,
+)
 from .snapshot import ASSET_KEYS, SOURCE_KEYS, VALUE_AT_RISK_KEYS, validate_snapshot
 from .voice_models import ANSWER_FIELDS, utc
 from .voice_store import VoiceStore, digest, encoded
@@ -157,8 +162,8 @@ def _response_proposal(response, snapshot, elapsed, *, now):
             or isinstance(response.get('now_min'), bool) or response.get('now_min') != elapsed
             or response.get('dispatch') is not False):
         raise ValueError('response proposal association, time or dispatch mismatch')
-    from .incident_planning import validate_current_location
     from .dashboard_public import _clean
+    from .incident_planning import validate_current_location
     assets = {a['asset_id'] for a in snapshot['assets']}
     task_keys = ('action_id', 'asset_id', 'team_id', 'scenario_id', 'snapshot_id',
                  'action_version', 'status', 'from_node', 'to_node', 'depart_min',
@@ -166,6 +171,8 @@ def _response_proposal(response, snapshot, elapsed, *, now):
                  'prerequisites', 'transport_people', 'route_source', 'path_lonlat', 'path_nodes',
                  'duration_min', 'deadline_min', 'required_capabilities', 'readiness_required',
                  'readiness', 'ordering_evidence', 'action', 'route_status')
+    task_keys += RESPONSE_TASK_DETAILS
+    joint_ids = joint_action_ids(response['teams'])
     teams, action_ids, team_ids = [], set(), set()
     for team in response['teams']:
         if team['team_id'] in team_ids:
@@ -180,11 +187,11 @@ def _response_proposal(response, snapshot, elapsed, *, now):
                     or (task['status'] == 'proposed' and task['snapshot_id'] != snapshot['snapshot_id'])
                     or task['team_id'] != team['team_id']
                     or task['scenario_id'] != snapshot['scenario_id']
-                    or task['action_id'] in action_ids
+                    or (task['action_id'] in action_ids and task['action_id'] not in joint_ids)
                     or task['status'] not in ('proposed', 'informed', 'en_route', 'in_progress', 'completed')):
                 raise ValueError('response proposal task association mismatch')
             action_ids.add(task['action_id'])
-            public = {k: task[k] for k in task_keys if k in task}
+            public = _clean({k: task[k] for k in task_keys if k in task})
             public['effects'] = []
             for effect in task['effects']:
                 if effect['asset_id'] not in assets and not preserved_missing:
@@ -204,8 +211,13 @@ def _response_proposal(response, snapshot, elapsed, *, now):
                              ('assisted_units', 'people_units', 'value_units')})
     for section in ('unassigned', 'review'):
         public[section] = [{k: row[k] for k in
-                           ('action_id', 'asset_id', 'team_id', 'reason', 'reasons') if k in row}
+                           ('action_id', 'asset_id', 'team_id', 'reason', 'reasons') + RESPONSE_REVIEW_DETAILS if k in row}
                           for row in response[section]]
+    if 'coverage_by_dimension' in response:
+        public['coverage_by_dimension'] = {k: _clean(v) for k, v in response['coverage_by_dimension'].items() if k in assets}
+    for key in ('remaining_needs', 'search', 'search_limits', 'sensitivity_summary'):
+        if key in response:
+            public[key] = _clean(response[key])
     return public
 
 
@@ -440,7 +452,8 @@ def main(argv=None):
     """One explicit local service tick; never starts a call worker."""
     import argparse
     from pathlib import Path
-    from .evacuation_readiness import ReceptionCentre, EvacuationRoute
+
+    from .evacuation_readiness import EvacuationRoute, ReceptionCentre
     from .priority_models import scenario_from_dict
 
     parser = argparse.ArgumentParser(description=__doc__)

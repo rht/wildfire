@@ -129,17 +129,14 @@ def assistance_call(voice):
                                    evidence={"identity_confirmed": "yes", "can_self_evacuate": "need help"}))
 
 
-def test_readiness_must_cover_action_finish_plus_thirty_minute_buffer(voice):
+def test_fresh_call_covers_intervention_start_without_fire_buffer(voice):
     assistance_call(voice)
     ops = operations()
     ops["actions"][0].update(transport_people=1, readiness_required=True)
-    ops["readiness_validity_min"] = 40
-    assert tasks(plan(voice, ops)) == []
-    ops["readiness_validity_min"] = 41
     result = plan(voice, ops)
     assert len(tasks(result)) == 1
-    assert tasks(result)[0]["readiness"]["valid_until_min"] == 41
-    assert tasks(plan(voice, ops, now=EPOCH + timedelta(minutes=2))) == []
+    assert tasks(result)[0]["readiness"]["valid_until_min"] == 15
+    assert tasks(plan(voice, ops, now=EPOCH + timedelta(minutes=11))) == []
 
 
 @pytest.mark.parametrize("duration", [0, -1, True, float("nan"), "60"])
@@ -200,3 +197,58 @@ def test_invalid_declared_road_node_coordinates_are_rejected(voice, point):
     ops["road_nodes"]["BASE"] = point
     with pytest.raises(ValueError):
         plan(voice, ops)
+
+
+def test_call_from_another_snapshot_does_not_authorize_current_rescue(voice):
+    assistance_call(voice)
+    ops = operations()
+    ops["actions"][0].update(transport_people=1, readiness_required=True)
+    ops["readiness_validity_min"] = 60
+    ops["snapshot_id"] = "s-0002"
+    snap = snapshot()
+    snap["snapshot_id"] = "s-0002"
+    assert tasks(plan(voice, ops, snap=snap)) == []
+
+
+def test_voice_epoch_mismatch_cannot_authorize_readiness(voice):
+    assistance_call(voice)
+    scenario = scenario_from_snapshot(snapshot(), operations(), EPOCH)
+    with pytest.raises(ValueError, match="epoch"):
+        response_from_snapshot(snapshot(), scenario, operations(), voice, EPOCH,
+                               EPOCH - timedelta(minutes=1))
+
+
+def test_supplied_early_forecast_and_long_duration_drive_fragility_without_invented_bounds(voice):
+    ops = operations()
+    ops['actions'][0]['duration_high_min'] = 20
+    snap = snapshot()
+    snap['assets'][0]['arrival_p10_at'] = (EPOCH + timedelta(minutes=45)).isoformat()
+    result = plan(voice, ops, snap=snap)
+    sensitivity = tasks(result)[0]['sensitivity']
+    assert sensitivity['status'] == 'fragile'
+    assert sensitivity['deadline_early_min'] == 45
+    assert sensitivity['duration_high_min'] == 20
+    assert tasks(plan(voice))[0]['sensitivity']['status'] == 'unknown'
+
+
+def test_configured_search_budget_is_applied_to_planner(voice):
+    ops = operations()
+    ops['search'] = {'depth': 1, 'beam_width': 2, 'max_expansions': 3}
+    result = plan(voice, ops)
+    assert result['search_limits'] == {'depth': 1, 'beam_width': 2, 'max_expansions': 3}
+    ops['search']['max_expansions'] = 0
+    with pytest.raises(ValueError, match='search'):
+        plan(voice, ops)
+
+
+def test_future_call_fact_does_not_authorize_a_past_planning_time(voice):
+    voice.clock = lambda: EPOCH + timedelta(minutes=1)
+    voice.register(CallRequest('future', 'A', 's-0001', '+12025550123', 'en', 'test'))
+    voice.bind('future', 'provider-future')
+    voice.record_result(CallResult('future', 'A', 's-0001', 'provider-future', 'completed',
+                                   (EPOCH + timedelta(minutes=1)).isoformat(), 'call',
+                                   identity_confirmed=True, can_self_evacuate=False,
+                                   evidence={'identity_confirmed': 'yes', 'can_self_evacuate': 'need help'}))
+    ops = operations()
+    ops['actions'][0].update(transport_people=1, readiness_required=True)
+    assert tasks(plan(voice, ops)) == []

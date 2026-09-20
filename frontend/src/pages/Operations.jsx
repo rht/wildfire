@@ -23,7 +23,7 @@ import {
   PageHeading,
   Metric,
 } from "../components/Common";
-import CrewPlans from "../components/CrewPlans";
+import CrewPlans, { UrgentInterventionReviews } from "../components/CrewPlans";
 import CrewItinerary from "../components/CrewItinerary";
 import {
   gps,
@@ -425,6 +425,7 @@ export function ResponsePlan({ incident }) {
         onClose={() => setShowBlockers(false)}
         title="Blockers & uncovered locations"
       >
+        <UrgentInterventionReviews incident={incident} />
         {response && (
           <MainCard title="Blockers & uncovered locations">
             {Object.entries(response.unserved || {}).map(([id, reason]) => (

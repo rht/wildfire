@@ -38,6 +38,31 @@ export function crewRouteArrows(path) {
   );
 }
 
+const validGeometry = (path) =>
+  Array.isArray(path) &&
+  path.length > 1 &&
+  path.every(
+    (point) =>
+      Array.isArray(point) &&
+      point.length === 2 &&
+      position({ latitude: point[1], longitude: point[0] }),
+  );
+
+function missionGeometry(legs) {
+  const path = [];
+  for (const leg of legs || []) {
+    const supplied = leg.path_lonlat;
+    if (!validGeometry(supplied)) return [];
+    if (
+      path.length &&
+      (path.at(-1)[0] !== supplied[0][0] || path.at(-1)[1] !== supplied[0][1])
+    )
+      return [];
+    path.push(...(path.length ? supplied.slice(1) : supplied));
+  }
+  return path;
+}
+
 export function crewMapData(team = {}, assets = []) {
   const currentPosition = position(team.current_location);
   const plannedStart = team.starting_location ?? team.planning_context?.start;
@@ -63,26 +88,27 @@ export function crewMapData(team = {}, assets = []) {
       : null,
     stops: (team.tasks || []).map((task, index) => {
       const asset = assets.find((item) => item.asset_id === task.asset_id);
-      const supplied = task.path_lonlat;
-      const validPath =
-        Array.isArray(supplied) &&
-        supplied.length > 1 &&
-        supplied.every(
-          (point) =>
-            Array.isArray(point) &&
-            point.length === 2 &&
-            position({ latitude: point[1], longitude: point[0] }),
-        );
-      const path = validPath ? supplied.map(([lon, lat]) => [lat, lon]) : [];
+      const completeMission = task.mission_status === "complete_evacuation";
+      const supplied = completeMission
+        ? missionGeometry(task.mission_legs)
+        : task.path_lonlat;
+      const path = validGeometry(supplied)
+        ? supplied.map(([lon, lat]) => [lat, lon])
+        : [];
       const destination = position(asset);
       return {
         id: crewStopId(task, index),
         number: index + 1,
-        name: asset?.name || task.asset_id || "Destination not supplied",
+        name:
+          completeMission && !destination && path.length
+            ? `${task.evacuation?.destination_id || task.evacuation?.node_id || "Reception"} · mission for ${asset?.name || task.asset_id || "unknown location"}`
+            : asset?.name || task.asset_id || "Destination not supplied",
         position: destination || path.at(-1) || null,
         positionSource: destination
           ? "Identified location"
-          : "Supplied route endpoint",
+          : completeMission
+            ? "Supplied planned reception endpoint"
+            : "Supplied route endpoint",
         path,
       };
     }),

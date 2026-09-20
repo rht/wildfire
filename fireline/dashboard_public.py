@@ -2,6 +2,8 @@
 import math
 import re
 
+from .response_contract import RESPONSE_PUBLIC_FIELDS
+
 # Phone-like text is redacted even inside public provenance. ISO dates are preserved.
 _PHONE = re.compile(r'(?<![\w-])(?:\+?\d(?:[\d ().-]*\d){8,14}|\(\d{2,4}\)[\d .-]{6,}\d)(?![\w-])')
 _SECRET = re.compile(r'(?i)(?:bearer\s+\S+|(?:api[_-]?key|token|password)\s*[:=]\s*\S+)')
@@ -53,6 +55,7 @@ proposed approved confirmed departure_at arrival_at departure_min arrival_min du
 path routes evacuation_path firetruck_path provenance route_source route_status
 steps actions schedule crews unassigned warnings unserved_people mode served_people
 '''.split())
+_FIELDS.update(RESPONSE_PUBLIC_FIELDS)
 _CALL_FIELDS = set('''queue_state reported_needs_assistance dispatch_state transfer_verified review_status evidence_fields provenance input_mode
 request_id asset_id snapshot_id status observed_at queued_at updated_at
 source needs_assistance wants_human message_acknowledged acknowledged departure_confirmed
@@ -105,6 +108,11 @@ def public_state(state):
     if isinstance(response, dict):
         public_response = result['plan']['response']
         asset_ids = {asset['asset_id'] for asset in state.get('assets', [])}
+        if 'coverage_by_dimension' in response:
+            public_response['coverage_by_dimension'] = {
+                key: _clean(value) for key, value in response['coverage_by_dimension'].items()
+                if key in asset_ids and isinstance(value, dict)
+            }
         if 'coverage' in response:
             public_response['coverage'] = {
                 key: _clean(value) for key, value in response['coverage'].items()
