@@ -2685,7 +2685,7 @@ coordination boundary. **Stack:** React, MUI, Vite, React Router, Leaflet, exist
 Python/Starlette server. **Spec:** this section, including the approved activity-log
 and frontend-directory additions.
 
-- [ ] Task 1 — data adapter and fixtures (`frontend/src/data/`,
+- [ ] Task 1 — data adapter and fixtures (`frontend/src/state/`,
   `frontend/tests/model.test.mjs`). Write failing cases for absent metrics, unique
   location contact counts, follow-up reasons, incident/date filtering, confirmed
   evacuation versus ability, and stable event arrival ordering. Run

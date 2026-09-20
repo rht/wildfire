@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { DashboardClient } = require('../design/dashboard-client.js');
+const { DashboardClient } = require('../legacy/dashboard-client.js');
 function state(revision=1) {
   return {schema_version:'coordination-state-1',scenario_id:'s', snapshot_id:'snap',revision,
     as_of:'2026-09-20T10:00:00Z',input_mode:'live',assets:[],contacts:{ranked:[],review:[]},

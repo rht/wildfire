@@ -1,0 +1,32 @@
+{
+  "name": "responsara-frontend",
+  "private": true,
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test tests/test_*.cjs tests/*.test.mjs",
+    "test:browser": "node tests/react_browser.cjs",
+    "lint": "eslint src vendor/mantis/typography.js legacy/dashboard-client.js legacy/dashboard-view.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "eslint": "10.11.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "jsdom": "26.1.0",
+    "prettier": "3.9.8",
+    "vite": "8.3.0"
+  },
+  "dependencies": {
+    "@ant-design/icons": "6.3.4",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@fontsource/public-sans": "5.3.0",
+    "@mui/material": "9.4.0",
+    "leaflet": "1.9.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-router-dom": "7.18.4"
+  }
+}
