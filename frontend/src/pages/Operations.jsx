@@ -23,6 +23,7 @@ import {
   PageHeading,
   Metric,
 } from "../components/Common";
+import CrewPlans from "../components/CrewPlans";
 import IncidentMap from "../components/IncidentMap";
 import {
   gps,
@@ -343,9 +344,9 @@ export function ResponsePlan({ incident }) {
         title="Firefighter plan"
         description="Team-by-team steps, destinations and dependencies, in the order supplied by coordination."
       />
-      <Alert severity="info">
-        Response proposals require separate dispatch confirmation. Travel and
-        action times are minutes from the plan’s reference time.
+      <Alert severity="warning">
+        <strong>Fire analyst confirmation required.</strong> Review and confirm
+        each proposed crew plan. Approval is separate from dispatch.
       </Alert>
       {!response ? (
         <MainCard>
@@ -365,16 +366,7 @@ export function ResponsePlan({ incident }) {
                       ?.name || team.team_id
                   }
                   action={
-                    <Status
-                      value={
-                        team.status ||
-                        (team.tasks?.every(
-                          (t) => t.status === team.tasks[0]?.status,
-                        )
-                          ? team.tasks?.[0]?.status
-                          : "mixed")
-                      }
-                    />
+                    <CrewPlans incidents={[incident]} teamId={team.team_id} />
                   }
                   key={team.team_id}
                 >
@@ -730,7 +722,15 @@ export function Resources({ incidents }) {
         available: t.available,
         source: t.source,
       }))
-    ).map((r) => ({ ...r, incident_name: i.name, incident_id: i.id })),
+    ).map((r) => ({
+      ...r,
+      incident: i,
+      incident_name: i.name,
+      incident_id: i.id,
+      plannedTeam: responseTeams(i).find(
+        (team) => team.team_id === (r.team_id || r.id),
+      ),
+    })),
   );
   return (
     <>
@@ -798,6 +798,7 @@ export function Resources({ incidents }) {
                   "Type / capabilities",
                   "Incident",
                   "Deployment",
+                  "Plan",
                   "Availability",
                   "Source",
                 ].map((c) => (
@@ -827,6 +828,16 @@ export function Resources({ incidents }) {
                     <TableCell>{r.incident_name}</TableCell>
                     <TableCell>
                       <Status value={r.status} />
+                    </TableCell>
+                    <TableCell>
+                      {r.plannedTeam?.tasks?.length ? (
+                        <CrewPlans
+                          incidents={[r.incident]}
+                          teamId={r.plannedTeam.team_id}
+                        />
+                      ) : (
+                        <span className="small-muted">No plan supplied</span>
+                      )}
                     </TableCell>
                     <TableCell>{fact(r.available)}</TableCell>
                     <TableCell>{r.source || "Not supplied"}</TableCell>

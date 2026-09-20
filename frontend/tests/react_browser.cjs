@@ -38,6 +38,12 @@ const fs = require("node:fs");
     );
     await expect(page.locator("main table")).toHaveCount(0);
     await expect(
+      page.getByText("Awaiting analyst confirmation", { exact: true }),
+    ).toHaveCount(6);
+    await expect(
+      page.getByText("6 need confirmation", { exact: true }),
+    ).toBeVisible();
+    await expect(
       page.getByRole("navigation", {
         name: "Incident navigation",
         exact: true,
@@ -61,7 +67,7 @@ const fs = require("node:fs");
     await expect(
       page
         .getByRole("dialog")
-        .getByRole("button", { name: "Confirm plan", exact: true }),
+        .getByRole("button", { name: "Confirm crew plan", exact: true }),
     ).toBeDisabled();
     await page.getByRole("button", { name: "Close details" }).click();
     await page.getByRole("dialog").waitFor({ state: "hidden" });
@@ -96,6 +102,17 @@ const fs = require("node:fs");
     await expect(page.getByTestId("metric-people")).toContainText("4");
     await page.getByTestId("metric-deployed").getByRole("link").click();
     await expect(page.locator("tbody tr")).toHaveCount(3);
+    await expect(
+      page.getByRole("columnheader", { name: "Plan", exact: true }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Review plan for Crew 1A", exact: true })
+      .click();
+    await expect(page.getByRole("dialog")).toContainText(
+      "Accessible transport confirmed",
+    );
+    await page.getByRole("button", { name: "Close details" }).click();
+    await page.getByRole("dialog").waitFor({ state: "hidden" });
     await page
       .getByRole("link", { name: "Calls & follow-up", exact: true })
       .click();
@@ -132,6 +149,17 @@ const fs = require("node:fs");
       await page.locator("main").innerText(),
       /Accessible transport confirmed/,
     );
+    await page
+      .getByRole("button", { name: "Review plan for Crew 1A", exact: true })
+      .click();
+    await expect(page.getByRole("dialog")).toContainText(
+      "Fire analyst confirmation required",
+    );
+    await expect(page.getByRole("dialog")).toContainText(
+      "Confirmation cannot be saved yet",
+    );
+    await page.getByRole("button", { name: "Close details" }).click();
+    await page.getByRole("dialog").waitFor({ state: "hidden" });
     await page.waitForFunction(() => {
       const tiles = [...document.querySelectorAll(".leaflet-tile")];
       return (
@@ -166,6 +194,12 @@ const fs = require("node:fs");
     await page
       .getByRole("heading", { name: "Activity log", exact: true })
       .waitFor();
+    const logTagWidths = await page
+      .locator("tbody .status-tag")
+      .evaluateAll((nodes) =>
+        nodes.map((n) => n.getBoundingClientRect().width),
+      );
+    assert.equal(new Set(logTagWidths).size, 1);
     const newest = await page.locator("tbody tr").first().innerText();
     await page.getByLabel("Event order").selectOption("oldest");
     assert.notEqual(await page.locator("tbody tr").first().innerText(), newest);

@@ -87,7 +87,16 @@ export function Status({ value }) {
             )
           ? "success"
           : "default";
-  return <Chip label={text} color={color} variant="outlined" size="small" />;
+  return (
+    <Chip
+      className="status-tag"
+      title={text}
+      label={text}
+      color={color}
+      variant="outlined"
+      size="small"
+    />
+  );
 }
 export function Empty({ title = "No records available", children }) {
   return (

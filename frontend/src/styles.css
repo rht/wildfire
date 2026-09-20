@@ -918,8 +918,8 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
-.risk-status .MuiChip-root {
-  width: 128px;
+.status-tag.MuiChip-root {
+  width: 144px;
   justify-content: center;
 }
 
@@ -945,4 +945,29 @@ main {
 .crew-plan-entry .crew-step-count {
   font-size: 10px;
   max-width: 60px;
+}
+
+.crew-confirmation-intro {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-left: 3px solid #d48806;
+  background: #fffbe6;
+  color: #614700;
+  font-size: 12px;
+}
+.crew-identity .confirmation-pending {
+  color: #ad6800;
+  font-weight: 600;
+}
+.crew-plan-entry .crew-step-count {
+  color: #1677ff;
+  font-weight: 600;
+  max-width: 78px;
+}
+.crew-confirmation-action {
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid #ffe58f;
+  background: #fffbe6;
+  border-radius: 4px;
 }

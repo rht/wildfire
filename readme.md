@@ -2787,3 +2787,20 @@ until that data is supplied. Only Design demo fixtures include illustrative dead
 
 The brand subtitle is “Wildfire coordination” beneath ResponsAra. The duplicate
 topbar label and location icon are removed. The main background remains white.
+
+Proposed crew plans now show **Awaiting analyst confirmation**, an explicit
+**Review & confirm** action, and a count of plans needing confirmation. The overview
+and firefighter plan page open the same review panel with a prominent confirmation
+requirement and a dedicated final action. Plans with no proposed steps are not
+labelled as awaiting approval. Saving is still unavailable until the approval
+service is connected; no approval or dispatch is inferred from opening the review.
+
+Status tags now share a fixed width across tables, including activity-log event
+types and severities. Full labels remain available on hover when truncated.
+
+The sidebar footer (read-only note, recommendation text and visible Mantis link)
+is removed. Required vendor attribution remains in the source and distributed
+license asset.
+
+The Resources table includes a Plan column linked by the supplied team identifier
+to the same crew review/confirmation panel. Missing plans are explicitly labelled.

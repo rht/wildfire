@@ -158,15 +158,6 @@ export default function App() {
           </NavLink>
         ))}
       </nav>
-      <div className="sidebar-footer">
-        <div className="read-only-dot" />
-        Read-only workspace<p>Recommendations support analyst decisions.</p>
-        <small>
-          <a href="/assets/mantis-license.txt" target="_blank" rel="noreferrer">
-            Mantis design · CodedThemes
-          </a>
-        </small>
-      </div>
     </div>
   );
   return (
