@@ -16,12 +16,19 @@ import pandas as pd
 import pydeck as pdk
 import streamlit as st
 
-from fireline import config, priority, snapshot, tasks
+from fireline import config, priority, snapshot, tasks, ui_theme
 from fireline.ui_state import Session, llm_available
 
 STATUS_COLOUR = {"current": "green", "stale": "orange", "unavailable": "red"}
-GREY = [150, 150, 150, 200]
-RED, ORANGE, YELLOW = [200, 30, 30, 230], [240, 140, 20, 230], [235, 210, 40, 230]
+GREY = [198, 192, 186, 225]
+RED, ORANGE, YELLOW = [232, 62, 46, 240], [240, 150, 40, 240], [236, 208, 60, 240]
+FIRE_FILL, FIRE_LINE = [198, 48, 38, 95], [255, 96, 74, 255]
+# Esri World Imagery: the satellite basemap of the mockup, public XYZ tiles with no API key.
+SATELLITE_URL = ("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/"
+                 "tile/{z}/{y}/{x}")
+SATELLITE_CREDIT = "Basemap Esri World Imagery (Esri, Maxar, Earthstar Geographics) - reference only."
+TAGLINE = ("Which infrastructure, people and assets are in danger - and which hospital, which school, "
+           "needs a call first.")
 SMALL_WINDOW_MIN = config.CONTACT_POLICY["attention_min"]   # "small window" threshold shared with task flagging
 # The euro columns are display strings, never numbers: an estimate from an assumed per-class replacement
 # cost, shown with its damage-ratio band, that must never order or filter the table (handoff 002).
@@ -159,6 +166,50 @@ def fmt_window(asset: dict) -> str:
     return f"rank {asset['priority_rank']}, remaining window {slack:.0f} min ({asset['priority_status']})"
 
 
+def window_tone(asset: dict) -> str:
+    """Tone name for the remaining window, the same three bands `window_colour` paints on the map:
+    red = exhausted, orange = under SMALL_WINDOW_MIN, ink = larger, grey = unranked."""
+    slack = asset.get("slack_min")
+    if slack is None or asset.get("queue") != "ranked":
+        return "grey"
+    if asset.get("priority_status") == "window_exhausted":
+        return "red"
+    return "orange" if float(slack) < SMALL_WINDOW_MIN else "ink"
+
+
+def window_segments(asset: dict) -> list[float | None]:
+    """The three parts of the window arithmetic, for the ranked row's stacked bar.
+
+    `evacuation + buffer + remaining window = time to impact`, so the bar shows how the snapshot's own
+    arithmetic spends the time before the forecast arrival. It is not a new score: nothing here
+    computes risk, it only re-draws `window_components` (readme 5)."""
+    c = asset.get("window_components") or {}
+    return [c.get("evacuation_min"), c.get("buffer_min"), asset.get("slack_min")]
+
+
+def location_subtitle(asset: dict) -> str:
+    """`school - 1400 m to fire`, with the distance dropped when the asset has none."""
+    distance = asset.get("distance_to_fire_m")
+    where = f" - {distance:,.0f} m to fire" if distance is not None else " - distance unknown"
+    return f"{asset.get('asset_type') or 'type unknown'}{where}"
+
+
+def stamp(value) -> str:
+    """`13:20Z 2026-07-03` for the header stamps; the raw text when it will not parse."""
+    try:
+        t = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return fmt(value)
+    return f"{t:%H:%M}Z {t:%Y-%m-%d}"
+
+
+def escalation_counts(rows: list[dict]) -> dict[str, int]:
+    """Task pipeline totals for the escalation card: done, blocked, and everything still open."""
+    done = sum(1 for t in rows if t["status"] == "done")
+    blocked = sum(1 for t in rows if t["status"] == "blocked")
+    return {"done": done, "blocked": blocked, "open": len(rows) - done - blocked}
+
+
 def try_action(label: str, fn, *args, **kwargs) -> bool:
     """Run a store/agent action; show its error instead of crashing the page. True on success."""
     try:
@@ -183,12 +234,14 @@ def polygon_rows(geometry: dict, geometry_kind: str | None = None) -> list[dict]
 
 def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
     snap, status = sess.snapshot, sess.status()
-    layers, lons, lats = [], [], []
+    # Satellite basemap first so every other layer draws over it; no key, no style server.
+    layers = [pdk.Layer("TileLayer", data=SATELLITE_URL, min_zoom=0, max_zoom=19, tile_size=256)]
+    lons, lats = [], []
     geometry = snap.get("fire_geometry")
     if geometry and geometry.get("type") in ("Polygon", "MultiPolygon"):
         rows = polygon_rows(geometry, snap.get("fire_geometry_kind"))
-        layers.append(pdk.Layer("PolygonLayer", data=rows, get_polygon="polygon", get_fill_color=[160, 20, 20, 90],
-                                get_line_color=[140, 0, 0], line_width_min_pixels=2, stroked=True, filled=True,
+        layers.append(pdk.Layer("PolygonLayer", data=rows, get_polygon="polygon", get_fill_color=FIRE_FILL,
+                                get_line_color=FIRE_LINE, line_width_min_pixels=3, stroked=True, filled=True,
                                 pickable=True))
         for rings in (r["polygon"] for r in rows):
             for x, y in rings[0]:
@@ -219,13 +272,13 @@ def build_deck(sess: Session) -> tuple[pdk.Deck, int]:
                            ', '.join(a.get('review_reasons') or []) or 'no review flags',
                        ])})
     layers.append(pdk.Layer("ScatterplotLayer", data=points, get_position=["lon", "lat"], get_fill_color="color",
-                            get_radius=150, radius_min_pixels=6, pickable=True, stroked=True,
-                            get_line_color=[40, 40, 40], line_width_min_pixels=1))
+                            get_radius=220, radius_min_pixels=8, pickable=True, stroked=True,
+                            get_line_color=[255, 255, 255, 210], line_width_min_pixels=2))
     clon = sum(lons) / len(lons) if lons else 3.0
     clat = sum(lats) / len(lats) if lats else 41.9
     view = pdk.ViewState(longitude=clon, latitude=clat, zoom=10.5, pitch=0)
     tooltip = {"html": "<b>{title}</b><br/>{tip}", "style": {"whiteSpace": "pre-line"}}
-    deck = pdk.Deck(layers=layers, initial_view_state=view, tooltip=tooltip, map_style="light")
+    deck = pdk.Deck(layers=layers, initial_view_state=view, tooltip=tooltip, map_style=None)
     return deck, status["counts"]["unlocated"]
 
 
@@ -601,9 +654,266 @@ def render_selected(sess: Session, asset: dict) -> None:
             render_task(sess, t, team_ids, team_names)
 
 
+
+# ----------------------------------------------------------------------------- dashboard shell
+ACTION_BUTTONS = (
+    ("Notify fire dept", "request_resources", True),
+    ("Contact facility", "contact_facility", False),
+    ("Check access", "check_access", False),
+    ("Confirm occupancy", "confirm_occupancy", False),
+)
+
+
+def selected_asset_id(sess: Session) -> str | None:
+    """The analyst's selection, dropped when it is not in the snapshot on screen (nothing by default)."""
+    aid = st.session_state.get("selected_asset")
+    return aid if any(a["asset_id"] == aid for a in sess.assets_in_order()) else None
+
+
+def select_asset(asset_id: str | None) -> None:
+    st.session_state.selected_asset = asset_id
+
+
+def render_header(sess: Session, s: dict) -> None:
+    """The header bar on the dark shell, with the sequence's forward control at its right."""
+    head, action = st.columns([0.86, 0.14], vertical_alignment="center")
+    head.html(ui_theme.header_html(
+        product="Respons'Ara", tagline=TAGLINE, mode=s["input_mode"] or "unknown",
+        status=s["data_status_now"] or "unknown", status_tone=STATUS_COLOUR.get(s["data_status_now"], "grey"),
+        as_of=stamp(s["as_of"]), computed_at=stamp(s["computed_at"])))
+    with action.container(key="ra-next"):
+        if st.button("Next update →", width="stretch", disabled=not sess.has_next, key="ra-next-btn",
+                     help="Apply the next snapshot of this scenario (the sidebar has Previous and the "
+                          "time-travel slider)."):
+            sess.next_update()
+            st.rerun()
+
+
+def render_change_log(sess: Session, events: list[dict]) -> None:
+    st.caption(f"{len(events)} store events, {len(sess.workbench.change_log)} agent lines.")
+    st.dataframe(pd.DataFrame(events[::-1]), width="stretch", hide_index=True)
+    for line in reversed(sess.workbench.change_log):
+        st.write(f"- {line}")
+
+
+def render_map_card(sess: Session, s: dict, c: dict) -> None:
+    """The map card: chips overlaid on a satellite basemap, fire footprint and located assets."""
+    deck, unlocated = build_deck(sess)
+    with st.container(key="racard-map"):
+        with st.container(key="ra-mapchips"):
+            chip, log = st.columns([0.7, 0.3], vertical_alignment="center")
+            chip.html(ui_theme.map_chip_html("Response map - live exposure radius"))
+            events = sess.store.events()
+            with log.popover(f"Change log ({len(events)})"):
+                render_change_log(sess, events)
+        st.pydeck_chart(deck, width="stretch", height=520)
+    st.caption(f"{c['assets'] - unlocated} located assets shown; {unlocated} unlocated assets are not on the map "
+               f"(see needs-review queue). Colour by remaining window: red = exhausted (<= 0 min), orange = under "
+               f"{SMALL_WINDOW_MIN} min, yellow = {SMALL_WINDOW_MIN} min or more, grey = unranked (no forecast or "
+               f"evacuation estimate). Fire: {s['fire_geometry_kind']} from {s['fire_source']}. {SATELLITE_CREDIT}")
+
+
+def render_action_row(sess: Session, asset: dict | None) -> None:
+    """Work the analyst can start on the selected location: the four declared task actions, then the
+    investigation agent. Every button writes to the task store, so none of them is a mock."""
+    cols = st.columns(len(ACTION_BUTTONS) + 1)
+    disabled = asset is None
+    for col, (label, action, primary) in zip(cols, ACTION_BUTTONS):
+        if col.button(label, key=f"act-{action}", width="stretch", disabled=disabled,
+                      type="primary" if primary else "secondary",
+                      help=f"Create a {action.replace('_', ' ')} task for the selected location "
+                           f"(needs {', '.join(config.TASK_ACTIONS[action])})."):
+            if try_action("create task", sess.create_task, asset["asset_id"], action, action.replace("_", " ")):
+                st.rerun()
+    live = llm_available()
+    if cols[-1].button("Investigate location →", key="act-investigate", width="stretch",
+                       disabled=disabled or not (asset or {}).get("review_reasons"),
+                       help="Run one bounded investigation on the selected location's review flags "
+                            + ("(live LLM)" if live else "(FakeLLM: no LLM API key)")):
+        try:
+            sess.investigate(asset["asset_id"], live=live)
+        except Exception as e:                  # LLM/network failure leaves the question answerable manually
+            st.error(f"investigation failed ({type(e).__name__}: {e}); answer the open items manually")
+        st.rerun()
+    if disabled:
+        st.caption("Select a location to start work on it. Scenario, time travel, policy and the team roster "
+                   "are in the sidebar (top left).")
+
+
+def render_priority_card(c: dict) -> None:
+    body = ui_theme.stat_summary_html([(c["window_exhausted"], "window exhausted", "red"),
+                                       (c["ranked"], "ranked to contact", "amber"),
+                                       (c["needs_review"], "needs review", "orange")])
+    st.html(ui_theme.card_html(
+        "Response priority summary", body,
+        foot=f"{c['flagged']} ranked assets still carry review flags - {c.get('strategic', 0)} strategic, "
+             f"{c.get('criticality_unassessed', 0)} unassessed - {c['assets']} assets in the snapshot."))
+
+
+def render_escalation_card(sess: Session) -> None:
+    """The task pipeline and what is waiting on the analyst: proposals and open questions."""
+    counts = escalation_counts(sess.store.tasks())
+    body = ui_theme.tile_row_html([(counts["done"], "confirmed done", "green"),
+                                   (counts["open"], "open", "orange"),
+                                   (counts["blocked"], "blocked", "blue")])
+    rows = [ui_theme.dot_row_html(f"{sess.asset(p['asset_id'])['name']} - {p['field']}", "amber",
+                                  right="proposal", right_tone="amber")
+            for p in sess.pending_proposals()]
+    rows += [ui_theme.dot_row_html(f"{sess.asset(q['asset_id'])['name']} - {q['question']}", "blue",
+                                   right="question", right_tone="blue")
+             for q in sess.open_questions()]
+    body += ui_theme.sub_heading_html("Awaiting confirmation")
+    body += ui_theme.scroll_html("".join(rows)) if rows else ui_theme.empty_state_html(
+        "Nothing is waiting on an analyst confirmation.")
+    st.html(ui_theme.card_html("Escalation & notification status", body,
+                               foot="Tasks are recommendations with a team capability and a deadline basis, "
+                                    "never a dispatch order."))
+
+
+def render_ranked_card(sess: Session, current: str | None) -> None:
+    """Ranked locations: the rank number is the button that selects the location."""
+    ranked = sess.scored["ranked"]
+    with st.container(key="racard-ranked"):
+        st.html(ui_theme.card_title_html("Ranked locations - analyst priority", len(ranked)))
+        if not ranked:
+            st.html(ui_theme.empty_state_html("No location has both a forecast arrival and an evacuation estimate."))
+        with st.container(key="ra-ranklist", height=300, border=False):
+            for a in ranked:
+                num, row = st.columns([0.09, 0.91], vertical_alignment="center")
+                with num.container(key=f"rarank-{a['asset_id']}"):
+                    if st.button(str(a["priority_rank"]), key=f"rankbtn-{a['asset_id']}",
+                                 help=f"Show {a['name']}"):
+                        select_asset(a["asset_id"])
+                        st.rerun()
+                row.html(ui_theme.ranked_row_html(
+                    name=a["name"], subtitle=location_subtitle(a), value=f"{a['slack_min']:.0f} min",
+                    segments=window_segments(a), value_tone=window_tone(a),
+                    selected=a["asset_id"] == current))
+        st.html('<div class="ra-card-foot">Smallest remaining evacuation window first. The bar is that '
+                'window\'s arithmetic: evacuation duration, buffer and the window that is left.</div>')
+
+
+def render_selected_card(sess: Session, current: str | None) -> None:
+    assets = sess.assets_in_order()
+    labels = {a["asset_id"]: f"{a['name']} ({a['asset_type']}; {a['queue']})" for a in assets}
+    ids = list(labels)
+    open_counts = open_task_counts(sess)
+    with st.container(key="racard-selected"):
+        st.html(ui_theme.card_title_html("Selected location"))
+        if current is None:
+            st.html(ui_theme.empty_state_html("Select a location from the list, or a pin on the map."))
+        else:
+            a = sess.asset(current)
+            st.html(ui_theme.detail_html(a["name"], [
+                ("priority", fmt_window(a)),
+                ("type / municipality", f"{a['asset_type']} - {a.get('municipality') or 'unknown'}"),
+                ("distance to fire", f"{fmt(a.get('distance_to_fire_m'))} m"),
+                ("predicted arrival", a.get("fire_arrival_at") or "no forecast"),
+                ("evacuation duration", f"{fmt(a.get('evacuation_min'))} min"),
+                ("people", people(a)),
+                ("review flags", ", ".join(a.get("review_reasons") or []) or "none"),
+                ("open tasks", open_counts.get(current, 0)),
+            ]))
+        chosen = st.selectbox("Selected location", ids, format_func=labels.get, label_visibility="collapsed",
+                              index=ids.index(current) if current in ids else None,
+                              placeholder="Search every location, ranked or not...",
+                              key=f"asset-select-{sess.scenario_id}-{current or 'none'}")
+        if chosen != current:
+            select_asset(chosen)
+            st.rerun()
+
+
+def render_review_card(sess: Session, c: dict) -> None:
+    rows = sess.scored["needs_review"]
+    body = "".join(ui_theme.dot_row_html(a["name"],
+                                         right=", ".join(a.get("review_reasons") or []) or "unranked",
+                                         right_tone="orange") for a in rows)
+    body = ui_theme.scroll_html(body) if rows else ui_theme.empty_state_html("Every location is ranked.")
+    st.html(ui_theme.card_html(
+        "Needs-review queue", body, count=c["needs_review"],
+        foot=f"{c['forecast_unavailable']} without a forecast arrival, {c['evacuation_unknown']} without an "
+             f"evacuation estimate. An investigation queue, not an assertion of highest risk."))
+
+
+# ----------------------------------------------------------------------------- sections below the fold
+def render_detail_sections(sess: Session, s: dict, c: dict, current: str | None) -> None:
+    """Everything the two columns do not have room for, kept reachable: the full selected-asset view,
+    the tables the ranking is read from, strategic exposure, tasks and the method notes."""
+    open_counts = open_task_counts(sess)
+    st.html('<div class="ra-section">Detail, tables and method</div>')
+    with st.expander("Selected location - full detail, agent, evacuation duration and tasks",
+                     expanded=current is not None):
+        if current is None:
+            st.caption("No location selected: pick one in the ranked list or the selector above.")
+        else:
+            render_selected(sess, sess.asset(current))
+
+    with st.expander(f"Ranked assets ({c['ranked']})"):
+        st.caption("Smallest remaining window first, then earlier predicted arrival, nearer distance, asset id. "
+                   "A farther asset can rank higher when the fire reaches it sooner or its evacuation takes longer.")
+        st.dataframe(ranked_frame(sess.scored["ranked"], open_counts), width="stretch", hide_index=True)
+        if sess.scored["flagged"]:
+            st.caption(f"Ranked assets that still carry review flags ({len(sess.scored['flagged'])}):")
+            st.dataframe(ranked_frame(sess.scored["flagged"], open_counts), width="stretch", hide_index=True)
+
+    with st.expander(f"Needs-review queue ({c['needs_review']})"):
+        st.caption("Unranked: no forecast arrival (forecast_unavailable, a producer gap) or no evacuation estimate "
+                   "(evacuation_unknown, confirm with the facility or set it on the selected asset). Unknown "
+                   "exposure first, then by known distance. An investigation queue, not an assertion of highest risk.")
+        st.dataframe(review_frame(sess.scored["needs_review"], open_counts), width="stretch", hide_index=True)
+
+    strategic = sess.scored.get("strategic") or []
+    if strategic or c.get("criticality_unassessed"):
+        with st.expander(f"Strategic exposure ({len(strategic)})"):
+            st.caption("A separate view, not a contact order: property value never overrides contact urgency "
+                       "(readme 6), so nothing here changes the ranked queue. Most critical tier first, "
+                       "then the same remaining window. Every tier is an analyst-confirmed proposal from the "
+                       f"investigation agent, quoting its evidence; {c.get('criticality_unassessed', 0)} asset(s) "
+                       f"are still unassessed. Policy {config.CRITICALITY_POLICY['version']}, assumed.")
+            if strategic:
+                st.dataframe(strategic_frame(strategic), width="stretch", hide_index=True)
+
+    with st.expander(f"All tasks ({len(sess.store.tasks())})"):
+        team_names = {t["team_id"]: t["name"] for t in sess.store.teams()}
+        st.dataframe(tasks_frame(sess.store.tasks(), team_names), width="stretch", hide_index=True)
+
+    with st.expander("Value at risk, method and limits"):
+        v = s["value_at_risk"]
+        if v["layer"]:
+            n = st.columns(4)
+            n[0].metric("People exposed", f"{v['people_exposed']:g}",
+                        help=f"sum of estimated occupancy x burn probability over located assets; "
+                             f"{v['excluded_people']} of {v['located']} located assets have no headcount or no "
+                             f"burn probability and are left out, never counted as zero")
+            n[1].metric("People at risk (p50)", f"{v['people_at_risk_p50']:g}",
+                        help=f"whole headcount of every located asset whose remaining evacuation window at the p50 "
+                             f"arrival is exhausted; at p10 it is {v['people_at_risk_p10']:g}. No partial clearance "
+                             f"is modelled, and {v['excluded_people']} located assets are excluded for want of an input")
+            n[2].metric("Expected loss (mid)", f"EUR {v['expected_loss_eur_mid']:,.0f}",
+                        help=f"band EUR {v['expected_loss_eur_low']:,.0f} to {v['expected_loss_eur_high']:,.0f} from the "
+                             f"class damage ratios; assumed per-class replacement costs ({v['policy_version']}), not a "
+                             f"per-asset valuation, and {v['excluded_eur']} of {v['located']} located assets are not valued")
+            n[3].metric("Excluded from totals", f"{v['excluded_people']} people / {v['excluded_eur']} eur",
+                        help=f"located assets left out of each total because an input is null (no headcount, no burn "
+                             f"probability, or a class the policy does not value), so neither total is complete. "
+                             f"{v['located']} located assets in all")
+        limits = value_limits(v)
+        st.caption(value_summary(v, s["as_of"]) + (f" {limits}" if limits else ""))
+        st.caption(f"Contact priority is the remaining evacuation window: forecast arrival - total evacuation "
+                   f"duration - buffer ({s['buffer_min']} min), relative to the snapshot time {s['now_at']}. A zero "
+                   "or negative window means immediate analyst review, not an evacuation instruction. Forecast and "
+                   "evacuation estimates are the producer's / policy's inputs, not validated predictions. Arrivals "
+                   "whose forecast source says 'labelled enrichment, not validated' come from an uncalibrated spread "
+                   "model seeded on the observed perimeter, not from a provider forecast. Recommendations, not orders.")
+        st.caption(f"Open tasks {c['open_tasks']} - pending proposals {c['pending_proposals']} - open questions "
+                   f"{c['open_questions']} - snapshot `{s['snapshot_id']}` sequence {s['sequence']} of "
+                   f"{s['n_sequences']}.")
+
+
 # ----------------------------------------------------------------------------- main
 def main() -> None:
-    st.set_page_config(page_title="ResponsAra", layout="wide")
+    st.set_page_config(page_title="ResponsAra", layout="wide", initial_sidebar_state="collapsed")
+    ui_theme.inject()
     if st.sidebar.toggle("Mock voice scenarios", value=st.query_params.get("demo") == "voice", key="mock_voice_mode"):
         from fireline.voice_demo_panel import render_voice_demo
         render_voice_demo()
@@ -614,104 +924,26 @@ def main() -> None:
     sidebar(sess)
     s = sess.status()
     c = s["counts"]
-    st.title(f"ResponsAra - {s['scenario_id']} - {s['as_of']}")
+    render_header(sess, s)
     if s["reviewing_earlier"]:
         st.warning(f"Earlier moment under review: snapshot `{s['snapshot_id']}`, sequence {s['sequence']} of "
                    f"{s['n_sequences']}, as_of {s['as_of']}. The map, ranking and review queue are recomputed for "
                    f"that moment with your confirmed overrides; tasks, the change log and the store's accepted "
                    f"sequence stay at {s['applied_sequence']}, and no tasks are suggested from it. Work you create "
                    f"here is still recorded, stamped with this snapshot.")
-    st.caption(f"Contact priority is the remaining evacuation window: forecast arrival - total evacuation duration "
-               f"- buffer ({s['buffer_min']} min), relative to the snapshot time {s['now_at']}. A zero or negative "
-               "window means immediate analyst review, not an evacuation instruction. Forecast and evacuation "
-               "estimates are the producer's / policy's inputs, not validated predictions. Arrivals whose forecast "
-               "source says 'labelled enrichment, not validated' come from an uncalibrated spread model seeded on the "
-               "observed perimeter, not from a provider forecast. Recommendations, not orders.")
-    m = st.columns(7)
-    m[0].metric("Ranked", c["ranked"])
-    m[1].metric("Window exhausted", c["window_exhausted"], help="remaining window <= 0; review first")
-    m[2].metric("Needs review", c["needs_review"],
-                help=f"unranked: {c['forecast_unavailable']} without forecast, {c['evacuation_unknown']} without evacuation estimate")
-    m[3].metric("Open tasks", c["open_tasks"])
-    m[4].metric("Pending proposals", c["pending_proposals"])
-    m[5].metric("Open questions", c["open_questions"])
-    m[6].metric("Strategic", c.get("strategic", 0),
-                help=f"assets above the default criticality tier, analyst-confirmed; "
-                     f"{c.get('criticality_unassessed', 0)} still unassessed. A separate view, never a "
-                     f"contact order.")
 
-    v = s["value_at_risk"]
-    if v["layer"]:
-        n = st.columns(4)
-        n[0].metric("People exposed", f"{v['people_exposed']:g}",
-                    help=f"sum of estimated occupancy x burn probability over located assets; "
-                         f"{v['excluded_people']} of {v['located']} located assets have no headcount or no "
-                         f"burn probability and are left out, never counted as zero")
-        n[1].metric("People at risk (p50)", f"{v['people_at_risk_p50']:g}",
-                    help=f"whole headcount of every located asset whose remaining evacuation window at the p50 "
-                         f"arrival is exhausted; at p10 it is {v['people_at_risk_p10']:g}. No partial clearance "
-                         f"is modelled, and {v['excluded_people']} located assets are excluded for want of an input")
-        n[2].metric("Expected loss (mid)", f"EUR {v['expected_loss_eur_mid']:,.0f}",
-                    help=f"band EUR {v['expected_loss_eur_low']:,.0f} to {v['expected_loss_eur_high']:,.0f} from the "
-                         f"class damage ratios; assumed per-class replacement costs ({v['policy_version']}), not a "
-                         f"per-asset valuation, and {v['excluded_eur']} of {v['located']} located assets are not valued")
-        n[3].metric("Excluded from totals", f"{v['excluded_people']} people / {v['excluded_eur']} eur",
-                    help=f"located assets left out of each total because an input is null (no headcount, no burn "
-                         f"probability, or a class the policy does not value), so neither total is complete. "
-                         f"{v['located']} located assets in all")
-    limits = value_limits(v)
-    st.caption(value_summary(v, s["as_of"]) + (f" {limits}" if limits else ""))
-
-    deck, unlocated = build_deck(sess)
-    st.pydeck_chart(deck, width="stretch")
-    st.caption(f"{c['assets'] - unlocated} located assets shown; {unlocated} unlocated assets are not on the map "
-               f"(see needs-review queue). Colour by remaining window: red = exhausted (<= 0 min), orange = under "
-               f"{SMALL_WINDOW_MIN} min, yellow = {SMALL_WINDOW_MIN} min or more, grey = unranked (no forecast or "
-               f"evacuation estimate). Fire: {s['fire_geometry_kind']} from {s['fire_source']}.")
-
-    open_counts = open_task_counts(sess)
-    st.subheader(f"Ranked assets ({c['ranked']})")
-    st.caption("Smallest remaining window first, then earlier predicted arrival, nearer distance, asset id. "
-               "A farther asset can rank higher when the fire reaches it sooner or its evacuation takes longer.")
-    st.dataframe(ranked_frame(sess.scored["ranked"], open_counts), width="stretch", hide_index=True)
-    st.subheader(f"Needs-review queue ({c['needs_review']})")
-    st.caption("Unranked: no forecast arrival (forecast_unavailable, a producer gap) or no evacuation estimate "
-               "(evacuation_unknown, confirm with the facility or set it on the selected asset). Unknown exposure "
-               "first, then by known distance. An investigation queue, not an assertion of highest risk.")
-    st.dataframe(review_frame(sess.scored["needs_review"], open_counts), width="stretch", hide_index=True)
-    if sess.scored["flagged"]:
-        st.caption(f"Ranked assets that still carry review flags ({len(sess.scored['flagged'])}):")
-        st.dataframe(ranked_frame(sess.scored["flagged"], open_counts), width="stretch", hide_index=True)
-
-    strategic = sess.scored.get("strategic") or []
-    if strategic or c.get("criticality_unassessed"):
-        st.subheader(f"Strategic exposure ({len(strategic)})")
-        st.caption("A separate view, not a contact order: property value never overrides contact urgency "
-                   "(readme 6), so nothing here changes the ranked queue above. Most critical tier first, "
-                   "then the same remaining window. Every tier is an analyst-confirmed proposal from the "
-                   f"investigation agent, quoting its evidence; {c.get('criticality_unassessed', 0)} asset(s) "
-                   f"are still unassessed. Policy {config.CRITICALITY_POLICY['version']}, assumed.")
-        if strategic:
-            st.dataframe(strategic_frame(strategic), width="stretch", hide_index=True)
-
-    assets = sess.assets_in_order()
-    labels = {a["asset_id"]: f"{a['name']} ({a['asset_type']}; {a['queue']})" for a in assets}
-    ids = list(labels)
-    default = st.session_state.get("selected_asset")
-    chosen = st.selectbox("Selected asset", ids, index=ids.index(default) if default in ids else 0,
-                          format_func=labels.get, key="asset_select")
-    st.session_state.selected_asset = chosen
-    render_selected(sess, sess.asset(chosen))
-
-    st.subheader(f"All tasks ({len(sess.store.tasks())})")
-    team_names = {t["team_id"]: t["name"] for t in sess.store.teams()}
-    st.dataframe(tasks_frame(sess.store.tasks(), team_names), width="stretch", hide_index=True)
-
-    events = sess.store.events()
-    with st.expander(f"Change log ({len(events)} store events, {len(sess.workbench.change_log)} agent lines)"):
-        st.dataframe(pd.DataFrame(events[::-1]), width="stretch", hide_index=True)
-        for line in reversed(sess.workbench.change_log):
-            st.write(f"- {line}")
+    current = selected_asset_id(sess)
+    left, right = st.columns([0.62, 0.38], gap="medium")
+    with left:
+        render_map_card(sess, s, c)
+        render_action_row(sess, sess.asset(current) if current else None)
+    with right:
+        render_priority_card(c)
+        render_escalation_card(sess)
+        render_ranked_card(sess, current)
+        render_selected_card(sess, current)
+        render_review_card(sess, c)
+    render_detail_sections(sess, s, c, current)
 
 
 if __name__ == "__main__":
