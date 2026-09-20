@@ -130,19 +130,24 @@ const root = path.resolve(__dirname, "..");
     ).toBeVisible();
     await next.click();
 
-    await expect(stepCard).toHaveText("4. Crews");
-    // No unit type is assumed: every count starts at zero and at least one is required.
-    for (const type of ["Ground crew", "Fire engine", "Helicopter"])
+    await expect(stepCard).toHaveText("4. Resources");
+    // No resource type is assumed: every count starts at zero and one is required.
+    for (const type of ["Ground crew", "Fire engine"])
       await expect(page.getByLabel(`${type} count`)).toHaveValue("0");
+    await expect(page.locator("main tbody tr")).toHaveCount(2);
     await next.click();
-    await expect(stepCard).toHaveText("4. Crews");
+    await expect(stepCard).toHaveText("4. Resources");
     await expect(page.getByRole("alert").first()).toContainText(
-      "Set a crew count above zero",
+      "Set a resource count above zero",
     );
+    // Capability tags come from the roster contract, not invented equipment classes.
+    await expect(
+      page.getByText("Occupancy check · Facility contact"),
+    ).toBeVisible();
     await page.getByLabel("Ground crew count").fill("3");
-    await page.getByLabel("Helicopter count").fill("1");
+    await page.getByLabel("Fire engine count").fill("1");
     await page
-      .getByLabel("Helicopter starting location")
+      .getByLabel("Fire engine starting location")
       .selectOption("territory");
     await next.click();
 
@@ -151,7 +156,7 @@ const root = path.resolve(__dirname, "..");
     // The last step starts the demo; it does not preview the dashboard.
     await expect(page.locator("main .incident-map")).toHaveCount(0);
     await expect(
-      page.getByText("2 fires, 4 numbers to call and 4 crews", {
+      page.getByText("2 fires, 4 numbers to call and 4 resources", {
         exact: false,
       }),
     ).toBeVisible();
@@ -172,6 +177,7 @@ const root = path.resolve(__dirname, "..");
     await page.goto(base + "/#/resources");
     await page.getByRole("heading", { name: "Resources" }).waitFor();
     await expect(page.getByText("Bombers de Test").first()).toBeVisible();
+    await expect(page.getByText("Ground crew 1")).toBeVisible();
     await expect(page.locator("main tbody tr")).toHaveCount(4);
 
     await page.goto(base + "/#/incidents");

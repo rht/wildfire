@@ -8,50 +8,37 @@ export const CATALONIA = {
   label: "Catalonia (approximate bounding box)",
 };
 
-export const CREW_TYPES = [
+// The two resource types the Resources page already shows (frontend/src/state/demo.mjs).
+// Their capability tags come from the roster contract (CONTRACTS section 5 and
+// fixtures/teams.json), so a generated plan never asks for a capability the system
+// does not model: this project plans coordination work, not suppression.
+export const RESOURCE_TYPES = [
   {
     id: "ground_crew",
     label: "Ground crew",
-    capabilities: ["Suppression", "Structure protection"],
-    aerial: false,
+    capabilities: [
+      "occupancy_check",
+      "facility_contact",
+      "assisted_evacuation",
+    ],
+    action: "confirm_occupancy",
   },
   {
     id: "fire_engine",
     label: "Fire engine",
-    capabilities: ["Suppression", "Water supply"],
-    aerial: false,
-  },
-  {
-    id: "water_tanker",
-    label: "Water tanker",
-    capabilities: ["Water supply"],
-    aerial: false,
-  },
-  {
-    id: "forestry_unit",
-    label: "Forestry unit",
-    capabilities: ["Wildland suppression", "Line building"],
-    aerial: false,
-  },
-  {
-    id: "medical_unit",
-    label: "Medical unit",
-    capabilities: ["Medical support", "Assisted evacuation"],
-    aerial: false,
-  },
-  {
-    id: "evacuation_bus",
-    label: "Evacuation bus",
-    capabilities: ["Assisted evacuation", "Transport"],
-    aerial: false,
-  },
-  {
-    id: "helicopter",
-    label: "Helicopter",
-    capabilities: ["Aerial suppression", "Reconnaissance"],
-    aerial: true,
+    capabilities: ["access_check", "transport"],
+    action: "check_access",
   },
 ];
+
+// Default required capabilities per action, from the same contract.
+export const ACTION_CAPABILITIES = {
+  confirm_occupancy: ["occupancy_check"],
+  contact_facility: ["facility_contact"],
+  check_access: ["access_check"],
+  request_resources: ["resource_request"],
+  assisted_evacuation: ["assisted_evacuation"],
+};
 
 export const PLACEMENTS = [
   ["station", "At the fire station"],
@@ -192,7 +179,7 @@ export function parsePhones(text) {
   return { numbers, problems };
 }
 
-// The call list and the crew roster are the jurisdiction's own facts: they start
+// The call list and the resource roster are the jurisdiction's own facts: they start
 // empty so nothing is generated from numbers or units nobody entered.
 export function defaultDraft() {
   return {
@@ -200,8 +187,11 @@ export function defaultDraft() {
     fires: "41.9400, 3.0400\n41.8600, 2.9100",
     station: "41.9600, 3.0380",
     phones: "",
-    crews: Object.fromEntries(
-      CREW_TYPES.map((type) => [type.id, { count: 0, placement: "station" }]),
+    resources: Object.fromEntries(
+      RESOURCE_TYPES.map((type) => [
+        type.id,
+        { count: 0, placement: "station" },
+      ]),
     ),
   };
 }
@@ -218,15 +208,15 @@ export function buildConfig(draft, { createdAt } = {}) {
   const fires = parseCoordinates(draft.fires);
   const phones = parsePhones(draft.phones);
   const station = parsePoint(draft.station);
-  const crews = CREW_TYPES.map((type) => {
-    const entry = draft.crews?.[type.id] || {};
+  const resources = RESOURCE_TYPES.map((type) => {
+    const entry = draft.resources?.[type.id] || {};
     const count = Math.max(
       0,
       Math.min(40, Math.trunc(Number(entry.count) || 0)),
     );
     const placement = entry.placement === "territory" ? "territory" : "station";
     return { type: type.id, count, placement };
-  }).filter((crew) => crew.count > 0);
+  }).filter((resource) => resource.count > 0);
   const department = String(draft.department ?? "").trim();
   // Each problem names the step that can fix it, so the form reports it in place.
   const problems = [];
@@ -245,15 +235,21 @@ export function buildConfig(draft, { createdAt } = {}) {
       "calls",
       "Supply at least one phone number for the voice agent to call.",
     );
-  if (!crews.length)
-    problem("crews", "Set a crew count above zero for at least one type.");
-  if (!station && crews.some((crew) => crew.placement === "station"))
+  if (!resources.length)
     problem(
-      "crews",
-      "Supply the fire station pair on the jurisdiction step, or place every crew type across the territory.",
+      "resources",
+      "Set a resource count above zero for at least one type.",
+    );
+  if (
+    !station &&
+    resources.some((resource) => resource.placement === "station")
+  )
+    problem(
+      "resources",
+      "Supply the fire station pair on the jurisdiction step, or place every resource type across the territory.",
     );
   const config = {
-    schema_version: "onboarding-demo-1",
+    schema_version: "onboarding-demo-2",
     created_at: createdAt || new Date().toISOString(),
     department,
     station,
@@ -262,7 +258,7 @@ export function buildConfig(draft, { createdAt } = {}) {
       longitude,
     })),
     phones: phones.numbers.map((entry) => entry.number),
-    crews,
+    resources,
   };
   return { config, problems, fires, phones, station };
 }
@@ -271,15 +267,22 @@ export const problemsFor = (problems, step) =>
   problems.filter((entry) => entry.step === step).map((entry) => entry.message);
 
 export function summarise(config) {
-  const crews = config.crews.reduce((total, crew) => total + crew.count, 0);
-  return { fires: config.fires.length, phones: config.phones.length, crews };
+  const resources = config.resources.reduce(
+    (total, resource) => total + resource.count,
+    0,
+  );
+  return {
+    fires: config.fires.length,
+    phones: config.phones.length,
+    resources,
+  };
 }
 
 /** Rejects anything that is not a configuration this build can generate a dashboard from. */
 export function isConfig(value) {
   return (
     !!value &&
-    value.schema_version === "onboarding-demo-1" &&
+    value.schema_version === "onboarding-demo-2" &&
     typeof value.department === "string" &&
     value.department.length > 0 &&
     Array.isArray(value.fires) &&
@@ -290,18 +293,20 @@ export function isConfig(value) {
     value.phones.every(
       (phone) => typeof phone === "string" && phone.length > 0,
     ) &&
-    Array.isArray(value.crews) &&
-    value.crews.length > 0 &&
-    value.crews.every(
-      (crew) =>
-        CREW_TYPES.some((type) => type.id === crew.type) &&
-        Number.isInteger(crew.count) &&
-        crew.count > 0 &&
-        ["station", "territory"].includes(crew.placement),
+    Array.isArray(value.resources) &&
+    value.resources.length > 0 &&
+    value.resources.every(
+      (resource) =>
+        RESOURCE_TYPES.some((type) => type.id === resource.type) &&
+        Number.isInteger(resource.count) &&
+        resource.count > 0 &&
+        ["station", "territory"].includes(resource.placement),
     ) &&
     (value.station === null || withinCatalonia(value.station)) &&
     (value.station !== null ||
-      value.crews.every((crew) => crew.placement === "territory")) &&
+      value.resources.every(
+        (resource) => resource.placement === "territory",
+      )) &&
     typeof value.created_at === "string" &&
     Number.isFinite(Date.parse(value.created_at))
   );
@@ -317,12 +322,17 @@ export function draftFromConfig(config) {
     fires: config.fires.map(pointText).join("\n"),
     station: pointText(config.station),
     phones: config.phones.join("\n"),
-    crews: Object.fromEntries(
-      CREW_TYPES.map((type) => {
-        const crew = config.crews.find((entry) => entry.type === type.id);
+    resources: Object.fromEntries(
+      RESOURCE_TYPES.map((type) => {
+        const resource = config.resources.find(
+          (entry) => entry.type === type.id,
+        );
         return [
           type.id,
-          { count: crew?.count ?? 0, placement: crew?.placement ?? "station" },
+          {
+            count: resource?.count ?? 0,
+            placement: resource?.placement ?? "station",
+          },
         ];
       }),
     ),

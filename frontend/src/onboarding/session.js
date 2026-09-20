@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { isConfig } from "./config.mjs";
 
-export const SESSION_KEY = "responsara.onboarding.v1";
+export const SESSION_KEY = "responsara.onboarding.v2";
 
 function stored() {
   try {

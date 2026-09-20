@@ -1,7 +1,12 @@
 // Illustrative dataset generated from the onboarding form. Locations, occupancy, values,
-// risk, calls and crew plans are synthetic: no register, no roster and no real call is involved.
+// risk, calls and response plans are synthetic: no register, no roster and no real call is involved.
 import { toIncident } from "../state/model.mjs";
-import { CATALONIA, CREW_TYPES, nearestPlace } from "./config.mjs";
+import {
+  ACTION_CAPABILITIES,
+  CATALONIA,
+  RESOURCE_TYPES,
+  nearestPlace,
+} from "./config.mjs";
 
 const hash = (text) => {
   let value = 0x811c9dc5;
@@ -436,16 +441,29 @@ function buildIncident(config, fire, fireIndex, units, seed) {
     };
   });
 
-  const planned = [...units]
-    .sort((a, b) => Number(a.aerial) - Number(b.aerial))
-    .slice(0, 2);
-  const targets = [...assets].sort(
-    (a, b) => (b.risk_score ?? -1) - (a.risk_score ?? -1),
+  // A resource is only sent where its capabilities apply: a location that asked for
+  // assistance needs an assisted_evacuation resource. The rest is left unserved with
+  // the reason, rather than mis-tasked.
+  const assists = (unit) => unit.capabilities.includes("assisted_evacuation");
+  const byRisk = (a, b) => (b.risk_score ?? -1) - (a.risk_score ?? -1);
+  const needsAssistance = (asset) =>
+    callFor(asset)?.reported_needs_assistance === true;
+  const assignments = new Map(units.map((unit) => [unit.id, []]));
+  const share = (locations, pool, perUnit) => {
+    if (!pool.length) return;
+    locations
+      .slice(0, pool.length * perUnit)
+      .forEach((asset, index) =>
+        assignments.get(pool[index % pool.length].id).push(asset),
+      );
+  };
+  share(assets.filter(needsAssistance).sort(byRisk), units.filter(assists), 2);
+  share(
+    assets.filter((asset) => !needsAssistance(asset)).sort(byRisk),
+    units.filter((unit) => !assists(unit)),
+    2,
   );
-  const assignments = new Map(planned.map((unit) => [unit.id, []]));
-  targets.slice(0, planned.length * 2).forEach((asset, index) => {
-    assignments.get(planned[index % planned.length].id).push(asset);
-  });
+  const planned = units.filter((unit) => assignments.get(unit.id).length > 0);
 
   const teams = planned.map((unit) => {
     let cursor = 0;
@@ -455,13 +473,11 @@ function buildIncident(config, fire, fireIndex, units, seed) {
       tasks: assignments.get(unit.id).map((asset, index) => {
         const from = index === 0 ? unit : assignments.get(unit.id)[index - 1];
         const travel = Math.max(
-          unit.aerial ? 3 : 5,
-          Math.round(
-            (distanceM(from, asset) / 1000 / (unit.aerial ? 160 : 45)) * 60,
-          ),
+          5,
+          Math.round((distanceM(from, asset) / 1000 / 45) * 60),
         );
-        const call = callFor(asset);
-        const assisted = call?.reported_needs_assistance === true;
+        const assisted = needsAssistance(asset);
+        const action = assisted ? "assisted_evacuation" : unit.action;
         const duration = assisted ? asset.evacuation_min : rng.int(12, 24);
         const depart = cursor;
         const start = depart + travel;
@@ -469,38 +485,34 @@ function buildIncident(config, fire, fireIndex, units, seed) {
         return {
           action_id: `${incidentId}-${unit.id}-${index + 1}`,
           asset_id: asset.asset_id,
-          action: assisted ? "assisted_evacuation" : "protect_and_check",
+          action,
           status: "proposed",
           depart_min: depart,
           travel_min: travel,
           start_min: start,
           finish_min: cursor,
           deadline_min: asset.fire_arrival_min,
-          required_capabilities: unit.capabilities,
+          required_capabilities: ACTION_CAPABILITIES[action],
           prerequisites: assisted
             ? ["Accessible transport confirmed", "Reception capacity confirmed"]
             : [],
-          route_source: unit.aerial ? null : "Illustrative straight-line route",
-          ...(unit.aerial
-            ? {}
-            : {
-                path_lonlat: [
-                  [from.longitude, from.latitude],
-                  [
-                    round(
-                      (from.longitude + asset.longitude) / 2 +
-                        rng.between(-0.006, 0.006),
-                      5,
-                    ),
-                    round(
-                      (from.latitude + asset.latitude) / 2 +
-                        rng.between(-0.006, 0.006),
-                      5,
-                    ),
-                  ],
-                  [asset.longitude, asset.latitude],
-                ],
-              }),
+          route_source: "Illustrative straight-line route",
+          path_lonlat: [
+            [from.longitude, from.latitude],
+            [
+              round(
+                (from.longitude + asset.longitude) / 2 +
+                  rng.between(-0.006, 0.006),
+                5,
+              ),
+              round(
+                (from.latitude + asset.latitude) / 2 +
+                  rng.between(-0.006, 0.006),
+                5,
+              ),
+            ],
+            [asset.longitude, asset.latitude],
+          ],
         };
       }),
     };
@@ -514,11 +526,13 @@ function buildIncident(config, fire, fireIndex, units, seed) {
       .filter((asset) => !served.has(asset.asset_id))
       .map((asset) => [
         asset.asset_id,
-        !asset.contact_phone
-          ? "Contact number not supplied; no crew assigned"
-          : asset.fire_arrival_min === null
-            ? "Awaiting forecast before a crew is assigned"
-            : "No crew free inside the evacuation window",
+        needsAssistance(asset)
+          ? "No assisted-evacuation resource free inside the evacuation window"
+          : !asset.contact_phone
+            ? "Contact number not supplied; no resource assigned"
+            : asset.fire_arrival_min === null
+              ? "Awaiting forecast before a resource is assigned"
+              : "No resource free inside the evacuation window",
       ]),
   );
 
@@ -551,7 +565,7 @@ function buildIncident(config, fire, fireIndex, units, seed) {
     ]),
     [
       "plan_updated",
-      `${teams.length} crew plans proposed for ${config.department}`,
+      `${teams.length} response plans proposed for ${config.department}`,
       "info",
       null,
     ],
@@ -605,8 +619,8 @@ function buildIncident(config, fire, fireIndex, units, seed) {
       name: unit.name,
       type: unit.label,
       capabilities: unit.capabilities,
-      status: assignments.has(unit.id) ? "deployed" : "standby",
-      available: !assignments.has(unit.id),
+      status: assignments.get(unit.id)?.length ? "deployed" : "standby",
+      available: !assignments.get(unit.id)?.length,
       latitude: unit.latitude,
       longitude: unit.longitude,
       home_station: config.department,
@@ -618,7 +632,7 @@ function buildIncident(config, fire, fireIndex, units, seed) {
       team_id: unit.id,
       name: unit.name,
       capabilities: unit.capabilities,
-      available: !assignments.has(unit.id),
+      available: !assignments.get(unit.id)?.length,
       source: `${config.department} · ${SOURCE}`,
     })),
     peopleClusters: assets.map((asset) => {
@@ -659,15 +673,15 @@ function buildIncident(config, fire, fireIndex, units, seed) {
 }
 
 function buildUnits(config, seed) {
-  const rng = generator(hash(`${seed}:crews`));
+  const rng = generator(hash(`${seed}:resources`));
   const box = territory(config);
   const prefix = slug(config.department);
   const units = [];
-  for (const crew of config.crews) {
-    const type = CREW_TYPES.find((entry) => entry.id === crew.type);
-    for (let index = 0; index < crew.count; index++) {
+  for (const resource of config.resources) {
+    const type = RESOURCE_TYPES.find((entry) => entry.id === resource.type);
+    for (let index = 0; index < resource.count; index++) {
       const point =
-        crew.placement === "station"
+        resource.placement === "station"
           ? offset(
               config.station,
               rng.between(-260, 260),
@@ -682,9 +696,9 @@ function buildUnits(config, seed) {
         name: `${type.label} ${index + 1}`,
         label: type.label,
         capabilities: type.capabilities,
-        aerial: type.aerial,
+        action: type.action,
         placementBasis:
-          crew.placement === "station"
+          resource.placement === "station"
             ? "Placed at the supplied fire station"
             : "Randomly placed inside the jurisdiction envelope",
         ...point,
@@ -702,7 +716,7 @@ export function onboardingIncidents(config) {
       config.created_at,
       config.fires,
       config.phones,
-      config.crews,
+      config.resources,
       config.station,
     ]),
   );

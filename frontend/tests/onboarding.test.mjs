@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   CATALONIA,
-  CREW_TYPES,
+  RESOURCE_TYPES,
   buildConfig,
   defaultDraft,
   draftFromConfig,
@@ -27,31 +27,30 @@ const COMPLETE = {
   fires: "41.9400, 3.0400\n41.8600, 2.9100",
   station: "41.9600, 3.0380",
   phones: "+34600111222\n+34600333444\n+34600555666\n+34600777888",
-  crews: {
-    ...defaultDraft().crews,
+  resources: {
+    ...defaultDraft().resources,
     ground_crew: { count: 3, placement: "station" },
     fire_engine: { count: 2, placement: "station" },
-    evacuation_bus: { count: 1, placement: "station" },
   },
 };
 const draft = (overrides) => ({ ...COMPLETE, ...overrides });
 const config = (overrides) =>
   buildConfig(draft(overrides), { createdAt: AT }).config;
 
-test("the form starts with no call list and no crews, and says so", () => {
+test("the form starts with no call list and no resources, and says so", () => {
   const { config: bare, problems } = buildConfig(defaultDraft(), {
     createdAt: AT,
   });
   assert.equal(bare.phones.length, 0);
-  assert.equal(bare.crews.length, 0);
+  assert.equal(bare.resources.length, 0);
   assert.deepEqual(problems, [
     {
       step: "calls",
       message: "Supply at least one phone number for the voice agent to call.",
     },
     {
-      step: "crews",
-      message: "Set a crew count above zero for at least one type.",
+      step: "resources",
+      message: "Set a resource count above zero for at least one type.",
     },
   ]);
   assert.equal(isConfig(bare), false);
@@ -61,8 +60,8 @@ test("the form starts with no call list and no crews, and says so", () => {
       {
         ...defaultDraft(),
         phones: "+34600111222",
-        crews: {
-          ...defaultDraft().crews,
+        resources: {
+          ...defaultDraft().resources,
           ground_crew: { count: 1, placement: "station" },
         },
       },
@@ -119,7 +118,7 @@ test("an incomplete configuration reports what is missing and is not storable", 
       fires: "48.85, 2.35",
       station: "",
       phones: "nope",
-      crews: {},
+      resources: {},
     },
     { createdAt: AT },
   );
@@ -127,14 +126,13 @@ test("an incomplete configuration reports what is missing and is not storable", 
   assert.equal(isConfig(partial), false);
 });
 
-test("station coordinates are required only when a crew type starts there", () => {
+test("station coordinates are required only when a resource type starts there", () => {
   const roaming = {
-    ...COMPLETE.crews,
+    ...COMPLETE.resources,
     ground_crew: { count: 2, placement: "territory" },
     fire_engine: { count: 0, placement: "territory" },
-    evacuation_bus: { count: 0, placement: "station" },
   };
-  const away = buildConfig(draft({ station: "", crews: roaming }), {
+  const away = buildConfig(draft({ station: "", resources: roaming }), {
     createdAt: AT,
   });
   assert.deepEqual(away.problems, []);
@@ -142,7 +140,10 @@ test("station coordinates are required only when a crew type starts there", () =
   const parked = buildConfig(
     draft({
       station: "",
-      crews: { ...roaming, ground_crew: { count: 2, placement: "station" } },
+      resources: {
+        ...roaming,
+        ground_crew: { count: 2, placement: "station" },
+      },
     }),
     { createdAt: AT },
   );
@@ -241,40 +242,91 @@ test("every supplied number reaches exactly one location, spread across the fire
   }
 });
 
-test("the crew roster matches the requested counts per type", () => {
+test("the resource roster matches the requested counts per type", () => {
   const supplied = config({
     fires: "41.9400, 3.0400\n41.8600, 2.9100",
-    crews: {
-      ...COMPLETE.crews,
+    resources: {
+      ...COMPLETE.resources,
       ground_crew: { count: 3, placement: "station" },
-      helicopter: { count: 2, placement: "territory" },
-      fire_engine: { count: 0, placement: "station" },
-      evacuation_bus: { count: 0, placement: "station" },
+      fire_engine: { count: 2, placement: "territory" },
     },
   });
   const incidents = onboardingIncidents(supplied);
-  const crews = incidents.flatMap((incident) => incident.resources);
-  assert.equal(crews.length, 5);
-  assert.equal(new Set(crews.map((crew) => crew.id)).size, 5);
-  assert.equal(summarise(supplied).crews, 5);
-  const byType = (label) => crews.filter((crew) => crew.type === label);
+  const resources = incidents.flatMap((incident) => incident.resources);
+  assert.equal(resources.length, 5);
+  assert.equal(new Set(resources.map((row) => row.id)).size, 5);
+  assert.equal(summarise(supplied).resources, 5);
+  const byType = (label) => resources.filter((row) => row.type === label);
   assert.equal(byType("Ground crew").length, 3);
-  assert.equal(byType("Helicopter").length, 2);
+  assert.equal(byType("Fire engine").length, 2);
+  // Only the two types the Resources page already shows are offered.
+  assert.deepEqual(
+    RESOURCE_TYPES.map((type) => type.label),
+    ["Ground crew", "Fire engine"],
+  );
+  // Capability tags come from the roster contract, not from invented equipment classes.
+  assert.deepEqual(byType("Ground crew")[0].capabilities, [
+    "occupancy_check",
+    "facility_contact",
+    "assisted_evacuation",
+  ]);
   for (const incident of incidents)
     assert.deepEqual(
       incident.teams.map((team) => team.team_id),
-      incident.resources.map((crew) => crew.id),
+      incident.resources.map((row) => row.id),
     );
 });
 
-test("crews start at the station or inside the jurisdiction envelope, as chosen", () => {
+test("a resource is only tasked where its capabilities apply", () => {
+  const supplied = config({
+    fires: "41.9400, 3.0400",
+    phones: "+34600000001\n+34600000002\n+34600000003",
+    resources: {
+      ...COMPLETE.resources,
+      ground_crew: { count: 1, placement: "station" },
+      fire_engine: { count: 1, placement: "station" },
+    },
+  });
+  const [incident] = onboardingIncidents(supplied);
+  const resource = (id) => incident.resources.find((row) => row.id === id);
+  const assisted = new Set(
+    incident.calls
+      .filter((call) => call.reported_needs_assistance === true)
+      .map((call) => call.asset_id),
+  );
+  assert.ok(assisted.size > 0, "a location asks for assistance");
+  for (const team of responseTeams(incident)) {
+    const capabilities = resource(team.team_id).capabilities;
+    for (const task of team.tasks) {
+      // The plan never asks a resource for a capability it does not have.
+      for (const required of task.required_capabilities)
+        assert.ok(
+          capabilities.includes(required),
+          `${team.team_id} lacks ${required}`,
+        );
+      assert.equal(
+        task.action === "assisted_evacuation",
+        assisted.has(task.asset_id),
+      );
+    }
+  }
+  // Only an assisted_evacuation resource is sent to an assistance request.
+  const engine = incident.resources.find((row) => row.type === "Fire engine");
+  assert.equal(
+    responseTeams(incident)
+      .find((team) => team.team_id === engine.id)
+      ?.tasks.some((task) => assisted.has(task.asset_id)) ?? false,
+    false,
+  );
+});
+
+test("resources start at the station or inside the jurisdiction envelope, as chosen", () => {
   const supplied = config({
     station: "41.9600, 3.0380",
-    crews: {
-      ...COMPLETE.crews,
+    resources: {
+      ...COMPLETE.resources,
       ground_crew: { count: 4, placement: "station" },
       fire_engine: { count: 4, placement: "territory" },
-      evacuation_bus: { count: 0, placement: "station" },
     },
   });
   const box = territory(supplied);
@@ -329,13 +381,13 @@ test("generated state drives the dashboard views it is built for", () => {
         incidents[0].assets.some((asset) => asset.asset_id === task.asset_id),
       );
     }
-  // Every crew type the form offers can be generated.
-  for (const type of CREW_TYPES) {
+  // Every resource type the form offers can be generated.
+  for (const type of RESOURCE_TYPES) {
     const single = config({
-      crews: {
-        ...COMPLETE.crews,
+      resources: {
+        ...COMPLETE.resources,
         ...Object.fromEntries(
-          CREW_TYPES.map((entry) => [
+          RESOURCE_TYPES.map((entry) => [
             entry.id,
             { count: entry.id === type.id ? 1 : 0, placement: "station" },
           ]),

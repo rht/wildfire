@@ -3615,11 +3615,11 @@ stays put rather than advancing, while parse problems (a pair outside Catalonia,
 unreadable number) are always listed line by line with the offending text. Completed
 steps are marked, and any step can be revisited from the progress list without losing
 what was entered. Validation that spans steps — station coordinates are required only
-when a crew type starts there — is reported on the step that can fix it.
+when a resource type starts there — is reported on the step that can fix it.
 
-The call list and the crew roster start empty: nothing is generated from numbers or unit
-types nobody entered, and neither step can be left until at least one number and at
-least one crew are supplied. The final step only starts the demo — one line confirming
+The call list and the resource roster start empty: nothing is generated from numbers or
+resource types nobody entered, and neither step can be left until at least one number and
+at least one resource are supplied. The final step only starts the demo — one line confirming
 what will be simulated, and the button. It does not preview the dashboard; the point is
 to run the response, not to read a summary of it. Starting opens the dashboard on the
 described jurisdiction to be worked as if it were live; ending the demo returns it to
@@ -3627,7 +3627,7 @@ its configured data source.
 
 The wizard collects five inputs:
 
-- **Fire department name** — recorded as the source of every crew record.
+- **Fire department name** — recorded as the source of every resource record.
 - **Fire GPS pairs, one per line** — the number of accepted pairs is the number of
   fires. Pairs outside an approximate Catalonia bounding box (40.5–42.9 N, 0.15–3.35 E)
   and unparseable lines are listed as ignored rather than silently dropped. Each fire is
@@ -3636,13 +3636,19 @@ The wizard collects five inputs:
 - **Phone numbers, one per line** — the voice agent's call list. Numbers are spread
   evenly across the fires and each becomes one contactable location. A fire with fewer
   numbers than locations leaves the rest in the review queue with `no_contact_number`.
-- **Crews per type** — a count per type (ground crew, fire engine, water tanker,
-  forestry unit, medical unit, evacuation bus, helicopter), each with a starting
-  location: at the fire station, or randomly across the territory. The territory is the
-  envelope covering the supplied fires and station, widened by about 13 km and clipped
-  to the Catalonia box. Crews are shared across the fires in turn; station coordinates
-  are required only when a type starts there.
-- **Fire station GPS** — where station-placed crews start.
+- **Resources per type** — a count for each of the two types the Resources page already
+  shows, ground crew and fire engine, each with a starting location: at the fire station,
+  or randomly across the territory. The territory is the envelope covering the supplied
+  fires and station, widened by about 13 km and clipped to the Catalonia box. Resources
+  are shared across the fires in turn; station coordinates are required only when a type
+  starts there. Their capability tags come from the roster contract (section 5:
+  `occupancy_check`, `facility_contact`, `access_check`, `transport`, plus
+  `assisted_evacuation` from the allocation model), so a generated task never asks for a
+  capability the system does not model — this project plans coordination work, not
+  suppression, and no suppression or aerial unit is offered. A location that reported
+  needing assistance is only given to a resource carrying `assisted_evacuation`; when
+  none is free it stays in `unserved` with that reason rather than being mis-tasked.
+- **Fire station GPS** — where station-placed resources start.
 
 Generation is deterministic: the same configuration always produces the same dashboard,
 seeded from a hash of the configuration itself. It emits ordinary `coordination-state-1`
@@ -3650,7 +3656,7 @@ incidents, so every existing view works unchanged — perimeter geometry, locate
 with occupancy, replacement value, expected-loss bands, burn probability and risk score,
 a ranked contact queue with evacuation windows, agent call records (assisted-evacuation
 request, self-evacuation with confirmed departure, a no-answer, and the rest queued),
-people groups, crew rosters with positions, proposed multi-crew plans with routes and
+people groups, resource rosters with positions, proposed multi-crew plans with routes and
 deadlines, unserved reasons, and an event log. Deadlines and remaining windows both
 derive from one illustrative spread rate applied to the supplied fire point, so crew
 margins and contact slack stay consistent with each other.
@@ -3665,22 +3671,22 @@ configuration exists. Crew confirmations are disabled for generated data and say
 there is no backend record to confirm against, and no approval request is sent.
 
 Every surface states what it is. The page, the mode banner and the footer mark the data
-as synthetic; no call is placed and no crew is dispatched. A "Number" column was added to
+as synthetic; no call is placed and no resource is dispatched. A "Number" column was added to
 the call queue, and the number on file to the call detail dialog, so the supplied call
 list is visible where the agent would work it; both read "Not supplied" for backend data
 that carries no number.
 
-Verification: 81 Node tests passed (12 new onboarding tests covering coordinate and
+Verification: 82 Node tests passed (13 new onboarding tests covering coordinate and
 number parsing, required-input reporting, configuration round-trips, one incident per
-pair, determinism, number distribution, crew counts per type and placement inside the
-station radius or the envelope, and the generated state driving `callRows`, `metrics`,
+pair, determinism, number distribution, resource counts per type, capability-matched
+tasking, and placement inside the station radius or the envelope, and the generated state driving `callRows`, `metrics`,
 `evacuationTotals` and `responseTeams`). Lint, Prettier and the production build passed.
 Ten Chrome regression scripts passed, including a new `onboarding_browser.cjs` that
 checks the page is absent from the navigation, walks all five steps with the progress bar
-advancing, confirms an empty call list, an empty crew roster and a coordinate outside
+advancing, confirms an empty call list, an empty resource roster and a coordinate outside
 Catalonia each report their error and refuse to advance, that Back and Next preserve
 entered values, that the final step previews no dashboard, starts the demo, verifies
-incident, crew and call-queue counts, and confirms the session survives a reload and that
+incident, resource and call-queue counts, and confirms the session survives a reload and that
 ending the demo returns the dashboard to its configured source. Screenshots of the
 form, overview, resources and call queue were inspected. Backend source files are
 unchanged.

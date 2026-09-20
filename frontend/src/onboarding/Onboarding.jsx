@@ -14,9 +14,10 @@ import {
 } from "@mui/material";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import { MainCard, PageHeading } from "../components/Common";
+import { humanize } from "../state/model.mjs";
 import {
   CATALONIA,
-  CREW_TYPES,
+  RESOURCE_TYPES,
   PLACEMENTS,
   buildConfig,
   defaultDraft,
@@ -48,8 +49,8 @@ const STEPS = [
     blurb: "The numbers the voice agent works through.",
   },
   {
-    id: "crews",
-    title: "Crews",
+    id: "resources",
+    title: "Resources",
     blurb: "How many of each type, and where they start.",
   },
   {
@@ -154,12 +155,12 @@ export default function Onboarding({ config, onSave, onClear }) {
     setDraft((previous) => ({ ...previous, [key]: value }));
     setFailure(null);
   };
-  const setCrew = (type, key, value) =>
+  const setResource = (type, key, value) =>
     setDraft((previous) => ({
       ...previous,
-      crews: {
-        ...previous.crews,
-        [type]: { ...previous.crews[type], [key]: value },
+      resources: {
+        ...previous.resources,
+        [type]: { ...previous.resources[type], [key]: value },
       },
     }));
 
@@ -237,7 +238,7 @@ export default function Onboarding({ config, onSave, onClear }) {
           <div className="onboarding-grid">
             <Field
               label="Fire department name"
-              hint="Shown as the source of every crew record."
+              hint="Shown as the source of every resource record."
             >
               <input
                 value={draft.department}
@@ -247,7 +248,7 @@ export default function Onboarding({ config, onSave, onClear }) {
             </Field>
             <Field
               label="Fire station GPS (latitude, longitude)"
-              hint="Where crews placed “at the fire station” start. Needed only if a crew type uses that placement."
+              hint="Where resources placed “at the fire station” start. Needed only if a resource type uses that placement."
             >
               <input
                 value={draft.station}
@@ -338,13 +339,13 @@ export default function Onboarding({ config, onSave, onClear }) {
           </>
         )}
 
-        {current.id === "crews" && (
+        {current.id === "resources" && (
           <>
             <div className="table-scroll">
               <Table>
                 <TableHead>
                   <TableRow>
-                    {["Type", "Capabilities", "Crews", "Starting location"].map(
+                    {["Type", "Capabilities", "Count", "Starting location"].map(
                       (column) => (
                         <TableCell key={column}>{column}</TableCell>
                       ),
@@ -352,13 +353,13 @@ export default function Onboarding({ config, onSave, onClear }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {CREW_TYPES.map((type) => (
+                  {RESOURCE_TYPES.map((type) => (
                     <TableRow key={type.id}>
                       <TableCell>
                         <strong>{type.label}</strong>
                       </TableCell>
                       <TableCell className="small-muted">
-                        {type.capabilities.join(" · ")}
+                        {type.capabilities.map(humanize).join(" · ")}
                       </TableCell>
                       <TableCell>
                         <input
@@ -367,18 +368,24 @@ export default function Onboarding({ config, onSave, onClear }) {
                           min="0"
                           max="40"
                           aria-label={`${type.label} count`}
-                          value={draft.crews[type.id]?.count ?? 0}
+                          value={draft.resources[type.id]?.count ?? 0}
                           onChange={(event) =>
-                            setCrew(type.id, "count", event.target.value)
+                            setResource(type.id, "count", event.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <select
                           aria-label={`${type.label} starting location`}
-                          value={draft.crews[type.id]?.placement ?? "station"}
+                          value={
+                            draft.resources[type.id]?.placement ?? "station"
+                          }
                           onChange={(event) =>
-                            setCrew(type.id, "placement", event.target.value)
+                            setResource(
+                              type.id,
+                              "placement",
+                              event.target.value,
+                            )
                           }
                         >
                           {PLACEMENTS.map(([value, label]) => (
@@ -394,10 +401,11 @@ export default function Onboarding({ config, onSave, onClear }) {
               </Table>
             </div>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-              {totals.crews} crew{totals.crews === 1 ? "" : "s"} in total,
-              shared across the supplied fires in turn. “Random across the
-              territory” draws a point from the area covering the fires and the
-              station, widened by about 13 km and clipped to {CATALONIA.label}.
+              {totals.resources} resource{totals.resources === 1 ? "" : "s"} in
+              total, shared across the supplied fires in turn. “Random across
+              the territory” draws a point from the area covering the fires and
+              the station, widened by about 13 km and clipped to{" "}
+              {CATALONIA.label}.
             </Typography>
           </>
         )}
@@ -408,16 +416,17 @@ export default function Onboarding({ config, onSave, onClear }) {
               <Typography>
                 {totals.fires} fire{totals.fires === 1 ? "" : "s"},{" "}
                 {totals.phones} number{totals.phones === 1 ? "" : "s"} to call
-                and {totals.crews} crew{totals.crews === 1 ? "" : "s"} for{" "}
+                and {totals.resources} resource
+                {totals.resources === 1 ? "" : "s"} for{" "}
                 {built.config.department}.
               </Typography>
               <Alert severity="info" sx={{ mt: 2 }}>
                 Starting the demo opens the dashboard on this jurisdiction so
                 you can work it as if it were live. Every location, occupancy
-                figure, value, risk score, call and crew plan is simulated; no
-                call is placed and no crew is dispatched. It is held for this
-                browser session only — end it and the dashboard returns to its
-                configured data source.
+                figure, value, risk score, call and response plan is simulated;
+                no call is placed and no resource is dispatched. It is held for
+                this browser session only — end it and the dashboard returns to
+                its configured data source.
               </Alert>
             </>
           ) : (
