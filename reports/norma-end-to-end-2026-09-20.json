@@ -1623,12 +1623,21 @@
   "updated_at": "2026-09-20T03:17:19.542347+00:00",
   "selected_new_defenses": [
     {
+      "candidate_id": "coordination_cli_json_stdout",
+      "branch": "codex/end-to-end",
+      "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "file": "fireline/coordination.py",
+      "line": 466,
+      "rule_id": "py-maint-no-print",
+      "status": "primary_selected_retained_defense_not_fixed_not_formally_registered"
+    },
+    {
       "candidate_id": "single_incident_worker",
       "file": "fireline/incident_server.py",
       "line": 483,
       "rule_id": "fa-scl-hardcoded-workers",
       "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
-      "status": "primary_retained_documented_design_not_fixed_not_formally_registered"
+      "status": "retained_alternative_design_not_fixed_not_formally_registered"
     },
     {
       "candidate_id": "cli_stdout_output",
@@ -1657,7 +1666,8 @@
         }
       ],
       "rule_id": "py-maint-no-print",
-      "rationale": "CLI result and completion output is intentionally observable independent of logging levels/handlers; logger.info is not an equivalent output contract."
+      "rationale": "CLI result and completion output is intentionally observable independent of logging levels/handlers; logger.info is not an equivalent output contract.",
+      "selection_scope": "Primary selected defense is coordination.py:466 only; other CLI outputs remain separately retained decisions."
     },
     {
       "candidate_id": "caller_owned_fetch_errors",
@@ -1665,7 +1675,7 @@
       "file": "frontend/legacy/dashboard-view.js",
       "line": 217,
       "rule_id": "js-no-error-handling-async",
-      "status": "retained_documented_error_boundary_not_fixed",
+      "status": "retained_alternative_error_boundary_not_fixed",
       "rationale": "Unchanged exact callback delegates failures to DashboardClient.start catch/recover; new committed test checks rejection and retry for both clients.",
       "evidence_reuse": "The source file and client code hashes remain unchanged; initial exact-code probe and applicable-rule verdict reused with provenance.",
       "regression": {
@@ -1675,18 +1685,19 @@
     }
   ],
   "primary_selected_new_defense": {
-    "candidate_id": "single_incident_worker",
-    "file": "fireline/incident_server.py",
-    "line": 483,
-    "rule_id": "fa-scl-hardcoded-workers",
+    "candidate_id": "coordination_cli_json_stdout",
+    "branch": "codex/end-to-end",
     "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
-    "status": "primary_retained_documented_design_not_fixed_not_formally_registered"
+    "file": "fireline/coordination.py",
+    "line": 466,
+    "rule_id": "py-maint-no-print",
+    "status": "primary_selected_retained_defense_not_fixed_not_formally_registered"
   },
   "coordination_followup": {
     "initial_scan_complete": true,
     "initial_scan_commit": "e8b8c8e17cc193538a5d469c2b1a210ebb3ffebb",
     "working_tree_remediation_owner": "root end-to-end session",
-    "working_tree_remediation_claims_verified_by_scanner": "Final two exact-file Livechecks at 2a235999 plus hash-verified unchanged results; final 1115 Python suite count is coordinator-reported.",
+    "working_tree_remediation_claims_verified_by_scanner": "Two exact-file Livechecks at 2a235999 plus hash-verified unchanged results; coordinator reports 71 focused tests at final head and 1115 full-suite tests previously passed.",
     "reported_work": [
       "HTTPS-only dashboard login and secure cookie with regression",
       "typed lifespan",
@@ -2444,7 +2455,10 @@
       },
       "test_evidence": {
         "reported_by": "coordinating root session",
-        "reported_python_passed": 1115,
+        "reported_focused_tests_passed": 71,
+        "focused_test_commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+        "reported_previous_full_python_suite_passed": 1115,
+        "full_suite_at_final_head_claimed": false,
         "full_suites_independently_rerun_by_scanner": false
       }
     }
@@ -3528,56 +3542,29 @@
     }
   ],
   "current_primary_defense": {
-    "candidate_id": "single_incident_worker",
-    "file": "fireline/incident_server.py",
-    "line": 483,
-    "rule_id": "fa-scl-hardcoded-workers",
+    "candidate_id": "coordination_cli_json_stdout",
+    "branch": "codex/end-to-end",
     "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
-    "status": "primary_retained_documented_design_not_fixed_not_formally_registered",
-    "intended_behavior": "Exactly one server process owns API mutation/background-tick serialization through asyncio.Lock and one lifespan task.",
-    "rationale": "Worker count is an ownership invariant, not an unrestricted scaling parameter; multiple independent process locks do not coordinate shared incident operations.",
-    "tradeoffs": "Limits throughput and availability; operators still must avoid multiple independent service instances. Fixed workers=1 does not prove cross-process safety.",
-    "evidence_anchors": {
-      "fireline/incident_server.py": [
-        {
-          "line": 182,
-          "text": "lock = asyncio.Lock()"
-        },
-        {
-          "line": 203,
-          "text": "async def lifespan(app: Starlette) -> AsyncIterator[None]:"
-        },
-        {
-          "line": 484,
-          "text": "application, host=args.host, port=args.port, workers=1, access_log=False"
-        }
-      ],
-      "frontend/tests/test_dashboard_client.cjs": [
-        {
-          "line": 58,
-          "text": "test('REST fetch rejection is handled by the caller and recovers through retry',async()=>{"
-        },
-        {
-          "line": 60,
-          "text": "for(const Client of [DashboardClient,LegacyClient]) {"
-        }
-      ],
-      "tests/test_incident_server.py": [
-        {
-          "line": 347,
-          "text": "with ThreadPoolExecutor(max_workers=1) as pool:"
-        },
-        {
-          "line": 467,
-          "text": "assert server_options[0][\"workers\"] == 1"
-        }
-      ]
-    },
+    "file": "fireline/coordination.py",
+    "line": 466,
+    "rule_id": "py-maint-no-print",
+    "status": "primary_selected_retained_defense_not_fixed_not_formally_registered",
+    "intended_behavior": "Successful coordination tick emits exactly one machine-readable JSON state to stdout, with a trailing newline; consumers can parse it and compare replay results.",
+    "why_general_rule_does_not_fit": "The rule treats print as diagnostic logging. This call is the CLI result protocol. logger.info may be disabled by level, normally writes to stderr, and may add formatting; it is not a behavior-preserving replacement for stdout JSON. Moving diagnostics to logging is separate from emitting command output.",
+    "tradeoffs": "Stdout is reserved for protocol data and cannot also carry arbitrary informational logs. Large states are serialized as one output payload and broken-pipe behavior remains a CLI concern. This does not authorize printing secrets or raw private input.",
     "invalidation_conditions": [
-      "Introduce tested inter-process coordination or leader election",
-      "Separate background ownership from replicated API workers",
-      "Deploy multiple independent processes on the same incident without equivalent synchronization"
-    ]
+      "The command contract changes from JSON stdout to another explicit output channel",
+      "Additional prints or logger configuration contaminate stdout with non-JSON diagnostics",
+      "The output ceases to be the public state or includes private payloads/secrets",
+      "The print is moved into a library/background/request path where there is no CLI stdout contract",
+      "Subprocess parsing/replay regression stops validating the actual CLI"
+    ],
+    "bounds": "Only this exact CLI result-output finding is selected. Other no-print findings need their own output-contract review; no whole-rule exemption or suppression is implied.",
+    "evidence": {
+      "finding": "focused_rescans[1].results",
+      "historical_subprocess_regression": "new_defense_candidates[0].verification",
+      "latest_suite": "Coordinating root reports 71 focused tests passed at final head; 1115 full-suite Python tests previously passed. Scanner did not rerun suites."
+    }
   },
   "candidate_assessment_scope": "new_defense_candidates contains initial e8b8c8e assessments; selected_new_defenses and current_primary_defense describe the final ba441f7 decisions.",
   "prior_final_snapshots": [
@@ -4645,6 +4632,60 @@
             "line": 58
           }
         }
+      ]
+    }
+  ],
+  "retained_alternative_defense_details": [
+    {
+      "candidate_id": "single_incident_worker",
+      "file": "fireline/incident_server.py",
+      "line": 483,
+      "rule_id": "fa-scl-hardcoded-workers",
+      "commit": "2a235999fd6016f8a930ac44f21dc764b2ae9cca",
+      "status": "retained_alternative_design_not_fixed_not_formally_registered",
+      "intended_behavior": "Exactly one server process owns API mutation/background-tick serialization through asyncio.Lock and one lifespan task.",
+      "rationale": "Worker count is an ownership invariant, not an unrestricted scaling parameter; multiple independent process locks do not coordinate shared incident operations.",
+      "tradeoffs": "Limits throughput and availability; operators still must avoid multiple independent service instances. Fixed workers=1 does not prove cross-process safety.",
+      "evidence_anchors": {
+        "fireline/incident_server.py": [
+          {
+            "line": 182,
+            "text": "lock = asyncio.Lock()"
+          },
+          {
+            "line": 203,
+            "text": "async def lifespan(app: Starlette) -> AsyncIterator[None]:"
+          },
+          {
+            "line": 484,
+            "text": "application, host=args.host, port=args.port, workers=1, access_log=False"
+          }
+        ],
+        "frontend/tests/test_dashboard_client.cjs": [
+          {
+            "line": 58,
+            "text": "test('REST fetch rejection is handled by the caller and recovers through retry',async()=>{"
+          },
+          {
+            "line": 60,
+            "text": "for(const Client of [DashboardClient,LegacyClient]) {"
+          }
+        ],
+        "tests/test_incident_server.py": [
+          {
+            "line": 347,
+            "text": "with ThreadPoolExecutor(max_workers=1) as pool:"
+          },
+          {
+            "line": 467,
+            "text": "assert server_options[0][\"workers\"] == 1"
+          }
+        ]
+      },
+      "invalidation_conditions": [
+        "Introduce tested inter-process coordination or leader election",
+        "Separate background ownership from replicated API workers",
+        "Deploy multiple independent processes on the same incident without equivalent synchronization"
       ]
     }
   ]
