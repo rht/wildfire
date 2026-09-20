@@ -10,6 +10,28 @@ The colleague builds **risk assessment**, which consumes fire updates, discovers
 
 Use [Superpowers](https://github.com/obra/superpowers) for development. Work in a dedicated branch and worktree under this repository's `.worktrees/` directory, publish every task branch to `origin`, and push progress so colleagues can review it. See [AGENTS.md](AGENTS.md) for the persistent workflow.
 
+### Pipeline pitch slide
+
+`frontend/pipeline/` is a standalone 16:9 pitch slide in the website's ResponsAra
+brand, using its theme, Public Sans and Ant Design icons. The three equal steps
+are **Assess risk → Coordinate response → Guide the analyst**, with one feedback
+loop: **Live updates refine priorities**. It is a concise architecture explanation;
+planning and analyst review do not imply autonomous dispatch. Technical contracts
+and implementation status remain in the architecture sections below.
+
+From `frontend`, run `npm exec vite -- --config pipeline/vite.config.mjs --port
+18544 --strictPort` and open `http://127.0.0.1:18544/`. Build with `npm exec vite --
+build --config pipeline/vite.config.mjs`; output is `frontend/dist/pipeline/`.
+The ordinary dashboard build and its entry points are unchanged.
+
+The page provides download controls outside the exported slide. Shareable files:
+`frontend/pipeline/public/exports/responsara-pipeline.png` (1600×900) and
+`frontend/pipeline/public/exports/responsara-pipeline.pdf` (one landscape page,
+selectable vector text). Regenerate exports and verify layouts/downloads with
+`node frontend/pipeline/verify.cjs` from the repository root, with the preview
+running. Verification uses installed Chrome, Playwright, and Poppler's `pdfinfo`
+and `pdftotext`. The slide loads no incident data or operational API.
+
 ## Three-component architecture
 
 Architecture baseline recorded on 2026-09-19. The responsibility split remains current;
